@@ -37,13 +37,15 @@ ROOT_UUID = "ca1c0000-0000-4000-8000-0000000d1501"   # keep stable across regens
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C")
 K.register_stdlib("Connector_Generic", "Conn_01x08")
-# Display parts chosen by LCSC price/availability (research):
-#   - TM1640 driver (C5337152) and FJ5161AH 0.56" 4-digit 7-seg (C8093) are NOT
-#     in KiCad's bundled libraries. Create custom symbols in
-#     hardware/lib/symbols/calcumaker.kicad_sym, then register them here:
-#   K.register_lib("calcumaker",
-#       os.path.join(HW, "lib", "symbols", "calcumaker.kicad_sym"),
-#       "TM1640", "FJ5161AH")
+# Digits: the FJ5161AH is a generic 0.56" 4-digit COMMON-CATHODE display — KiCad
+# bundles this exact topology as Display_Character:CC56-12* (12-pin). We reuse
+# CC56-12EWA (verify the FJ5161AH pinout matches CC56-12 at layout).
+K.register_stdlib("Display_Character", "CC56-12EWA")
+# Driver: TM1640 is NOT in KiCad — vendored symbol authored from the datasheet
+# pinout in hardware/lib/symbols/calcumaker.kicad_sym.
+K.register_lib("calcumaker",
+               os.path.join(HW, "lib", "symbols", "calcumaker.kicad_sym"),
+               "TM1640")
 
 # ---- footprint shorthands ---------------------------------------------------
 C0402 = "Capacitor_SMD:C_0402_1005Metric"
@@ -65,28 +67,26 @@ def C(ref, val, fp=C0402):
 # Multi-row 7-seg RPN stack: 3 rows laid out, top row optionally populated (=> 2
 # or 3 visible rows). Each row = ONE TM1640 driving 16 common-cathode digits =
 # 4x FJ5161AH (0.56" 4-digit CC). Parts chosen by LCSC stock/price (research):
-#   TM1640   C5337152  SOP-28   ~$0.12  (2-wire, 16-dig x 8-seg, common-cathode)
+#   TM1640   C5337152  SOP-28 (SOIC-28W)   ~$0.12  (2-wire, 16-dig x 8-seg, CC)
 #   FJ5161AH C8093     0.56" 4-digit common-cathode, THROUGH-HOLE  ~$0.19
+#       -> symbol = stock Display_Character:CC56-12EWA; fp = Display_7Segment:CC56-12GWA
 # *** THT digits: no SMD multi-digit 7-seg are stocked on LCSC, so the display
 #     board needs THT assembly (JLCPCB THT add-on or hand-solder). ***
-# NOTE: TM1640/FJ5161AH need CUSTOM symbols (not in KiCad bundled libs) — see the
-# register_lib TODO above. Below shows U1 + DS1 (row 1); replicate for U2/U3 and
-# DS2..DS12 once the symbols exist (one TM1640 + four FJ5161AH per row).
+TM1640_FP = "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm"   # verify vs TM1640 SOP-28 drawing
+DIGIT_FP = "Display_7Segment:CC56-12GWA"               # CC56-12 land = FJ5161AH 12-pin
+# 3 row drivers (U3/top row optional for a 2-row build).
+DRIVERS = [dict(ref=f"U{r}", lib_id="calcumaker:TM1640", value="TM1640",
+                fp=TM1640_FP, lcsc="C5337152", mpn="TM1640", mfr="TitanMicro")
+           for r in (1, 2, 3)]
+# 12 digit modules: 4 per row x 3 rows (DS9-12 = top row, optional).
+DIGITS = [dict(ref=f"DS{n}", lib_id="Display_Character:CC56-12EWA",
+               value="FJ5161AH", fp=DIGIT_FP, lcsc="C8093", mpn="FJ5161AH",
+               mfr="Forge") for n in range(1, 13)]
 DISPLAY = dict(name="Display", file="display.kicad_sch",
     title="7-seg RPN stack (3 rows x 16 digits) + TM1640 drivers", page="2",
-    big=[
-        dict(ref="U1", lib_id="calcumaker:TM1640", value="TM1640",
-             fp="Package_SO:SOP-28_7.5x18.7mm_P1.27mm",   # TODO verify fp
-             lcsc="C5337152", mpn="TM1640", mfr="TitanMicro"),
-        # U2, U3 = rows 2 & 3 (U3 row optional for 2-row build).
-        dict(ref="DS1", lib_id="calcumaker:FJ5161AH",
-             value="FJ5161AH 0.56\" 4-dig CC",
-             fp="Display_7Segment:FJ5161AH_4-digit",       # TODO create/verify fp
-             lcsc="C8093", mpn="FJ5161AH", mfr="Forge"),
-        # DS2..DS12 = remaining 11 digit modules (4 per row x 3 rows).
-    ],
+    big=DRIVERS + DIGITS,
     small=[
-        # Per TM1640: 100nF decoupling + shared bulk. (Replicate C per chip.)
+        # Per TM1640: 100nF decoupling; shared 3V3 bulk.
         C("C1", "100nF"), C("C2", "100nF"), C("C3", "100nF"),  # U1/U2/U3 bypass
         C("C4", "10uF", C0805),                                 # 3V3 bulk
     ],

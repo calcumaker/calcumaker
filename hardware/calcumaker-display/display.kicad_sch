@@ -1,0 +1,2088 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "90740d87-7211-4fa0-b59b-73c565908d04")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Display — 7-seg RPN stack (3 rows x 16 digits) + TM1640 drivers")
+		(date "2026-06-21")
+		(rev "0.1")
+		(company "calcumaker authors")
+	)
+	(lib_symbols
+	(symbol "calcumaker:TM1640"
+		(pin_names (offset 1.016))
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "U" (at -15.24 23.5 0) (effects (font (size 1.27 1.27)) (justify left)))
+		(property "Value" "TM1640" (at -15.24 -24.13 0) (effects (font (size 1.27 1.27)) (justify left)))
+		(property "Footprint" "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+		(property "Datasheet" "https://www.titanmec.com/" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+		(property "Description" "Titan Micro TM1640 LED drive control: 8 seg x 16 grid, 2-wire (CLK/DIN), common-cathode, SOP-28" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
+		(symbol "TM1640_1_1"
+			(rectangle (start -15.24 21.59) (end 15.24 -21.59) (stroke (width 0.254) (type default)) (fill (type background)))
+			(pin power_in line (at -17.78 19.05 0) (length 2.54) (name "VDD" (effects (font (size 1.27 1.27)))) (number "17" (effects (font (size 1.27 1.27))))) 
+			(pin input line (at -17.78 13.97 0) (length 2.54) (name "DIN" (effects (font (size 1.27 1.27)))) (number "7" (effects (font (size 1.27 1.27))))) 
+			(pin input line (at -17.78 11.43 0) (length 2.54) (name "SCLK" (effects (font (size 1.27 1.27)))) (number "8" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 6.35 0) (length 2.54) (name "SEG1" (effects (font (size 1.27 1.27)))) (number "9" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 3.81 0) (length 2.54) (name "SEG2" (effects (font (size 1.27 1.27)))) (number "10" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 1.27 0) (length 2.54) (name "SEG3" (effects (font (size 1.27 1.27)))) (number "11" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 -1.27 0) (length 2.54) (name "SEG4" (effects (font (size 1.27 1.27)))) (number "12" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 -3.81 0) (length 2.54) (name "SEG5" (effects (font (size 1.27 1.27)))) (number "13" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 -6.35 0) (length 2.54) (name "SEG6" (effects (font (size 1.27 1.27)))) (number "14" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 -8.89 0) (length 2.54) (name "SEG7" (effects (font (size 1.27 1.27)))) (number "15" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at -17.78 -11.43 0) (length 2.54) (name "SEG8" (effects (font (size 1.27 1.27)))) (number "16" (effects (font (size 1.27 1.27))))) 
+			(pin power_in line (at -17.78 -19.05 0) (length 2.54) (name "VSS" (effects (font (size 1.27 1.27)))) (number "6" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 19.05 180) (length 2.54) (name "GRID1" (effects (font (size 1.27 1.27)))) (number "18" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 16.51 180) (length 2.54) (name "GRID2" (effects (font (size 1.27 1.27)))) (number "19" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 13.97 180) (length 2.54) (name "GRID3" (effects (font (size 1.27 1.27)))) (number "20" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 11.43 180) (length 2.54) (name "GRID4" (effects (font (size 1.27 1.27)))) (number "21" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 8.89 180) (length 2.54) (name "GRID5" (effects (font (size 1.27 1.27)))) (number "22" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 6.35 180) (length 2.54) (name "GRID6" (effects (font (size 1.27 1.27)))) (number "23" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 3.81 180) (length 2.54) (name "GRID7" (effects (font (size 1.27 1.27)))) (number "24" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 1.27 180) (length 2.54) (name "GRID8" (effects (font (size 1.27 1.27)))) (number "25" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -1.27 180) (length 2.54) (name "GRID9" (effects (font (size 1.27 1.27)))) (number "26" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -3.81 180) (length 2.54) (name "GRID10" (effects (font (size 1.27 1.27)))) (number "27" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -6.35 180) (length 2.54) (name "GRID11" (effects (font (size 1.27 1.27)))) (number "28" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -8.89 180) (length 2.54) (name "GRID12" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -11.43 180) (length 2.54) (name "GRID13" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -13.97 180) (length 2.54) (name "GRID14" (effects (font (size 1.27 1.27)))) (number "3" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -16.51 180) (length 2.54) (name "GRID15" (effects (font (size 1.27 1.27)))) (number "4" (effects (font (size 1.27 1.27))))) 
+			(pin output line (at 17.78 -19.05 180) (length 2.54) (name "GRID16" (effects (font (size 1.27 1.27)))) (number "5" (effects (font (size 1.27 1.27))))) 
+		)
+	)
+	(symbol "Display_Character:CC56-12EWA"
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "U"
+			(at -24.13 13.97 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "CC56-12EWA"
+			(at 19.05 13.97 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Display_7Segment:CA56-12EWA"
+			(at 0 -15.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "http://www.kingbrightusa.com/images/catalog/SPEC/CA56-12EWA.pdf"
+			(at -10.922 0.762 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "4 digit 7 segment high efficiency red LED, common cathode"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "display LED 7-segment"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "*CA56*12EWA*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "CC56-12EWA_0_0"
+			(rectangle
+				(start -25.4 12.7)
+				(end 25.4 -12.7)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+			(polyline
+				(pts
+					(xy -20.32 -3.81) (xy -19.05 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -19.05 -3.81) (xy -16.51 -3.81)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -18.796 1.27) (xy -17.526 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -17.78 0) (xy -15.24 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -16.256 5.08) (xy -13.716 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -15.24 -3.81) (xy -13.97 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -13.716 1.27) (xy -12.446 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -8.89 -3.81) (xy -7.62 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -7.62 -3.81) (xy -5.08 -3.81)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -7.366 1.27) (xy -6.096 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -6.35 0) (xy -3.81 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -4.826 5.08) (xy -2.286 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -3.81 -3.81) (xy -2.54 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -2.286 1.27) (xy -1.016 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 -3.81) (xy 2.54 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.54 -3.81) (xy 5.08 -3.81)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.794 1.27) (xy 4.064 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 3.81 0) (xy 6.35 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 5.334 5.08) (xy 7.874 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 6.35 -3.81) (xy 7.62 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 7.874 1.27) (xy 9.144 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 11.176 -3.81) (xy 12.446 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 12.446 -3.81) (xy 14.986 -3.81)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 12.7 1.27) (xy 13.97 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 13.716 0) (xy 16.256 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 15.24 5.08) (xy 17.78 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 16.256 -3.81) (xy 17.526 0)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 17.78 1.27) (xy 19.05 5.08)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(text "e"
+				(at -21.336 -1.524 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "f"
+				(at -19.558 3.048 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "d"
+				(at -17.78 -2.794 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "g"
+				(at -16.51 1.524 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "a"
+				(at -15.24 6.35 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "DP1"
+				(at -13.716 -6.35 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "c"
+				(at -13.208 -1.778 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "b"
+				(at -12.192 2.794 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "DP2"
+				(at -2.286 -6.35 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "DP3"
+				(at 7.62 -6.35 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(text "DP4"
+				(at 17.78 -6.096 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+		)
+		(symbol "CC56-12EWA_0_1"
+			(circle
+				(center -13.716 -3.81)
+				(radius 0.3556)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type outline)
+				)
+			)
+			(circle
+				(center -2.54 -3.81)
+				(radius 0.3556)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type outline)
+				)
+			)
+		)
+		(symbol "CC56-12EWA_1_0"
+			(circle
+				(center 7.62 -4.064)
+				(radius 0.3556)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type outline)
+				)
+			)
+			(circle
+				(center 17.78 -3.81)
+				(radius 0.3556)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type outline)
+				)
+			)
+		)
+		(symbol "CC56-12EWA_1_1"
+			(pin input line
+				(at -27.94 -2.54 0)
+				(length 2.54)
+				(name "e"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 0 0)
+				(length 2.54)
+				(name "d"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 -10.16 0)
+				(length 2.54)
+				(name "DPX"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 2.54 0)
+				(length 2.54)
+				(name "c"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 -7.62 0)
+				(length 2.54)
+				(name "g"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 27.94 -10.16 180)
+				(length 2.54)
+				(name "CC4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "6"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 5.08 0)
+				(length 2.54)
+				(name "b"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 27.94 -7.62 180)
+				(length 2.54)
+				(name "CC3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 27.94 -5.08 180)
+				(length 2.54)
+				(name "CC2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 -5.08 0)
+				(length 2.54)
+				(name "f"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "10"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -27.94 7.62 0)
+				(length 2.54)
+				(name "a"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 27.94 -2.54 180)
+				(length 2.54)
+				(name "CC1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "Device:C"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0.254)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "C"
+			(at 0.635 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "C"
+			(at 0.635 -2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 0.9652 -3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "cap capacitor"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "C_*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "C_0_1"
+			(polyline
+				(pts
+					(xy -2.032 0.762) (xy 2.032 0.762)
+				)
+				(stroke
+					(width 0.508)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -2.032 -0.762) (xy 2.032 -0.762)
+				)
+				(stroke
+					(width 0.508)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "C_1_1"
+			(pin passive line
+				(at 0 3.81 270)
+				(length 2.794)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 0 -3.81 90)
+				(length 2.794)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	)
+	(symbol
+		(lib_id "calcumaker:TM1640")
+		(at 45.7200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b992a220-3041-4487-850b-e9520f445470")
+		(property "Reference" "U1"
+			(at 49.5300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "TM1640"
+			(at 49.5300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C5337152"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "TM1640"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "TitanMicro"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "17" (uuid "e227e8d8-27e7-4a77-b66b-eb21c291d307"))
+		(pin "7" (uuid "b43385f0-7275-4bc8-8eb5-233a7f541286"))
+		(pin "8" (uuid "0bc53310-ba27-4305-90ba-04f6e24b508c"))
+		(pin "9" (uuid "4b18a321-0797-401a-bac1-63213d2a7a65"))
+		(pin "10" (uuid "668730d4-85e8-465d-8a9e-8a5ab3e9829b"))
+		(pin "11" (uuid "33824a00-59d1-4bed-833e-2d1985de9e95"))
+		(pin "12" (uuid "4781b762-a5ed-497d-9493-ad01141f692e"))
+		(pin "13" (uuid "75ff7ace-8b40-4067-a9ab-65e4bb3751a1"))
+		(pin "14" (uuid "39582331-c498-48e3-8191-605113ed2d0b"))
+		(pin "15" (uuid "7d640eba-37ff-464e-a3ac-af1693ee3ba2"))
+		(pin "16" (uuid "75791004-4cd2-4870-a113-1f7f41b64b5a"))
+		(pin "6" (uuid "5a4a5fef-8e53-4cb1-9031-c9f33154cf52"))
+		(pin "18" (uuid "adbcc6b4-874c-42ea-8d79-1e7b6b0ebcb6"))
+		(pin "19" (uuid "77ef4376-1495-40c6-8b6c-5860b600d3c2"))
+		(pin "20" (uuid "371827ca-f64e-4875-b17f-d9296445a944"))
+		(pin "21" (uuid "31b020c9-5a77-465f-b0f6-be69b4ff181b"))
+		(pin "22" (uuid "d87c58a3-d8ad-4ba0-9923-c17527813ee3"))
+		(pin "23" (uuid "1592218a-7ddd-4293-b891-6182139b26b2"))
+		(pin "24" (uuid "a9bc5eea-a9cf-4281-a0cb-d12c949d7522"))
+		(pin "25" (uuid "e26ffc2b-fe65-4ae4-ab14-a2cef77af1e1"))
+		(pin "26" (uuid "2a37178f-5ec2-4b58-ba84-fec647c021eb"))
+		(pin "27" (uuid "345b5fa5-dcc5-4d83-94ac-a07f8a9b72fd"))
+		(pin "28" (uuid "b24ef88f-e4c7-4386-8ac7-6ba6efedf8a7"))
+		(pin "1" (uuid "92cb3bf2-0eb8-47d6-ac83-bd9b8b0e3dab"))
+		(pin "2" (uuid "745cbda4-d602-4ec8-b122-1d8290f6bab1"))
+		(pin "3" (uuid "ed00ddae-286c-4af9-a78a-44ca0cb8441b"))
+		(pin "4" (uuid "98ddf415-1e04-4b39-bb42-c793d53dbe7e"))
+		(pin "5" (uuid "a2c74dd5-0aa1-4f59-971f-91431815a9f9"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "calcumaker:TM1640")
+		(at 142.2400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "61fdf8b5-71bf-45c7-af6e-14b9a924ec34")
+		(property "Reference" "U2"
+			(at 146.0500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "TM1640"
+			(at 146.0500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C5337152"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "TM1640"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "TitanMicro"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "17" (uuid "8904ff12-2918-4981-b1bd-aa8e205b52a1"))
+		(pin "7" (uuid "ddc906be-2d35-4a70-b962-301ab95f8baf"))
+		(pin "8" (uuid "35bc14f2-7c41-4886-bc1a-225f2db82f52"))
+		(pin "9" (uuid "50d8675a-435c-4d85-b0ea-b5805b36c3a2"))
+		(pin "10" (uuid "e3b5ab51-417b-45be-b773-65b35a6982a9"))
+		(pin "11" (uuid "0cf03797-f39c-42ac-87fc-31f37269f462"))
+		(pin "12" (uuid "860608c1-3c78-4700-b5c9-d6120ca60d2e"))
+		(pin "13" (uuid "43e586cb-6ea0-41d2-9ce2-cea62e5b61f8"))
+		(pin "14" (uuid "145de3c1-d467-4ff8-a3af-6644c1f438dd"))
+		(pin "15" (uuid "0d88bee9-fd0b-4021-b8c1-a15357745522"))
+		(pin "16" (uuid "acc41148-6029-485f-a91e-0ed973390f33"))
+		(pin "6" (uuid "414e3eff-d5db-45c3-bd52-1280ea84342d"))
+		(pin "18" (uuid "180babd3-4217-4e73-bd7e-9181c46bf67f"))
+		(pin "19" (uuid "184a1412-46ca-4c5c-a833-e36946b53ca5"))
+		(pin "20" (uuid "a923710c-0609-4e5c-a46c-82bab325afcd"))
+		(pin "21" (uuid "83865f31-aa85-4ea9-b3b7-dc384cb5eaba"))
+		(pin "22" (uuid "e71c1dcb-b424-4aae-b9e2-34a428225a2e"))
+		(pin "23" (uuid "0d15829f-b88e-4d88-8aed-467f87f6ead5"))
+		(pin "24" (uuid "d956a33c-6d0d-4dd8-b058-d9aebaaff554"))
+		(pin "25" (uuid "58a5a2a5-fbfd-4f32-b401-e98082c32dec"))
+		(pin "26" (uuid "b559cfd1-c89b-46cd-bcfd-17989ded8bf5"))
+		(pin "27" (uuid "6fc2357e-774b-4460-9f76-6cbc4b3af64c"))
+		(pin "28" (uuid "b107d78e-80d9-467e-acac-52018a92fc7f"))
+		(pin "1" (uuid "fbf2a372-ddbd-4880-a34c-4b03af1fdb89"))
+		(pin "2" (uuid "fdfcbe35-feb8-47bc-a722-69b7088de8f9"))
+		(pin "3" (uuid "7dfcbb09-2a63-45e4-b328-dc7f0d9b0589"))
+		(pin "4" (uuid "ee24d5b7-3a45-401d-880f-51111521d907"))
+		(pin "5" (uuid "47ad241a-c3a6-468b-a846-247aaed54954"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "calcumaker:TM1640")
+		(at 238.7600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "98dfc69c-bf91-4991-a5be-6e08debc99a6")
+		(property "Reference" "U3"
+			(at 242.5700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "TM1640"
+			(at 242.5700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C5337152"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "TM1640"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "TitanMicro"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "17" (uuid "450cefa6-f1c5-4cf5-921b-4bd1a160620d"))
+		(pin "7" (uuid "931bce42-7922-43a9-b5ca-fa78a7f1ec9b"))
+		(pin "8" (uuid "c879f525-476c-4818-aed8-761d0773cc57"))
+		(pin "9" (uuid "355da84f-c5f5-4425-8938-6488cdd3a2b1"))
+		(pin "10" (uuid "4311e3f4-da4d-4e26-b6d8-c8bd79ccb3ee"))
+		(pin "11" (uuid "c4a076cd-1ebf-4f5c-a131-12c845cf702b"))
+		(pin "12" (uuid "1d73d4e2-0db0-4a30-8e7f-1314337d09f9"))
+		(pin "13" (uuid "8d7e7b0f-1fdb-42c6-8d31-6bcbdce9a512"))
+		(pin "14" (uuid "a64a30f2-bc7c-494f-81a2-98155f012339"))
+		(pin "15" (uuid "fc945e18-38b4-4efc-a6ea-8559ad695247"))
+		(pin "16" (uuid "15e60bdb-10e7-4bca-9143-4a693cf722f3"))
+		(pin "6" (uuid "989f2bd7-01e8-4353-b07a-f27fec6a92de"))
+		(pin "18" (uuid "68469858-6ce6-4a35-a862-4e277a018c5e"))
+		(pin "19" (uuid "9fbbafcd-5135-41c3-ae90-34039481738e"))
+		(pin "20" (uuid "05dfd6c7-cd9d-4bd1-bb31-85b0890d3b16"))
+		(pin "21" (uuid "a54dc175-9f06-4eb6-9b30-10b52275b9bb"))
+		(pin "22" (uuid "23c10b88-33af-4446-ad21-4887ee67ecda"))
+		(pin "23" (uuid "f4e5be20-752b-412c-9c70-ab4eb772b00c"))
+		(pin "24" (uuid "a47de835-45fe-4cb9-b7ca-5207f84b283d"))
+		(pin "25" (uuid "fea131d5-7443-4bfd-bd92-077886d14cdd"))
+		(pin "26" (uuid "bd51f917-344f-4ae6-9e5a-8fff00817f14"))
+		(pin "27" (uuid "794725e6-dd65-46eb-ac72-b94df73791b3"))
+		(pin "28" (uuid "34f89ad5-f361-42a0-9eb7-c7405f9b3634"))
+		(pin "1" (uuid "ce683a48-0984-405f-8f8e-c079ed92c142"))
+		(pin "2" (uuid "69e5276f-9a96-4cc8-87ee-e7df70df09bc"))
+		(pin "3" (uuid "59d5e8f7-7b4a-4350-a2d5-ad2354a061a1"))
+		(pin "4" (uuid "0e1a799d-a3e3-44f2-83f2-77a19a8340ba"))
+		(pin "5" (uuid "4f321481-f28f-4613-9318-38b97dfce80c"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 335.2800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "72b6989d-2e6b-4134-b5a2-040b5b2cfb57")
+		(property "Reference" "DS1"
+			(at 339.0900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 339.0900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "965a9aab-ad49-4ca1-8f5a-ebce6b195be5"))
+		(pin "2" (uuid "e4dce2c8-9373-4b93-bd0a-7388f5fcd4f5"))
+		(pin "3" (uuid "fedd37e0-5fea-4824-94bf-f613c7b543b3"))
+		(pin "4" (uuid "ec0ff294-1b67-4528-a39c-c9f5311042ba"))
+		(pin "5" (uuid "6bacbc9c-4c85-48db-9974-da02f81dafdc"))
+		(pin "6" (uuid "5755d2a5-26ed-4c2c-93ec-0d56642de1f6"))
+		(pin "7" (uuid "13ac6991-779c-4895-a829-22e290341dc9"))
+		(pin "8" (uuid "ca31339e-4ff4-439e-a5b4-1e65fe8316a9"))
+		(pin "9" (uuid "fd0036da-c8ab-4e11-927a-5544c08017ee"))
+		(pin "10" (uuid "d1f37017-6607-46ee-836e-7ca5777a3aa4"))
+		(pin "11" (uuid "5a30c7ea-4af5-4497-89f6-c3b7a1ad5d63"))
+		(pin "12" (uuid "612469e2-c87c-4b20-be84-940df245437e"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 431.8000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "57460e71-4268-4e99-98e7-e1dedbca02d3")
+		(property "Reference" "DS2"
+			(at 435.6100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 435.6100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "46e27633-3fb2-4786-ba92-7a28570bf524"))
+		(pin "2" (uuid "e81e122c-19d4-48b1-b24e-093d98afef6b"))
+		(pin "3" (uuid "f3052ad8-5c56-427c-b7c1-769b9433e1dc"))
+		(pin "4" (uuid "4197d9be-7e75-4b8a-85a8-f5f86a08f2b1"))
+		(pin "5" (uuid "47f97199-a8f9-4cf9-9316-78da73ad77de"))
+		(pin "6" (uuid "5faac6a9-137e-49f6-aaf3-e965097e2b9d"))
+		(pin "7" (uuid "b545370f-8e40-4395-9c90-376431bb9fc5"))
+		(pin "8" (uuid "b3d0ab6c-68dc-4cf0-a235-1f23ea7e7cf2"))
+		(pin "9" (uuid "24186f00-eccd-4d9b-8ba3-fd59cb0dc78a"))
+		(pin "10" (uuid "7691530b-d8eb-46f7-9c5e-3c982a247286"))
+		(pin "11" (uuid "44af1a1c-d657-41cb-9c66-0bf6e58cc1f7"))
+		(pin "12" (uuid "68b00f65-f3b2-4bea-a15f-4e732550b908"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 528.3200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8f2c4eb3-012d-4afc-b4fc-948ec15258f2")
+		(property "Reference" "DS3"
+			(at 532.1300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 532.1300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "24e45337-7838-45ec-a2d0-0ccb84af684e"))
+		(pin "2" (uuid "929bbec6-fc5e-401b-a0bc-bc23211cab0a"))
+		(pin "3" (uuid "5f44a54c-9544-4cbb-a63b-2c344489df19"))
+		(pin "4" (uuid "d9383dbc-1c8b-427f-8fa0-f7263b08c84b"))
+		(pin "5" (uuid "9abf9aac-593c-4d03-8136-67b2bc62dc1e"))
+		(pin "6" (uuid "3cace966-e93c-478b-b90d-a00e5dd3930b"))
+		(pin "7" (uuid "7a97aee2-7f3a-42e2-a346-7669ef7c7383"))
+		(pin "8" (uuid "2686c94b-20e9-4cb3-8f35-b3339da9d561"))
+		(pin "9" (uuid "e0cac90c-43fd-4089-b7e4-7ec91d0faecc"))
+		(pin "10" (uuid "72e84512-7d71-4315-b765-817e29387986"))
+		(pin "11" (uuid "15743597-0347-411f-a52d-de74cc253c0b"))
+		(pin "12" (uuid "328c5c99-5cb2-47f5-b2d0-399f0088f8d4"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 624.8400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "731e99b9-83af-4b6c-a6f1-0b4103047120")
+		(property "Reference" "DS4"
+			(at 628.6500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 628.6500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "98fa6e36-5692-47c2-8e8b-bcf674e1c8b4"))
+		(pin "2" (uuid "6c120d6c-669e-4a29-879e-ba3ffe2e85b6"))
+		(pin "3" (uuid "2c1ab971-91ec-4e73-adfd-60808ad07022"))
+		(pin "4" (uuid "2573aad9-b248-4266-b5e8-d62b4fee8c5f"))
+		(pin "5" (uuid "c2d41cae-bdfb-40e8-940e-21135c5bd271"))
+		(pin "6" (uuid "21bbe735-0987-4a1d-8392-0deeaca8eeb6"))
+		(pin "7" (uuid "43438f3d-d2e1-4f7e-84f5-e89162413351"))
+		(pin "8" (uuid "df1d94d4-c19d-4f6d-9f2f-3c23917915e9"))
+		(pin "9" (uuid "7c0a1dfe-640f-467f-88ff-b6c1d64da55c"))
+		(pin "10" (uuid "e5b90224-cbe9-4b72-aca7-080ef20f09cf"))
+		(pin "11" (uuid "19b9d027-d2fd-4a90-bf9d-2c68b117e9f7"))
+		(pin "12" (uuid "9e6c2137-31a0-4929-bf5a-fbc2e5ff1612"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 721.3600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2de658ab-3aab-4966-8e19-53d690ffda23")
+		(property "Reference" "DS5"
+			(at 725.1700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 725.1700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "78b996be-22a1-4ef4-bfce-dfcf74f2569a"))
+		(pin "2" (uuid "277c33e4-b411-43a4-ac32-dc8a32d6a559"))
+		(pin "3" (uuid "d4c80884-4d4f-437e-b10a-77b8b631730b"))
+		(pin "4" (uuid "77c49103-707c-44d8-8992-eec32af43c88"))
+		(pin "5" (uuid "c287a12d-a091-4889-8410-43b6e7e31f1f"))
+		(pin "6" (uuid "0d92c33c-e488-4339-8a24-a192ac7ad1b6"))
+		(pin "7" (uuid "899dcfd7-1124-4e94-b524-509cf180dfb8"))
+		(pin "8" (uuid "60d5ecb7-5bf8-4b91-8bac-47ba3ee78b37"))
+		(pin "9" (uuid "bc9bb81d-80fc-425e-a4db-47cf0c6fbc07"))
+		(pin "10" (uuid "fba4ccdb-9272-4e2d-a2e4-9611f1f98c89"))
+		(pin "11" (uuid "e8812b82-df3a-4cc8-970c-c7dc3f710123"))
+		(pin "12" (uuid "18796577-8700-4f63-9db4-a11f1a909bc0"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 817.8800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "220f00d2-b61c-4f30-8a94-0fb95f7b9455")
+		(property "Reference" "DS6"
+			(at 821.6900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 821.6900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "57f54461-fd7a-4479-a8f6-0b0e4865992b"))
+		(pin "2" (uuid "4f42f92d-b3c7-4bbb-983c-d64600ba0435"))
+		(pin "3" (uuid "c28796a7-f061-4c32-a89d-bbca2bcf3a39"))
+		(pin "4" (uuid "9e0082a6-3c4b-40c4-a385-4ca979d42d62"))
+		(pin "5" (uuid "d511b6bf-3351-4c08-a5e6-7a0ea6724932"))
+		(pin "6" (uuid "669299c6-c360-46f8-947e-4d22975dc6e3"))
+		(pin "7" (uuid "9e8e45b5-9d6f-464b-95f3-83d292b965fc"))
+		(pin "8" (uuid "1664f0f9-1d75-4285-b0db-5bdcafd02891"))
+		(pin "9" (uuid "70f0c4eb-d31f-4299-a9a8-41dfb1e32afe"))
+		(pin "10" (uuid "c9537b2a-0755-413b-852a-fc90dcc4d6d5"))
+		(pin "11" (uuid "288a9605-41e4-49bf-abd1-f2416fd113f0"))
+		(pin "12" (uuid "f37e9f5b-255f-4a24-a6b3-eaf0392aee62"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 914.4000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c370143d-3af7-4c0f-9105-ab37d985cf31")
+		(property "Reference" "DS7"
+			(at 918.2100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 918.2100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "0b68da29-d136-4895-84df-d3cf4f3e37cf"))
+		(pin "2" (uuid "d3ead86d-64c7-4287-b19a-74262bab209c"))
+		(pin "3" (uuid "823d2e83-0715-42af-84fe-2db3bfcfd86d"))
+		(pin "4" (uuid "e78755a4-5356-4ad3-9b3b-927c0fe7d286"))
+		(pin "5" (uuid "c26447e3-7e25-437a-a626-e83fd7bc56e5"))
+		(pin "6" (uuid "edd2ee23-24db-45ff-aeaf-ea0fbfaa78a5"))
+		(pin "7" (uuid "a5742307-e9ff-4314-8037-a9ddb6370922"))
+		(pin "8" (uuid "009c7bab-2ed2-4464-952e-07f0977a828d"))
+		(pin "9" (uuid "d3b4269b-6f9a-43ec-b6db-141ec92b4af3"))
+		(pin "10" (uuid "9fa69c87-03cf-4823-80e3-05bf98e90512"))
+		(pin "11" (uuid "5cb9ddff-a062-4c5c-96d8-fcdb6fcfa583"))
+		(pin "12" (uuid "dbcc39e2-af05-4097-974e-69f4f4d22e5a"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 1010.9200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fcc00336-bb14-4365-814a-d9e699607844")
+		(property "Reference" "DS8"
+			(at 1014.7300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 1014.7300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b52a8b52-569a-42af-9377-3ae739445264"))
+		(pin "2" (uuid "d005ece2-9719-46c8-826f-7bbb7f3bc847"))
+		(pin "3" (uuid "88018e2b-5766-4c33-93da-7f45ba3fce82"))
+		(pin "4" (uuid "850380a4-9ce3-4b27-bc28-6ee221db8a22"))
+		(pin "5" (uuid "97557141-2210-48b7-bc93-83732c9d8648"))
+		(pin "6" (uuid "73eb8446-114d-48d5-bf3b-5e92bc32badc"))
+		(pin "7" (uuid "fbd901c0-053a-46fb-8730-464ffa28a313"))
+		(pin "8" (uuid "7d50a540-cde4-42d3-9d29-b64111c2c980"))
+		(pin "9" (uuid "f4ecc702-a061-4c94-a42c-d3f360b02aad"))
+		(pin "10" (uuid "db1d6d1d-c628-4930-94f9-04e627507496"))
+		(pin "11" (uuid "65fa1fa8-995c-4eaf-9f91-ed39411a22a3"))
+		(pin "12" (uuid "73256e7b-1ab1-4e18-ac68-93028631bfc1"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 1107.4400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3a2ae2ab-6cd6-479e-b1bb-21ba3ef4cad1")
+		(property "Reference" "DS9"
+			(at 1111.2500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 1111.2500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ae5d4433-df04-4425-b820-3f15df6f3e6f"))
+		(pin "2" (uuid "752ecdc4-0c8b-404d-a105-d18f27977de4"))
+		(pin "3" (uuid "b155a7c0-e409-43c8-8e05-545e0182d377"))
+		(pin "4" (uuid "69d873b9-b684-4b13-86c3-d5eeea2635af"))
+		(pin "5" (uuid "f47dd445-4cc4-404c-99ab-babb3cbb2eff"))
+		(pin "6" (uuid "3571fff7-2009-4f75-aeeb-773d295a2e46"))
+		(pin "7" (uuid "da0382e8-30e4-401c-a163-74772d500073"))
+		(pin "8" (uuid "f20a675e-90b2-45be-9ac4-0a845852958a"))
+		(pin "9" (uuid "02b38b96-5f40-469f-8723-31a0b0b16b87"))
+		(pin "10" (uuid "384fd467-eb43-4188-8572-44a052113d11"))
+		(pin "11" (uuid "17e74d1c-6c42-43db-8cea-e8df6c4b1963"))
+		(pin "12" (uuid "fbbcb052-f41a-4852-874a-1b3c93510866"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 1203.9600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e6b42de3-2969-4101-adee-057bf020e332")
+		(property "Reference" "DS10"
+			(at 1207.7700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 1207.7700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "896d2895-27a6-43e9-b464-f22dec691c6e"))
+		(pin "2" (uuid "cd099a34-533f-452d-9e25-d482fa69f8dd"))
+		(pin "3" (uuid "8a323d42-aef4-4d06-aded-aa6813540551"))
+		(pin "4" (uuid "f0c12d34-8a41-49b7-bc87-9bded8fedecb"))
+		(pin "5" (uuid "5290fe5e-aca2-42d2-a7cf-9720bee39336"))
+		(pin "6" (uuid "863a6085-643c-4638-a876-62e950732ac4"))
+		(pin "7" (uuid "07c704ab-b76c-4934-bf2b-578b4ba380b6"))
+		(pin "8" (uuid "f088996c-4850-4b69-9108-de2e81260029"))
+		(pin "9" (uuid "66968c33-6590-4cb5-bace-374eca26eba9"))
+		(pin "10" (uuid "5173e995-62e1-46e5-9620-6b114a64f8e3"))
+		(pin "11" (uuid "3712d93a-02ed-4730-9cb5-30c2693f18ab"))
+		(pin "12" (uuid "56f3b4f2-76be-4f93-98e1-baeef295b00e"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 1300.4800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2212b9e0-68a2-46c3-9c7b-8b8153d0a5fa")
+		(property "Reference" "DS11"
+			(at 1304.2900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 1304.2900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4ebd06a1-0ecb-459a-82f2-e4b9cb51e6c2"))
+		(pin "2" (uuid "fdaa1b56-c347-4301-a383-3a7504757751"))
+		(pin "3" (uuid "743763ec-ae05-4ca2-ba16-206a474d68b9"))
+		(pin "4" (uuid "c9372fd7-fbe6-47e9-a154-0dd8c25284cc"))
+		(pin "5" (uuid "876f3d2c-643b-466e-ab40-75938a188404"))
+		(pin "6" (uuid "a8771db5-8195-453f-acee-f2958c1a7d6e"))
+		(pin "7" (uuid "98df2631-a92e-4908-93ae-8d6bcac7b5c7"))
+		(pin "8" (uuid "1fcc1abe-ec64-42cb-8f6f-c34834ec84a0"))
+		(pin "9" (uuid "7e4e6586-bedd-4362-8185-41f9bc548d6f"))
+		(pin "10" (uuid "9d50dc68-7b83-470c-9fcc-8ec914365f98"))
+		(pin "11" (uuid "afbbe68b-3fdd-4683-a2ce-99b40d84ecb7"))
+		(pin "12" (uuid "61ccf28a-4739-42c2-a76f-b9cc47254d37"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Display_Character:CC56-12EWA")
+		(at 1397.0000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eac86062-4911-444c-ae31-1f5c10e458f6")
+		(property "Reference" "DS12"
+			(at 1400.8100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "FJ5161AH"
+			(at 1400.8100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Display_7Segment:CC56-12GWA"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C8093"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "FJ5161AH"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "Forge"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3b48b7f0-2e79-4037-a904-dbbad45159ab"))
+		(pin "2" (uuid "5c5f8f1c-556c-4e8d-954d-54784c20345e"))
+		(pin "3" (uuid "5c516e3f-c36d-45ac-abfb-2d5101eb5432"))
+		(pin "4" (uuid "da157604-e09d-40f8-ba50-ac4513886392"))
+		(pin "5" (uuid "f54e4281-80ed-4027-9c05-76064b55ce38"))
+		(pin "6" (uuid "0bf94309-a7a4-4f19-a247-b1de98f33d45"))
+		(pin "7" (uuid "468128ce-7ac5-4abf-a83d-bf36525a317c"))
+		(pin "8" (uuid "ec7d3a8b-f99e-4a28-991b-0d3110796f03"))
+		(pin "9" (uuid "20edaf46-c321-40a6-8307-72b69419fef6"))
+		(pin "10" (uuid "91d0814c-81dd-4468-b163-bf4ad90c631c"))
+		(pin "11" (uuid "b79e0e69-7be7-43c1-ab24-196683ff9969"))
+		(pin "12" (uuid "8bcb5991-e71c-4b88-9aa7-671df555ef6f"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "DS12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 30.4800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f579edd2-22a7-49f5-9ba9-21d3ec32303c")
+		(property "Reference" "C1"
+			(at 34.2900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "100nF"
+			(at 34.2900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C1525"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "0876a0a9-06a7-4953-8dee-793a05dbd6c4"))
+		(pin "2" (uuid "d4839d2c-8542-43a6-9b54-b2976d65904e"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 68.5800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b3a2ea18-49cd-4d35-bdb6-f9f33d7cc344")
+		(property "Reference" "C2"
+			(at 72.3900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "100nF"
+			(at 72.3900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C1525"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "21d5b1dd-3edd-4403-9478-b099a7613bf9"))
+		(pin "2" (uuid "a6239841-b554-4dcf-a0cf-112d67e8ed5c"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 106.6800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c61fc105-8305-4d38-bcc9-b0f37f937c9a")
+		(property "Reference" "C3"
+			(at 110.4900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "100nF"
+			(at 110.4900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C1525"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "633023ee-efd1-4ee1-921e-6a96bd2115a4"))
+		(pin "2" (uuid "8276d8ee-0ed6-40ce-9d36-4d3a636b90c4"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 144.7800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4c5ee617-bddc-4469-8a5a-0fe57eb534c2")
+		(property "Reference" "C4"
+			(at 148.5900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "10uF"
+			(at 148.5900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C15850"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "081e1597-dee2-432b-9882-f08a97109442"))
+		(pin "2" (uuid "d1ec12d1-8e33-4fe9-aa44-830704205b85"))
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/90740d87-7211-4fa0-b59b-73c565908d04"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(text "Calcumaker 16 display — 7-seg RPN stack. 3 rows x 16 digits (top row U3/DS9-12 optional => 2- or 3-row build). PER ROW: 1x TM1640 (C5337152) drives 4x FJ5161AH 0.56\" 4-digit common-cathode (C8093) over a 2-wire bus. *** DIGITS ARE THROUGH-HOLE (no SMD multi-digit 7-seg on LCSC) -> THT assembly. *** TM1640: shared CLK, per-chip DIN (DIN1/2/3) from the interconnect; GRID->digit commons, SEG->segments. LED current dominates active power (drawn from +3V3 across the interconnect) -> gates the main buck-boost sizing. Use brightness (TM1640 dimming) + blank-on-idle."
+		(exclude_from_sim no)
+		(at 15.00 120.00 0)
+		(effects (font (size 1.5 1.5)) (justify left top))
+		(uuid "63905a42-d089-4fd8-90a0-00e36b8127a5")
+	)
+	(sheet_instances
+		(path "/"
+			(page "2")
+		)
+	)
+	(embedded_fonts no)
+)

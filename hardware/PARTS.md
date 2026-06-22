@@ -49,8 +49,14 @@ TM1640s. The main board is all-SMT (plus the THT header + battery/USB connectors
 as applicable). If an all-SMT display is a hard requirement, revisit driver+digit
 selection (would likely mean discrete SMD single-digit displays — more parts).
 
-## Custom KiCad symbols needed
+## KiCad symbols
 
-`TM1640` and `FJ5161AH` are **not** in KiCad's bundled libraries — create them in
-`lib/symbols/calcumaker.kicad_sym` and register via `register_lib(...)` in
-`scripts/calcumaker-display.schgen.py` before generating that board.
+- **Digits (FJ5161AH):** use the **stock** KiCad symbol
+  `Display_Character:CC56-12EWA` (generic 0.56" 4-digit **common-cathode**, the
+  same 12-pin topology) with footprint `Display_7Segment:CC56-12GWA`. ✅ No custom
+  symbol needed. *Verify the FJ5161AH pinout matches the CC56-12 land at layout.*
+- **Driver (TM1640):** not in KiCad — **authored** from the datasheet pinout in
+  `lib/symbols/calcumaker.kicad_sym` (28-pin SOP-28: GRID12–16=1–5, VSS=6, DIN=7,
+  SCLK=8, SEG1–8=9–16, VDD=17, GRID1–11=18–28), registered via `register_lib` in
+  `scripts/calcumaker-display.schgen.py`. ✅ Generates + passes the structure
+  check. *Confirm the SOIC-28W footprint vs the TM1640 SOP-28 package drawing.*

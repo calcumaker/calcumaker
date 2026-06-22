@@ -1,0 +1,54 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ca1c0000-0000-4000-8000-0000000d1501")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Display")
+		(date "2026-06-21")
+		(rev "0.1")
+		(company "calcumaker authors")
+		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
+		(comment 2 "Display board: 7-seg RPN stack + driver + interconnect (DRAFT)")
+	)
+	(lib_symbols)
+	(sheet
+		(at 40.64 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "90740d87-7211-4fa0-b59b-73c565908d04")
+		(property "Sheetname" "Display"
+			(at 40.64 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "display.kicad_sch"
+			(at 40.64 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 96.52 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "003235e3-d05f-48ee-ae76-22965c0677c8")
+		(property "Sheetname" "Interconnect"
+			(at 96.52 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "interconnect.kicad_sch"
+			(at 96.52 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

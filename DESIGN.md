@@ -143,8 +143,10 @@ arbitrary-precision values that exceed the row width are **windowed / scrolled**
   upsizing). Use TM1640 brightness/dimming + blank-on-idle + display-off in
   sleep to honor the battery goal.
 
-Custom KiCad symbols for TM1640 + FJ5161AH are needed (not bundled) — see
-`hardware/PARTS.md`.
+KiCad symbols: digits use the **stock** `Display_Character:CC56-12EWA` (0.56"
+4-digit common-cathode); the **TM1640** symbol is authored from the datasheet in
+`hardware/lib/symbols/calcumaker.kicad_sym`. The display board **generates and
+passes the structure check** (placed, not wired). See `hardware/PARTS.md`.
 
 ### Keypad: full-size Cherry MX, wide HP-16C-style layout
 
@@ -321,12 +323,16 @@ Resolved: ✅ MCU (Q7) · ✅ board partition = split (Q8) · ✅ hardware licen
 CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+digits
 (TM1640 + FJ5161AH) · ✅ interconnect (1×8 2.54 mm header). Remaining:
 
-1. **Custom KiCad symbols** for TM1640 + FJ5161AH (not bundled) before generating
-   the display board (`hardware/PARTS.md`). And confirm THT-assembly route for
-   the digits (JLCPCB THT add-on vs hand-solder).
-2. **Buck-boost sizing.** Now that the display is 3× TM1640 × 16 CC digits,
-   compute the display LED current budget and confirm/resize the TPS63900 (its
-   ~hundreds-of-mA ceiling may be too low).
+1. ✅ **KiCad symbols done** — digits use stock `CC56-12EWA`; TM1640 authored
+   (`lib/symbols/calcumaker.kicad_sym`); display board generates + checks OK.
+   Remaining: confirm THT-assembly route (JLCPCB THT add-on vs hand-solder), and
+   verify the FJ5161AH pinout vs CC56-12 + the TM1640 SOP-28 footprint at layout.
+2. **Buck-boost upsizing + display rail voltage.** The TM1640's VDD is **5 V
+   nominal** (VIH = 0.7·VDD = 3.5 V > the STM32's 3.3 V). Either run the display
+   at **3.3 V** (out of TM1640 spec but common; dimmer; needs low-Vf red/green/
+   yellow digits — single rail, no level-shift) or add a **5 V boost + level
+   shifters** on CLK/DIN. Then resize the buck-boost for the display LED current
+   (TPS63900's ~hundreds-of-mA ceiling is likely too low). **← next task.**
 3. **Numeric backend for first bring-up.** Start on `numeric-pure` (always
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR

@@ -36,10 +36,14 @@ ROOT_UUID = "ca1c0000-0000-4000-8000-0000000d1501"   # keep stable across regens
 
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C")
-K.register_stdlib("Connector_Generic", "Conn_01x06")
-# TODO(display): register the driver + 7-seg symbols once chosen by availability:
-#   K.register_stdlib("Display_Driver", "MAX7219")     # or HT16K33 / TM1640 ...
-#   K.register_stdlib("Display_7Segment", "...")       # per chosen digit module
+K.register_stdlib("Connector_Generic", "Conn_01x08")
+# Display parts chosen by LCSC price/availability (research):
+#   - TM1640 driver (C5337152) and FJ5161AH 0.56" 4-digit 7-seg (C8093) are NOT
+#     in KiCad's bundled libraries. Create custom symbols in
+#     hardware/lib/symbols/calcumaker.kicad_sym, then register them here:
+#   K.register_lib("calcumaker",
+#       os.path.join(HW, "lib", "symbols", "calcumaker.kicad_sym"),
+#       "TM1640", "FJ5161AH")
 
 # ---- footprint shorthands ---------------------------------------------------
 C0402 = "Capacitor_SMD:C_0402_1005Metric"
@@ -57,46 +61,65 @@ def C(ref, val, fp=C0402):
                 lcsc=CLCSC.get(val, ""))
 
 
-# ============================ Display sheet (TODO parts) =====================
+# ============================ Display sheet ==================================
 # Multi-row 7-seg RPN stack: 3 rows laid out, top row optionally populated (=> 2
-# or 3 visible rows), each row ~12-16 digits. Driver + digits PENDING the
-# availability research (DESIGN.md Display). Skeleton shows per-chip support
-# passives only; add the real driver chip(s) + digit modules when chosen.
+# or 3 visible rows). Each row = ONE TM1640 driving 16 common-cathode digits =
+# 4x FJ5161AH (0.56" 4-digit CC). Parts chosen by LCSC stock/price (research):
+#   TM1640   C5337152  SOP-28   ~$0.12  (2-wire, 16-dig x 8-seg, common-cathode)
+#   FJ5161AH C8093     0.56" 4-digit common-cathode, THROUGH-HOLE  ~$0.19
+# *** THT digits: no SMD multi-digit 7-seg are stocked on LCSC, so the display
+#     board needs THT assembly (JLCPCB THT add-on or hand-solder). ***
+# NOTE: TM1640/FJ5161AH need CUSTOM symbols (not in KiCad bundled libs) — see the
+# register_lib TODO above. Below shows U1 + DS1 (row 1); replicate for U2/U3 and
+# DS2..DS12 once the symbols exist (one TM1640 + four FJ5161AH per row).
 DISPLAY = dict(name="Display", file="display.kicad_sch",
-    title="7-seg RPN stack (2-3 rows) + driver", page="2",
+    title="7-seg RPN stack (3 rows x 16 digits) + TM1640 drivers", page="2",
     big=[
-        # TODO(display): N driver chips (e.g. MAX7219 cascade over SPI), +
-        # the 7-seg digit modules tiling 2-3 rows of ~12-16 digits.
-        # dict(ref="U1", lib_id="Display_Driver:MAX7219", value="MAX7219", ...),
+        dict(ref="U1", lib_id="calcumaker:TM1640", value="TM1640",
+             fp="Package_SO:SOP-28_7.5x18.7mm_P1.27mm",   # TODO verify fp
+             lcsc="C5337152", mpn="TM1640", mfr="TitanMicro"),
+        # U2, U3 = rows 2 & 3 (U3 row optional for 2-row build).
+        dict(ref="DS1", lib_id="calcumaker:FJ5161AH",
+             value="FJ5161AH 0.56\" 4-dig CC",
+             fp="Display_7Segment:FJ5161AH_4-digit",       # TODO create/verify fp
+             lcsc="C8093", mpn="FJ5161AH", mfr="Forge"),
+        # DS2..DS12 = remaining 11 digit modules (4 per row x 3 rows).
     ],
     small=[
-        # Per driver chip: 100nF + 10uF bulk + ISET resistor (segment current).
-        C("C1", "100nF"), C("C2", "10uF", C0805),
-        R("R1", "10k"),   # ISET (segment current) — value per driver datasheet
+        # Per TM1640: 100nF decoupling + shared bulk. (Replicate C per chip.)
+        C("C1", "100nF"), C("C2", "100nF"), C("C3", "100nF"),  # U1/U2/U3 bypass
+        C("C4", "10uF", C0805),                                 # 3V3 bulk
     ],
-    note=(15, 120, "Calcumaker 16 display — multi-row 7-seg RPN stack (2-3 rows; "
-          "board laid out for 3, top row optional). PENDING driver + digit parts "
-          "(DESIGN.md Display, chosen by LCSC availability). Add N driver chips + "
-          "digit modules (rows = top of stack), per-chip 100nF+10uF + ISET. "
-          "*** LED current dominates active power — budget it; it is drawn from "
-          "+3V3 across the interconnect, so it gates the main board's buck-boost "
-          "sizing. ***"))
+    note=(15, 120, "Calcumaker 16 display — 7-seg RPN stack. 3 rows x 16 digits "
+          "(top row U3/DS9-12 optional => 2- or 3-row build). PER ROW: 1x TM1640 "
+          "(C5337152) drives 4x FJ5161AH 0.56\" 4-digit common-cathode (C8093) "
+          "over a 2-wire bus. *** DIGITS ARE THROUGH-HOLE (no SMD multi-digit "
+          "7-seg on LCSC) -> THT assembly. *** TM1640: shared CLK, per-chip DIN "
+          "(DIN1/2/3) from the interconnect; GRID->digit commons, SEG->segments. "
+          "LED current dominates active power (drawn from +3V3 across the "
+          "interconnect) -> gates the main buck-boost sizing. Use brightness "
+          "(TM1640 dimming) + blank-on-idle."))
 
-# ============================ Interconnect sheet (TODO) ======================
+# ============================ Interconnect sheet =============================
 # Connector back to the main board. Pinout MUST match calcumaker-main J3.
+# 2.54mm 1x8 header (research): PZ254V-11-08P (C492407, straight) or PZ254R
+# (C492416, right-angle for a fixed display angle); join boards with a short
+# ribbon/cable for the upward-angled mount.
 INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
     title="Main board interconnect", page="3", big=[
-        dict(ref="J1", lib_id="Connector_Generic:Conn_01x06", value="TO MAIN",
-             fp="Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"),  # TODO: FFC/FPC vs header (availability)
+        dict(ref="J1", lib_id="Connector_Generic:Conn_01x08", value="TO MAIN",
+             fp="Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
+             lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
     ],
     small=[
-        C("C3", "10uF", C0805),   # local 3V3 bulk at the connector
+        C("C5", "10uF", C0805),   # local 3V3 bulk at the connector
     ],
     note=(15, 95, "Calcumaker 16 display — Interconnect to the main board. J1 "
-          "pinout (MUST match calcumaker-main J3): 1=+3V3, 2=GND, 3=SPI SCK, "
-          "4=SPI MOSI, 5=CS/LOAD, 6=BLANK/spare. Wide +3V3/GND (LED current). "
-          "Connector type/part PENDING availability research. See DESIGN.md "
-          "Board Partition."))
+          "pinout (MUST match calcumaker-main J3): 1=+3V3, 2=GND, 3=CLK (shared), "
+          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. (TM1640 2-wire: one shared "
+          "CLK + one DIN per row driver U1/U2/U3.) Wide +3V3/GND for LED "
+          "current. 2.54mm 1x8 header (C492407); short cable to the angled "
+          "display. See DESIGN.md Board Partition."))
 
 # ============================ generate =======================================
 K.build(

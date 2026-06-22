@@ -43,7 +43,7 @@ K.register_stdlib("Transistor_FET", "Q_PMOS_GSD")
 K.register_stdlib("Switch", "SW_Push")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
-K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x06")
+K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08")
 # TODO(mcu): register the STM32U575ZGT6 symbol (selected), e.g.:
 #   K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # verify exact symbol (LQFP-144)
 # TODO(keypad): Cherry MX switch symbol — KiCad's Switch:SW_Push works as a
@@ -85,8 +85,8 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU / clock / programming",
           "DESIGN.md MCU + Pin Budget. Add: VDD/VDDA/VDDIO decoupling, LSE "
           "32.768kHz + 2x load caps, NRST 100nF, BOOT0 10k pulldown, USB FS "
           "PA11/PA12 (ESD on PSU), SWD PA13/PA14 -> Tag-Connect, display bus "
-          "(SPI) -> Interconnect sheet, GPIO matrix -> Keypad sheet (one col "
-          "-> EXTI wake)."))
+          "(TM1640 2-wire: shared CLK + 3x DIN, GPIO/bit-bang) -> Interconnect "
+          "sheet, GPIO matrix -> Keypad sheet (one col -> EXTI wake)."))
 
 # ============================ PSU sheet (concrete) ===========================
 # Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
@@ -166,18 +166,20 @@ KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
 # Connector part chosen by availability (research) — FFC/FPC or 2.54mm header.
 INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
     title="Display board interconnect", page="5", big=[
-        dict(ref="J3", lib_id="Connector_Generic:Conn_01x06", value="TO DISPLAY",
-             fp="Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"),  # TODO: FFC/FPC vs header (availability)
+        dict(ref="J3", lib_id="Connector_Generic:Conn_01x08", value="TO DISPLAY",
+             fp="Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
+             lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
     ],
     small=[
         C("C8", "10uF", C0805),   # local 3V3 bulk at the connector feed to display
     ],
     note=(15, 95, "Calcumaker 16 main — Interconnect to the display board "
-          "(angled, separate PCB). J3 pinout (match calcumaker-display J1): "
-          "1=+3V3, 2=GND, 3=SPI SCK, 4=SPI MOSI, 5=CS/LOAD, 6=BLANK/spare. "
-          "Keep the +3V3 + GND pins wide (display LED current). Connector "
-          "type/part PENDING availability research (FFC/FPC 0.5/1.0mm vs "
-          "2.54mm header vs JST). See DESIGN.md Board Partition."))
+          "(angled, separate PCB). J3 pinout (MUST match calcumaker-display J1): "
+          "1=+3V3, 2=GND, 3=CLK (shared), 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, "
+          "8=spare. (Display = 3x TM1640, 2-wire: one shared CLK + per-row DIN.) "
+          "Keep +3V3/GND pins wide (display LED current). 2.54mm 1x8 header "
+          "(C492407 straight / C492416 right-angle); short cable to the angled "
+          "display. See DESIGN.md Board Partition."))
 
 # ============================ generate =======================================
 K.build(

@@ -41,12 +41,12 @@ keeps it alive between keystrokes.
 ```
    DISPLAY BOARD (calcumaker-display) — angled                        
    ┌──────────────────────────────────────────────────┐
-   │  multi-row 7-segment RPN stack (2–3 rows)         │
-   │      ▲ segment/digit drive                        │
-   │   driver IC(s) (MAX7219 SPI / HT16K33 I²C — TBD)  │
+   │  7-segment RPN stack: 3 rows × 16 digits (2–3 on) │
+   │      ▲ FJ5161AH 0.56" common-cathode (THT)        │
+   │   3× TM1640 driver (1 per row, 2-wire bus)        │
    └───────────────────────▲──────────────────────────┘
-                           │  interconnect: +3V3, GND, serial bus (SPI)
-                           │  (board-to-board / FFC — "simplifies wiring")
+                           │  interconnect (1×8 2.54mm header):
+                           │  +3V3, GND, CLK + DIN×3  ("simplifies wiring")
    MAIN BOARD (calcumaker-main)
    ┌───────────────────────┴──────────────────────────┐
    │  full-size Cherry MX key matrix (+ per-key diode) │
@@ -104,18 +104,19 @@ calcumaker/
 | Component | Part | Status |
 |-----------|------|--------|
 | MCU | STM32U575ZGT6 (2MB/786KB, M33, ULP, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
-| Display | 7-segment, 2–3 rows + driver (MAX7219 / HT16K33 / TM-series) | driver+digits being chosen by LCSC price/availability |
+| Display | 3 rows × 16 digits: 3× TM1640 + 12× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
 | Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
-| Interconnect | board-to-board (FFC / header) main↔display | part TBD by availability |
+| Interconnect | 1×8 2.54mm header (PZ254V-11-08P) main↔display | ✅ LCSC C492407 |
 | Power | 1S Li-ion + USB-C charge + buck-boost | parts TBD (buck-boost sized to display LED current) |
 | Math | GNU MP + MPFR (pure-Rust fallback) | path confirmed (FFI to cross-built libs) |
 
 ## Status
 
 Repo scaffold (split hardware framework + Rust firmware skeleton + design doc)
-is in. **MCU + software stack are decided** (see `DESIGN.md`); the display BOM
-and the keypad layout are the next part-selection steps. Hardware/firmware are
-not yet built or fabricated.
+is in. **MCU, software stack, and the display BOM are decided** (see `DESIGN.md`
+/ `hardware/PARTS.md`); remaining part-selection: the keypad layout, custom KiCad
+symbols for the TM1640/FJ5161AH, and buck-boost sizing. Hardware/firmware are not
+yet built or fabricated.
 
 ## License
 

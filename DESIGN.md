@@ -107,32 +107,44 @@ Putting the driver *on the display board* means only **+3V3, GND, and the
 display serial bus** (a handful of signals) cross the connector — instead of
 dozens of segment/digit lines — which is what **simplifies the wiring**.
 
-- **Interconnect:** carries `+3V3, GND, SPI SCK, SPI MOSI, CS/LOAD,
-  BLANK/spare`. Connector type (FFC/FPC for a clean angled cable, vs a 2.54 mm
-  header, vs JST) is chosen by availability (research). Keep +3V3/GND wide for
+- **Interconnect:** a **2.54 mm 1×8 header** (PZ254V-11-08P, LCSC C492407 —
+  well-stocked, cheap, mechanically supports the angled board; FFC was rejected,
+  ~2 pcs LCSC stock). Pinout `1=+3V3, 2=GND, 3=CLK(shared), 4=DIN1, 5=DIN2,
+  6=DIN3, 7=GND, 8=spare` — the TM1640 driver uses a **2-wire** bus, so it's a
+  shared clock + one data line per row driver (not SPI). Keep +3V3/GND wide for
   the display LED current. `calcumaker-main:J3` ↔ `calcumaker-display:J1` pinouts
-  must match.
+  must match; join with a short ribbon/cable for the upward angle.
 
 ### Display: multi-row 7-segment (RPN stack), 2–3 rows
 
-A multi-row 7-segment array shows the **top of the RPN stack**. The board is laid
-out for **3 rows** with the **top row optionally populated**, so it builds as a
-**2- or 3-row** display (firmware-configurable). Each row carries a signed
-mantissa + an exponent field (~12–16 digits); arbitrary-precision values that
-exceed the row width are **windowed / scrolled** (entry policy TBD).
+A multi-row 7-segment array shows the **top of the RPN stack**, **3 rows × 16
+digits**. The board is laid out for 3 rows with the **top row optionally
+populated**, so it builds as a **2- or 3-row** display (firmware-configurable).
+A 16-digit row holds a full 64-bit hex word, or a signed mantissa + exponent;
+arbitrary-precision values that exceed the row width are **windowed / scrolled**.
 
-- **Driver + digits chosen by LCSC price/availability** (research in progress).
-  Candidates: **MAX7219/MAX7221** (SPI, 8 digits/chip, cascadable,
-  constant-current), **HT16K33** (I²C, ~8 digits/chip + built-in key-scan),
-  **TM1640/TM1638** (cheap, common on LCSC). For ~3 rows × ~16 digits (~48
-  digits) a MAX7219 cascade needs ~6 chips over one SPI bus.
+**Selected by LCSC price/availability (research):**
+
+- **Driver: TM1640** (LCSC C5337152, SOP-28, ~$0.12, deep stock). A 2-wire bus
+  drives **16 common-cathode digits per chip = one full row**, so **3 chips**
+  cover 3 rows (vs ~6 MAX7219 at ~20× the cost). Shared CLK + one DIN per chip.
+  Display-only (keys live on the main board). TM1638 (C19187) is the drop-in if
+  on-chip key-scan is ever wanted.
+- **Digits: FJ5161AH** (LCSC C8093, 0.56" **4-digit common-cathode**, ~$0.19) —
+  4 per row → **12 modules**. Common-cathode matches the TM1640. 0.36" FJ3461AH
+  (C10708) is the option if board space is tight.
+- **⚠ Through-hole digits.** No SMD multi-digit 7-segment displays are stocked on
+  LCSC — the well-stocked parts are THT. So `calcumaker-display` needs **THT
+  assembly** (JLCPCB through-hole add-on, or hand/wave solder); the TM1640s are
+  SMT. See `hardware/PARTS.md`.
 - **Power note:** LED 7-segment is the dominant active current draw, *not* the
   MCU — and it's drawn from +3V3 **across the interconnect**, so it gates the
-  main board's buck-boost sizing. Use brightness limiting + blank-on-idle +
-  display-off in sleep to honor the battery goal.
+  main board's buck-boost sizing (the TPS63900 placeholder likely needs
+  upsizing). Use TM1640 brightness/dimming + blank-on-idle + display-off in
+  sleep to honor the battery goal.
 
-Open: final driver/digit parts + digit count per row (by availability); digit
-height; common-anode/cathode (match the driver). See Open Questions.
+Custom KiCad symbols for TM1640 + FJ5161AH are needed (not bundled) — see
+`hardware/PARTS.md`.
 
 ### Keypad: full-size Cherry MX, wide HP-16C-style layout
 
@@ -306,13 +318,15 @@ silicon.
 ## Open Questions
 
 Resolved: ✅ MCU (Q7) · ✅ board partition = split (Q8) · ✅ hardware license =
-CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10). Remaining:
+CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+digits
+(TM1640 + FJ5161AH) · ✅ interconnect (1×8 2.54 mm header). Remaining:
 
-1. **Display driver + digit parts** — being chosen by LCSC price/availability
-   (research). Sets digits-per-row, the display-current budget, and the
-   main-board buck-boost sizing.
-2. **Interconnect connector** — FFC/FPC vs 2.54 mm header vs JST, by availability;
-   must suit the angled mount. Fix the `main:J3`↔`display:J1` pinout.
+1. **Custom KiCad symbols** for TM1640 + FJ5161AH (not bundled) before generating
+   the display board (`hardware/PARTS.md`). And confirm THT-assembly route for
+   the digits (JLCPCB THT add-on vs hand-solder).
+2. **Buck-boost sizing.** Now that the display is 3× TM1640 × 16 CC digits,
+   compute the display LED current budget and confirm/resize the TPS63900 (its
+   ~hundreds-of-mA ceiling may be too low).
 3. **Numeric backend for first bring-up.** Start on `numeric-pure` (always
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
@@ -327,14 +341,15 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10). Remaining:
 ## Parts List (preliminary)
 
 Anchored where known; `TBD` pending the Open Questions. LCSC/MPN are filled into
-KiCad symbol fields as parts are placed (so `make bom` emits a JLCPCB BOM).
+KiCad symbol fields as parts are placed (so `make bom` emits a JLCPCB BOM). The
+per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 
 | Block | Part | Status |
 |-------|------|--------|
 | MCU (main) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
-| Display driver (display) | MAX7219 / HT16K33 / TM-series | choosing by LCSC price/availability (research) |
-| 7-seg display (display) | TBD module(s), 2–3 rows × ~12–16 digits | by availability (research) |
-| Interconnect | board-to-board (FFC / 2.54mm header / JST) | by availability; main J3 ↔ display J1 |
+| Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
+| 7-seg digits (display) ×12 | **FJ5161AH** 0.56" 4-digit CC (**THT**) | ✅ LCSC C8093, ~$0.19 — 4/row |
+| Interconnect | **PZ254V-11-08P** 1×8 2.54mm header | ✅ LCSC C492407; main J3 ↔ display J1 |
 | Keyswitches (main) | Cherry MX (full size) + optional Kailh hot-swap sockets | TBD count |
 | Key diodes (main) | 1N4148W (SOD-123) ×N | per key |
 | USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |

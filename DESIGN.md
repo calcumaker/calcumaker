@@ -155,6 +155,11 @@ wide), in the HP-16C / Voyager tradition with **f (gold) / g (blue)** shifts
 (3 functions per key). Power is a **slide switch** (not in the matrix); any
 keypress wakes the MCU from Stop, so no dedicated ON key is needed.
 
+> **Width is deliberate.** Tighter packings were considered — 8×6 (≈152 mm, A–F
+> as a 3×2 block) and 7×6 (≈133 mm) — but the full **10-wide** Voyager face was
+> chosen for authenticity and one-function-per-key clarity, accepting the ~190 mm
+> board width that full-size keys imply.
+
 **Base (unshifted) faces:**
 
 ```

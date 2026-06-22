@@ -45,12 +45,10 @@ K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
 K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08")
 K.register_stdlib("74xx", "74AHCT125")  # level shifter symbol (use value "74HCT125"); 3V3->5V
-# TODO(mcu): register the STM32U575ZGT6 symbol (selected), e.g.:
-#   K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # verify exact symbol (LQFP-144)
-# TODO(boost): register the chosen 5V display boost symbol once picked by
-#   availability (MT3608 etc. likely need a custom symbol in calcumaker.kicad_sym).
-# TODO(keypad): Cherry MX switch symbol — KiCad's Switch:SW_Push works as a
-#   placeholder; the keyswitch-kicad-library 'SW_Cherry_MX_*' is preferred.
+K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # LQFP-144 (stock)
+K.register_stdlib("Converter_DCDC", "TPS61022")        # 5V boost (stock)
+# Note: Cherry MX keys use Switch:SW_Push (placeholder symbol); the
+# keyswitch-kicad-library 'SW_Cherry_MX_*' is a nicer swap if installed.
 
 # ---- footprint shorthands ---------------------------------------------------
 # Size policy (user): 0402 for resistors + small/decoupling caps; bulk MLCCs
@@ -65,11 +63,14 @@ SOT235 = "Package_TO_SOT_SMD:SOT-23-5"
 SOT236 = "Package_TO_SOT_SMD:SOT-23-6"
 SOT23 = "Package_TO_SOT_SMD:SOT-23"
 SOD123 = "Diode_SMD:D_SOD-123"
+LQFP144 = "Package_QFP:LQFP-144_20x20mm_P0.5mm"
+XTAL_FP = "Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm"
+SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 
 RLCSC = {"5.1k": "C25905", "4.7k": "C25900", "10k": "C25744",
          "100k": "C25741", "1k": "C11702", "0R": "C17168"}
 # Per-rail voltage differs, so 10uF/22uF LCSC# live in hardware/PARTS.md, not here.
-CLCSC = {"100nF": "C1525", "1uF": "C29266"}
+CLCSC = {"100nF": "C1525", "1uF": "C29266", "12pF": "C1547"}
 
 
 def R(ref, val):
@@ -82,20 +83,62 @@ def C(ref, val, fp=C0402):
                 lcsc=CLCSC.get(val, ""))
 
 
-# ============================ MCU sheet (TODO) ===============================
-# STM32U575ZGT6 selected (DESIGN.md). Still needs its parts placed: VDD/VDDA/
-# VDDIO decoupling, LSE 32.768kHz + load caps, NRST cap, BOOT0 pulldown, USB FS
-# (PA11/PA12) + ESD (on PSU sheet), SWD (PA13/PA14) -> Tag-Connect, VDDUSB, and
-# bus pins to the interconnect (display) + keypad sheets.
-MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU / clock / programming",
-    page="2", big=[], small=[],
-    note=(15, 150, "Calcumaker 16 main — MCU (STM32U575ZGT6, LQFP-144). See "
-          "DESIGN.md MCU + Pin Budget. Add: VDD/VDDA/VDDIO decoupling, LSE "
-          "32.768kHz + 2x load caps, NRST 100nF, BOOT0 10k pulldown, USB FS "
-          "PA11/PA12 (ESD on PSU), SWD PA13/PA14 -> Tag-Connect, display bus "
-          "(TM1640 2-wire: shared CLK + 3x DIN, 3V3 GPIO/bit-bang) -> Display-IF "
-          "sheet (74HCT125 level shifter) + DISP_PWR_EN GPIO -> 5V boost EN, "
-          "GPIO matrix -> Keypad sheet (one col -> EXTI wake)."))
+# ============================ MCU core sheet =================================
+# STM32U575ZGTx (LQFP-144) + power decoupling + reset/boot. Clock and programming
+# are their own subsheets. NOTE: the U5 core can run from the internal LDO or the
+# internal SMPS; SMPS mode needs an external inductor on VLXSMPS + VDD12 caps
+# (datasheet) — placed/configured at layout. VDDA/VREF+ and VDDUSB decoupled.
+MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
+    page="2",
+    big=[
+        dict(ref="U1", lib_id="MCU_ST_STM32U5:STM32U575ZGTx", value="STM32U575ZGT6",
+             fp=LQFP144, lcsc="C5271004", mpn="STM32U575ZGT6", mfr="STMicroelectronics"),
+    ],
+    small=[
+        # Refs are globally unique across the board: PSU uses C1-C7/R1-R5,
+        # DisplayIF C8-C11/R6-R7, so MCU starts at C12/R8.
+        C("C12", "100nF"), C("C13", "100nF"), C("C14", "100nF"), C("C15", "100nF"),
+        C("C16", "100nF"),                                 # VDD x5 decoupling
+        C("C17", "10uF", C0603),                           # VDD bulk
+        C("C18", "1uF"), C("C19", "100nF"),                # VDDA/VREF+ filter
+        C("C20", "100nF"),                                 # VDDUSB
+        C("C21", "100nF"),                                 # NRST cap
+        R("R8", "10k"),                                    # BOOT0 pulldown
+        C("C22", "2.2uF", C0603), C("C23", "2.2uF", C0603),  # VCORE/VCAP (LDO/SMPS) — verify per mode
+    ],
+    note=(15, 150, "Calcumaker 16 main — MCU core (U1 STM32U575ZGTx, LQFP-144). "
+          "POWER: VDD pins -> +3V3 (5x 100nF C12-C16 + C17 10uF bulk); VDDA/VREF+ "
+          "-> C18 1uF + C19 100nF; VDDUSB -> C20 100nF; EP/VSS -> GND. "
+          "VCORE: choose LDO or internal SMPS — SMPS needs an inductor on VLXSMPS "
+          "+ VDD12; C22/C23 are VCAP placeholders (set per mode, datasheet). "
+          "RESET/BOOT: NRST + C21 100nF; BOOT0 -> R8 10k to GND. "
+          "OFF-SHEET: USB PA11/PA12 -> PSU ESD; SWD PA13/PA14 + NRST -> Programming; "
+          "LSE OSC32_IN/OUT -> Clock; display bus (CLK+DIN1/2/3) + DISP_PWR_EN -> "
+          "DisplayIF; 5 rows + 10 cols -> Keypad (one col -> EXTI wake)."))
+
+# ============================ Clock sheet ====================================
+CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
+    page="3", big=[],
+    small=[
+        dict(ref="Y1", lib_id="Device:Crystal", value="32.768kHz", fp=XTAL_FP,
+             lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
+        C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
+    ],
+    note=(15, 100, "Calcumaker 16 main — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
+          "OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via "
+          "2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives "
+          "the RTC for sleep timing."))
+
+# ============================ Programming sheet ==============================
+# PSU uses J1/J2, DisplayIF uses J3, so SWD = J4.
+PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
+    page="4", big=[
+        dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
+             value="SWD TC2030-NL", fp=SWD_FP),
+    ], small=[],
+    note=(15, 95, "Calcumaker 16 main — SWD programming (J4 Tag-Connect TC2030-NL, "
+          "no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. "
+          "Bare land — no part mounted."))
 
 # ============================ PSU sheet (concrete) ===========================
 # Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
@@ -103,7 +146,7 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU / clock / programming",
 # current budget (DESIGN.md Power Tree); a higher-current buck-boost may be
 # needed. LCSC values carried over from ephemerkey; re-verify stock.
 PSU = dict(name="PSU", file="psu.kicad_sch",
-    title="USB-C / Li-ion charge / load-share / buck-boost", page="3",
+    title="USB-C / Li-ion charge / load-share / buck-boost", page="5",
     big=[
         dict(ref="J1", lib_id="Connector:USB_C_Receptacle_USB2.0_16P", value="USB-C",
              fp="Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal",
@@ -158,7 +201,7 @@ KEY_SW = [dict(ref="SW%d" % i, lib_id="Switch:SW_Push", value="MX", fp=MX_FP)
 KEY_D = [dict(ref="D%d" % (10 + i), lib_id="Device:D", value="1N4148W", fp=SOD123,
               lcsc="C81598", mpn="1N4148W", mfr="onsemi") for i in range(1, 51)]
 KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
-    title="Cherry MX key matrix (5x10, 50 keys)", page="4",
+    title="Cherry MX key matrix (5x10, 50 keys)", page="6",
     big=KEY_SW, small=KEY_D,
     note=(15, 130, "Calcumaker 16 main — Keypad: 50 Cherry MX keys in a 5x10 "
           "scanned matrix (wide HP-16C layout + f/g shifts; keymap in DESIGN.md). "
@@ -175,18 +218,18 @@ KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
 # This sheet generates the EN-gated 5V display rail and translates the 4 control
 # lines 3V3->5V, then hands +5V + 5V-logic to the display board via J3.
 #   - U5: TPS61022 EN-gated 5V boost (off in sleep). LCSC C915088, VQFN-7.
-#     Adjustable -> R6/R7 FB divider sets +5V. Custom symbol TODO (not in KiCad).
+#     Adjustable -> R6/R7 FB divider sets +5V. Symbol: stock Converter_DCDC:TPS61022.
 #   - U6: 74HCT125 quad buffer @5V = 3V3->5V level shift for CLK + DIN1/2/3
 #     (KiCad symbol 74AHCT125 is pin-compatible; value=74HCT125, LCSC C352957).
 #   - J3: 1x8 2.54mm header to the display board.
 # The 3V3 TPS63900 (PSU sheet) now feeds only the MCU, so it stays as-is.
 DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
     title="Display 5V rail (TPS61022) + 74HCT125 level shifter + interconnect",
-    page="5",
+    page="7",
     big=[
         # 5V boost TPS61022 (adjustable). Symbol is TODO (author into
         # calcumaker.kicad_sym like the MCU); footprint exists in KiCad.
-        dict(ref="U5", lib_id="calcumaker:TPS61022", value="TPS61022RWUR",
+        dict(ref="U5", lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR",
              fp="Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm",
              lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments"),
         dict(ref="U6", lib_id="74xx:74AHCT125", value="74HCT125",
@@ -220,5 +263,5 @@ K.build(
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
                          "Main board: MCU + PSU + keypad + display interconnect (DRAFT)"]),
-    sheets=[MCU, PSU, KEYPAD, DISPLAY_IF],
+    sheets=[MCU, CLOCK, PROG, PSU, KEYPAD, DISPLAY_IF],
 )

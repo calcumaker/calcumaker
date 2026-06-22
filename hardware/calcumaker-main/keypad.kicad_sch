@@ -1,0 +1,4579 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "079dfd14-cd0c-48b6-90bb-0183924059fa")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Main — Cherry MX key matrix (5x10, 50 keys)")
+		(date "2026-06-21")
+		(rev "0.1")
+		(company "calcumaker authors")
+	)
+	(lib_symbols
+	(symbol "Switch:SW_Push"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 1.016)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "SW"
+			(at 1.27 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SW_Push"
+			(at 0 -1.524 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "switch normally-open pushbutton push-button"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "SW_Push_0_1"
+			(circle
+				(center -2.032 0)
+				(radius 0.508)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 0 1.27) (xy 0 3.048)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(circle
+				(center 2.032 0)
+				(radius 0.508)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.54 1.27) (xy -2.54 1.27)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(pin passive line
+				(at -5.08 0 0)
+				(length 2.54)
+				(name "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 5.08 0 180)
+				(length 2.54)
+				(name "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "Device:D"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 1.016)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "D"
+			(at 0 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 0 -2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Diode"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "diode"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "D_0_1"
+			(polyline
+				(pts
+					(xy -1.27 1.27) (xy -1.27 -1.27)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 0) (xy -1.27 0)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "D_1_1"
+			(pin passive line
+				(at -3.81 0 0)
+				(length 2.54)
+				(name "K"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 3.81 0 180)
+				(length 2.54)
+				(name "A"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 45.7200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7d0b164c-b8dc-48e5-a838-cfe787f532d4")
+		(property "Reference" "SW1"
+			(at 49.5300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 49.5300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 45.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "bb334fa6-34bb-40b8-b8a0-5150826416e1"))
+		(pin "2" (uuid "2f30d995-7a74-4b72-9913-adde923230f3"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 142.2400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7b4f61b5-6971-4b37-b0e3-1e90e3852882")
+		(property "Reference" "SW2"
+			(at 146.0500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 146.0500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 142.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ff74a3bb-bcf9-4ea6-b917-52d6e2ba61d1"))
+		(pin "2" (uuid "90862b60-7c58-444b-832a-f13421ba4fa8"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 238.7600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "12c0a2a3-e6d0-4353-b04d-5d1ed7f65883")
+		(property "Reference" "SW3"
+			(at 242.5700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 242.5700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 238.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "eea31090-fcce-4aa0-9199-da92dac3baf1"))
+		(pin "2" (uuid "e7fa626e-afaf-4421-b9ba-17db68a005d7"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 335.2800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "18918844-02eb-4c51-9037-a56495c4adf3")
+		(property "Reference" "SW4"
+			(at 339.0900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 339.0900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "0d00434e-d7ae-4d79-836b-ae83ad72eec2"))
+		(pin "2" (uuid "7eb21d7e-a3a6-4cb7-a195-16bddc8f61ff"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 431.8000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "53d936de-22ba-4771-b6eb-f976464472eb")
+		(property "Reference" "SW5"
+			(at 435.6100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 435.6100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 431.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "eed1c223-a169-4590-80c4-6d822478cc82"))
+		(pin "2" (uuid "240b196e-f83f-4ccc-8780-8a5e6b9ebafe"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 528.3200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c6fbd715-aa12-49c0-abbb-3d08db663101")
+		(property "Reference" "SW6"
+			(at 532.1300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 532.1300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 528.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "96e3c4e6-d2c7-4403-a9e5-32a014b05c89"))
+		(pin "2" (uuid "7eb45d08-fe3b-43e5-95b9-96fd73b0f3b7"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 624.8400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d2fc801c-1758-42d6-aff8-f19c80149677")
+		(property "Reference" "SW7"
+			(at 628.6500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 628.6500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 624.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b58771aa-88aa-4ae6-9e51-005c93958a5b"))
+		(pin "2" (uuid "dc4b4542-0b65-4ab4-9b1f-7b7f4a25f8af"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 721.3600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1c7e954b-bf9c-4b7b-bce2-53a0c9f21cba")
+		(property "Reference" "SW8"
+			(at 725.1700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 725.1700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 721.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "85c1299e-62e9-4c9c-af8e-79f1e8314b77"))
+		(pin "2" (uuid "9e39ef9f-2e96-43cf-a336-fed5c033bc24"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 817.8800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7f80b317-6ca5-4e2d-8ab7-163f688efb91")
+		(property "Reference" "SW9"
+			(at 821.6900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 821.6900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 817.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "cf4f3396-a609-43f3-8267-bd8fa56e9a02"))
+		(pin "2" (uuid "a278ea89-b2ed-486b-ba69-18f3619f68f6"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 914.4000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9fb38537-67bd-4dd0-a221-3b66bc1e8452")
+		(property "Reference" "SW10"
+			(at 918.2100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 918.2100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 914.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e444080e-aa04-48f9-97a2-1a6fb5a7fd33"))
+		(pin "2" (uuid "ac9faefc-963a-4f51-93bf-1f8649642761"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1010.9200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6bfe1398-5289-47a6-aebb-6f290ee782d1")
+		(property "Reference" "SW11"
+			(at 1014.7300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1014.7300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1010.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "53924eda-a13b-4de6-94b0-3b2189527d1b"))
+		(pin "2" (uuid "d8ec9bde-a730-4872-82ba-cf4d05085bcd"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1107.4400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "391c7a27-fd77-405b-a0e6-2bedb74049d7")
+		(property "Reference" "SW12"
+			(at 1111.2500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1111.2500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1107.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e12205e4-8533-4f10-9641-558af79b8ce3"))
+		(pin "2" (uuid "a8e25c77-e95b-4f89-9845-14a3be5b1fa2"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1203.9600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4352aa4e-1ae7-469c-b0f6-1bf2391c405c")
+		(property "Reference" "SW13"
+			(at 1207.7700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1207.7700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1203.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b8621280-ecdb-403d-bfc2-9fa412d17f04"))
+		(pin "2" (uuid "e6bca8e7-50a7-4520-9470-8c306dbeb3ae"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1300.4800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f934e0a7-79cc-446d-8e81-2ab9b56a03eb")
+		(property "Reference" "SW14"
+			(at 1304.2900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1304.2900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1300.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9f5cdd77-6ea6-4869-b8cc-577ae80ed8f8"))
+		(pin "2" (uuid "c69b8853-fd25-4c45-9333-97fae1761c80"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1397.0000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3dfd1a1e-2d73-4b68-a5e3-07175f020b4b")
+		(property "Reference" "SW15"
+			(at 1400.8100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1400.8100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1397.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "97132dce-2898-4c25-8868-d666ecdf2083"))
+		(pin "2" (uuid "4e8e1110-6c98-43e6-a30d-4987d6a0b7af"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1493.5200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b92f279e-91a1-467b-ae44-427341c6e3b2")
+		(property "Reference" "SW16"
+			(at 1497.3300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1497.3300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1493.5200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1493.5200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "23d31c43-9fdd-46de-bd16-145980f8bc2e"))
+		(pin "2" (uuid "53a18af8-eab5-4f1e-ac0f-2d5fc5572423"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1590.0400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "907cfe63-fefd-4d12-ac2b-0a76580995b5")
+		(property "Reference" "SW17"
+			(at 1593.8500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1593.8500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1590.0400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1590.0400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4bc294da-53ca-4445-8269-db331e230290"))
+		(pin "2" (uuid "2148c611-ac02-4646-952c-de4451a9540e"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1686.5600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4cd8ab33-c744-4a98-b24f-80fd0ae3e60e")
+		(property "Reference" "SW18"
+			(at 1690.3700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1690.3700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1686.5600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1686.5600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e669bd1c-7c23-4553-a749-4deb76de99b3"))
+		(pin "2" (uuid "ffcf3b19-125b-4d3b-af15-4ce6b4108563"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1783.0800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "88b3992b-e108-471c-a6e4-69fdd2f4e752")
+		(property "Reference" "SW19"
+			(at 1786.8900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1786.8900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1783.0800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1783.0800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "db66f16e-0d80-435a-b1ff-020a32b2fa77"))
+		(pin "2" (uuid "9e646b48-55a6-4e07-9d9e-4869552cfb44"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1879.6000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8f77de7b-51b0-4b18-997b-c9bebac9df84")
+		(property "Reference" "SW20"
+			(at 1883.4100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1883.4100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1879.6000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1879.6000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4966cae4-3f5e-49c0-904b-7fad68024105"))
+		(pin "2" (uuid "a80dabd5-fa30-4cb5-b124-58454e932620"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 1976.1200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e12c114a-fdd9-4357-aeda-104b8de0b726")
+		(property "Reference" "SW21"
+			(at 1979.9300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 1979.9300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 1976.1200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 1976.1200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "8af80ebc-a9de-4fae-972d-56be0b3bc203"))
+		(pin "2" (uuid "26b6f866-dfe3-4b41-ac03-9d19b5e13357"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2072.6400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "40ff5b80-0d6a-43bb-9af7-7d7e1d103f39")
+		(property "Reference" "SW22"
+			(at 2076.4500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2076.4500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2072.6400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2072.6400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1b29415c-3727-4e99-9864-22806a556f1d"))
+		(pin "2" (uuid "e665bbfa-6679-4c85-b207-3e12d887c9ac"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2169.1600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "34aebac7-06eb-4d00-8279-41e545ae0bd6")
+		(property "Reference" "SW23"
+			(at 2172.9700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2172.9700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2169.1600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2169.1600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2648b390-4ca9-4437-ab18-e560ccc7e13c"))
+		(pin "2" (uuid "627c8d0f-90d5-4b61-9218-dd471639f991"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2265.6800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f76fcad6-d4da-4e45-9dd6-3d188a49e7aa")
+		(property "Reference" "SW24"
+			(at 2269.4900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2269.4900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2265.6800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2265.6800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "225337dd-725d-4db4-ab46-47915902cd77"))
+		(pin "2" (uuid "d3f9cd9f-75ff-43b5-91e5-b29820f2abaf"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2362.2000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "546b8b65-b7cf-4cf1-8bd1-e5bafa779682")
+		(property "Reference" "SW25"
+			(at 2366.0100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2366.0100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2362.2000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2362.2000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3d14f33f-91a0-4734-af30-d05a4e0643a8"))
+		(pin "2" (uuid "056f2651-6bc4-4aee-a690-83aa8945bfc1"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2458.7200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "81746e66-0756-431a-8c4d-21d20932a658")
+		(property "Reference" "SW26"
+			(at 2462.5300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2462.5300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2458.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2458.7200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "882487b6-c864-411e-8388-98943d286e13"))
+		(pin "2" (uuid "63551c0c-d58f-43f7-9c61-94c712063a88"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2555.2400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "55dcb354-fc11-4828-ad96-982207e6ad50")
+		(property "Reference" "SW27"
+			(at 2559.0500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2559.0500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2555.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2555.2400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2e7b2d64-5031-4fb9-ba01-285d4009b5d6"))
+		(pin "2" (uuid "37245e8f-98ef-4005-8ad7-837f50324a84"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2651.7600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d6266e64-8a96-4caf-a572-c22ebb0518aa")
+		(property "Reference" "SW28"
+			(at 2655.5700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2655.5700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2651.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2651.7600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "a0199c5c-e379-4587-876b-67738356aeb3"))
+		(pin "2" (uuid "808cff4c-12f3-4c2f-9d4a-69f4e37b9701"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2748.2800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "af82d247-20b2-4f38-9faa-b5a8abc6fe37")
+		(property "Reference" "SW29"
+			(at 2752.0900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2752.0900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2748.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2748.2800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3da2b228-aff8-4a73-b32d-13352a605b47"))
+		(pin "2" (uuid "abfb103c-8286-419c-a21a-eb6d215f2056"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2844.8000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0a9706a6-71fa-46ef-bb94-df9dc198bdad")
+		(property "Reference" "SW30"
+			(at 2848.6100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2848.6100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2844.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2844.8000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3524c442-8a4b-454f-a0a7-38c320f31e67"))
+		(pin "2" (uuid "64a23aad-a0bc-4fab-aaa4-d2e43d31250b"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 2941.3200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e00414b9-f41a-4356-a29a-0fd1ecaa6ed4")
+		(property "Reference" "SW31"
+			(at 2945.1300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 2945.1300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 2941.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 2941.3200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "833d33c0-cde8-49d7-8591-4fec47216909"))
+		(pin "2" (uuid "7ea34ca3-af94-44be-b4bd-6f91d4ba28fc"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3037.8400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b13c4d68-3135-4f68-82b6-7bf9c9080354")
+		(property "Reference" "SW32"
+			(at 3041.6500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3041.6500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3037.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3037.8400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e858f091-65e4-44b6-8c5f-2a69ee79304b"))
+		(pin "2" (uuid "016108b5-8a12-4c50-87ea-db285ade2893"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3134.3600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2e97ed2a-7180-4d02-acd4-b6e07daaf0cb")
+		(property "Reference" "SW33"
+			(at 3138.1700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3138.1700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3134.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3134.3600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "f672eb15-1e93-4e92-a11c-5d892060b30f"))
+		(pin "2" (uuid "901ca0f0-7a2a-450f-97cb-ae6c44451c0d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW33")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3230.8800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "62d007a2-62f5-499d-b0e4-88c7406d3a5a")
+		(property "Reference" "SW34"
+			(at 3234.6900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3234.6900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3230.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3230.8800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "cba04bcc-de95-409d-9fed-7b1744f5bac3"))
+		(pin "2" (uuid "e7b123a4-a044-4e5c-a156-d20696155f7c"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3327.4000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9dab260c-f76e-49b1-9136-4b78d19cd7bc")
+		(property "Reference" "SW35"
+			(at 3331.2100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3331.2100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3327.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3327.4000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "913b2e08-2746-4341-9ef3-56af411c2928"))
+		(pin "2" (uuid "9a3a4b28-a973-4344-94f7-59902db17fde"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW35")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3423.9200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f2af6cbe-9fa5-45bb-b9d7-4295124934bf")
+		(property "Reference" "SW36"
+			(at 3427.7300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3427.7300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3423.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3423.9200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3b3d4090-4c7f-4626-93c7-70486ae921aa"))
+		(pin "2" (uuid "3f722a1f-4155-4008-83b8-c27244906ff1"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3520.4400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f011332f-8028-43a8-86a0-7d131a04c82d")
+		(property "Reference" "SW37"
+			(at 3524.2500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3524.2500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3520.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3520.4400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ddeab642-24db-4d9e-84fa-2ae5f12bcbee"))
+		(pin "2" (uuid "da52cb24-f7f0-427d-aad9-055e7759a601"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW37")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3616.9600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "18cfb876-fe4c-49aa-aa3e-991d874c00af")
+		(property "Reference" "SW38"
+			(at 3620.7700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3620.7700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3616.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3616.9600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "5de42e29-bd1e-4c28-9ada-af276aa7ed21"))
+		(pin "2" (uuid "43aa66c1-97d2-4326-8790-b210d6a94d3d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW38")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3713.4800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d6cde33e-d6b6-41d9-bbb1-347147e3e869")
+		(property "Reference" "SW39"
+			(at 3717.2900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3717.2900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3713.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3713.4800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4f6a21ac-b1f3-4e53-8fcd-d21036ab809b"))
+		(pin "2" (uuid "b03aaebe-149d-4990-a3d2-4b0bd3b4d0db"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW39")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3810.0000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8d7364af-22e9-48cf-8c30-903694ef844f")
+		(property "Reference" "SW40"
+			(at 3813.8100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3813.8100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3810.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3810.0000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "85aac088-5b9d-49dd-8026-b88406d9b5f4"))
+		(pin "2" (uuid "4bfb4dfc-7288-482a-a7be-d6658fe90f5d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW40")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 3906.5200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5bc45e47-61d7-4145-96c2-395d25d7d155")
+		(property "Reference" "SW41"
+			(at 3910.3300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 3910.3300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 3906.5200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 3906.5200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3ac2452f-89e2-494a-add4-80e96dcf11f1"))
+		(pin "2" (uuid "f1510f25-5482-4e1c-888f-a33dcbc02c1a"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4003.0400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4909fb27-267f-4812-ba13-9656a3ceb42e")
+		(property "Reference" "SW42"
+			(at 4006.8500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4006.8500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4003.0400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4003.0400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1dd9b01f-d49a-409b-bf0b-cfeebb8c9a5a"))
+		(pin "2" (uuid "abe9e720-46a4-4327-9ec7-f57e0fd7148e"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4099.5600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4f835da5-81bc-4676-aa0a-29679804c5c5")
+		(property "Reference" "SW43"
+			(at 4103.3700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4103.3700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4099.5600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4099.5600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "84922e20-e1a5-4e27-8754-713e5a851819"))
+		(pin "2" (uuid "159fb61a-48a2-42ee-b1cf-f29cbdc479b6"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4196.0800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "591df4bd-d310-4139-876d-a1c602c80b81")
+		(property "Reference" "SW44"
+			(at 4199.8900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4199.8900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4196.0800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4196.0800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "13a129ca-9c68-4a6f-9cb9-4dbc174ee57d"))
+		(pin "2" (uuid "c68b6f79-cd18-48b8-9030-2f702cd20c9e"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4292.6000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f9fd3ea0-a0bf-406f-96ca-716434e717c0")
+		(property "Reference" "SW45"
+			(at 4296.4100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4296.4100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4292.6000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4292.6000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "872f2247-be82-41ca-b5ba-cc136c277dcc"))
+		(pin "2" (uuid "e2df9dae-4062-4e5b-92c5-90c453062da6"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4389.1200 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2efaaae5-bfd7-4d2e-9e6c-3a0aa6590ed8")
+		(property "Reference" "SW46"
+			(at 4392.9300 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4392.9300 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4389.1200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4389.1200 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2486fcbc-0bd9-4b21-8b46-e53ae0387249"))
+		(pin "2" (uuid "5148dde2-e533-436b-8821-33d163a033f8"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4485.6400 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "aa7a7554-ad63-4cea-80e6-6349f0fc0f1f")
+		(property "Reference" "SW47"
+			(at 4489.4500 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4489.4500 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4485.6400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4485.6400 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "89066815-2df2-4484-953a-b8dd3d8220f9"))
+		(pin "2" (uuid "901886ce-65ed-4b17-bdd3-81c15b3863ec"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4582.1600 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7471ffd1-02c2-4f6e-ba25-d030557e15db")
+		(property "Reference" "SW48"
+			(at 4585.9700 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4585.9700 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4582.1600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4582.1600 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e930a050-9d5f-4ce9-9fc5-a7cd22b44a97"))
+		(pin "2" (uuid "a547aed9-3f20-4511-90f4-ec9a61ecc50d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4678.6800 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2ad086ee-9667-46a0-b931-38de9aa601a0")
+		(property "Reference" "SW49"
+			(at 4682.4900 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4682.4900 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4678.6800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4678.6800 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "c511f635-1533-4164-a2f6-cf47821a6b57"))
+		(pin "2" (uuid "e6b2c85f-3073-4f72-963f-51b6c1fb8d3f"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 4775.2000 55.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e784e03e-4300-4844-b906-9693a1f9f80a")
+		(property "Reference" "SW50"
+			(at 4779.0100 53.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 4779.0100 58.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 4775.2000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 4775.2000 55.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "954e3f34-c03f-4be0-8ffd-7895326cee3a"))
+		(pin "2" (uuid "b37a2489-947b-47cc-924f-8aea20158e15"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "SW50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 30.4800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9d23b52c-44dd-4430-96af-533b9099c9bb")
+		(property "Reference" "D11"
+			(at 34.2900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 34.2900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 30.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "fbb0e308-2fd8-4855-ae3f-bd646a995b14"))
+		(pin "2" (uuid "b5c71c87-5cce-4ea6-8c49-c3d249896274"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 68.5800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3ad5b448-f597-42d2-b517-4ebfe6e7617a")
+		(property "Reference" "D12"
+			(at 72.3900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 72.3900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 68.5800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "d411b96a-01e4-42f6-aac9-9ee5ecb24ac5"))
+		(pin "2" (uuid "8455751f-6920-4961-9090-1690b8740e9e"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 106.6800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "20103762-c7af-4f2a-9f51-4c7db0a6f593")
+		(property "Reference" "D13"
+			(at 110.4900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 110.4900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 106.6800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "c5b90795-bf40-4cdc-bd3d-c3fce381a1ba"))
+		(pin "2" (uuid "e6c5e8da-8621-4e07-b406-7644a792c333"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 144.7800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a935cbd5-dba5-4324-9793-972b08508cd8")
+		(property "Reference" "D14"
+			(at 148.5900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 148.5900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 144.7800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "7e8f4435-5f63-4505-8d4f-525adf3dcf27"))
+		(pin "2" (uuid "e1caa486-7138-42e8-989b-7e1f247cb84b"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 182.8800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "21884374-43aa-47ac-a989-b971fb5818aa")
+		(property "Reference" "D15"
+			(at 186.6900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 186.6900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 182.8800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 182.8800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 182.8800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 182.8800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 182.8800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "33ad772d-d24a-46c5-941f-d5c4000a19fb"))
+		(pin "2" (uuid "0ee3b13d-60fa-4a8e-a49a-84992ca6b160"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 220.9800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2995f439-6b7a-413f-a6be-d4a96998b2b6")
+		(property "Reference" "D16"
+			(at 224.7900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 224.7900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 220.9800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 220.9800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 220.9800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 220.9800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 220.9800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3347db14-b21c-4d5e-9bca-a7e52a85f148"))
+		(pin "2" (uuid "48490aa5-279b-46a2-9feb-e535f7590647"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 259.0800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1e658e8e-0536-43ee-8da8-818506366181")
+		(property "Reference" "D17"
+			(at 262.8900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 262.8900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 259.0800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 259.0800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 259.0800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 259.0800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 259.0800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "6beb02a3-6a16-4ded-aa98-d8eb57abc488"))
+		(pin "2" (uuid "7ee3640c-664b-492f-b5cf-16da8bfb302d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 297.1800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "42d8315f-eaa6-4ee0-b5ec-82fdf3916765")
+		(property "Reference" "D18"
+			(at 300.9900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 300.9900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 297.1800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 297.1800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 297.1800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 297.1800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 297.1800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "17963a9b-9ce9-4257-a670-cae3ab18d8ec"))
+		(pin "2" (uuid "2f5d92ca-8699-412c-a7ed-2e61b78c9611"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eca34a3a-4845-4d06-b218-bd1e685ac451")
+		(property "Reference" "D19"
+			(at 339.0900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3b388980-a966-4a5d-9891-85c56592591f"))
+		(pin "2" (uuid "840d01f8-f877-4713-82e9-34b9bf53ead3"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 373.3800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "61b0578d-3422-4193-8684-8dab2f0a3712")
+		(property "Reference" "D20"
+			(at 377.1900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 377.1900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 373.3800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 373.3800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 373.3800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 373.3800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 373.3800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "60d7f0db-cd62-4585-8813-d73d3fcf7f48"))
+		(pin "2" (uuid "ddb6b0e1-87b5-4a51-922e-b8a1459e1772"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 30.4800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "df57998e-932d-4f09-9c3c-1da311ec634d")
+		(property "Reference" "D21"
+			(at 34.2900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 34.2900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 30.4800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 30.4800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 30.4800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 30.4800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b1054d06-37ee-4e2f-9854-e95c9191cb53"))
+		(pin "2" (uuid "3a50eaf6-6da1-42fe-9fc2-7661be4a9895"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 68.5800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b63961fe-1da6-45cf-aabd-543310e83631")
+		(property "Reference" "D22"
+			(at 72.3900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 72.3900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 68.5800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 68.5800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 68.5800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 68.5800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3fd84845-a1b0-417b-b512-88e389e28ea7"))
+		(pin "2" (uuid "c9a4769c-1d7c-421f-8596-0735bbcb4d07"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 106.6800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3e6c4769-92e2-4b44-93b8-3e4628b197b7")
+		(property "Reference" "D23"
+			(at 110.4900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 110.4900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 106.6800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 106.6800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 106.6800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 106.6800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ddcb5f6a-bb7c-4b2d-b03e-a4ccae10ebd9"))
+		(pin "2" (uuid "bcc9f67a-79d4-4311-ad6f-bb1145c8720d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 144.7800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2fb34fae-d286-495a-8b95-e19380f59e47")
+		(property "Reference" "D24"
+			(at 148.5900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 148.5900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 144.7800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 144.7800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 144.7800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 144.7800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "cee46167-d93b-470e-83dc-d78bd1b83d7e"))
+		(pin "2" (uuid "35dab426-c21a-4a6e-b770-4a1814e1edda"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 182.8800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8624fc00-9bc1-4015-b206-3a6c083fd15f")
+		(property "Reference" "D25"
+			(at 186.6900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 186.6900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 182.8800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 182.8800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 182.8800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 182.8800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 182.8800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "fd4b7bc9-f8a4-4b43-81a5-7335f4c2816f"))
+		(pin "2" (uuid "7f870920-79f3-4835-a4d3-983ef2a4842a"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 220.9800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "966c6ea8-c4f3-4219-9503-d17f1de75782")
+		(property "Reference" "D26"
+			(at 224.7900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 224.7900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 220.9800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 220.9800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 220.9800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 220.9800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 220.9800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "352e88a4-5328-48a6-a281-72d420aee3a2"))
+		(pin "2" (uuid "b564cee5-0beb-4930-b0a8-76e83fb2d7b4"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 259.0800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f4a1590e-f149-448a-a3cb-36d6df85d93d")
+		(property "Reference" "D27"
+			(at 262.8900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 262.8900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 259.0800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 259.0800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 259.0800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 259.0800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 259.0800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9f9cdf35-407f-44a1-be6a-dd7e05b6552d"))
+		(pin "2" (uuid "04a83de3-b217-4035-9bd7-a0481ca9970e"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 297.1800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "55e3a24b-a1e8-4b44-9cd5-31af3f4c6ec8")
+		(property "Reference" "D28"
+			(at 300.9900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 300.9900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 297.1800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 297.1800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 297.1800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 297.1800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 297.1800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "7ce34c88-9e0e-4b17-8011-b6cb78d29866"))
+		(pin "2" (uuid "94765012-3f3a-4336-b4e1-4193c3f7b31b"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4fdb10b8-4403-4ea5-b05b-f5bb7c2fc89e")
+		(property "Reference" "D29"
+			(at 339.0900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b905a49b-c4b5-4a68-80d5-c35d9114cf12"))
+		(pin "2" (uuid "8dbebf48-f05c-481b-9a9f-90bd5677508f"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 373.3800 152.4000 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e2814d77-cae4-4c4c-bf90-9993493a1c78")
+		(property "Reference" "D30"
+			(at 377.1900 149.8600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 377.1900 154.9400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 373.3800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 373.3800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 373.3800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 373.3800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 373.3800 152.4000 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1beb11ba-12c8-44ed-bc03-73ee7969f29e"))
+		(pin "2" (uuid "c5da07d5-47cd-475d-b197-48bfd73b1be0"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 30.4800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "637812ad-33e2-42a4-9eb0-543972c10ef7")
+		(property "Reference" "D31"
+			(at 34.2900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 34.2900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 30.4800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 30.4800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 30.4800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 30.4800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2de74b36-090e-40ee-b52b-2873293ab34d"))
+		(pin "2" (uuid "91e4760e-f0d3-484c-a270-b7f4978c9330"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 68.5800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b801864e-5725-403e-bfe7-d481d18c999a")
+		(property "Reference" "D32"
+			(at 72.3900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 72.3900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 68.5800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 68.5800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 68.5800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 68.5800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2ebc3c96-13e1-41a7-aeef-e59b7a782a82"))
+		(pin "2" (uuid "c9405187-3bd9-46bf-87d5-ef52226ac62c"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 106.6800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "136dacbe-d5e5-4aaa-ba33-7ba5e0978e7f")
+		(property "Reference" "D33"
+			(at 110.4900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 110.4900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 106.6800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 106.6800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 106.6800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 106.6800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "5328e956-293d-4d8b-881e-3bd075dd1cf7"))
+		(pin "2" (uuid "09c22c3f-8fe3-4481-8d52-fe7e641f6940"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D33")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 144.7800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0c998402-1d1e-4200-afef-9e249f9cc833")
+		(property "Reference" "D34"
+			(at 148.5900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 148.5900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 144.7800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 144.7800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 144.7800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 144.7800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "f6d74b20-9e65-4cea-8617-001347129054"))
+		(pin "2" (uuid "7ce824c8-4ab2-4f08-a135-dfb445f933ee"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 182.8800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1ea1f829-511d-400b-9625-479389717b37")
+		(property "Reference" "D35"
+			(at 186.6900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 186.6900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 182.8800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 182.8800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 182.8800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 182.8800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 182.8800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "838d3a9f-ffc9-404a-98b4-8f38f89b0be6"))
+		(pin "2" (uuid "1bf064ef-69b7-4651-bcc2-2fa80841e991"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D35")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 220.9800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "42b7cd5c-cb47-4db5-b3c8-23cab56684c7")
+		(property "Reference" "D36"
+			(at 224.7900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 224.7900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 220.9800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 220.9800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 220.9800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 220.9800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 220.9800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e05ff1e1-eb93-4cfa-9c0a-d7e865e07a02"))
+		(pin "2" (uuid "4915c323-7dfa-48d5-ab58-b5de121d20f1"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 259.0800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d725fadc-d289-4d2c-b450-0f91ab541359")
+		(property "Reference" "D37"
+			(at 262.8900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 262.8900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 259.0800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 259.0800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 259.0800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 259.0800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 259.0800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9cb72f8e-8d6a-4214-9c2f-f303e84714c1"))
+		(pin "2" (uuid "77dcab9c-8785-4650-a603-b4863c8e2692"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D37")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 297.1800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b9cc5618-35a7-41a4-a175-85c619f76d77")
+		(property "Reference" "D38"
+			(at 300.9900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 300.9900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 297.1800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 297.1800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 297.1800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 297.1800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 297.1800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "5b91700b-6399-4bc0-b4ed-d36b95847e2f"))
+		(pin "2" (uuid "beabc575-bcbe-479e-8f70-b6c246f46e64"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D38")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7ea8e9c8-be1a-4ab3-bbbf-058f5470b9a0")
+		(property "Reference" "D39"
+			(at 339.0900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9ac2eaf7-c90a-4c1f-b04d-1a36eb2de6f6"))
+		(pin "2" (uuid "9a6b28c2-550c-4adc-9730-6eca151ad97c"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D39")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 373.3800 182.8800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "67791b5d-2c33-4576-bcfa-c6d1d82520f4")
+		(property "Reference" "D40"
+			(at 377.1900 180.3400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 377.1900 185.4200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 373.3800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 373.3800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 373.3800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 373.3800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 373.3800 182.8800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "7fd5c21e-4e49-477e-9606-73c86fafbbc3"))
+		(pin "2" (uuid "1316631e-c390-40d2-ae97-ab03b91b3f5f"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D40")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 30.4800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e6f8baf0-8201-4fdc-b949-255963ec6b3e")
+		(property "Reference" "D41"
+			(at 34.2900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 34.2900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 30.4800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 30.4800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 30.4800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 30.4800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4f5ca786-e845-489a-9b3b-75ef3fc4f87c"))
+		(pin "2" (uuid "31766fbb-4e78-45f4-84f2-023f59ff9482"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 68.5800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "121af575-1d28-4d34-ab72-48bb504eff9d")
+		(property "Reference" "D42"
+			(at 72.3900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 72.3900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 68.5800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 68.5800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 68.5800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 68.5800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "a9049b6a-d22b-4777-956c-dfc077db4b5c"))
+		(pin "2" (uuid "aea164d8-ae38-45c4-9b37-446d02521300"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 106.6800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "37e67dd5-0c92-4bd3-b3da-eddd8ee33423")
+		(property "Reference" "D43"
+			(at 110.4900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 110.4900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 106.6800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 106.6800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 106.6800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 106.6800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1e278b99-e5e7-4c24-b8c5-f21cd1120933"))
+		(pin "2" (uuid "145b33c4-3449-45ae-873f-9f91815cdc7c"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 144.7800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4947a505-9ca8-4d15-a03b-e94f206502a5")
+		(property "Reference" "D44"
+			(at 148.5900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 148.5900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 144.7800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 144.7800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 144.7800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 144.7800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "92d7f0d0-54a8-4001-93c2-fc216cbe9a95"))
+		(pin "2" (uuid "19b603e1-3551-4619-b0d7-6eb4ad0feb55"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 182.8800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "528b3a45-48d6-4e00-809a-86cc6a417656")
+		(property "Reference" "D45"
+			(at 186.6900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 186.6900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 182.8800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 182.8800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 182.8800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 182.8800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 182.8800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "14972190-b076-453a-a8db-6d7ef5b14829"))
+		(pin "2" (uuid "56be87f5-9d8f-4837-a258-01e33f2eebea"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 220.9800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "52fb0395-2c07-4f8a-8e96-a4d66c68f8d1")
+		(property "Reference" "D46"
+			(at 224.7900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 224.7900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 220.9800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 220.9800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 220.9800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 220.9800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 220.9800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "a284f396-397e-4b35-9ebd-1723525c50d0"))
+		(pin "2" (uuid "661ba13f-41b5-4bad-b535-939cf43a229f"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 259.0800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eee95a16-ed04-4f1c-9764-64d2b15f77e4")
+		(property "Reference" "D47"
+			(at 262.8900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 262.8900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 259.0800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 259.0800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 259.0800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 259.0800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 259.0800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "8e7a4051-d7be-493c-81be-b4ab8b19bd7f"))
+		(pin "2" (uuid "d5b213b1-1448-40a3-922f-764e93be9f69"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 297.1800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a812f935-b8c8-4533-aa2a-8dcb2d4e7c18")
+		(property "Reference" "D48"
+			(at 300.9900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 300.9900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 297.1800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 297.1800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 297.1800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 297.1800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 297.1800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b7e454e5-b247-4959-bc80-d5f070005fd4"))
+		(pin "2" (uuid "d1b6ac4c-ab82-4f75-83c6-b7bf39a09fe7"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a5dc49a3-8c85-4b74-8d32-47dcf1aa5e8b")
+		(property "Reference" "D49"
+			(at 339.0900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "f77d7c83-0423-4b39-a335-74f844e3815a"))
+		(pin "2" (uuid "25192253-b070-4c3a-a2e6-fea5e528ed0f"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 373.3800 213.3600 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cb1a192f-456f-4b13-bde5-c52f7e537231")
+		(property "Reference" "D50"
+			(at 377.1900 210.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 377.1900 215.9000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 373.3800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 373.3800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 373.3800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 373.3800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 373.3800 213.3600 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ddd5ff1f-d957-46b8-9f66-3a25f66be31d"))
+		(pin "2" (uuid "4844b026-67f6-43fd-9a31-79352724dc4d"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 30.4800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "aee1c187-47ef-4d6e-995f-909ace29ffe2")
+		(property "Reference" "D51"
+			(at 34.2900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 34.2900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 30.4800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 30.4800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 30.4800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 30.4800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 30.4800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "223ce5d8-e606-4f09-a794-0ef0a66ce3cb"))
+		(pin "2" (uuid "929f5af3-d95f-4038-81b5-af1206930349"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D51")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 68.5800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5eca6a4b-0ead-4bff-bf44-15362a1e2a8a")
+		(property "Reference" "D52"
+			(at 72.3900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 72.3900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 68.5800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 68.5800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 68.5800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 68.5800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 68.5800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "d9465dcc-833d-4164-b3ed-9086d4a5d4c9"))
+		(pin "2" (uuid "4d422028-f1b4-45bf-b1ba-85f24c8d9198"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D52")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 106.6800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "233cacc1-e766-41f5-aa06-b332015f38a2")
+		(property "Reference" "D53"
+			(at 110.4900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 110.4900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 106.6800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 106.6800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 106.6800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 106.6800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 106.6800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "0b581fa5-ad5d-4a2c-a5ec-9c45da6c2f8c"))
+		(pin "2" (uuid "7f67687a-233e-4b0c-b006-9eec1dd3e9d0"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D53")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 144.7800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bc9cd734-4468-4b81-82e4-c194a944af20")
+		(property "Reference" "D54"
+			(at 148.5900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 148.5900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 144.7800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 144.7800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 144.7800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 144.7800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 144.7800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3b14a1e2-ec62-488e-8ccf-493fba6f6625"))
+		(pin "2" (uuid "5f92fb38-d4be-40b1-8973-1ed9ef57da45"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D54")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 182.8800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f038bf6e-59c0-4282-aa1a-35e6a1c025d5")
+		(property "Reference" "D55"
+			(at 186.6900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 186.6900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 182.8800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 182.8800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 182.8800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 182.8800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 182.8800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b6f542e2-80c3-4a6f-91d2-e790e523c0a9"))
+		(pin "2" (uuid "9ee38703-4709-4ace-95c5-54b04d1351cc"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D55")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 220.9800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9e8e39d7-ef2f-4d63-a1d6-244ee3ffaf0c")
+		(property "Reference" "D56"
+			(at 224.7900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 224.7900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 220.9800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 220.9800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 220.9800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 220.9800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 220.9800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "df60e877-ae73-4f9f-8005-900a382c9231"))
+		(pin "2" (uuid "cfc451a9-13e3-474e-b4da-3ffefc5b6c63"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D56")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 259.0800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "975b38ee-6c28-40fa-bad4-87b3445fc279")
+		(property "Reference" "D57"
+			(at 262.8900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 262.8900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 259.0800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 259.0800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 259.0800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 259.0800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 259.0800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "b2e0f8bc-b872-4af7-bf1f-53bc673d7d9d"))
+		(pin "2" (uuid "eea6dcea-1f9e-4867-9580-31addbed5fbf"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D57")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 297.1800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0217e465-67b6-410d-8799-960c8abf879f")
+		(property "Reference" "D58"
+			(at 300.9900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 300.9900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 297.1800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 297.1800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 297.1800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 297.1800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 297.1800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "c41a6aee-e58f-48cf-8fe2-8662891249c8"))
+		(pin "2" (uuid "c04a803b-2383-48cb-a2c3-25c8a2836084"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D58")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f5913557-3cbf-4d80-8c0d-b6460902d102")
+		(property "Reference" "D59"
+			(at 339.0900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "6c2e87cc-ed47-475f-8479-20ab4acb55d7"))
+		(pin "2" (uuid "396a91db-866a-40ad-8af4-a84710f84d77"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D59")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 373.3800 243.8400 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e40f27c0-51a4-46f4-9332-6d6c0743d6f1")
+		(property "Reference" "D60"
+			(at 377.1900 241.3000 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 377.1900 246.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 373.3800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 373.3800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 373.3800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 373.3800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 373.3800 243.8400 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "19c588b2-0033-4e8e-bdef-1f1e34912df5"))
+		(pin "2" (uuid "d514fcc5-b4aa-4b08-8092-09223ad4f2b9"))
+		(instances
+			(project "calcumaker-main"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/079dfd14-cd0c-48b6-90bb-0183924059fa"
+					(reference "D60")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(text "Calcumaker 16 main — Keypad: 50 Cherry MX keys in a 5x10 scanned matrix (wide HP-16C layout + f/g shifts; keymap in DESIGN.md). PLACED, not wired. WIRING: ROW1..ROW5 = GPIO outputs; COL1..COL10 = GPIO inputs with INTERNAL pull-ups (no external R; STM32U5 keeps pull-ups in Stop). Each key SWn in series with Dn (anode at switch, cathode to its COL) for n-key rollover. Key (row r, col c): SW#=(r-1)*10+c, D#=10+(r-1)*10+c. Scan: drive one ROW low, read COLs. WAKE: drive all ROWs low + EXTI on one COL (or all) -> any keypress wakes from Stop. Optional Kailh hot-swap sockets (same footprint family)."
+		(exclude_from_sim no)
+		(at 15.00 130.00 0)
+		(effects (font (size 1.5 1.5)) (justify left top))
+		(uuid "bef7e6d3-aa87-4667-beef-bf5940b6e279")
+	)
+	(sheet_instances
+		(path "/"
+			(page "6")
+		)
+	)
+	(embedded_fonts no)
+)

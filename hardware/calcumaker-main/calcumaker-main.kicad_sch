@@ -1,0 +1,118 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ca1c0000-0000-4000-8000-00000000ma01")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Main")
+		(date "2026-06-21")
+		(rev "0.1")
+		(company "calcumaker authors")
+		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
+		(comment 2 "Main board: MCU + PSU + keypad + display interconnect (DRAFT)")
+	)
+	(lib_symbols)
+	(sheet
+		(at 40.64 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "d3184a48-4e57-4dd4-8657-28f06ea51a50")
+		(property "Sheetname" "MCU"
+			(at 40.64 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "mcu.kicad_sch"
+			(at 40.64 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 96.52 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "29225b8b-b6d0-4464-80fa-dde1b6aba1e3")
+		(property "Sheetname" "Clock"
+			(at 96.52 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "clock.kicad_sch"
+			(at 96.52 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 152.40 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "71b58d6d-f987-4e22-9835-fb974e168907")
+		(property "Sheetname" "Programming"
+			(at 152.40 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "prog.kicad_sch"
+			(at 152.40 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 208.28 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "5282cf56-e703-4461-9ce5-56ef809a75ea")
+		(property "Sheetname" "PSU"
+			(at 208.28 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "psu.kicad_sch"
+			(at 208.28 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 264.16 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "079dfd14-cd0c-48b6-90bb-0183924059fa")
+		(property "Sheetname" "Keypad"
+			(at 264.16 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "keypad.kicad_sch"
+			(at 264.16 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 320.04 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "f9b95f10-9b2d-40c8-a772-d4d132aff963")
+		(property "Sheetname" "DisplayIF"
+			(at 320.04 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "display_if.kicad_sch"
+			(at 320.04 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

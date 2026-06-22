@@ -317,10 +317,17 @@ then wired in eeschema.
 | Sheet | File | Contents |
 |-------|------|----------|
 | Root | `calcumaker-main.kicad_sch` | sheet symbols + title block |
-| MCU | `mcu.kicad_sch` | STM32U575 + decoupling + LSE + SWD + USB + BOOT0 |
+| MCU | `mcu.kicad_sch` | STM32U575ZGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 |
+| Clock | `clock.kicad_sch` | LSE 32.768 kHz crystal (Y1) + load caps (RTC) |
+| Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (50 SW + 50 diodes) + wake line |
-| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost + 74HCT125 level shifter + J3 → display |
+| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + J3 → display |
+
+Both boards **generate from their manifests and pass the structure check**
+(placed-not-wired): `calcumaker-main` = 149 components across the 6 subsheets
+above; `calcumaker-display` = 21 components. All symbols are stock KiCad except
+the authored TM1640.
 
 **`calcumaker-display`:**
 
@@ -369,11 +376,13 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
    once the cross-build is proven — both behind the same `Number` API.)
-4. ✅ **Keypad designed** — 5×10 (50 keys), f/g shift scheme, internal-pull-up
-   matrix + EXTI wake (see Keypad section; keymap in `keypad.rs`). Remaining:
-   refine the `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; then
-   author the **MCU sheet** (stock `MCU_ST_STM32U5:STM32U575ZGTx` symbol) +
-   **TPS61022** custom symbol and **generate the full main board**.
+4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
+   internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
+   subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols
+   stock (TPS61022 + STM32U575 were both in KiCad), and it **generates + passes
+   the structure check** (149 comp). Remaining: refine `Nop` shift assignments;
+   confirm Cherry MX vs Kailh hot-swap; verify the STM32U5 VCORE LDO-vs-SMPS
+   choice (SMPS needs an inductor); then **wire both boards in eeschema**.
 5. **Battery cell + capacity.** Drives charger current (PROG resistor) and
    runtime target.
 

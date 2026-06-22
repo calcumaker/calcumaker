@@ -96,9 +96,9 @@ DISPLAY = dict(name="Display", file="display.kicad_sch",
           "over a 2-wire bus. *** DIGITS ARE THROUGH-HOLE (no SMD multi-digit "
           "7-seg on LCSC) -> THT assembly. *** TM1640: shared CLK, per-chip DIN "
           "(DIN1/2/3) from the interconnect; GRID->digit commons, SEG->segments. "
-          "LED current dominates active power (drawn from +3V3 across the "
-          "interconnect) -> gates the main buck-boost sizing. Use brightness "
-          "(TM1640 dimming) + blank-on-idle."))
+          "Runs at +5V (VDD + LED) from the main-board EN-gated 5V boost across "
+          "the interconnect -> sized on that boost, not the 3V3 rail. Use "
+          "brightness (TM1640 dimming) + blank-on-idle."))
 
 # ============================ Interconnect sheet =============================
 # Connector back to the main board. Pinout MUST match calcumaker-main J3.
@@ -112,14 +112,14 @@ INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
              lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
     ],
     small=[
-        C("C5", "10uF", C0805),   # local 3V3 bulk at the connector
+        C("C5", "10uF", C0805),   # local 5V bulk at the connector
     ],
     note=(15, 95, "Calcumaker 16 display — Interconnect to the main board. J1 "
-          "pinout (MUST match calcumaker-main J3): 1=+3V3, 2=GND, 3=CLK (shared), "
-          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. (TM1640 2-wire: one shared "
-          "CLK + one DIN per row driver U1/U2/U3.) Wide +3V3/GND for LED "
-          "current. 2.54mm 1x8 header (C492407); short cable to the angled "
-          "display. See DESIGN.md Board Partition."))
+          "pinout (MUST match calcumaker-main J3): 1=+5V, 2=GND, 3=CLK (shared), "
+          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Display runs at +5V (TM1640 "
+          "VDD + LED); CLK/DIN are 5V-logic from the main-board 74HCT125 level "
+          "shifter. Wide +5V/GND for LED current. 2.54mm 1x8 header (C492407); "
+          "short cable to the angled display. See DESIGN.md Board Partition."))
 
 # ============================ generate =======================================
 K.build(

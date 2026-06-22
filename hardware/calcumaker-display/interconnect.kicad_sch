@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "003235e3-d05f-48ee-ae76-22965c0677c8")
+	(uuid "f2c009b6-dba2-43d5-a6f1-690da8662fd2")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Display — Main board interconnect")
@@ -507,7 +507,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9ea5f9fc-be6f-4cd7-9d10-f06437fe31d0")
+		(uuid "7b6954a6-614f-4507-aead-9a36b5ac7168")
 		(property "Reference" "J1"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -536,17 +536,17 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "21642f4d-c290-49cc-93ed-c9c81a413a46"))
-		(pin "2" (uuid "437b5490-4c32-4190-b059-ad7b7049ebf7"))
-		(pin "3" (uuid "3328ab6a-9f1b-47a0-972d-59e6ca4695c5"))
-		(pin "4" (uuid "b27c78c8-227f-4af8-91f7-01570309dc94"))
-		(pin "5" (uuid "a864e913-12c2-4471-81c1-fa0143ea1d8a"))
-		(pin "6" (uuid "53f3904a-451d-42ab-8b19-dc9059e10d2a"))
-		(pin "7" (uuid "64881372-e3c0-41cd-85ec-14352a96b4d7"))
-		(pin "8" (uuid "4cd85540-7a89-45d3-9d83-4987a2febe63"))
+		(pin "1" (uuid "d9293448-e71b-4374-a98d-7f38f52b9d74"))
+		(pin "2" (uuid "9b114bed-b43d-4586-bdd3-11a721584c93"))
+		(pin "3" (uuid "0f30863b-1593-4ff5-9bdb-ea58f43bdd64"))
+		(pin "4" (uuid "fd553a7d-7a01-4c62-b89c-ebda623cd17e"))
+		(pin "5" (uuid "ea424450-fddc-402b-8c71-e9b0fb9236f8"))
+		(pin "6" (uuid "b9cbf2e5-2d91-49c7-9a1d-7ae421ea9d34"))
+		(pin "7" (uuid "4fb44bbf-c348-430e-9f78-5473ef116365"))
+		(pin "8" (uuid "fbd50fc8-8946-4118-b0d3-c87b0be875c5"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/003235e3-d05f-48ee-ae76-22965c0677c8"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/f2c009b6-dba2-43d5-a6f1-690da8662fd2"
 					(reference "J1")
 					(unit 1)
 				)
@@ -561,7 +561,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e4cb5730-8892-472e-bf1a-73f1d98e7645")
+		(uuid "e1e857fb-b078-4c43-abcb-a6e8bc17c613")
 		(property "Reference" "C5"
 			(at 34.2900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -582,22 +582,22 @@
 			(at 30.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1e50c0e6-5c03-4f75-b46c-a88125503bb9"))
-		(pin "2" (uuid "727d141a-c5d9-46e0-876d-2ce87ec64aaf"))
+		(pin "1" (uuid "b7ae96d9-6f88-46b4-b0a5-98cf8eee13c1"))
+		(pin "2" (uuid "26ac67eb-78df-4c2d-ae18-08319dafb119"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/003235e3-d05f-48ee-ae76-22965c0677c8"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/f2c009b6-dba2-43d5-a6f1-690da8662fd2"
 					(reference "C5")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 display — Interconnect to the main board. J1 pinout (MUST match calcumaker-main J3): 1=+3V3, 2=GND, 3=CLK (shared), 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. (TM1640 2-wire: one shared CLK + one DIN per row driver U1/U2/U3.) Wide +3V3/GND for LED current. 2.54mm 1x8 header (C492407); short cable to the angled display. See DESIGN.md Board Partition."
+	(text "Calcumaker 16 display — Interconnect to the main board. J1 pinout (MUST match calcumaker-main J3): 1=+5V, 2=GND, 3=CLK (shared), 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Display runs at +5V (TM1640 VDD + LED); CLK/DIN are 5V-logic from the main-board 74HCT125 level shifter. Wide +5V/GND for LED current. 2.54mm 1x8 header (C492407); short cable to the angled display. See DESIGN.md Board Partition."
 		(exclude_from_sim no)
 		(at 15.00 95.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "b7141bcf-745d-47dc-b861-915bfcd57f87")
+		(uuid "235ed8eb-a377-4d99-a815-581dad199d4b")
 	)
 	(sheet_instances
 		(path "/"

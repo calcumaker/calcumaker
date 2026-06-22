@@ -46,9 +46,10 @@ keeps it alive between keystrokes.
    │   3× TM1640 driver (1 per row, 2-wire bus)        │
    └───────────────────────▲──────────────────────────┘
                            │  interconnect (1×8 2.54mm header):
-                           │  +3V3, GND, CLK + DIN×3  ("simplifies wiring")
+                           │  +5V, GND, CLK + DIN×3 (5V logic)  ("simplifies wiring")
    MAIN BOARD (calcumaker-main)
    ┌───────────────────────┴──────────────────────────┐
+   │  EN-gated 5V boost ──► display │ 74HCT125 (3V3→5V)│
    │  full-size Cherry MX key matrix (+ per-key diode) │
    │      │ GPIO matrix scan                           │
    │   ┌──┴───────────────────────────────────────┐   │  USB-C ── console /
@@ -60,8 +61,9 @@ keeps it alive between keystrokes.
    │   │   heap: embedded-alloc (TLSF)             │   │
    │   └───────────────────────────────────────────┘   │
    └───────┬───────────────────────────────────────────┘
-           │ 3V3
-   1S Li-ion ── USB-C charger ── load-share ── buck-boost ── 3V3 rail
+           │ VSYS
+   1S Li-ion ── USB-C charger ── load-share ── VSYS ──┬── buck-boost → 3V3 (MCU, ULP)
+                                                      └── 5V boost (EN-gated) → display
 ```
 
 ## Repository Structure
@@ -106,8 +108,8 @@ calcumaker/
 | MCU | STM32U575ZGT6 (2MB/786KB, M33, ULP, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
 | Display | 3 rows × 16 digits: 3× TM1640 + 12× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
 | Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
-| Interconnect | 1×8 2.54mm header (PZ254V-11-08P) main↔display | ✅ LCSC C492407 |
-| Power | 1S Li-ion + USB-C charge + buck-boost | parts TBD (buck-boost sized to display LED current) |
+| Interconnect | 1×8 2.54mm header (PZ254V-11-08P), carries +5V | ✅ LCSC C492407 |
+| Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
 | Math | GNU MP + MPFR (pure-Rust fallback) | path confirmed (FFI to cross-built libs) |
 
 ## Status

@@ -44,8 +44,11 @@ K.register_stdlib("Switch", "SW_Push")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
 K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08")
+K.register_stdlib("74xx", "74HC125")   # level shifter (use value "74HCT125": 3V3->5V)
 # TODO(mcu): register the STM32U575ZGT6 symbol (selected), e.g.:
 #   K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # verify exact symbol (LQFP-144)
+# TODO(boost): register the chosen 5V display boost symbol once picked by
+#   availability (MT3608 etc. likely need a custom symbol in calcumaker.kicad_sym).
 # TODO(keypad): Cherry MX switch symbol — KiCad's Switch:SW_Push works as a
 #   placeholder; the keyswitch-kicad-library 'SW_Cherry_MX_*' is preferred.
 
@@ -85,8 +88,9 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU / clock / programming",
           "DESIGN.md MCU + Pin Budget. Add: VDD/VDDA/VDDIO decoupling, LSE "
           "32.768kHz + 2x load caps, NRST 100nF, BOOT0 10k pulldown, USB FS "
           "PA11/PA12 (ESD on PSU), SWD PA13/PA14 -> Tag-Connect, display bus "
-          "(TM1640 2-wire: shared CLK + 3x DIN, GPIO/bit-bang) -> Interconnect "
-          "sheet, GPIO matrix -> Keypad sheet (one col -> EXTI wake)."))
+          "(TM1640 2-wire: shared CLK + 3x DIN, 3V3 GPIO/bit-bang) -> Display-IF "
+          "sheet (74HCT125 level shifter) + DISP_PWR_EN GPIO -> 5V boost EN, "
+          "GPIO matrix -> Keypad sheet (one col -> EXTI wake)."))
 
 # ============================ PSU sheet (concrete) ===========================
 # Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
@@ -135,9 +139,9 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
           "(size to cell); STAT->D2+R5. C1/C2 in/out.\nLOAD-SHARE: Q1 AO3401A "
           "src=BAT+, drn=VSYS, gate<-VBUS via R4; D1 B5819W VBUS->VSYS.\n"
           "BUCK-BOOST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5. "
-          "CFG strap=3.3V. VOUT=+3V3. *** re-check max current vs display LED "
-          "budget — display draws its 3V3 across the interconnect; may need a "
-          "higher-current part. ***\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."))
+          "CFG strap=3.3V. VOUT=+3V3 -> MCU ONLY (display is on its own EN-gated "
+          "5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / "
+          "low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."))
 
 # ============================ Keypad sheet (TODO counts) =====================
 # Cherry MX matrix, wide HP-16C layout (DESIGN.md). Skeleton shows the pattern;
@@ -160,26 +164,41 @@ KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
           "one col to an EXTI line for wake-from-Stop on keypress. Optional "
           "Kailh hot-swap sockets."))
 
-# ============================ Interconnect sheet (TODO) ======================
-# Board-to-board link to the display board (split design). Carries 3V3 + GND +
-# the display serial bus (SPI: SCK/MOSI/CS/LOAD, + optional BLANK/brightness).
-# Connector part chosen by availability (research) — FFC/FPC or 2.54mm header.
-INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
-    title="Display board interconnect", page="5", big=[
+# ===================== Display power + interface sheet =======================
+# The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).
+# This sheet generates the EN-gated 5V display rail and translates the 4 control
+# lines 3V3->5V, then hands +5V + 5V-logic to the display board via J3.
+#   - U5: 5V boost (EN-gated, off in sleep). Part TBD by availability (research).
+#   - U6: 74HCT125 quad buffer @5V = 3V3->5V level shift for CLK + DIN1/2/3.
+#   - J3: 1x8 2.54mm header to the display board.
+# The 3V3 TPS63900 (PSU sheet) now feeds only the MCU, so it stays as-is.
+DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
+    title="Display 5V rail + level shifter + interconnect", page="5",
+    big=[
+        # 5V boost — placeholder symbol/part; fill once chosen by availability.
+        dict(ref="U5", lib_id="Regulator_Switching:TPS63900", value="5V BOOST (TBD)",
+             fp="Package_SON:WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm"),  # TODO real boost part+symbol
+        dict(ref="U6", lib_id="74xx:74HC125", value="74HCT125",
+             fp="Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"),   # TODO confirm LCSC
         dict(ref="J3", lib_id="Connector_Generic:Conn_01x08", value="TO DISPLAY",
              fp="Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
              lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
     ],
     small=[
-        C("C8", "10uF", C0805),   # local 3V3 bulk at the connector feed to display
+        dict(ref="L2", lib_id="Device:L", value="BOOST L (TBD)",
+             fp="Inductor_SMD:L_Changjiang_FNR3015S"),   # TODO per boost
+        C("C8", "10uF", C0805), C("C9", "10uF", C0805),   # boost in/out
+        C("C10", "10uF", C0805),                          # 5V bulk at J3
+        C("C11", "100nF"),                                # 74HCT125 VCC(5V) decoupling
     ],
-    note=(15, 95, "Calcumaker 16 main — Interconnect to the display board "
-          "(angled, separate PCB). J3 pinout (MUST match calcumaker-display J1): "
-          "1=+3V3, 2=GND, 3=CLK (shared), 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, "
-          "8=spare. (Display = 3x TM1640, 2-wire: one shared CLK + per-row DIN.) "
-          "Keep +3V3/GND pins wide (display LED current). 2.54mm 1x8 header "
-          "(C492407 straight / C492416 right-angle); short cable to the angled "
-          "display. See DESIGN.md Board Partition."))
+    note=(15, 110, "Calcumaker 16 main — Display 5V rail + interface. "
+          "5V BOOST U5 (TBD, EN-gated): VIN<-VSYS (3.0-4.7V), VOUT=+5V, L2 + "
+          "Cin C8/Cout C9 (10uF); EN<-MCU GPIO (display-power, low in sleep). "
+          "LEVEL SHIFT U6 74HCT125 @ +5V (VIH=2V -> accepts 3V3): IN<-MCU CLK,"
+          "DIN1,DIN2,DIN3 (3V3); OUT-> J3 at 5V logic; C11 100nF. Tie unused "
+          "/OE low. J3 to display (MUST match calcumaker-display J1): 1=+5V, "
+          "2=GND, 3=CLK, 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Wide +5V/GND "
+          "(LED current). C10 5V bulk. See DESIGN.md Power Tree / Board Partition."))
 
 # ============================ generate =======================================
 K.build(
@@ -188,5 +207,5 @@ K.build(
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
                          "Main board: MCU + PSU + keypad + display interconnect (DRAFT)"]),
-    sheets=[MCU, PSU, KEYPAD, INTERCONNECT],
+    sheets=[MCU, PSU, KEYPAD, DISPLAY_IF],
 )

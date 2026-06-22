@@ -19,13 +19,16 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Charger | MCP73831T-2ACI/OT | C424093 | SOT-23-5 | ✅ (PROG sized to cell) |
 | Load-share FET | AO3401A (P-MOS) | C15127 | SOT-23 | ✅ |
 | Load-share diode | B5819W (Schottky) | C8598 | SOD-123 | ✅ |
-| Buck-boost | TPS63900DSKR | C1518762 | WSON-10 | ⚠ re-size to display LED load |
-| Inductor | FNR3015S2R2MT 2.2µH | C167747 | 3015 | ✅ (per buck-boost) |
+| Buck-boost 3V3 (MCU) | TPS63900DSKR | C1518762 | WSON-10 | ✅ MCU-only now (light load); ULP low-Iq |
+| 3V3 inductor | FNR3015S2R2MT 2.2µH | C167747 | 3015 | ✅ (per TPS63900) |
+| 5V boost (display) | EN-gated boost, ~0.6–0.8A | TBD | TBD | researching (MT3608/TPS6102x…) |
+| 5V boost inductor | per boost | TBD | TBD | per boost choice |
+| Level shifter | 74HCT125 (quad, VCC=5V, 3V3→5V) | TBD | SOIC-14 | researching LCSC# |
 | Battery conn | JST S2B-PH-K-S | C173752 | PH 2.0 | ✅ |
 | RTC xtal | 32.768 kHz | — | — | TBD (e.g. Epson) |
 | Keyswitches | Cherry MX (full size) | — | MX PCB / hot-swap | TBD count + layout |
 | Key diodes | 1N4148W ×N | C81598 | SOD-123 | ✅ part (qty per matrix) |
-| Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J3 → display) |
+| Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J3 → display; carries **+5V**) |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
 
 ## calcumaker-display (7-seg stack + drivers + interconnect)

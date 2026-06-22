@@ -235,25 +235,32 @@ feature (default until GMP/MPFR FFI is wired):
 ## Power Tree
 
 ```
-USB-C (J?) ──VBUS──┬── ESD (USBLC6) ──► D+/D- ──► STM32 USB FS
-                   │
-                   ├── Li-ion charger (e.g. MCP73831 / BQ-class) ──► BAT+
-                   │       (charge current sized for the chosen cell)
-                   │
-   BAT+ ──┬── load-share (P-FET + Schottky) ──► VSYS ──► buck-boost ──► +3V3
-          │                                       (TPS63xxx-class, ULP)
-   1S Li-ion (JST-PH)                              │
-                                                   ├──► MCU 3V3
-                                                   └──► display 3V3 (LED current
-                                                        is the dominant load —
-                                                        budget separately)
+USB-C ──VBUS──┬── ESD (USBLC6) ──► D+/D- ──► STM32 USB FS
+              │
+              ├── Li-ion charger (MCP73831) ──► BAT+   (charge I sized to cell)
+              │
+ BAT+ ──┬── load-share (P-FET + Schottky) ──► VSYS ──┬── buck-boost ──► +3V3 ──► MCU
+        │                                            │   (TPS63900, ULP, low-Iq,
+ 1S Li-ion (JST-PH)                                  │    always on — light load)
+                                                     │
+                                                     └── 5V boost (EN-gated) ──► +5V
+                                                         (TBD part)         │
+                                                              ▲ DISP_PWR_EN │ ──► display
+                                                                (MCU GPIO,  │     (TM1640
+                                                                 off=sleep) │      + LEDs)
+   MCU 3V3 ─► 74HCT125 (VCC=+5V) ─► CLK/DIN1/2/3 at 5V logic ─────────────► display
 ```
 
-- Battery feeds VSYS only when USB is absent (load-share). USB present → system
-  runs from USB and the charger tops up the cell.
-- **Display current budget** must be computed once the digit count + drive
-  current are chosen — it dominates the active power and the charger/buck-boost
-  sizing. (Open Question.)
+- **Two rails.** The MCU runs on the ultra-low-Iq 3V3 buck-boost (always on, so
+  sleep current stays tiny). The display's LED load lives on a **separate 5V
+  boost gated by `DISP_PWR_EN`** — fully off in sleep. This keeps the low-power
+  story intact while giving the TM1640 its 5V (and the LEDs more Vf headroom).
+- The 4 control lines (CLK + DIN1/2/3) are translated 3V3→5V by a **74HCT125**
+  (VIH=2V at VCC=5V) so the 3.3V MCU drives the 5V TM1640 inputs in spec.
+- Battery feeds VSYS only when USB is absent (load-share); USB present → run from
+  USB, charger tops up the cell. VSYS (3.0–4.7V) is always < 5V → a boost works.
+- **Display current budget** (3× TM1640 × 16 CC digits) sizes the **5V boost**,
+  not the 3V3 rail. Boost part + level shifter chosen by availability (research).
 
 ---
 
@@ -263,8 +270,9 @@ MCU is **STM32U575ZGT6** (LQFP-144). Fill a pin table (package pin → function 
 AF) here once the panel layout fixes the matrix dimensions. Expected peripheral
 use (all on the main board):
 
-- **SPI** (or I²C) → display driver chain, **out via the interconnect** to the
-  display board (MAX7219 cascade / HT16K33 / TM-series).
+- **Display bus** → 4 GPIOs: TM1640 2-wire (shared CLK + DIN1/DIN2/DIN3),
+  bit-banged at 3V3 → 74HCT125 → 5V → interconnect. Plus **DISP_PWR_EN** GPIO →
+  5V-boost EN (display off in sleep).
 - **GPIO matrix** → Cherry MX rows × cols (+ EXTI wake on a column for
   wake-from-Stop on keypress).
 - **USB FS** (PA11/PA12) → CDC console / provisioning.
@@ -286,9 +294,9 @@ then wired in eeschema.
 |-------|------|----------|
 | Root | `calcumaker-main.kicad_sch` | sheet symbols + title block |
 | MCU | `mcu.kicad_sch` | STM32U575 + decoupling + LSE + SWD + USB + BOOT0 |
-| PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + buck-boost + battery conn |
+| PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | Keypad | `keypad.kicad_sch` | Cherry MX matrix + per-key diodes + wake line |
-| Interconnect | `interconnect.kicad_sch` | J3 → display board (+3V3/GND + SPI bus) |
+| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost + 74HCT125 level shifter + J3 → display |
 
 **`calcumaker-display`:**
 
@@ -327,12 +335,11 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    (`lib/symbols/calcumaker.kicad_sym`); display board generates + checks OK.
    Remaining: confirm THT-assembly route (JLCPCB THT add-on vs hand-solder), and
    verify the FJ5161AH pinout vs CC56-12 + the TM1640 SOP-28 footprint at layout.
-2. **Buck-boost upsizing + display rail voltage.** The TM1640's VDD is **5 V
-   nominal** (VIH = 0.7·VDD = 3.5 V > the STM32's 3.3 V). Either run the display
-   at **3.3 V** (out of TM1640 spec but common; dimmer; needs low-Vf red/green/
-   yellow digits — single rail, no level-shift) or add a **5 V boost + level
-   shifters** on CLK/DIN. Then resize the buck-boost for the display LED current
-   (TPS63900's ~hundreds-of-mA ceiling is likely too low). **← next task.**
+2. ✅ **Display rail = 5 V + level shifter** (decided). Architecture: keep the
+   ULP TPS63900 at 3V3 for the MCU; add an **EN-gated 5 V boost** for the display
+   + a **74HCT125** to translate CLK/DIN1/2/3 (3V3→5V). Remaining: pick the
+   **5 V boost** (+ inductor) and confirm the **74HCT125** by LCSC availability
+   (research running), and size the boost to the display LED budget.
 3. **Numeric backend for first bring-up.** Start on `numeric-pure` (always
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
@@ -355,12 +362,14 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | MCU (main) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×12 | **FJ5161AH** 0.56" 4-digit CC (**THT**) | ✅ LCSC C8093, ~$0.19 — 4/row |
-| Interconnect | **PZ254V-11-08P** 1×8 2.54mm header | ✅ LCSC C492407; main J3 ↔ display J1 |
+| Interconnect | **PZ254V-11-08P** 1×8 2.54mm header (carries +5V) | ✅ LCSC C492407; main J3 ↔ display J1 |
 | Keyswitches (main) | Cherry MX (full size) + optional Kailh hot-swap sockets | TBD count |
 | Key diodes (main) | 1N4148W (SOD-123) ×N | per key |
 | USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
 | Charger (main) | MCP73831 / BQ-class | sized to cell |
-| Buck-boost (main) | TPS63xxx-class (ULP) | sized to display LED load |
+| Buck-boost 3V3 (main) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load) |
+| 5V boost (main) | EN-gated boost for display rail (+ inductor) | TBD by availability (research) |
+| Level shifter (main) | **74HCT125** quad buffer @5V (CLK+DIN×3, 3V3→5V) | TBD LCSC (research) |
 | Battery (main) | 1S Li-ion (JST-PH) | capacity TBD |
 | RTC crystal (main) | 32.768 kHz | LSE |
 | Programming (main) | SWD Tag-Connect TC2030-NL | as sibling repos |

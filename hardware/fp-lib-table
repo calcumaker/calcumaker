@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "calcumaker")(type "KiCad")(uri "${KIPRJMOD}/lib/footprints.pretty")(options "")(descr "calcumaker project-specific footprints"))
+)

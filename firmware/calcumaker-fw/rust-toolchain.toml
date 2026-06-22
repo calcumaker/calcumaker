@@ -1,0 +1,9 @@
+[toolchain]
+channel = "stable"
+# Both candidate targets installed; the active one is set in .cargo/config.toml
+# (depends on the chosen MCU core — see ../../DESIGN.md).
+targets = [
+  "thumbv8m.main-none-eabihf",   # Cortex-M33: STM32U5 / STM32L5
+  "thumbv7em-none-eabihf",       # Cortex-M4F: STM32L4+
+]
+components = ["rust-src", "llvm-tools"]

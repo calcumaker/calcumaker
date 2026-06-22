@@ -19,7 +19,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "bff2c2c9-e03f-4398-9f4c-6cb350699cef")
+		(uuid "5655df7c-81b1-4acd-8ecd-e82f9f427e94")
 		(property "Sheetname" "Display"
 			(at 40.64 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -35,7 +35,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "f2c009b6-dba2-43d5-a6f1-690da8662fd2")
+		(uuid "c4c3c015-b6ba-4dbd-a6a4-490d09c995d8")
 		(property "Sheetname" "Interconnect"
 			(at 96.52 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))

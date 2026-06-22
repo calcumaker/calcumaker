@@ -48,10 +48,11 @@ K.register_lib("calcumaker",
                "TM1640")
 
 # ---- footprint shorthands ---------------------------------------------------
+# Size policy: 0402 decoupling; 0603 for bulk MLCCs (10uF on the 5V display rail).
 C0402 = "Capacitor_SMD:C_0402_1005Metric"
-C0805 = "Capacitor_SMD:C_0805_2012Metric"
+C0603 = "Capacitor_SMD:C_0603_1608Metric"
 R0402 = "Resistor_SMD:R_0402_1005Metric"
-CLCSC = {"100nF": "C1525", "10uF": "C15850"}
+CLCSC = {"100nF": "C1525"}   # 10uF (5V/0603) LCSC# in hardware/PARTS.md
 
 
 def R(ref, val):
@@ -88,7 +89,7 @@ DISPLAY = dict(name="Display", file="display.kicad_sch",
     small=[
         # Per TM1640: 100nF decoupling; shared 3V3 bulk.
         C("C1", "100nF"), C("C2", "100nF"), C("C3", "100nF"),  # U1/U2/U3 bypass
-        C("C4", "10uF", C0805),                                 # 3V3 bulk
+        C("C4", "10uF", C0603),                                 # 3V3 bulk
     ],
     note=(15, 120, "Calcumaker 16 display — 7-seg RPN stack. 3 rows x 16 digits "
           "(top row U3/DS9-12 optional => 2- or 3-row build). PER ROW: 1x TM1640 "
@@ -112,7 +113,7 @@ INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
              lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
     ],
     small=[
-        C("C5", "10uF", C0805),   # local 5V bulk at the connector
+        C("C5", "10uF", C0603),   # local 5V bulk at the connector
     ],
     note=(15, 95, "Calcumaker 16 display — Interconnect to the main board. J1 "
           "pinout (MUST match calcumaker-main J3): 1=+5V, 2=GND, 3=CLK (shared), "

@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "f2c009b6-dba2-43d5-a6f1-690da8662fd2")
+	(uuid "c4c3c015-b6ba-4dbd-a6a4-490d09c995d8")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Display — Main board interconnect")
@@ -507,7 +507,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7b6954a6-614f-4507-aead-9a36b5ac7168")
+		(uuid "c2bcdbed-9f3a-4858-a236-95533d9ed0ca")
 		(property "Reference" "J1"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -536,17 +536,17 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "d9293448-e71b-4374-a98d-7f38f52b9d74"))
-		(pin "2" (uuid "9b114bed-b43d-4586-bdd3-11a721584c93"))
-		(pin "3" (uuid "0f30863b-1593-4ff5-9bdb-ea58f43bdd64"))
-		(pin "4" (uuid "fd553a7d-7a01-4c62-b89c-ebda623cd17e"))
-		(pin "5" (uuid "ea424450-fddc-402b-8c71-e9b0fb9236f8"))
-		(pin "6" (uuid "b9cbf2e5-2d91-49c7-9a1d-7ae421ea9d34"))
-		(pin "7" (uuid "4fb44bbf-c348-430e-9f78-5473ef116365"))
-		(pin "8" (uuid "fbd50fc8-8946-4118-b0d3-c87b0be875c5"))
+		(pin "1" (uuid "7fe231d2-333d-474d-9489-2ec46b1c8d7b"))
+		(pin "2" (uuid "3de9cf07-ae87-491b-9453-84f2c1a7685c"))
+		(pin "3" (uuid "c3d1fd20-2c00-4b95-a5b5-45406fe80217"))
+		(pin "4" (uuid "7877d863-3a56-4657-aa65-3f5727e4f623"))
+		(pin "5" (uuid "3cb9304e-64b0-44c4-9549-0b367ad73710"))
+		(pin "6" (uuid "6b009ced-24db-4fb8-86fb-6d09d269bd05"))
+		(pin "7" (uuid "114d88ea-1ecc-4817-bf02-c69b2471db5b"))
+		(pin "8" (uuid "dd6e4cb0-c7d0-4bcb-9246-b1578205f3e4"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/f2c009b6-dba2-43d5-a6f1-690da8662fd2"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/c4c3c015-b6ba-4dbd-a6a4-490d09c995d8"
 					(reference "J1")
 					(unit 1)
 				)
@@ -561,7 +561,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e1e857fb-b078-4c43-abcb-a6e8bc17c613")
+		(uuid "84ea4667-9ece-4ba2-9474-6703d2dcee73")
 		(property "Reference" "C5"
 			(at 34.2900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -570,7 +570,7 @@
 			(at 34.2900 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 30.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -578,15 +578,11 @@
 			(at 30.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C15850"
-			(at 30.4800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "b7ae96d9-6f88-46b4-b0a5-98cf8eee13c1"))
-		(pin "2" (uuid "26ac67eb-78df-4c2d-ae18-08319dafb119"))
+		(pin "1" (uuid "d1d3204d-7452-4790-be9f-9fabf41a7842"))
+		(pin "2" (uuid "1ef6f18b-f3e6-4772-802f-4fd0af7935f7"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/f2c009b6-dba2-43d5-a6f1-690da8662fd2"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/c4c3c015-b6ba-4dbd-a6a4-490d09c995d8"
 					(reference "C5")
 					(unit 1)
 				)
@@ -597,7 +593,7 @@
 		(exclude_from_sim no)
 		(at 15.00 95.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "235ed8eb-a377-4d99-a815-581dad199d4b")
+		(uuid "508e114d-7ba8-4ea4-92e3-aa450b77d626")
 	)
 	(sheet_instances
 		(path "/"

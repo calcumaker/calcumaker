@@ -19,11 +19,12 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Charger | MCP73831T-2ACI/OT | C424093 | SOT-23-5 | ✅ (PROG sized to cell) |
 | Load-share FET | AO3401A (P-MOS) | C15127 | SOT-23 | ✅ |
 | Load-share diode | B5819W (Schottky) | C8598 | SOD-123 | ✅ |
-| Buck-boost 3V3 (MCU) | TPS63900DSKR | C1518762 | WSON-10 | ✅ MCU-only now (light load); ULP low-Iq |
-| 3V3 inductor | FNR3015S2R2MT 2.2µH | C167747 | 3015 | ✅ (per TPS63900) |
-| 5V boost (display) | EN-gated boost, ~0.6–0.8A | TBD | TBD | researching (MT3608/TPS6102x…) |
-| 5V boost inductor | per boost | TBD | TBD | per boost choice |
-| Level shifter | 74HCT125 (quad, VCC=5V, 3V3→5V) | TBD | SOIC-14 | researching LCSC# |
+| Buck-boost 3V3 (MCU) | TPS63900DSKR | C1518762 | WSON-10 | ✅ MCU-only (light load); ULP low-Iq |
+| 3V3 inductor | 2.2µH | TBD | **0805/2016** | smallest reasonable; verify Isat for TPS63900 |
+| 5V boost (display) | **TPS61022RWUR** (EN-gated, adj.) | **C915088** | VQFN-7 2×2 | ✅ ~$0.32; FB divider R6 732k/R7 100k → 5V |
+| 5V boost inductor | **FTC201610S1R0MBCA** 1µH | **C5832342** | 2.0×1.6mm | ✅ ~$0.04 (smallest reasonable for ~2A) |
+| 5V boost caps | 10µF in + 2×22µF out (16V) | (PARTS) | **0603** | smallest at voltage |
+| Level shifter | **SN74HCT125DR** (quad, VCC=5V, 3V3→5V) | **C352957** | SOIC-14 | ✅ ~$0.20; KiCad symbol = `74AHCT125` |
 | Battery conn | JST S2B-PH-K-S | C173752 | PH 2.0 | ✅ |
 | RTC xtal | 32.768 kHz | — | — | TBD (e.g. Epson) |
 | Keyswitches | Cherry MX (full size) | — | MX PCB / hot-swap | TBD count + layout |
@@ -63,3 +64,19 @@ selection (would likely mean discrete SMD single-digit displays — more parts).
   SCLK=8, SEG1–8=9–16, VDD=17, GRID1–11=18–28), registered via `register_lib` in
   `scripts/calcumaker-display.schgen.py`. ✅ Generates + passes the structure
   check. *Confirm the SOIC-28W footprint vs the TM1640 SOP-28 package drawing.*
+- **Level shifter (SN74HCT125):** use the **stock** `74xx:74AHCT125` symbol
+  (pin-identical quad buffer; value = `74HCT125`) + `Package_SO:SOIC-14_3.9x8.7mm`.
+  ✅ No custom symbol.
+- **5V boost (TPS61022):** footprint is stock
+  (`Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm`) but the **symbol is not**
+  — author it into `lib/symbols/calcumaker.kicad_sym` (TODO, batch with the MCU
+  symbol when the main board is generated).
+- **MCU (STM32U575ZGT6):** author/confirm its symbol when generating the main
+  board (TODO).
+
+## Passive size policy
+
+Per project policy: **0402** for resistors + decoupling/small caps; **0603** for
+bulk MLCCs (10/22µF — true-0402 10µF is 6.3V-only, too low for the 5V rail).
+Magnetics: **smallest reasonable** from the JLCPCB catalog (boost L = 2.0×1.6mm
+1µH; the 3V3 buck-boost L downsized to 0805/2016 — verify Isat).

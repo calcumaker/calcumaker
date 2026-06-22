@@ -335,11 +335,12 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    (`lib/symbols/calcumaker.kicad_sym`); display board generates + checks OK.
    Remaining: confirm THT-assembly route (JLCPCB THT add-on vs hand-solder), and
    verify the FJ5161AH pinout vs CC56-12 + the TM1640 SOP-28 footprint at layout.
-2. ✅ **Display rail = 5 V + level shifter** (decided). Architecture: keep the
-   ULP TPS63900 at 3V3 for the MCU; add an **EN-gated 5 V boost** for the display
-   + a **74HCT125** to translate CLK/DIN1/2/3 (3V3→5V). Remaining: pick the
-   **5 V boost** (+ inductor) and confirm the **74HCT125** by LCSC availability
-   (research running), and size the boost to the display LED budget.
+2. ✅ **Display rail = 5 V + level shifter** (decided + parts chosen). EN-gated
+   **TPS61022** boost (C915088) + 1µH FTC201610 (C5832342) + 0603 caps; FB
+   divider R6 732k/R7 100k → 5V. **SN74HCT125** level shifter (C352957, KiCad
+   symbol `74AHCT125`). Remaining: author the **TPS61022 custom symbol** (batch
+   with the MCU symbol when generating the main board); verify boost Isat/FB and
+   the downsized 3V3 inductor Isat at layout.
 3. **Numeric backend for first bring-up.** Start on `numeric-pure` (always
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
@@ -367,9 +368,9 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | Key diodes (main) | 1N4148W (SOD-123) ×N | per key |
 | USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
 | Charger (main) | MCP73831 / BQ-class | sized to cell |
-| Buck-boost 3V3 (main) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load) |
-| 5V boost (main) | EN-gated boost for display rail (+ inductor) | TBD by availability (research) |
-| Level shifter (main) | **74HCT125** quad buffer @5V (CLK+DIN×3, 3V3→5V) | TBD LCSC (research) |
+| Buck-boost 3V3 (main) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load); L→0805 |
+| 5V boost (main) | **TPS61022RWUR** (EN-gated) + 1µH (FTC201610) + 0603 caps | ✅ LCSC C915088 / C5832342 |
+| Level shifter (main) | **SN74HCT125DR** quad buffer @5V (CLK+DIN×3) | ✅ LCSC C352957 (symbol `74AHCT125`) |
 | Battery (main) | 1S Li-ion (JST-PH) | capacity TBD |
 | RTC crystal (main) | 32.768 kHz | LSE |
 | Programming (main) | SWD Tag-Connect TC2030-NL | as sibling repos |

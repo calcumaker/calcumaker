@@ -27,8 +27,8 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Level shifter | **SN74HCT125DR** (quad, VCC=5V, 3V3→5V) | **C352957** | SOIC-14 | ✅ ~$0.20; KiCad symbol = `74AHCT125` |
 | Battery conn | JST S2B-PH-K-S | C173752 | PH 2.0 | ✅ |
 | RTC xtal | 32.768 kHz | — | — | TBD (e.g. Epson) |
-| Keyswitches | Cherry MX (full size) | — | MX PCB / hot-swap | TBD count + layout |
-| Key diodes | 1N4148W ×N | C81598 | SOD-123 | ✅ part (qty per matrix) |
+| Keyswitches ×50 | Cherry MX (full size) | — | SW_Cherry_MX_1.00u_PCB | 5×10 matrix; Kailh hot-swap optional |
+| Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D11–D60 |
 | Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J3 → display; carries **+5V**) |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
 

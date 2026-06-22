@@ -146,26 +146,29 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
           "5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / "
           "low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."))
 
-# ============================ Keypad sheet (TODO counts) =====================
-# Cherry MX matrix, wide HP-16C layout (DESIGN.md). Skeleton shows the pattern;
-# replicate SW+diode per key across an R x C matrix (~40-45 keys).
+# ============================ Keypad sheet ===================================
+# Wide HP-16C-style layout: 5 rows x 10 cols = 50 full-size Cherry MX keys, with
+# f/g shifts (3 functions per key). See DESIGN.md "Keypad" for the keymap.
+# Matrix: ROWr (GPIO out) -> SW -> 1N4148W (anode@SW, cathode@COLc) -> COLc
+# (GPIO in, internal pull-up). 50 keys => SW1..SW50 + D11..D60. Key index =
+# (r-1)*10 + c. (Diodes start at D11 to avoid the PSU's D1/D2.)
+MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap variant optional
+KEY_SW = [dict(ref="SW%d" % i, lib_id="Switch:SW_Push", value="MX", fp=MX_FP)
+          for i in range(1, 51)]
+KEY_D = [dict(ref="D%d" % (10 + i), lib_id="Device:D", value="1N4148W", fp=SOD123,
+              lcsc="C81598", mpn="1N4148W", mfr="onsemi") for i in range(1, 51)]
 KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
-    title="Cherry MX key matrix", page="4", big=[],
-    small=[
-        # Per key: SW_Push (placeholder for Cherry MX) + series diode 1N4148W.
-        dict(ref="SW1", lib_id="Switch:SW_Push", value="MX",
-             fp="Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"),   # TODO verify fp lib
-        dict(ref="D3", lib_id="Device:D", value="1N4148W", fp=SOD123,
-             lcsc="C81598", mpn="1N4148W", mfr="onsemi"),
-        # ... repeat SWn + Dn for the full matrix (generate in a loop once the
-        # key map + matrix dimensions are fixed).
-    ],
-    note=(15, 120, "Calcumaker 16 main — Keypad (Cherry MX matrix, wide HP-16C "
-          "layout). PENDING key map + dimensions (DESIGN.md). ~40-45 keys on an "
-          "R x C matrix (e.g. 6x8); ONE 1N4148W per key (cathode->col) for "
-          "n-key rollover. Rows driven by GPIO, cols read with pull-ups; route "
-          "one col to an EXTI line for wake-from-Stop on keypress. Optional "
-          "Kailh hot-swap sockets."))
+    title="Cherry MX key matrix (5x10, 50 keys)", page="4",
+    big=KEY_SW, small=KEY_D,
+    note=(15, 130, "Calcumaker 16 main — Keypad: 50 Cherry MX keys in a 5x10 "
+          "scanned matrix (wide HP-16C layout + f/g shifts; keymap in DESIGN.md). "
+          "PLACED, not wired. WIRING: ROW1..ROW5 = GPIO outputs; COL1..COL10 = "
+          "GPIO inputs with INTERNAL pull-ups (no external R; STM32U5 keeps "
+          "pull-ups in Stop). Each key SWn in series with Dn (anode at switch, "
+          "cathode to its COL) for n-key rollover. Key (row r, col c): SW#=(r-1)*"
+          "10+c, D#=10+(r-1)*10+c. Scan: drive one ROW low, read COLs. WAKE: "
+          "drive all ROWs low + EXTI on one COL (or all) -> any keypress wakes "
+          "from Stop. Optional Kailh hot-swap sockets (same footprint family)."))
 
 # ===================== Display power + interface sheet =======================
 # The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).

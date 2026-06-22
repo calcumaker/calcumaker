@@ -1,0 +1,27 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "9cd73972-c849-4044-abc4-22cc298e107e")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Main — MCU / clock / programming")
+		(date "2026-06-21")
+		(rev "0.1")
+		(company "calcumaker authors")
+	)
+	(lib_symbols
+	)
+	(text "Calcumaker 16 main — MCU (STM32U575ZGT6, LQFP-144). See DESIGN.md MCU + Pin Budget. Add: VDD/VDDA/VDDIO decoupling, LSE 32.768kHz + 2x load caps, NRST 100nF, BOOT0 10k pulldown, USB FS PA11/PA12 (ESD on PSU), SWD PA13/PA14 -> Tag-Connect, display bus (TM1640 2-wire: shared CLK + 3x DIN, 3V3 GPIO/bit-bang) -> Display-IF sheet (74HCT125 level shifter) + DISP_PWR_EN GPIO -> 5V boost EN, GPIO matrix -> Keypad sheet (one col -> EXTI wake)."
+		(exclude_from_sim no)
+		(at 15.00 150.00 0)
+		(effects (font (size 1.5 1.5)) (justify left top))
+		(uuid "b74ddf03-89d7-4643-b719-270a8522705e")
+	)
+	(sheet_instances
+		(path "/"
+			(page "2")
+		)
+	)
+	(embedded_fonts no)
+)

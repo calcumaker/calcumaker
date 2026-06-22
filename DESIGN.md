@@ -150,15 +150,39 @@ passes the structure check** (placed, not wired). See `hardware/PARTS.md`.
 
 ### Keypad: full-size Cherry MX, wide HP-16C-style layout
 
-A wide landscape layout in the HP-16C / Voyager tradition (with **f / g** shift
-keys to reach the programmer + scientific function set). Full-size Cherry MX
-switches on a scanned matrix; **one diode per key** for n-key rollover.
+**5 rows × 10 columns = 50 full-size Cherry MX keys** (≈190 × 95 mm — authentically
+wide), in the HP-16C / Voyager tradition with **f (gold) / g (blue)** shifts
+(3 functions per key). Power is a **slide switch** (not in the matrix); any
+keypress wakes the MCU from Stop, so no dedicated ON key is needed.
 
-- ~**40–45 keys** → a matrix on GPIO (e.g. 6 rows × 8 cols = 48, or 5 × 9 = 45).
-- Optional **Kailh hot-swap sockets** for switch choice without soldering.
-- The exact key map (digit/nibble keys, ENTER, arithmetic, AND/OR/XOR/NOT/
-  shifts/rotates, base select, word-size select, stack ops, precision) is
-  finalized with the front-panel layout.
+**Base (unshifted) faces:**
+
+```
+ SIN   COS   TAN   LN    √x    yˣ    1/x   EEX   ⌫     CLx
+  A     B     C     D     E     F     7     8     9     ÷
+ AND   OR    XOR   NOT   SL    SR    4     5     6     ×
+ HEX   DEC   OCT   BIN   WSIZE x⇄y   1     2     3     −
+  f     g    STO   RCL   R↓    ENTER 0     .     CHS   +
+```
+
+- Right 4 columns = numeric keypad + operators; **A–F** sit above 7-8-9 as the
+  hex extension.
+- **f (gold)** → inverse / advanced: ASIN/ACOS/ATAN, eˣ, x², **PREC** (set
+  arbitrary-precision working digits), π, LASTx; over A–F → bit set/clear/test,
+  MASKL/MASKR, bit-count; over AND…SR → RL/RR/ASR/RMD; over HEX/DEC/OCT/BIN →
+  FLOAT; WSIZE → sign mode (unsigned / 1's / 2's); R↓ → R↑.
+- **g (blue)** → secondary: SINH/COSH/TANH, LOG, 10ˣ, n!, %, RND, OFF.
+- The full keymap is the source of truth in
+  `firmware/calcumaker-fw/src/keypad.rs` (`BASE` / `LAYER_F` / `LAYER_G`) — keep
+  the two in sync. Shift assignments marked `Nop` are open for refinement.
+
+**Electrical:** 5-row × 10-col scanned matrix. ROWr = GPIO outputs, COLc = GPIO
+inputs on **internal pull-ups** (no external resistors — lower idle current;
+STM32U5 retains pull-ups in Stop). **One 1N4148W per key** (anode at switch,
+cathode to its column) for n-key rollover. One column also drives an EXTI line:
+in Stop all rows are held low, so any keypress pulls a column → wake. 15 GPIO
+(5 rows + 10 cols). Refs: `SW1..SW50` (key `(r,c)` = `SW(r-1)*10+c`), diodes
+`D11..D60`. Optional **Kailh hot-swap sockets** (same footprint family).
 
 ### Power: 1S Li-ion + USB-C charge + buck-boost
 
@@ -295,7 +319,7 @@ then wired in eeschema.
 | Root | `calcumaker-main.kicad_sch` | sheet symbols + title block |
 | MCU | `mcu.kicad_sch` | STM32U575 + decoupling + LSE + SWD + USB + BOOT0 |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
-| Keypad | `keypad.kicad_sch` | Cherry MX matrix + per-key diodes + wake line |
+| Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (50 SW + 50 diodes) + wake line |
 | DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost + 74HCT125 level shifter + J3 → display |
 
 **`calcumaker-display`:**
@@ -345,8 +369,11 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
    outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
    once the cross-build is proven — both behind the same `Number` API.)
-4. **Keypad map + count.** Final key set and matrix dimensions for the wide
-   HP-16C-style layout; f/g shift scheme; Kailh hot-swap or soldered.
+4. ✅ **Keypad designed** — 5×10 (50 keys), f/g shift scheme, internal-pull-up
+   matrix + EXTI wake (see Keypad section; keymap in `keypad.rs`). Remaining:
+   refine the `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; then
+   author the **MCU sheet** (stock `MCU_ST_STM32U5:STM32U575ZGTx` symbol) +
+   **TPS61022** custom symbol and **generate the full main board**.
 5. **Battery cell + capacity.** Drives charger current (PROG resistor) and
    runtime target.
 
@@ -364,8 +391,8 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×12 | **FJ5161AH** 0.56" 4-digit CC (**THT**) | ✅ LCSC C8093, ~$0.19 — 4/row |
 | Interconnect | **PZ254V-11-08P** 1×8 2.54mm header (carries +5V) | ✅ LCSC C492407; main J3 ↔ display J1 |
-| Keyswitches (main) | Cherry MX (full size) + optional Kailh hot-swap sockets | TBD count |
-| Key diodes (main) | 1N4148W (SOD-123) ×N | per key |
+| Keyswitches (main) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
+| Key diodes (main) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
 | USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
 | Charger (main) | MCP73831 / BQ-class | sized to cell |
 | Buck-boost 3V3 (main) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load); L→0805 |

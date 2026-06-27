@@ -5,10 +5,10 @@
 //! programmer model, masked to the word size); the scientific functions promote
 //! to MPFR reals. Input is token-at-a-time so it drives both the REPL and tests.
 
-use core::cmp::Ordering;
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 
-use rug::float::Constant;
-use rug::{Float, Integer};
+use gmp_mpfr_nostd::{Float, Integer};
 
 use crate::value::Value;
 
@@ -109,9 +109,9 @@ impl Calc {
 
     fn try_parse_number(&self, t: &str) -> Option<Value> {
         if self.radix == Radix::Dec && (t.contains('.') || t.contains('e') || t.contains('E')) {
-            return Float::parse(t).ok().map(|p| Value::Real(Float::with_val(self.prec, p)));
+            return Float::from_str(self.prec, t).map(Value::Real);
         }
-        Integer::from_str_radix(t, self.radix.base()).ok().map(Value::Int)
+        Integer::from_str_radix(t, self.radix.base()).map(Value::Int)
     }
 
     // ---- dispatch ---------------------------------------------------------
@@ -137,7 +137,7 @@ impl Calc {
                 x * y
             }),
             "pi" => {
-                self.stack.push(Value::Real(Float::with_val(self.prec, Constant::Pi)));
+                self.stack.push(Value::Real(Float::pi(self.prec)));
                 Ok(())
             }
             "and" => self.bitwise('&'),
@@ -168,7 +168,7 @@ impl Calc {
     fn mask(&self, r: Integer) -> Integer {
         match self.word_bits {
             Some(n) => {
-                let m = (Integer::from(1) << n) - Integer::from(1);
+                let m = (Integer::from_i64(1) << n) - Integer::from_i64(1);
                 r & m
             }
             None => r,
@@ -185,7 +185,7 @@ impl Calc {
                     '-' => x - y,
                     '*' => x * y,
                     '/' => {
-                        if y.cmp0() == Ordering::Equal {
+                        if y.is_zero() {
                             return Err(CalcError::DivZero);
                         }
                         x / y
@@ -260,7 +260,7 @@ impl Calc {
         match self.pop()? {
             Value::Int(x) => {
                 let n = x.to_u32().ok_or(CalcError::TypeError("factorial needs a small non-negative integer"))?;
-                self.stack.push(Value::Int(Integer::from(Integer::factorial(n))));
+                self.stack.push(Value::Int(Integer::factorial(n)));
                 Ok(())
             }
             _ => Err(CalcError::TypeError("factorial needs an integer")),

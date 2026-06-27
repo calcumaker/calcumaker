@@ -23,8 +23,9 @@ keeps it alive between keystrokes.
   - **GNU MP (libgmp)** — unbounded integers (huge hex/decimal, exact bitwise).
   - **MPFR (libmpfr)** — correctly-rounded floating point + transcendentals
     (sin/cos/exp/ln/…) at user-selectable precision.
-  - Packaged as the **`calcumaker-core`** library — host-testable and runnable
-    today (`cargo test`, `cargo run --example repl`) via `rug`.
+  - Packaged as the **`calcumaker-core`** library (`no_std`) over our own
+    **`gmp-mpfr-nostd`** FFI bindings — host-testable and runnable today
+    (`cargo test`, `cargo run --example repl`).
 - **Visible RPN stack:** multi-row 7-segment display (2–3 rows) shows the top of
   the stack at once.
 - **Split design:** the display lives on its **own PCB** that angles upward;
@@ -87,7 +88,8 @@ calcumaker/
 │   ├── sym-lib-table
 │   └── fp-lib-table
 ├── firmware/
-│   ├── calcumaker-core/          # the ENGINE: RPN + GMP/MPFR (rug). Host-tested lib.
+│   ├── gmp-mpfr-nostd/           # own no_std FFI to GMP/MPFR ("rug, but no_std")
+│   ├── calcumaker-core/          # the ENGINE: RPN + GMP/MPFR. no_std, host-tested lib.
 │   │   ├── src/                  #   lib, calc, value, format
 │   │   ├── tests/ · examples/repl.rs
 │   │   └── Cargo.toml            #   single math path (no fallback)
@@ -112,7 +114,7 @@ calcumaker/
 | Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
 | Interconnect | 1×8 2.54mm header (PZ254V-11-08P), carries +5V | ✅ LCSC C492407 |
 | Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
-| Math | GNU MP + MPFR via `calcumaker-core` (single path) | ✅ host-tested + REPL (`rug`); on-target cross-build is the open step |
+| Math | GNU MP + MPFR via `calcumaker-core` + own `gmp-mpfr-nostd` (single path) | ✅ no_std, host-tested + REPL; on-target cross-build is the open step |
 
 ## Status
 

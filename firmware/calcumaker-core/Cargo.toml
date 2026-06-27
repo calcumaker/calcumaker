@@ -7,9 +7,10 @@ description = "Calcumaker 16 calculator engine — RPN stack + arbitrary-precisi
 readme = "README.md"
 
 [dependencies]
-# Single math path: real GNU MP + MPFR through rug (gmp-mpfr-sys vendors and
-# builds the C libraries — no system packages needed). No pure-Rust fallback.
-rug = { version = "1", default-features = false, features = ["std", "integer", "float"] }
+# Single math path: real GNU MP + MPFR through our own no_std FFI bindings
+# (links system libs on host, cross-built libs on target). No std, no pure-Rust
+# fallback. The engine itself is no_std + alloc.
+gmp-mpfr-nostd = { path = "../gmp-mpfr-nostd" }
 
 [[example]]
 name = "repl"

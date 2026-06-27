@@ -1,9 +1,10 @@
 //! The calculator value: an arbitrary-precision integer (programmer modes) or an
-//! arbitrary-precision real (scientific modes). Backed by `rug` = GMP + MPFR.
+//! arbitrary-precision real (scientific modes). Backed by GMP + MPFR via
+//! `gmp-mpfr-nostd`.
 
-use rug::{Float, Integer};
+use gmp_mpfr_nostd::{Float, Integer};
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub enum Value {
     /// Arbitrary-precision integer (GMP `mpz`).
     Int(Integer),
@@ -15,8 +16,8 @@ impl Value {
     /// View/convert this value as an MPFR float at the given precision (bits).
     pub fn to_real(&self, prec: u32) -> Float {
         match self {
-            Value::Int(i) => Float::with_val(prec, i),
-            Value::Real(f) => Float::with_val(prec, f),
+            Value::Int(i) => Float::from_integer(prec, i),
+            Value::Real(f) => Float::with_prec(prec, f),
         }
     }
 

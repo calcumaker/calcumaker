@@ -50,9 +50,12 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
 
 ## Firmware (Rust)
 - **Engine: `firmware/calcumaker-core/`** — the RPN + arbitrary-precision math,
-  a plain **host-testable library** over **GMP + MPFR** (single path, no
-  fallback). Uses `rug` (self-builds GMP/MPFR — no system deps). Test with
-  `cargo test`; run with `cargo run --example repl`. Logic lives here.
+  a `no_std` **host-testable library** over **GMP + MPFR** (single path, no
+  fallback). Math is our own no_std FFI crate **`firmware/gmp-mpfr-nostd/`**
+  (`Integer`/`Float`) — *like rug, but no_std*; host links system GMP/MPFR
+  (`brew install gmp mpfr`), target links cross-built. `cargo test` /
+  `cargo run --example repl`. **Do not add `rug`/`std` to the engine.** Logic
+  lives here.
 - **Board crate: `firmware/calcumaker-fw/`** — **STM32U575ZGT6**, Cortex-M33,
   `no_std`, async via `embassy-stm32` (`stm32u575zg`), target
   `thumbv8m.main-none-eabihf`. Heap via `embedded-alloc` (GMP → it via

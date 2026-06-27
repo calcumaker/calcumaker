@@ -4,20 +4,22 @@ The **Calcumaker 16 calculator engine** — the RPN stack + arbitrary-precision
 math, as a plain library you can unit-test and run against on the host.
 
 **Single math path.** Real **GNU MP** (integers) + **MPFR** (correctly-rounded
-floats and transcendentals) via the [`rug`](https://crates.io/crates/rug) crate,
-which vendors and builds the C libraries itself — **no system packages, no
-feature-gated pure-Rust fallback.**
+floats and transcendentals) via our own `no_std` bindings crate
+**`gmp-mpfr-nostd`** — **no `std`, no feature-gated pure-Rust fallback.** The
+engine itself is `#![no_std]` + `alloc`, so the *same* crate runs on the host and
+compiles for the MCU.
 
 ## Test it
 
 ```sh
+brew install gmp mpfr     # one-time host deps (apt: libgmp-dev libmpfr-dev)
 cargo test
 ```
 
-The first build compiles GMP + MPFR + MPC from source (~a few minutes); after
-that it's fast. The tests exercise the real C libraries: `sqrt(2)` and `e` to
-hundreds of digits, `cos(0)=1`, `100!` as a 158-digit integer, hex bitwise ops,
-word-size masking, and integer-vs-real promotion.
+Builds in well under a second (it links the system GMP/MPFR — no build from
+source). The tests exercise the real C libraries: `sqrt(2)` and `e` to hundreds
+of digits, `cos(0)=1`, `100!` as a 158-digit integer, hex bitwise ops, word-size
+masking, and integer-vs-real promotion.
 
 ## Run it
 
@@ -50,12 +52,11 @@ assert_eq!(c.display(), "5");
 
 ## Relationship to the firmware
 
-This crate is the **canonical engine** and is `std`/`rug` for host development +
-testing. The STM32 firmware (`../calcumaker-fw`) links the **same** GMP/MPFR —
-cross-built for `thumbv8m` — and drives this engine over FFI. Wiring that
-(`gmp-mpfr-sys`/rug `no_std` against the cross-built libs, GMP allocator → the
-firmware heap) is the remaining integration; see `../../DESIGN.md` →
-"Numeric core".
+This crate is the **canonical engine** — `no_std`, math via `gmp-mpfr-nostd`. On
+the host it links the system GMP/MPFR for dev + testing; the **same crate**
+compiles for `thumbv8m`, where the STM32 firmware (`../calcumaker-fw`) links the
+**cross-built** GMP/MPFR (GMP allocator → the firmware heap). That cross-build is
+the remaining integration; see `../../DESIGN.md` → "GMP/MPFR on the target".
 
 ## License
 

@@ -6,9 +6,13 @@ Rust firmware for the Calcumaker 16 programmer's / technical RPN calculator.
 
 ```
 firmware/
-├── calcumaker-core/   # the calculator ENGINE — RPN + arbitrary precision (GMP+MPFR
-│   │                  #   via rug). Plain library, host-tested + a REPL. SINGLE math
-│   │                  #   path (no fallback). This is where the logic lives.
+├── gmp-mpfr-nostd/    # own no_std FFI bindings to GMP/MPFR (Integer + Float).
+│   │                  #   "Like rug, but for a no_std world." Links system libs
+│   │                  #   on host, cross-built libs on target.
+│   └── src/           #   lib · ffi · integer · float
+├── calcumaker-core/   # the calculator ENGINE — RPN + arbitrary precision over
+│   │                  #   gmp-mpfr-nostd. no_std lib, host-tested + a REPL. SINGLE
+│   │                  #   math path (no fallback). This is where the logic lives.
 │   ├── src/           #   lib · calc · value · format
 │   ├── tests/         #   engine tests against real GMP/MPFR
 │   └── examples/repl.rs
@@ -21,15 +25,19 @@ firmware/
 
 ## The engine is real and testable today
 
-`calcumaker-core` uses **GNU MP + MPFR** through `rug` (which builds the C libs
-itself — no system packages). It's a normal library you develop and test on the
-host:
+`calcumaker-core` uses **GNU MP + MPFR** through our own `no_std` bindings
+(`gmp-mpfr-nostd`). On the host they link the system libraries, so it's a normal
+library you develop and test on the desktop (builds in <1 s):
 
 ```bash
+brew install gmp mpfr      # one-time host deps (apt: libgmp-dev libmpfr-dev)
 cd calcumaker-core
-cargo test                 # engine tests vs real GMP/MPFR (first build compiles them)
+cargo test                 # 12 engine tests vs real GMP/MPFR
 cargo run --example repl   # interactive RPN, run against it
 ```
+
+The engine is `#![no_std]`; the *same* crate also compiles for the MCU
+(`cargo build --target thumbv8m.main-none-eabihf`).
 
 There is **one** numeric path — no `numeric-gmp`/`numeric-pure` feature split,
 no pure-Rust fallback.

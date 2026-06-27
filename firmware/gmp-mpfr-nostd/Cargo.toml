@@ -1,0 +1,13 @@
+[package]
+name = "gmp-mpfr-nostd"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0"
+description = "Minimal no_std FFI bindings to GNU MP (mpz) + MPFR (mpfr): Integer + Float. Links system libs on host, cross-built libs on target. Like rug, but for a no_std world."
+readme = "README.md"
+
+# No Rust dependencies — this is direct FFI. The C libraries are linked by
+# build.rs (host) or by the firmware's linker (target).
+
+[lib]
+# `no_std` crate (std only under `cargo test`); see src/lib.rs.

@@ -1,6 +1,11 @@
 //! Render a [`Value`] for the display, honoring the integer radix and the
 //! working precision.
 
+use alloc::format;
+use alloc::string::{String, ToString};
+
+use gmp_mpfr_nostd::Float;
+
 use crate::calc::Radix;
 use crate::value::Value;
 
@@ -27,12 +32,12 @@ pub fn format(v: &Value, radix: Radix, prec: u32) -> String {
 /// Beyond this many leading/trailing zeros, switch to scientific notation.
 const PLAIN_RANGE: i64 = 12;
 
-fn format_real(f: &rug::Float, prec: u32) -> String {
+fn format_real(f: &Float, prec: u32) -> String {
     if f.is_zero() {
         return "0".to_string();
     }
     // MPFR emits a normalized "d.ffff e±EXP" form; reformat it %g-style.
-    let s = f.to_string_radix(10, Some(dec_digits(prec)));
+    let s = f.to_string_radix(10, dec_digits(prec));
     reformat(&s)
 }
 

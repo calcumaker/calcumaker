@@ -3,12 +3,5 @@
 version = 4
 
 [[package]]
-name = "calcumaker-core"
-version = "0.1.0"
-dependencies = [
- "gmp-mpfr-nostd",
-]
-
-[[package]]
 name = "gmp-mpfr-nostd"
 version = "0.1.0"

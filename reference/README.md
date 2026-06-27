@@ -18,9 +18,10 @@ main loop is **Rust (no_std)**.
   side: big hex/dec/oct/bin, bitwise). https://gmplib.org/ (LGPLv3 / GPLv2 dual)
 - **MPFR (libmpfr)** — arbitrary-precision floats with correct rounding (the
   scientific side: transcendentals). https://www.mpfr.org/ (LGPLv3)
-- **rug / gmp-mpfr-sys** — Rust bindings; `rug` self-builds GMP/MPFR/MPC.
-  https://crates.io/crates/rug · used by `calcumaker-core` for host dev+test.
-  **Single math path — no pure-Rust fallback.**
+- **Bindings: our own `firmware/gmp-mpfr-nostd/`** — thin `no_std` FFI to
+  GMP/MPFR (*like `rug`, but no_std*). Host links system GMP/MPFR (`brew install
+  gmp mpfr`); target links cross-built. **Single math path — no pure-Rust
+  fallback, no `rug`/`std` in the engine.**
 - For the target: cross-built GMP/MPFR (`--host=arm-none-eabi --disable-assembly`
   + picolibc); see DESIGN.md → "GMP/MPFR on the target".
 - Embedded Rust: **embassy-stm32** (async HAL), **cortex-m** / **cortex-m-rt**,

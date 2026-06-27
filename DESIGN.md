@@ -31,7 +31,7 @@ being Rust.
 
 | # | Decision | Choice |
 |---|----------|--------|
-| 1 | Math stack | **Prefer GMP + MPFR (via FFI); pure-Rust fallback** (dashu/astro-float) if no_std cross-compile proves impractical. |
+| 1 | Math stack | **GMP + MPFR only — single path, no fallback.** Engine = `calcumaker-core` (host: `rug`, which self-builds GMP/MPFR; target: cross-built GMP/MPFR). Host-tested + REPL. |
 | 2 | Power | **1S Li-ion + USB-C charging + buck-boost**; "low power" = long battery life via aggressive sleep between keystrokes. |
 | 3 | Display | **Stacked RPN registers, 2–3 rows (option)** — multi-row 7-segment showing the top of the stack. Driver + digit parts chosen by LCSC price/availability. |
 | 4 | Keypad | **Wide HP-16C-style layout** for programming / technical / engineering use; full-size Cherry MX. |
@@ -195,11 +195,16 @@ Mirrors the ephemerkey power path (proven in the sibling repo):
 USB-C (sink) → ESD → Li-ion charger → load-share → buck-boost → 3V3. Sized up
 for the larger active load (display + MCU running MPFR). See **Power Tree**.
 
-### Numeric core: GMP/MPFR (preferred) with a pure-Rust fallback
+### Numeric core: GMP + MPFR, single path (no fallback)
 
-The firmware's numeric core is abstracted behind `firmware/calcumaker-fw/
-src/numeric/` so the RPN engine is backend-agnostic. Two Cargo-feature-selected
-backends — see **Numeric Core (firmware)** and **GMP/MPFR on no_std** below.
+The calculator engine lives in **`firmware/calcumaker-core/`** — a plain library
+(RPN stack + the `Value` = arbitrary-precision int/real) over **GNU MP + MPFR**.
+There is **one** numeric path: the pure-Rust fallback was dropped. On the host
+the engine uses the **`rug`** crate (which vendors and builds GMP/MPFR/MPC, so
+`cargo test` "just works" with no system packages) and is fully unit-tested +
+runnable (`cargo run --example repl`). On the STM32 the firmware links the
+**same** GMP/MPFR, cross-built for the target. See **Numeric Core** and
+**GMP/MPFR on the target** below.
 
 ---
 
@@ -213,51 +218,51 @@ backends — see **Numeric Core (firmware)** and **GMP/MPFR on no_std** below.
 | Heap | **`embedded-alloc` (TLSF)** | TLSF handles variable-size bignum churn with less fragmentation than LLFF |
 | Flash/debug | **`probe-rs`** (`cargo run`/`cargo embed`) | set the chip name in `.cargo/config.toml` |
 | Logging | `defmt` + RTT (optional) | |
-| Numeric (pref) | **GMP + MPFR via FFI** | cross-built `.a`, allocator routed to the heap |
-| Numeric (fallback) | **`dashu`/`ibig` + `astro-float`** | pure-Rust, fully no_std + alloc |
+| Engine | **`calcumaker-core`** (RPN + GMP/MPFR) | one path; host = `rug`, target = cross-built GMP/MPFR |
 
 ---
 
-## GMP/MPFR on no_std (the hard part)
+## Host development & testing (works today)
 
-Verdict from research (see also the recall note `ref-gmp-mpfr-no-std`):
+`calcumaker-core` depends on **`rug`**, which vendors and builds GMP + MPFR + MPC
+from source during `cargo build` — no system packages, correct bindings,
+ergonomic API. So the engine is a normal library you develop and test on the
+desktop against the **real** C libraries:
 
-- **`rug` / `gmp-mpfr-sys` are impractical on bare metal.** `gmp-mpfr-sys`
-  compiles vendored GMP/MPFR C with a *host* C compiler and explicitly does not
-  support cross-compilation; `rug`'s `no_std` mode only drops std-dependent Rust
-  glue, the core types still pull `gmp-mpfr-sys` (and `libc`). Don't go this way.
-- **The path that works = manual FFI to a separately cross-built static lib.**
-  Recipe:
-  1. Build **GMP** with
-     `./configure --host=arm-none-eabi --disable-assembly`
-     `CC=arm-none-eabi-gcc CFLAGS="-mcpu=cortex-m33 -mthumb --specs=nosys.specs -nostartfiles"`.
-     `--disable-assembly` is **mandatory** (no `mpn` asm backend for M-profile).
-  2. Build **MPFR** against that GMP via `--with-gmp-include` / `--with-gmp-lib`
-     (versions must match).
-  3. Link **picolibc** (successor to newlib-nano) for the libc + libm symbols
-     MPFR's transcendentals need.
-  4. Route GMP's allocator to the Rust global heap via
-     `mp_set_memory_functions(malloc, realloc, free)` at init (`numeric::init()`).
-  5. Link the `.a`s from `build.rs` under the `numeric-gmp` feature.
+```sh
+cd firmware/calcumaker-core
+cargo test                 # engine tests vs real GMP/MPFR (first build compiles them)
+cargo run --example repl   # interactive RPN
+```
+
+This is the single source of truth for the calculator logic and math.
+
+## GMP/MPFR on the target (the remaining hard step)
+
+`rug`/`gmp-mpfr-sys` build the C libs with a *host* compiler and don't support
+cross-compilation, so on the bare-metal STM32 we cross-build GMP + MPFR
+ourselves and link the engine against them (same C libraries, no second
+implementation). Recipe (see recall note `ref-gmp-mpfr-no-std`):
+
+1. Build **GMP**: `./configure --host=arm-none-eabi --disable-assembly`
+   `CC=arm-none-eabi-gcc CFLAGS="-mcpu=cortex-m33 -mthumb --specs=nosys.specs -nostartfiles"`.
+   `--disable-assembly` is **mandatory** (no `mpn` asm backend for M-profile).
+2. Build **MPFR** against that GMP (`--with-gmp-include` / `--with-gmp-lib`;
+   versions must match).
+3. Link **picolibc** for the libc + libm symbols MPFR needs.
+4. Route GMP's allocator to the firmware heap via
+   `mp_set_memory_functions(malloc, realloc, free)` at init.
+5. Link the `.a`s from `calcumaker-fw/build.rs`, and have the engine's FFI bind
+   to them (either a `no_std` build of `gmp-mpfr-sys` against the prebuilt libs,
+   or a thin direct-FFI shim behind the same `Value` API).
+
 - **Footprint:** ~0.5–1 MB flash for both libs; heap scales with precision —
-  this is the main reason for the large-flash/large-RAM MCU.
+  the reason for the large-flash MCU.
 - **Licensing:** GMP is LGPLv3/GPLv2, MPFR is LGPLv3 — compatible with the
-  AGPL-3.0 firmware; honor LGPL relinking terms for any shipped product.
-
-This is gated behind the `numeric-gmp` Cargo feature; `build.rs` currently warns
-that the cross-built libs aren't wired yet.
-
-## Pure-Rust Fallback
-
-Fully `no_std` + `alloc`, MIT/Apache, no C toolchain — the `numeric-pure`
-feature (default until GMP/MPFR FFI is wired):
-
-- **Integers (GMP analog):** `dashu-int` (or `ibig`) — arbitrary-precision
-  integers; covers HP-16C hex/bin/bitwise/word-size needs.
-- **Floats + transcendentals (MPFR analog):** **`astro-float`** — arbitrary-
-  precision floats with **correctly-rounded** sin/cos/exp/ln, the closest MPFR
-  analog. (`dashu-float` exists but has narrower transcendental coverage.)
-- Both allocate from `embedded-alloc` (TLSF) as the global allocator.
+  AGPL-3.0 firmware; honor LGPL relinking terms for a shipped product.
+- **Risk / open:** this is the one genuinely hard part. If it proves
+  impractical, the fallback is *not* a second math library (we removed that) but
+  a hardware reconsideration (a Linux-capable SoM where `rug` runs on-device).
 
 ---
 
@@ -344,20 +349,20 @@ the authored TM1640.
 
 ---
 
-## Numeric Core (firmware)
+## Numeric Core
 
-`firmware/calcumaker-fw/src/numeric/mod.rs` exposes a backend-agnostic
-`Number` (an arbitrary-precision `Int` or `Real`) and a `Radix` for the
-programmer display modes. The RPN engine (`rpn.rs`) only uses `Number`, so the
-backend swaps via Cargo feature with no engine changes:
+`firmware/calcumaker-core/` is the engine, with **one** numeric path:
 
-- `numeric-gmp` → `Int` = `mpz_t`, `Real` = `mpfr_t` (FFI). `init()` calls
-  `mp_set_memory_functions` to use the global heap.
-- `numeric-pure` → `Int` = dashu/ibig, `Real` = astro-float.
+- `Value` = `Int(rug::Integer)` (GMP) **or** `Real(rug::Float)` (MPFR).
+- `Calc` = the RPN stack + token input; integers stay integers through
+  `+ - * /` and the bitwise/shift ops (HP-16C model, masked to the word size);
+  the scientific functions promote to MPFR reals.
+- HAL-free and fully **host-testable** (`cargo test`) + runnable
+  (`cargo run --example repl`).
 
-Keep `rpn.rs` and `numeric/` **host-testable** (no HAL) so the calculator logic
-can be unit-tested on a desktop (and against the pure-Rust backend) before
-silicon.
+The firmware consumes this crate; on the target the only thing that changes is
+where GMP/MPFR come from (cross-built, linked at the FFI layer) — the engine code
+is identical.
 
 ---
 
@@ -374,13 +379,13 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
 2. ✅ **Display rail = 5 V + level shifter** (decided + parts chosen). EN-gated
    **TPS61022** boost (C915088) + 1µH FTC201610 (C5832342) + 0603 caps; FB
    divider R6 732k/R7 100k → 5V. **SN74HCT125** level shifter (C352957, KiCad
-   symbol `74AHCT125`). Remaining: author the **TPS61022 custom symbol** (batch
-   with the MCU symbol when generating the main board); verify boost Isat/FB and
-   the downsized 3V3 inductor Isat at layout.
-3. **Numeric backend for first bring-up.** Start on `numeric-pure` (always
-   builds) and bring up GMP/MPFR FFI in parallel, or commit to GMP/MPFR from the
-   outset? (Recommendation: bring the product up on pure-Rust, port to GMP/MPFR
-   once the cross-build is proven — both behind the same `Number` API.)
+   symbol `74AHCT125`). Remaining: verify boost Isat/FB and the downsized 3V3
+   inductor Isat at layout. (TPS61022 + STM32U575 symbols turned out stock in
+   KiCad, so the main board generates with no custom authoring.)
+3. ✅ **Numeric engine = single GMP/MPFR path** (`calcumaker-core`), host-tested
+   + REPL via `rug`. **Remaining (the hard part): get the same GMP/MPFR onto the
+   STM32** — cross-build for thumbv8m + FFI-link the engine (see "GMP/MPFR on the
+   target"). This is the main firmware risk.
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols
@@ -420,6 +425,8 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 
 ## Firmware Dependencies
 
-See `reference/README.md` and the **Software Stack** table above. Cross-built
-GMP/MPFR (for `numeric-gmp`) are produced out-of-tree and linked via `build.rs`;
-they are **not** vendored into the repo (gitignored under `firmware/vendor/`).
+See `reference/README.md` and the **Software Stack** table above. The engine
+(`calcumaker-core`) depends only on **`rug`** for host builds (it self-builds
+GMP/MPFR — nothing to install). For the target, the **cross-built** GMP/MPFR are
+produced out-of-tree and linked via `calcumaker-fw/build.rs`; they are **not**
+vendored into the repo (gitignored under `firmware/vendor/`).

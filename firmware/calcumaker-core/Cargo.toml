@@ -1,0 +1,15 @@
+[package]
+name = "calcumaker-core"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0"
+description = "Calcumaker 16 calculator engine — RPN stack + arbitrary-precision math (GNU MP + MPFR via rug). Host-testable library."
+readme = "README.md"
+
+[dependencies]
+# Single math path: real GNU MP + MPFR through rug (gmp-mpfr-sys vendors and
+# builds the C libraries — no system packages needed). No pure-Rust fallback.
+rug = { version = "1", default-features = false, features = ["std", "integer", "float"] }
+
+[[example]]
+name = "repl"

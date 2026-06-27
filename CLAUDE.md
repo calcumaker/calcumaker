@@ -48,15 +48,18 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   make jlc                       # full JLCPCB fab+assembly zips (all boards)
   ```
 
-## Firmware (Rust, no_std)
-- App crate: `firmware/calcumaker-fw/` (**STM32U575ZGT6**, Cortex-M33, `no_std`,
-  async via `embassy-stm32` feature `stm32u575zg`; target
-  `thumbv8m.main-none-eabihf`).
-- **Numeric core** is abstracted behind `firmware/calcumaker-fw/src/numeric/` so
-  the engine can sit on **GMP/MPFR via FFI** (preferred) **or** a **pure-Rust**
-  arbitrary-precision backend (fallback) — selected by Cargo feature.
-- Heap: bignum allocators need a `no_std` global allocator (`embedded-alloc`);
-  GMP is pointed at it via `mp_set_memory_functions`.
+## Firmware (Rust)
+- **Engine: `firmware/calcumaker-core/`** — the RPN + arbitrary-precision math,
+  a plain **host-testable library** over **GMP + MPFR** (single path, no
+  fallback). Uses `rug` (self-builds GMP/MPFR — no system deps). Test with
+  `cargo test`; run with `cargo run --example repl`. Logic lives here.
+- **Board crate: `firmware/calcumaker-fw/`** — **STM32U575ZGT6**, Cortex-M33,
+  `no_std`, async via `embassy-stm32` (`stm32u575zg`), target
+  `thumbv8m.main-none-eabihf`. Heap via `embedded-alloc` (GMP → it via
+  `mp_set_memory_functions`). It hosts the core engine; on-target GMP/MPFR are
+  **cross-built** and FFI-linked (the open hard step — see DESIGN.md).
+- **Do not reintroduce a second numeric backend** (no pure-Rust fallback / no
+  `numeric-*` features) — one GMP/MPFR path only.
 - `common/` and `shared/` hold cross-target glue / protocol definitions.
 
 ## Licensing

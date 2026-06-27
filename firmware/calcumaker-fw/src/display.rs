@@ -5,8 +5,6 @@
 //! interconnect to the display PCB. See ../../DESIGN.md → Display.
 //! Skeleton — the TM1640 bit-bang/timing is wired after the MCU bring-up.
 
-use crate::rpn::Stack;
-
 /// Rows shown at once. Board is laid out for 3; set to 2 for the 2-row build
 /// (top row unpopulated). See ../../DESIGN.md → Display.
 pub const ROWS: usize = 3;
@@ -24,12 +22,11 @@ impl Display {
         Self {}
     }
 
-    /// Render the live RPN stack across the rows. Arbitrary-precision values
-    /// that exceed `DIGITS_PER_ROW` are windowed/scrolled (policy TBD).
-    pub fn render(&mut self, stack: &Stack) {
-        for (_row, value) in stack.top(ROWS).enumerate() {
-            let _text = value.format(stack.radix);
-            // TODO(mcu): map `_text` to 7-seg patterns and push to the driver.
-        }
+    /// Render the top stack rows (already formatted by the engine, top first).
+    /// Arbitrary-precision values longer than `DIGITS_PER_ROW` are
+    /// windowed/scrolled (policy TBD).
+    pub fn render(&mut self, _rows: &[&str]) {
+        // TODO(mcu): map each row's text to 7-seg patterns and push to the
+        // TM1640 chain (CLK + per-row DIN).
     }
 }

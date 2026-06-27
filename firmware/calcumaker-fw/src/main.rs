@@ -1,13 +1,17 @@
 #![no_std]
 #![no_main]
 
-//! calcumaker — programmer's / technical arbitrary-precision RPN calculator.
+//! Calcumaker 16 firmware — hardware skeleton.
 //!
-//! Chip-agnostic `no_std` skeleton: a cortex-m-rt super-loop that scans the
-//! Cherry MX matrix, feeds the RPN engine, and refreshes the 7-segment stack
-//! display. It will move to an `embassy-stm32` async executor once the MCU is
-//! pinned (see ../../DESIGN.md). Does not build until the HAL + a numeric
-//! backend are wired.
+//! The calculator logic + arbitrary-precision math live in the
+//! **`calcumaker-core`** library (RPN engine over GMP + MPFR, single path,
+//! host-tested). This crate is the board bring-up: clocks, the Cherry MX matrix
+//! scan, the 7-segment display driver, and (eventually) hosting the engine.
+//!
+//! Engine integration is the open task: `calcumaker-core` is `std`/`rug` for
+//! host testing; on the STM32 we link the SAME GMP/MPFR cross-built for
+//! thumbv8m and route GMP's allocator to the global heap below
+//! (`mp_set_memory_functions`). See ../../DESIGN.md → Numeric core.
 
 extern crate alloc;
 
@@ -16,18 +20,16 @@ use panic_halt as _;
 
 mod display;
 mod keypad;
-mod numeric;
-mod rpn;
 
 // TLSF (vs LLFF) handles the variable-size bignum allocation churn with less
-// fragmentation — see ../../DESIGN.md → Numeric core.
+// fragmentation; GMP allocates here once wired up.
 use embedded_alloc::TlsfHeap as Heap;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
 
 /// Heap backing the arbitrary-precision allocator. Provisional — size against
-/// the chosen MCU's RAM and the working precision (DESIGN.md → Numeric core).
+/// the chosen working precision (DESIGN.md → Numeric core).
 const HEAP_SIZE: usize = 64 * 1024;
 
 fn init_heap() {
@@ -40,19 +42,18 @@ fn init_heap() {
 #[entry]
 fn main() -> ! {
     init_heap();
-    numeric::init(); // route GMP's allocator to the global heap (no-op for pure-Rust)
 
-    // TODO(mcu): clocks + GPIO/SPI/I2C init via embassy-stm32 once pinned.
-    let mut stack = rpn::Stack::new();
+    // TODO(mcu): clocks + GPIO/SPI init via embassy-stm32 once pinned.
+    // TODO(engine): construct a calcumaker_core::Calc here once the engine is
+    // linked for the target (point GMP's allocator at the heap above).
     let mut display = display::Display::new();
     let mut keypad = keypad::Keypad::new();
 
-    display.render(&stack);
-
     loop {
-        if let Some(key) = keypad.scan() {
-            stack.handle(key);
-            display.render(&stack);
+        if let Some(_key) = keypad.scan() {
+            // TODO(engine): feed `_key` into the Calc engine, then render its
+            // formatted stack rows:
+            display.render(&[]);
         }
         // TODO(mcu): enter low-power Stop mode, wake on a key-matrix interrupt.
         cortex_m::asm::wfi();

@@ -13,15 +13,16 @@ Modeled after the sibling BenchBits hardware+firmware repos:
 The firmware departs from those (which are C / Zephyr / ESPHome): calcumaker's
 main loop is **Rust (no_std)**.
 
-## Firmware dependencies (to research / vendor — see DESIGN.md)
+## Firmware dependencies (see DESIGN.md)
 - **GNU MP (libgmp)** — arbitrary-precision integers (the HP-16C "programmer"
   side: big hex/dec/oct/bin, bitwise). https://gmplib.org/ (LGPLv3 / GPLv2 dual)
 - **MPFR (libmpfr)** — arbitrary-precision floats with correct rounding (the
   scientific side: transcendentals). https://www.mpfr.org/ (LGPLv3)
-- **rug / gmp-mpfr-sys** — Rust bindings to GMP/MPFR/MPC.
-  https://crates.io/crates/rug · https://crates.io/crates/gmp-mpfr-sys
-  (no_std viability is an open question — see DESIGN.md).
-- Pure-Rust fallback candidates: **dashu**, **astro-float**, **num-bigint**.
+- **rug / gmp-mpfr-sys** — Rust bindings; `rug` self-builds GMP/MPFR/MPC.
+  https://crates.io/crates/rug · used by `calcumaker-core` for host dev+test.
+  **Single math path — no pure-Rust fallback.**
+- For the target: cross-built GMP/MPFR (`--host=arm-none-eabi --disable-assembly`
+  + picolibc); see DESIGN.md → "GMP/MPFR on the target".
 - Embedded Rust: **embassy-stm32** (async HAL), **cortex-m** / **cortex-m-rt**,
   **embedded-alloc** (heap for the bignum allocator), **probe-rs** (flash/debug).
 

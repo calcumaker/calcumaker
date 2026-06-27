@@ -19,12 +19,12 @@ keeps it alive between keystrokes.
 - **Programmer's RPN core (HP-16C lineage):** HEX/DEC/OCT/BIN modes, bitwise and
   shift/rotate ops, selectable word size, two's-complement / unsigned / one's-
   complement integer modes.
-- **Arbitrary precision:**
+- **Arbitrary precision (single math path — no fallback):**
   - **GNU MP (libgmp)** — unbounded integers (huge hex/decimal, exact bitwise).
   - **MPFR (libmpfr)** — correctly-rounded floating point + transcendentals
     (sin/cos/exp/ln/…) at user-selectable precision.
-  - A **pure-Rust** arbitrary-precision backend is the fallback if GMP/MPFR
-    can't be made to work `no_std` (selected at build time).
+  - Packaged as the **`calcumaker-core`** library — host-testable and runnable
+    today (`cargo test`, `cargo run --example repl`) via `rug`.
 - **Visible RPN stack:** multi-row 7-segment display (2–3 rows) shows the top of
   the stack at once.
 - **Split design:** the display lives on its **own PCB** that angles upward;
@@ -55,9 +55,8 @@ keeps it alive between keystrokes.
    │   ┌──┴───────────────────────────────────────┐   │  USB-C ── console /
    │   │ STM32U575ZGT6 (Cortex-M33, 2MB/786KB, ULP)│   │          provisioning
    │   │  Rust no_std main loop (embassy)          │   │
-   │   │   RPN engine ──► numeric core             │   │
-   │   │        ├ GMP/MPFR via FFI       (preferred)│   │
-   │   │        └ pure-Rust bignum        (fallback)│   │
+   │   │   calcumaker-core: RPN engine          │   │
+   │   │        └ GMP + MPFR  (single path)      │   │
    │   │   heap: embedded-alloc (TLSF)             │   │
    │   └───────────────────────────────────────────┘   │
    └───────┬───────────────────────────────────────────┘
@@ -88,11 +87,14 @@ calcumaker/
 │   ├── sym-lib-table
 │   └── fp-lib-table
 ├── firmware/
-│   ├── calcumaker-fw/            # Rust no_std application (STM32U575 / embassy)
-│   │   ├── Cargo.toml            #   numeric core: GMP/MPFR FFI ⟷ pure-Rust
-│   │   ├── .cargo/config.toml
+│   ├── calcumaker-core/          # the ENGINE: RPN + GMP/MPFR (rug). Host-tested lib.
+│   │   ├── src/                  #   lib, calc, value, format
+│   │   ├── tests/ · examples/repl.rs
+│   │   └── Cargo.toml            #   single math path (no fallback)
+│   ├── calcumaker-fw/            # Rust no_std board app (STM32U575 / embassy)
+│   │   ├── Cargo.toml · .cargo/config.toml
 │   │   ├── memory.x · build.rs · rust-toolchain.toml
-│   │   └── src/                  #   main, rpn, display, keypad, numeric/
+│   │   └── src/                  #   main, keypad, display (hosts the engine)
 │   ├── common/                   # shared HAL/utilities
 │   └── shared/                   # shared protocol/definitions
 ├── reference/                    # datasheets + dependency pointers
@@ -110,7 +112,7 @@ calcumaker/
 | Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
 | Interconnect | 1×8 2.54mm header (PZ254V-11-08P), carries +5V | ✅ LCSC C492407 |
 | Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
-| Math | GNU MP + MPFR (pure-Rust fallback) | path confirmed (FFI to cross-built libs) |
+| Math | GNU MP + MPFR via `calcumaker-core` (single path) | ✅ host-tested + REPL (`rug`); on-target cross-build is the open step |
 
 ## Status
 

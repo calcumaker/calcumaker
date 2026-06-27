@@ -1,50 +1,51 @@
 # calcumaker firmware
 
-Rust **`no_std`** firmware for the calcumaker programmer's / technical RPN
-calculator.
+Rust firmware for the Calcumaker 16 programmer's / technical RPN calculator.
 
 ## Layout
 
 ```
 firmware/
-├── calcumaker-fw/   # the application crate (Cortex-M, no_std)
-│   └── src/         #   main · rpn · keypad · display · numeric/
-├── common/          # shared HAL / board glue (reserved)
-├── shared/          # shared protocol / definitions (reserved)
-└── LICENSE          # (repo LICENSE is AGPL-3.0)
+├── calcumaker-core/   # the calculator ENGINE — RPN + arbitrary precision (GMP+MPFR
+│   │                  #   via rug). Plain library, host-tested + a REPL. SINGLE math
+│   │                  #   path (no fallback). This is where the logic lives.
+│   ├── src/           #   lib · calc · value · format
+│   ├── tests/         #   engine tests against real GMP/MPFR
+│   └── examples/repl.rs
+├── calcumaker-fw/     # the embedded application (Cortex-M, no_std): board bring-up,
+│   └── src/           #   main · keypad · display  (it will host the core engine)
+├── common/            # shared HAL / board glue (reserved)
+├── shared/            # shared protocol / definitions (reserved)
+└── LICENSE            # (repo LICENSE is AGPL-3.0)
 ```
 
-## Status: skeleton
+## The engine is real and testable today
 
-The crate is a structured **skeleton** and does **not** build yet — by design.
-Two things must be selected and wired first (tracked in `../DESIGN.md`):
-
-1. **MCU / HAL.** Pin the STM32 part, then set:
-   - the Cargo target (`thumbv8m.main-none-eabihf` for Cortex-M33 / STM32U5/L5,
-     or `thumbv7em-none-eabihf` for Cortex-M4F / STM32L4+),
-   - the `embassy-stm32` chip feature,
-   - `memory.x` FLASH/RAM sizes,
-   - the `.cargo/config.toml` `probe-rs` runner chip name.
-2. **Numeric backend.** Pick a Cargo feature:
-   - `numeric-gmp` — **GNU MP + MPFR via FFI** (preferred; correctly-rounded
-     transcendentals). Requires a cross-built `libgmp`/`libmpfr` (see
-     `calcumaker-fw/build.rs` and `../DESIGN.md` → "GMP/MPFR on no_std").
-   - `numeric-pure` — **pure-Rust** arbitrary precision (fallback; fully no_std).
-
-## Build (once the above are wired)
+`calcumaker-core` uses **GNU MP + MPFR** through `rug` (which builds the C libs
+itself — no system packages). It's a normal library you develop and test on the
+host:
 
 ```bash
-cd calcumaker-fw
-cargo build --release                       # default (numeric-pure) backend
-cargo build --release --no-default-features --features numeric-gmp
-cargo run   --release                        # flash+run via probe-rs
+cd calcumaker-core
+cargo test                 # engine tests vs real GMP/MPFR (first build compiles them)
+cargo run --example repl   # interactive RPN, run against it
 ```
 
-## Host-testable units
+There is **one** numeric path — no `numeric-gmp`/`numeric-pure` feature split,
+no pure-Rust fallback.
 
-`rpn.rs` and `numeric/` are intended to be exercised on the host (a small `std`
-test harness / the pure-Rust backend) before targeting silicon — keep the RPN
-logic free of HAL dependencies.
+## The embedded crate
+
+`calcumaker-fw` is the board skeleton (heap, Cherry MX matrix scan, 7-segment
+driver). It does **not** build standalone yet — the MCU/HAL must be wired (Cargo
+target, `embassy-stm32` chip feature, `memory.x`, `probe-rs` chip in
+`.cargo/config.toml`).
+
+It will host the **same** `calcumaker-core` engine. The one hard step (tracked in
+`../DESIGN.md` → "Numeric core / GMP/MPFR on the target"): build GMP + MPFR for
+`thumbv8m` (`--host=arm-none-eabi --disable-assembly`, against picolibc) and link
+the engine against them with GMP's allocator routed to the firmware heap. Same
+code, cross-built C libraries — not a second implementation.
 
 ## License
 

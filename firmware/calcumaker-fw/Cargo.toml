@@ -13,30 +13,24 @@ readme = "README.md"
 cortex-m = "0.7"
 cortex-m-rt = "0.7"
 panic-halt = "1.0"
-# Heap for the arbitrary-precision allocator (GMP is pointed here via
-# mp_set_memory_functions; the pure-Rust backend allocates from it directly).
-# TLSF allocator: better fragmentation behaviour for variable-size bignum allocs.
+# Heap for the arbitrary-precision allocator. GMP is pointed at it via
+# mp_set_memory_functions. TLSF: better fragmentation behaviour for the
+# variable-size bignum allocations.
 embedded-alloc = { version = "0.6", default-features = false, features = ["tlsf"] }
+
+# --- Calculator engine -------------------------------------------------------
+# The RPN + arbitrary-precision engine lives in `calcumaker-core` (GMP + MPFR,
+# single path — see ../calcumaker-core). That crate is host-tested with `rug`;
+# the embedded build links the SAME GMP/MPFR cross-compiled for thumbv8m and
+# drives the engine over FFI. Wiring that is the open task (../../DESIGN.md):
+#   calcumaker-core = { path = "../calcumaker-core", default-features = false }
+# (pending a no_std build of gmp-mpfr-sys against the cross-built libgmp/libmpfr).
 
 # --- MCU HAL: STM32U575ZGT6 (selected — see ../../DESIGN.md) ------------------
 # Move to embassy-stm32 with the U575 chip feature (verify exact feature name):
 #   embassy-stm32   = { version = "0.2", features = ["stm32u575zg", "memory-x", "time-driver-any"] }
 #   embassy-executor = { version = "0.6", features = ["arch-cortex-m", "executor-thread"] }
 #   embassy-time    = "0.3"
-
-# --- Numeric backends (choose exactly one feature) ---------------------------
-# Fallback backend: pure-Rust arbitrary precision (fully no_std + alloc).
-dashu = { version = "0.4", default-features = false, optional = true }
-# astro-float = { version = "0.9", default-features = false, optional = true }  # correctly-rounded transcendentals
-
-[features]
-# Default to the always-buildable pure-Rust backend until GMP/MPFR FFI is wired.
-default = ["numeric-pure"]
-# Preferred backend: GNU MP (integers) + MPFR (floats) via FFI. Links a
-# cross-built libgmp/libmpfr — see build.rs.
-numeric-gmp = []
-# Fallback backend: pure-Rust (dashu / astro-float).
-numeric-pure = ["dep:dashu"]
 
 # Bignum code is large; favour size and keep symbols for debugging.
 [profile.release]

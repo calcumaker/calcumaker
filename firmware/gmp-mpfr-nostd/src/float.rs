@@ -117,6 +117,9 @@ impl Float {
     pub fn sqrt(self) -> Float {
         self.unary(ffi::mpfr_sqrt)
     }
+    pub fn abs(self) -> Float {
+        self.unary(ffi::mpfr_abs)
+    }
     pub fn sin(self) -> Float {
         self.unary(ffi::mpfr_sin)
     }
@@ -126,8 +129,29 @@ impl Float {
     pub fn tan(self) -> Float {
         self.unary(ffi::mpfr_tan)
     }
+    pub fn asin(self) -> Float {
+        self.unary(ffi::mpfr_asin)
+    }
+    pub fn acos(self) -> Float {
+        self.unary(ffi::mpfr_acos)
+    }
+    pub fn atan(self) -> Float {
+        self.unary(ffi::mpfr_atan)
+    }
+    pub fn sinh(self) -> Float {
+        self.unary(ffi::mpfr_sinh)
+    }
+    pub fn cosh(self) -> Float {
+        self.unary(ffi::mpfr_cosh)
+    }
+    pub fn tanh(self) -> Float {
+        self.unary(ffi::mpfr_tanh)
+    }
     pub fn ln(self) -> Float {
         self.unary(ffi::mpfr_log)
+    }
+    pub fn log10(self) -> Float {
+        self.unary(ffi::mpfr_log10)
     }
     pub fn exp(self) -> Float {
         self.unary(ffi::mpfr_exp)
@@ -135,6 +159,12 @@ impl Float {
     pub fn recip(self) -> Float {
         let mut r = Float::new(self.prec());
         unsafe { ffi::mpfr_ui_div(&mut r.raw, 1, &self.raw, RNDN) };
+        r
+    }
+    /// `self ^ exp`, result at `self`'s precision.
+    pub fn pow(self, exp: Float) -> Float {
+        let mut r = Float::new(self.prec());
+        unsafe { ffi::mpfr_pow(&mut r.raw, &self.raw, &exp.raw, RNDN) };
         r
     }
 }

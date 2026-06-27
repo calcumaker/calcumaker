@@ -77,6 +77,13 @@ impl Integer {
         x
     }
 
+    /// Absolute value.
+    pub fn abs(self) -> Self {
+        let mut r = Self::new();
+        unsafe { ffi::__gmpz_abs(&mut r.raw, &self.raw) };
+        r
+    }
+
     pub(crate) fn as_raw(&self) -> *const ffi::mpz_struct {
         &self.raw
     }
@@ -120,6 +127,7 @@ binop!(Add, add, ffi::__gmpz_add);
 binop!(Sub, sub, ffi::__gmpz_sub);
 binop!(Mul, mul, ffi::__gmpz_mul);
 binop!(Div, div, ffi::__gmpz_tdiv_q); // truncating quotient
+binop!(Rem, rem, ffi::__gmpz_tdiv_r); // truncating remainder
 binop!(BitAnd, bitand, ffi::__gmpz_and);
 binop!(BitOr, bitor, ffi::__gmpz_ior);
 binop!(BitXor, bitxor, ffi::__gmpz_xor);

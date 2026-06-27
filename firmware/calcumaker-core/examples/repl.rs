@@ -15,9 +15,12 @@ use calcumaker_core::Calc;
 fn main() {
     let mut calc = Calc::new(256);
     println!("Calcumaker 16 — RPN engine (GMP + MPFR), {}-bit precision.", calc.prec());
-    println!("numbers | + - * / chs sqrt sin cos tan ln exp inv sq pi");
-    println!("and or xor not shl shr fact | radix: hex dec oct bin");
-    println!("meta: prec <bits>, words <bits|none>, stack, clear, quit\n");
+    println!("arith : + - * / chs abs pow  inv sq sqrt  fact mod");
+    println!("trig  : sin cos tan asin acos atan  sinh cosh tanh");
+    println!("log   : ln log exp e pi");
+    println!("prog  : and or xor not shl shr  | radix: hex dec oct bin");
+    println!("stack : enter dup drop swap over rolldn rollup lastx");
+    println!("meta  : prec <bits>, words <bits|none>, stack, clear, quit\n");
 
     let stdin = io::stdin();
     loop {

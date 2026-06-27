@@ -49,6 +49,8 @@ extern "C" {
     pub fn __gmpz_sub(r: *mut mpz_struct, a: *const mpz_struct, b: *const mpz_struct);
     pub fn __gmpz_mul(r: *mut mpz_struct, a: *const mpz_struct, b: *const mpz_struct);
     pub fn __gmpz_tdiv_q(q: *mut mpz_struct, n: *const mpz_struct, d: *const mpz_struct);
+    pub fn __gmpz_tdiv_r(r: *mut mpz_struct, n: *const mpz_struct, d: *const mpz_struct);
+    pub fn __gmpz_abs(r: *mut mpz_struct, a: *const mpz_struct);
     pub fn __gmpz_and(r: *mut mpz_struct, a: *const mpz_struct, b: *const mpz_struct);
     pub fn __gmpz_ior(r: *mut mpz_struct, a: *const mpz_struct, b: *const mpz_struct);
     pub fn __gmpz_xor(r: *mut mpz_struct, a: *const mpz_struct, b: *const mpz_struct);
@@ -86,10 +88,19 @@ extern "C" {
     pub fn mpfr_ui_div(r: *mut mpfr_struct, u: c_ulong, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_neg(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_sqrt(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_abs(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_sin(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_cos(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_tan(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_asin(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_acos(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_atan(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_sinh(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_cosh(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_tanh(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_log(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_log10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_exp(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_pow(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_const_pi(r: *mut mpfr_struct, rnd: c_int) -> c_int;
 }

@@ -245,32 +245,41 @@ Crucially this is **one crate, `no_std`** — it also compiles for the MCU targe
 link to the C libraries differs. This is the single source of truth for the
 calculator logic and math.
 
-## GMP/MPFR on the target (the remaining step)
+## GMP/MPFR on the target (✅ cross-built + link-verified)
 
-The Rust is already `no_std` and target-compiling; the only thing left is to
-provide GMP/MPFR as static libs for the MCU and link them. Recipe (see recall
-note `ref-gmp-mpfr-no-std`):
+The Rust is already `no_std` and target-compiling; the C libraries are now
+cross-built too. **`firmware/scripts/build-gmp-mpfr-arm.sh`** builds static
+`libgmp.a` + `libmpfr.a` for Cortex-M33 hard-float and installs them to
+`firmware/vendor/gmp-mpfr-arm/` (gitignored — reproducible, not committed):
 
-1. Build **GMP**: `./configure --host=arm-none-eabi --disable-assembly`
-   `CC=arm-none-eabi-gcc CFLAGS="-mcpu=cortex-m33 -mthumb --specs=nosys.specs -nostartfiles"`.
-   `--disable-assembly` is **mandatory** (no `mpn` asm backend for M-profile).
-2. Build **MPFR** against that GMP (`--with-gmp-include` / `--with-gmp-lib`;
-   versions must match).
-3. Link **picolibc** for the libc + libm symbols MPFR needs.
-4. Route GMP's allocator to the firmware heap via
-   `mp_set_memory_functions(malloc, realloc, free)` at init.
-5. Point `calcumaker-fw/build.rs` at the `.a`s (`rustc-link-lib=static=mpfr`,
-   `=gmp`). `gmp-mpfr-nostd`'s own `build.rs` already no-ops on `-none-eabi`, so
-   nothing else changes — same FFI, just a different linker input.
+```sh
+firmware/scripts/build-gmp-mpfr-arm.sh        # GMP 6.3.0 + MPFR 4.2.1, ~5 min
+GMP_MPFR_LIBDIR=firmware/vendor/gmp-mpfr-arm \
+  cargo build -p calcumaker-fw --target thumbv8m.main-none-eabihf
+```
+
+Key build details (see recall note `ref-gmp-mpfr-no-std`):
+- `./configure --host=arm-none-eabi --disable-assembly` (the `--disable-assembly`
+  is **mandatory** — no `mpn` asm backend for M-profile); MPFR `--with-gmp=`.
+- `CFLAGS=-mcpu=cortex-m33 -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16
+  -std=gnu17 --specs=nosys.specs` — **`-std=gnu17`** is required (GCC 15 defaults
+  to C23, which breaks GMP's old-style configure probes), and the **hard-float**
+  flags make the ABI match `thumbv8m.main-none-eabihf`.
+- `calcumaker-fw/build.rs` links them when `GMP_MPFR_LIBDIR` is set;
+  `gmp-mpfr-nostd`'s own `build.rs` no-ops on `-none-eabi` — same FFI, just a
+  different linker input.
+
+**Verified:** a Cortex-M33 ELF links cleanly against the libs with
+`Tag_ABI_VFP_args: VFP registers` (hard-float) and `FPv5/FP-D16`; a GMP+MPFR
+program is ~127 KB text. **Remaining (firmware bring-up, not math):** at final
+link, route GMP's allocator to the heap (`mp_set_memory_functions`) and resolve
+newlib's `memcpy`/libm for GMP/MPFR (link the toolchain libc/libm) — folded into
+the MCU/HAL bring-up.
 
 - **Footprint:** ~0.5–1 MB flash for both libs; heap scales with precision —
   the reason for the large-flash MCU.
 - **Licensing:** GMP is LGPLv3/GPLv2, MPFR is LGPLv3 — compatible with the
   AGPL-3.0 firmware; honor LGPL relinking terms for a shipped product.
-- **Risk / open:** the cross-build + picolibc is the one finicky part. If it ever
-  proves impractical, the fallback is *not* a second math library (we removed
-  that) but a hardware reconsideration (a Linux-capable SoM, where the same
-  bindings link the on-device system GMP/MPFR).
 
 ---
 
@@ -391,10 +400,11 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    symbol `74AHCT125`). Remaining: verify boost Isat/FB and the downsized 3V3
    inductor Isat at layout. (TPS61022 + STM32U575 symbols turned out stock in
    KiCad, so the main board generates with no custom authoring.)
-3. ✅ **Numeric engine = single GMP/MPFR path**, our own `no_std` bindings
-   (`gmp-mpfr-nostd`) — host-tested + REPL, and the crate already compiles for
-   `thumbv8m`. **Remaining: cross-build GMP/MPFR for the MCU + link them** (see
-   "GMP/MPFR on the target"). The Rust side is done; this is just the C libs.
+3. ✅ **Numeric engine = single GMP/MPFR path** (`gmp-mpfr-nostd` + `calcumaker-core`),
+   host-tested (23 engine tests) + REPL, compiles for `thumbv8m`. ✅ **GMP/MPFR
+   cross-built + link-verified** for Cortex-M33 hard-float (build script +
+   `build.rs` wired). Remaining is firmware bring-up: route GMP's allocator to
+   the heap + resolve newlib at final link (folded into the MCU/HAL work).
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols

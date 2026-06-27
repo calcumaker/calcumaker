@@ -49,13 +49,20 @@ pub struct Calc {
     prec: u32,
     radix: Radix,
     word_bits: Option<u32>,
+    last_x: Option<Value>,
 }
 
 impl Calc {
     /// New calculator with `prec` bits of MPFR working precision (e.g. 256 ≈ 77
     /// decimal digits). Decimal radix, unbounded integers.
     pub fn new(prec: u32) -> Self {
-        Self { stack: Vec::new(), prec: prec.max(2), radix: Radix::Dec, word_bits: None }
+        Self {
+            stack: Vec::new(),
+            prec: prec.max(2),
+            radix: Radix::Dec,
+            word_bits: None,
+            last_x: None,
+        }
     }
 
     // ---- state ------------------------------------------------------------
@@ -136,10 +143,29 @@ impl Calc {
                 let y = x.clone();
                 x * y
             }),
+            "asin" => self.unary_real(|x| x.asin()),
+            "acos" => self.unary_real(|x| x.acos()),
+            "atan" => self.unary_real(|x| x.atan()),
+            "sinh" => self.unary_real(|x| x.sinh()),
+            "cosh" => self.unary_real(|x| x.cosh()),
+            "tanh" => self.unary_real(|x| x.tanh()),
+            "log" => self.unary_real(|x| x.log10()),
+            "abs" => self.abs_op(),
+            "pow" => self.pow_op(),
+            "mod" => self.mod_op(),
+            "e" => {
+                self.push_e();
+                Ok(())
+            }
             "pi" => {
                 self.stack.push(Value::Real(Float::pi(self.prec)));
                 Ok(())
             }
+            "lastx" => self.lastx(),
+            "enter" => self.enter(),
+            "over" => self.over(),
+            "rolldn" | "roll" => self.roll_down(),
+            "rollup" => self.roll_up(),
             "and" => self.bitwise('&'),
             "or" => self.bitwise('|'),
             "xor" => self.bitwise('^'),
@@ -160,6 +186,13 @@ impl Calc {
         self.stack.pop().ok_or(CalcError::Empty)
     }
 
+    /// Pop the X register, recording it as LASTx (recalled by `lastx`).
+    fn take_x(&mut self) -> Result<Value, CalcError> {
+        let v = self.pop()?;
+        self.last_x = Some(v.clone());
+        Ok(v)
+    }
+
     fn set_radix_ok(&mut self, r: Radix) -> Result<(), CalcError> {
         self.radix = r;
         Ok(())
@@ -176,7 +209,7 @@ impl Calc {
     }
 
     fn arith(&mut self, op: char) -> Result<(), CalcError> {
-        let b = self.pop()?;
+        let b = self.take_x()?;
         let a = self.pop()?;
         let v = match (a, b) {
             (Value::Int(x), Value::Int(y)) => {
@@ -212,7 +245,7 @@ impl Calc {
     }
 
     fn bitwise(&mut self, op: char) -> Result<(), CalcError> {
-        let b = self.pop()?;
+        let b = self.take_x()?;
         let a = self.pop()?;
         match (a, b) {
             (Value::Int(x), Value::Int(y)) => {
@@ -230,7 +263,7 @@ impl Calc {
     }
 
     fn not_op(&mut self) -> Result<(), CalcError> {
-        match self.pop()? {
+        match self.take_x()? {
             Value::Int(x) => {
                 let r = self.mask(!x);
                 self.stack.push(Value::Int(r));
@@ -241,7 +274,7 @@ impl Calc {
     }
 
     fn shift(&mut self, left: bool) -> Result<(), CalcError> {
-        let cnt = self.pop()?;
+        let cnt = self.take_x()?;
         let val = self.pop()?;
         let n = match cnt {
             Value::Int(c) => c.to_u32().ok_or(CalcError::TypeError("shift count out of range"))?,
@@ -257,7 +290,7 @@ impl Calc {
     }
 
     fn fact(&mut self) -> Result<(), CalcError> {
-        match self.pop()? {
+        match self.take_x()? {
             Value::Int(x) => {
                 let n = x.to_u32().ok_or(CalcError::TypeError("factorial needs a small non-negative integer"))?;
                 self.stack.push(Value::Int(Integer::factorial(n)));
@@ -268,7 +301,7 @@ impl Calc {
     }
 
     fn chs(&mut self) -> Result<(), CalcError> {
-        let v = match self.pop()? {
+        let v = match self.take_x()? {
             Value::Int(x) => Value::Int(-x),
             Value::Real(f) => Value::Real(-f),
         };
@@ -291,8 +324,91 @@ impl Calc {
     }
 
     fn unary_real(&mut self, f: impl FnOnce(Float) -> Float) -> Result<(), CalcError> {
-        let x = self.pop()?.to_real(self.prec);
+        let x = self.take_x()?.to_real(self.prec);
         self.stack.push(Value::Real(f(x)));
+        Ok(())
+    }
+
+    /// |X| — preserves the integer/real kind.
+    fn abs_op(&mut self) -> Result<(), CalcError> {
+        let v = match self.take_x()? {
+            Value::Int(x) => Value::Int(x.abs()),
+            Value::Real(f) => Value::Real(f.abs()),
+        };
+        self.stack.push(v);
+        Ok(())
+    }
+
+    /// Y ^ X (always real).
+    fn pow_op(&mut self) -> Result<(), CalcError> {
+        let x = self.take_x()?.to_real(self.prec);
+        let y = self.pop()?.to_real(self.prec);
+        self.stack.push(Value::Real(y.pow(x)));
+        Ok(())
+    }
+
+    /// Y mod X (integers only; truncating remainder).
+    fn mod_op(&mut self) -> Result<(), CalcError> {
+        let x = self.take_x()?;
+        let y = self.pop()?;
+        match (y, x) {
+            (Value::Int(a), Value::Int(b)) => {
+                if b.is_zero() {
+                    return Err(CalcError::DivZero);
+                }
+                self.stack.push(Value::Int(self.mask(a % b)));
+                Ok(())
+            }
+            _ => Err(CalcError::TypeError("mod needs integers")),
+        }
+    }
+
+    /// Push e = exp(1) at the working precision.
+    fn push_e(&mut self) {
+        let one = Float::from_i64(self.prec, 1);
+        self.stack.push(Value::Real(one.exp()));
+    }
+
+    /// Recall LASTx (the X consumed by the previous operation).
+    fn lastx(&mut self) -> Result<(), CalcError> {
+        match &self.last_x {
+            Some(v) => {
+                self.stack.push(v.clone());
+                Ok(())
+            }
+            None => Err(CalcError::Empty),
+        }
+    }
+
+    /// Duplicate X onto the stack (RPN ENTER).
+    fn enter(&mut self) -> Result<(), CalcError> {
+        self.dup()
+    }
+
+    /// Copy Y above X (… Y X → … Y X Y).
+    fn over(&mut self) -> Result<(), CalcError> {
+        let n = self.stack.len();
+        if n < 2 {
+            return Err(CalcError::Empty);
+        }
+        self.stack.push(self.stack[n - 2].clone());
+        Ok(())
+    }
+
+    /// Roll the stack down: X drops to the bottom.
+    fn roll_down(&mut self) -> Result<(), CalcError> {
+        let x = self.pop()?;
+        self.stack.insert(0, x);
+        Ok(())
+    }
+
+    /// Roll the stack up: the bottom element rises to X.
+    fn roll_up(&mut self) -> Result<(), CalcError> {
+        if self.stack.is_empty() {
+            return Err(CalcError::Empty);
+        }
+        let b = self.stack.remove(0);
+        self.stack.push(b);
         Ok(())
     }
 }
@@ -301,8 +417,10 @@ fn is_command(t: &str) -> bool {
     matches!(
         t,
         "+" | "-" | "*" | "/" | "chs" | "swap" | "drop" | "dup" | "sqrt" | "sin"
-            | "cos" | "tan" | "ln" | "exp" | "inv" | "sq" | "pi" | "and" | "or"
-            | "xor" | "not" | "shl" | "shr" | "fact" | "!" | "hex" | "dec"
-            | "oct" | "bin"
+            | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
+            | "ln" | "log" | "exp" | "inv" | "sq" | "abs" | "pow" | "mod" | "e"
+            | "pi" | "and" | "or" | "xor" | "not" | "shl" | "shr" | "fact" | "!"
+            | "hex" | "dec" | "oct" | "bin" | "lastx" | "enter" | "over"
+            | "rolldn" | "roll" | "rollup"
     )
 }

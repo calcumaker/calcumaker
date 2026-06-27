@@ -24,4 +24,18 @@ fn main() {
     println!("cargo:rustc-link-search={}", out.display());
     println!("cargo:rerun-if-changed=memory.x");
     println!("cargo:rerun-if-changed=build.rs");
+
+    // Cross-built GMP + MPFR for the calculator engine. Point GMP_MPFR_LIBDIR at
+    // the install prefix produced by `firmware/scripts/build-gmp-mpfr-arm.sh`
+    // (default: firmware/vendor/gmp-mpfr-arm). mpfr before gmp (mpfr -> gmp).
+    println!("cargo:rerun-if-env-changed=GMP_MPFR_LIBDIR");
+    if let Ok(prefix) = env::var("GMP_MPFR_LIBDIR") {
+        println!("cargo:rustc-link-search=native={prefix}/lib");
+        println!("cargo:rustc-link-lib=static=mpfr");
+        println!("cargo:rustc-link-lib=static=gmp");
+        // GMP/MPFR also pull a little newlib (memcpy, libm doubles); the final
+        // image links the toolchain's libc/libm via the linker specs. If the
+        // link reports missing libc symbols, add the newlib multilib dir +
+        // `-lc -lm` (or build with --specs=nano.specs) here.
+    }
 }

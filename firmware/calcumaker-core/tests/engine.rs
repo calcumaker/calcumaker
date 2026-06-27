@@ -96,3 +96,78 @@ fn precision_scales() {
 fn mixed_int_real_promotes() {
     assert_eq!(run(64, &["1", "2.0", "/"]), "0.5");
 }
+
+#[test]
+fn pow_2_10_is_1024() {
+    assert_eq!(run(128, &["2", "10", "pow"]), "1024");
+}
+
+#[test]
+fn atan1_is_quarter_pi() {
+    let s = run(200, &["1", "atan"]);
+    assert!(s.starts_with("0.785398163397448309"), "atan(1) = {s}");
+}
+
+#[test]
+fn log10_1000_is_3() {
+    assert!(run(200, &["1000", "log"]).starts_with("3"));
+}
+
+#[test]
+fn cosh0_is_one() {
+    assert_eq!(run(64, &["0", "cosh"]), "1");
+}
+
+#[test]
+fn e_constant() {
+    assert!(run(128, &["e"]).starts_with("2.718281828459045"));
+}
+
+#[test]
+fn abs_int() {
+    assert_eq!(run(64, &["-5", "abs"]), "5");
+}
+
+#[test]
+fn mod_17_5_is_2() {
+    assert_eq!(run(64, &["17", "5", "mod"]), "2");
+}
+
+#[test]
+fn lastx_recalls_consumed_x() {
+    let mut c = Calc::new(64);
+    for t in ["2", "3", "+", "lastx"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3"); // the X (=3) consumed by +
+    assert_eq!(c.stack().len(), 2); // [5, 3]
+}
+
+#[test]
+fn enter_dups_x() {
+    let mut c = Calc::new(64);
+    for t in ["7", "enter"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "7");
+    assert_eq!(c.stack().len(), 2);
+}
+
+#[test]
+fn over_copies_y_above_x() {
+    let mut c = Calc::new(64);
+    for t in ["2", "3", "over"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2"); // [2, 3, 2]
+    assert_eq!(c.stack().len(), 3);
+}
+
+#[test]
+fn rolldn_moves_x_to_bottom() {
+    let mut c = Calc::new(64);
+    for t in ["1", "2", "3", "rolldn"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2"); // [3, 1, 2] -> X = 2
+}

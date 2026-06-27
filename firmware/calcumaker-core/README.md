@@ -34,9 +34,13 @@ cargo run --example repl
 [Hex 64b] F > dec  20 fact              # -> 2432902008176640000
 ```
 
-Tokens: numbers · `+ - * / chs sqrt sin cos tan ln exp inv sq pi` ·
-`and or xor not shl shr fact` · radix `hex dec oct bin` ·
-meta `prec <bits>`, `words <bits|none>`, `stack`, `clear`, `quit`.
+Tokens:
+- arith: `+ - * / chs abs pow inv sq sqrt fact mod`
+- trig: `sin cos tan asin acos atan sinh cosh tanh`
+- log/const: `ln log exp e pi`
+- programmer: `and or xor not shl shr` · radix `hex dec oct bin`
+- stack: `enter dup drop swap over rolldn rollup lastx`
+- meta: `prec <bits>`, `words <bits|none>`, `stack`, `clear`, `quit`
 
 ## API
 

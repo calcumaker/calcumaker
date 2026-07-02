@@ -60,11 +60,12 @@ Tokens:
   hit exact angles: `deg 180 sin` = 0, `deg 30 sin` = 0.5, `deg 1 atan` = 45)
 - log/const: `ln log exp exp10 e pi`
 - programmer: `and or xor not` · `sl sr asr rl rr` (X by one bit) ·
-  `shl shr rln rrn` (Y by X bits) · `bset bclr btest maskl maskr popcnt` ·
-  radix `hex dec oct bin`
+  `shl shr rln rrn` (Y by X bits) · `rlc rrc rlcn rrcn` (through carry) ·
+  `bset bclr btest maskl maskr popcnt lj` · `dbl* dbl/ dblr` (double-word) ·
+  flags `sf cf ftest` (0-2 user; 3/4/5 = lz/C/G) · radix `hex dec oct bin`
 - conversions: `float round trunc floor ceil frac`
 - stack/memory: `enter dup drop swap over rolldn rollup lastx clear` ·
-  registers `sto0`–`stof` / `rcl0`–`rclf`
+  registers `sto0`–`stof` / `rcl0`–`rclf` / `clreg`
 - modes (RPN postfix, pop X): `<bits> prec` · `<bits> wsize` (`0` = unbounded)
   with sign modes `2s 1s unsgn` (or `signmode` to cycle) · real formats
   `<d> fix / sci / eng`, `std` = auto · `lz` = leading zeros to the word width

@@ -33,6 +33,8 @@ pub struct App {
     shift: Shift,
     entry: Option<String>,
     pending_reg: Option<RegOp>,
+    /// Display window over an X wider than the row (0 = default view).
+    win: usize,
     msg: Option<String>,
 }
 
@@ -44,6 +46,7 @@ impl App {
             shift: Shift::None,
             entry: None,
             pending_reg: None,
+            win: 0,
             msg: None,
         }
     }
@@ -85,6 +88,18 @@ impl App {
     /// backend, public for tests and scripted input.
     pub fn press_key(&mut self, k: Key) {
         self.msg = None;
+        // Window scrolling is pure display navigation; any other key resets
+        // the window to the default view.
+        if matches!(k, Key::WinL | Key::WinR) {
+            let (cur, total) = self.window();
+            self.win = if k == Key::WinR {
+                (cur + 1).min(total - 1)
+            } else {
+                cur.saturating_sub(1)
+            };
+            return;
+        }
+        self.win = 0;
         // A pending STO/RCL claims the next digit key as its register (0-F,
         // radix-independent); any other key cancels it.
         if let Some(op) = self.pending_reg.take() {
@@ -298,9 +313,40 @@ impl App {
     }
 
     /// The display rows as TM1640 segment bytes, index 0 = top — exactly what
-    /// the hardware shows (the emulator renders these same bytes).
+    /// the hardware shows (the emulator renders these same bytes). With a
+    /// window selected (16C `<`/`>`), the X row scrolls: window 0 is the
+    /// fitted view (15 cells + the overflow marker), and window k ≥ 1 picks
+    /// up **exactly where the marker cut off** (cell 15 + 16·(k−1)),
+    /// left-aligned — every digit is reachable.
     pub fn seg_rows(&self) -> [[u8; DIGITS_PER_ROW]; DISPLAY_ROWS] {
-        self.text_rows().map(|t| seg7::encode_row(&t))
+        let texts = self.text_rows();
+        let mut rows = [[0u8; DIGITS_PER_ROW]; DISPLAY_ROWS];
+        for (i, t) in texts.iter().enumerate() {
+            rows[i] = seg7::encode_row(t);
+        }
+        if self.win > 0 {
+            let cells = seg7::encode_cells(&texts[DISPLAY_ROWS - 1]);
+            let start = DIGITS_PER_ROW * self.win - 1;
+            let mut row = [0u8; DIGITS_PER_ROW];
+            for (i, c) in cells.iter().skip(start).take(DIGITS_PER_ROW).enumerate() {
+                row[i] = *c;
+            }
+            rows[DISPLAY_ROWS - 1] = row;
+        }
+        rows
+    }
+
+    /// Display window position: `(current, total)` — total > 1 means X is
+    /// wider than the row and the window keys will scroll it.
+    pub fn window(&self) -> (usize, usize) {
+        let len = seg7::encode_cells(&self.text_rows()[DISPLAY_ROWS - 1]).len();
+        let total = if len <= DIGITS_PER_ROW {
+            1
+        } else {
+            // window 0 shows 15 cells (+ marker); the rest come in 16s
+            1 + (len - (DIGITS_PER_ROW - 1)).div_ceil(DIGITS_PER_ROW)
+        };
+        (self.win.min(total - 1), total)
     }
 }
 

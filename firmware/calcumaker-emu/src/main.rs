@@ -166,6 +166,7 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)
     G then W = angle mode (RAD -> DEG -> GRAD)
     G then & = leading zeros toggle (pad hex/oct/bin to the word width)
+    G then </> = scroll the display window over values wider than 16 digits
 
   STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
@@ -235,11 +236,19 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         Some(r) => format!("  {r} _"),
         None => String::new(),
     };
+    let win = {
+        let (w, total) = app.window();
+        if total > 1 {
+            format!("  win {}/{total}", w + 1)
+        } else {
+            String::new()
+        }
+    };
     let msg = match app.message() {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {radix}  {angle}  prec {}  {word}{flags}{fmt}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(" {radix}  {angle}  prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.

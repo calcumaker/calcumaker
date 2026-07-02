@@ -288,8 +288,11 @@ display-rounded to the 16-digit window** (correctly, by MPFR — HP behaviour:
 the glass rounds, the register keeps full precision; a value a hair under
 382.1 shows `382.1`, not `382.09999…`; exponent-bound values go scientific
 with maximal digits). The emulator's `X:` line is the SHOW view — X at full
-precision. Integers and explicit FIX/SCI/ENG still truncate with the overflow
-marker — **integer windowing/scrolling is an open item**. Engine modes are RPN
+precision. Integers and explicit FIX/SCI/ENG wider than the row truncate with
+the overflow marker, and the **window keys** (16C `<`/`>`, g-shift SL/SR)
+scroll X through the rest: window 0 = 15 cells + marker, window k ≥ 1 picks up
+exactly where the marker cut off (every digit reachable — tested by
+reassembly); any other key resets the view; `win k/N` annunciator. Engine modes are RPN
 postfix like the HP-16C: `<bits> W` (WSIZE, 0 = unbounded), f-shift `I`
 (= `prec`, pops X as the MPFR working precision), f-shift WSIZE cycles the sign
 mode, g-shift over the radix keys sets FIX/SCI/ENG/auto (digits from X). The
@@ -445,8 +448,15 @@ the authored TM1640.
   - **Leading zeros** (`lz`, 16C flag 3): pad hex/oct/bin display to the word
     width (`0F` @8 bits, `000F` @16).
   - `sl sr asr rl rr` act on X by one bit (the panel keys); `shl shr rln rrn`
-    shift/rotate Y by X bits. `bset bclr btest maskl maskr popcnt` cover the
-    bit ops (`btest` leaves the value in Y and pushes 0/1).
+    shift/rotate Y by X bits; `rlc rrc` (+`rlcn rrcn`) rotate through the
+    carry — an (n+1)-bit rotation. `bset bclr btest maskl maskr popcnt` cover
+    the bit ops (`btest` leaves the value in Y and pushes 0/1); `lj`
+    left-justifies (Y = value, X = count); `dbl* dbl/ dblr` are the 16C
+    double-word ops (2's comp / unsigned only — 1's-comp −0 makes the double
+    word ambiguous).
+  - **Flags 0–5** (`sf`/`cf`/`ftest`, index from X): 0–2 user bits, 3/4/5 alias
+    leading-zeros / carry / overflow. `clreg` wipes the STO registers.
+    SHOW (f-shifted radix keys) displays X in another base transiently.
 - **16 STO/RCL registers** (`sto0`…`stof` / `rcl0`…`rclf` — one per hex digit
   key; on the keypad STO/RCL wait for the next digit key).
 - **Real display formats:** AUTO (`%g`-style) / `FIX n` / `SCI n` / `ENG n`

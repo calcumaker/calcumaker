@@ -67,11 +67,10 @@ pub const fn encode(c: char) -> Option<u8> {
     })
 }
 
-/// Encode one display line: right-aligned into `DIGITS_PER_ROW` cells, `.`
-/// folded into the preceding cell's dp, unknown characters blanked. Text wider
-/// than the row is truncated with [`OVERFLOW`] in the last cell (windowing /
-/// scrolling is a later, app-level policy).
-pub fn encode_row(text: &str) -> [u8; DIGITS_PER_ROW] {
+/// Encode text into segment cells (unbounded): `.` folds into the preceding
+/// cell's dp, unknown characters blank. The raw material for both the
+/// fitted row view ([`encode_row`]) and the App's display windowing.
+pub fn encode_cells(text: &str) -> alloc::vec::Vec<u8> {
     let mut cells = alloc::vec::Vec::with_capacity(text.len());
     for ch in text.chars() {
         if ch == '.' {
@@ -85,6 +84,14 @@ pub fn encode_row(text: &str) -> [u8; DIGITS_PER_ROW] {
             cells.push(encode(ch).unwrap_or(0x00));
         }
     }
+    cells
+}
+
+/// Encode one display line: right-aligned into `DIGITS_PER_ROW` cells. Text
+/// wider than the row is truncated with [`OVERFLOW`] in the last cell (the
+/// App's window keys scroll the rest into view).
+pub fn encode_row(text: &str) -> [u8; DIGITS_PER_ROW] {
+    let mut cells = encode_cells(text);
     if cells.len() > DIGITS_PER_ROW {
         cells.truncate(DIGITS_PER_ROW - 1);
         cells.push(OVERFLOW);

@@ -232,6 +232,68 @@ fn seg_rows_encode_x() {
     assert_eq!(bottom[DIGITS_PER_ROW - 1], 0x6D);
 }
 
+/// 16C window keys: scroll a value wider than the row through 16-cell chunks.
+#[test]
+fn window_keys_scroll_long_values() {
+    let mut app = App::new(256);
+    // 10^70: a '1' + 70 zeros = 71 cells → 5 windows
+    press_all(&mut app, &[Key::Digit(7), Key::Digit(0), Key::Exp10]);
+    assert_eq!(app.window(), (0, 5));
+    // default view: overflow marker in the last cell
+    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1][DIGITS_PER_ROW - 1], seg7::OVERFLOW);
+
+    app.press_key(Key::WinR);
+    assert_eq!(app.window(), (1, 5));
+    // window 1 starts at cell 15 — exactly where the marker cut off
+    let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
+    assert!(row.iter().all(|&c| c == 0x3F), "window 1 is all zeros: {row:?}");
+
+    for _ in 0..10 {
+        app.press_key(Key::WinR); // clamps at the last window
+    }
+    assert_eq!(app.window(), (4, 5));
+    let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
+    // 71 cells: window 4 shows cells 63..71 = 8 cells, then blanks
+    assert_eq!(row[7], 0x3F);
+    assert_eq!(row[8], 0x00);
+
+    app.press_key(Key::WinL);
+    assert_eq!(app.window(), (3, 5));
+
+    // any non-window key resets the view
+    app.press_key(Key::Enter);
+    assert_eq!(app.window().0, 0);
+}
+
+/// Reassembling window 0 (its 15 content cells) plus every scrolled window
+/// must reproduce the full value — no digit may fall between windows.
+#[test]
+fn every_cell_is_reachable_across_windows() {
+    let mut app = App::new(256);
+    press_all(&mut app, &[Key::Digit(2), Key::Digit(2), Key::Fact]); // 22! = 22 digits
+    let full = seg7::encode_cells(&app.text_rows()[seg7::DISPLAY_ROWS - 1]);
+    let (_, total) = app.window();
+    assert!(total > 1);
+    let mut seen: Vec<u8> = Vec::new();
+    seen.extend_from_slice(&app.seg_rows()[seg7::DISPLAY_ROWS - 1][..DIGITS_PER_ROW - 1]);
+    for _ in 1..total {
+        app.press_key(Key::WinR);
+        seen.extend_from_slice(&app.seg_rows()[seg7::DISPLAY_ROWS - 1]);
+    }
+    seen.truncate(full.len());
+    assert_eq!(seen, full);
+}
+
+#[test]
+fn window_is_single_for_short_values() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(4), Key::Digit(2), Key::Enter]);
+    assert_eq!(app.window(), (0, 1));
+    app.press_key(Key::WinR); // nothing to scroll
+    assert_eq!(app.window(), (0, 1));
+    assert_eq!(x_row(&app), "42");
+}
+
 #[test]
 fn overflow_marks_last_cell() {
     let mut app = App::new(256);

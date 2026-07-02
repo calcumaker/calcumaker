@@ -40,6 +40,8 @@ pub enum Key {
     AngleMode,
     // leading-zeros display toggle (16C flag 3)
     Lz,
+    // display window scroll for values wider than the row (16C < / >)
+    WinL, WinR,
     // arbitrary-precision control (the headline feature)
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
@@ -72,7 +74,7 @@ pub const LAYER_F: [[Key; COLS]; ROWS] = [
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [Lz,     Nop,    Nop,  Nop,  Nop,      Nop,  Fact,   Pct,  Round, Nop],
+    [Lz,     Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Pct,  Round, Nop],
     [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Nop, Nop, Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
 ];

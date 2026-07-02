@@ -499,10 +499,24 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    host-tested + REPL, compiles for `thumbv8m`. ✅ **GMP/MPFR cross-built +
    link-verified** for Cortex-M33 hard-float (build script + `build.rs` wired).
    ✅ **Emulator target** (`calcumaker-emu`): the full device UI (keymap/App/
-   seg7, now in the core) on a host terminal. Remaining is firmware bring-up:
-   route GMP's allocator to the heap + resolve newlib at final link (folded
-   into the MCU/HAL work). Display **windowing/scrolling** for >16-digit
-   values is an open UI policy (emulator shows the overflow marker + full X).
+   seg7, now in the core) on a host terminal. ✅ Display windowing (16C
+   `<`/`>`) implemented. Remaining is firmware bring-up: route GMP's
+   allocator to the heap + resolve newlib at final link (folded into the
+   MCU/HAL work).
+6. **Annunciators (status line → hardware).** The emulator's status line has
+   no hardware counterpart yet — the schematics carry digits only. Mapping
+   plan (16C precedent: lamps ONLY for f/g/C/G/PRGM/battery; the rest lives in
+   the digits): **(a)** five discrete LEDs on the main board's top edge under
+   the display bezel — f (gold), g (blue) beside the shift keys, C, G, low-
+   battery — MCU GPIO direct, zero interconnect impact (recommended; the
+   display-board alternative needs a 4th TM1640 + DIN4 on a spare header pin
+   *and* a 5th level-shifter channel — the HCT125's four are all used);
+   **(b)** radix as a 16C-style `h d o b` suffix letter in the X row
+   (firmware); **(c)** an **f-STATUS momentary view** rendering prec / wsize /
+   sign mode / angle / FIX-SCI-ENG / flags as 7-seg text across the rows
+   (firmware); **(d)** errors + SHOW as transient X-row text (firmware).
+   Decision pending: confirm (a) vs the display-board strip, then add the
+   LEDs to the main-board manifest and the STATUS view to the App.
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols

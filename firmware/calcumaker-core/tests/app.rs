@@ -284,6 +284,43 @@ fn every_cell_is_reachable_across_windows() {
     assert_eq!(seen, full);
 }
 
+/// f-STATUS: the glass shows the mode summary until the next key (16C).
+#[test]
+fn status_view_shows_modes_then_restores() {
+    let mut app = App::new(256);
+    press_all(
+        &mut app,
+        &[Key::Hex, Key::Digit(8), Key::WordSize, Key::Digit(4), Key::Fix, Key::Digit(1), Key::Sf],
+    );
+    app.press_key(Key::Status);
+    let rows = app.text_rows();
+    assert_eq!(rows[0].trim_end(), "bASE 16 2S rAd");
+    assert_eq!(rows[1].trim_end(), "P256 b8");
+    assert_eq!(rows[2].trim_end(), "FI 4 000010"); // flags 543210: F1 set
+    // every character must be 7-seg renderable
+    for r in &rows {
+        for ch in r.chars() {
+            assert!(
+                ch == ' ' || calcumaker_core::seg7::encode(ch).is_some(),
+                "unrenderable char {ch:?} in {r:?}"
+            );
+        }
+    }
+    // next key restores the stack view
+    app.press_key(Key::Digit(5));
+    assert_eq!(x_row(&app), "5_");
+}
+
+#[test]
+fn status_reflects_carry_and_word_flags() {
+    let mut app = App::new(128);
+    // 8-bit word, inexact isqrt sets carry (flag 4)
+    press_all(&mut app, &[Key::Digit(8), Key::WordSize, Key::Digit(1), Key::Digit(7), Key::Sqrt]);
+    app.press_key(Key::Status);
+    let rows = app.text_rows();
+    assert_eq!(rows[2].trim_end(), "AUtO 010000");
+}
+
 #[test]
 fn window_is_single_for_short_values() {
     let mut app = App::new(128);

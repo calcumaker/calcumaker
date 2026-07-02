@@ -35,6 +35,8 @@ pub struct App {
     pending_reg: Option<RegOp>,
     /// Display window over an X wider than the row (0 = default view).
     win: usize,
+    /// STATUS view active — the glass shows modes/flags instead of the stack.
+    status_view: bool,
     msg: Option<String>,
 }
 
@@ -47,6 +49,7 @@ impl App {
             entry: None,
             pending_reg: None,
             win: 0,
+            status_view: false,
             msg: None,
         }
     }
@@ -88,6 +91,13 @@ impl App {
     /// backend, public for tests and scripted input.
     pub fn press_key(&mut self, k: Key) {
         self.msg = None;
+        // STATUS is momentary (16C): it takes the glass until the next key.
+        if k == Key::Status {
+            self.status_view = true;
+            self.win = 0;
+            return;
+        }
+        self.status_view = false;
         // Window scrolling is pure display navigation; any other key resets
         // the window to the default view.
         if matches!(k, Key::WinL | Key::WinR) {
@@ -286,11 +296,63 @@ impl App {
             .unwrap_or_default()
     }
 
+    /// The STATUS view (16C f-STATUS) as three glass lines, every character
+    /// 7-seg renderable ('X'/'W'/'Z' don't exist, hence the spellings):
+    /// base + sign mode + angle unit, precision + word bits (`b0` =
+    /// unbounded), real format + the six flags as bits 543210
+    /// (G · C · lz · F2 · F1 · F0).
+    fn status_rows(&self) -> [String; DISPLAY_ROWS] {
+        let c = &self.calc;
+        let sign = match c.sign_mode() {
+            crate::calc::SignMode::Twos => "2S",
+            crate::calc::SignMode::Ones => "1S",
+            crate::calc::SignMode::Unsigned => "UnS",
+        };
+        let angle = match c.angle_mode() {
+            crate::calc::AngleMode::Rad => "rAd",
+            crate::calc::AngleMode::Deg => "dEG",
+            crate::calc::AngleMode::Grad => "GrAd",
+        };
+        let fmt = match c.float_fmt() {
+            crate::calc::FloatFmt::Auto => "AUtO".to_string(),
+            crate::calc::FloatFmt::Fix(d) => alloc::format!("FI {d}"),
+            crate::calc::FloatFmt::Sci(d) => alloc::format!("SCI {d}"),
+            crate::calc::FloatFmt::Eng(d) => alloc::format!("EnG {d}"),
+        };
+        let bits: String = [
+            c.overflow(),
+            c.carry(),
+            c.leading_zeros(),
+            c.user_flag(2),
+            c.user_flag(1),
+            c.user_flag(0),
+        ]
+        .iter()
+        .map(|&f| if f { '1' } else { '0' })
+        .collect();
+        let mut rows = [
+            alloc::format!("bASE {} {sign} {angle}", c.radix().base()),
+            alloc::format!("P{} b{}", c.prec(), c.word_bits().unwrap_or(0)),
+            alloc::format!("{fmt} {bits}"),
+        ];
+        for r in &mut rows {
+            // pad to the row width so the text renders left-aligned
+            while r.len() < DIGITS_PER_ROW {
+                r.push(' ');
+            }
+        }
+        rows
+    }
+
     /// The display rows as text, index 0 = top. X (or the live entry, cursor
     /// `_`) is the bottom row, Y above it, … — the top of the RPN stack.
     /// AUTO-mode reals are display-rounded to the row width (HP behaviour —
-    /// the stored value keeps full precision, see [`App::x_full`]).
+    /// the stored value keeps full precision, see [`App::x_full`]). With the
+    /// STATUS view active, the rows are the mode summary instead.
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
+        if self.status_view {
+            return self.status_rows();
+        }
         let mut items: Vec<String> = self
             .calc
             .stack()

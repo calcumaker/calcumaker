@@ -25,6 +25,8 @@ pub enum Key {
     Sf, Cf, Ftest,
     // SHOW: transient display of X in another base (App-level, 16C f-SHOW)
     ShowHex, ShowDec, ShowOct, ShowBin,
+    // STATUS: momentary all-modes view on the glass (App-level, 16C STATUS)
+    Status,
     // base / word modes (programmer)
     Hex, Dec, Oct, Bin, WordSize, SignMode, Float,
     // bitwise / shift / rotate (programmer)
@@ -62,7 +64,7 @@ pub const BASE: [[Key; COLS]; ROWS] = [
 
 /// f (gold) layer — inverse / advanced / set. (Nop = unassigned, refine later.)
 pub const LAYER_F: [[Key; COLS]; ROWS] = [
-    [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Nop],
+    [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Status],
     [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Sf,  Cf,    Ftest],
     [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  DblMul, DblDiv, DblRem, Nop],
     [ShowHex,ShowDec,ShowOct,ShowBin,SignMode, Float, Nop, Nop, Nop,  Nop],

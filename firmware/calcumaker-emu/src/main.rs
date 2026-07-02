@@ -161,6 +161,8 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     F then x = FLOAT (int X -> real)        F then W = sign mode (2's/1's/unsgn)
     F then 8/9 = SF/CF, F then / = F? (flag 0-5 from X; 3=LZ 4=C 5=G)
     F then m = CLR-REG (wipe all registers) F then v = roll-up
+    F then X (CLx cell) = STATUS: the glass shows base/sign/angle, prec/word,
+                          format + flags until the next key
     G then S/C/T = sinh/cosh/tanh     G then L = log10   G then Q = 10^x
     G then 4/5/6 = x! / % / round (real X -> int)
     G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)

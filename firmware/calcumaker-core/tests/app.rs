@@ -663,3 +663,22 @@ fn overflow_marks_last_cell() {
     assert_eq!(bottom[DIGITS_PER_ROW - 1], seg7::OVERFLOW);
     assert_ne!(bottom[0], 0); // row is full
 }
+
+/// Errors show HP-style `Error N` on the glass (transient), with the full
+/// text on the status line — both cleared by the next key.
+#[test]
+fn glass_shows_error_code() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div]);
+    assert_eq!(x_row(&app), "Error 0");
+    assert_eq!(app.message(), Some("divide by zero"));
+    // renderable on the 7-seg
+    for ch in "Error 0".chars() {
+        assert!(ch == ' ' || calcumaker_core::seg7::encode(ch).is_some());
+    }
+    // next key restores the stack view (operands were never consumed)
+    app.press_key(Key::Digit(3));
+    assert_eq!(x_row(&app), "3_");
+    app.press_key(Key::ClrX);
+    assert_eq!(x_row(&app), "0"); // the 0 divisor still there
+}

@@ -135,6 +135,9 @@ pub struct App {
     status_view: bool,
     /// SETUP menu active — index of the selected item.
     setup: Option<usize>,
+    /// Transient HP-style glass error (`Error N` on the X row) — cleared,
+    /// like `msg`, on the next key.
+    glass_err: Option<u8>,
     msg: Option<String>,
 }
 
@@ -150,6 +153,7 @@ impl App {
             win: 0,
             status_view: false,
             setup: None,
+            glass_err: None,
             msg: None,
         }
     }
@@ -205,6 +209,7 @@ impl App {
     /// backend, public for tests and scripted input.
     pub fn press_key(&mut self, k: Key) {
         self.msg = None;
+        self.glass_err = None;
         // SETUP menu captures navigation until dismissed.
         if let Some(i) = self.setup {
             match k {
@@ -442,15 +447,7 @@ impl App {
         // The entry buffer is KNOWN to be a number: use the number-only door
         // so hex entries spelling command names (E, DEC, CF…) aren't stolen.
         if let Err(e) = self.calc.push_number(&s) {
-            self.msg = Some(
-                match e {
-                    CalcError::Parse(_) => "parse error",
-                    CalcError::Empty => "stack empty",
-                    CalcError::TypeError(t) => t,
-                    CalcError::DivZero => "divide by zero",
-                }
-                .into(),
-            );
+            self.report(e);
         }
     }
 
@@ -458,17 +455,16 @@ impl App {
         self.run_owned(tok);
     }
 
+    /// Report an engine error: full text to the status line / aux display,
+    /// HP-style `Error N` to the glass.
+    fn report(&mut self, e: CalcError) {
+        self.glass_err = Some(e.code());
+        self.msg = Some(e.text().into());
+    }
+
     fn run_owned(&mut self, tok: &str) {
         if let Err(e) = self.calc.input(tok) {
-            self.msg = Some(
-                match e {
-                    CalcError::Parse(_) => "parse error",
-                    CalcError::Empty => "stack empty",
-                    CalcError::TypeError(t) => t,
-                    CalcError::DivZero => "divide by zero",
-                }
-                .into(),
-            );
+            self.report(e);
         }
     }
 
@@ -612,6 +608,11 @@ impl App {
             if let Some(item) = items.len().checked_sub(1 + i).map(|n| &items[n]) {
                 rows[DISPLAY_ROWS - 1 - i] = item.clone();
             }
+        }
+        // HP-style transient error display: the X row shows `Error N` until
+        // the next key (the full text is on the status line / aux display).
+        if let Some(code) = self.glass_err {
+            rows[DISPLAY_ROWS - 1] = alloc::format!("Error {code}");
         }
         rows
     }

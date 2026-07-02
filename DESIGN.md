@@ -109,13 +109,38 @@ Putting the driver *on the display board* means only **+3V3, GND, and the
 display serial bus** (a handful of signals) cross the connector — instead of
 dozens of segment/digit lines — which is what **simplifies the wiring**.
 
-- **Interconnect:** a **2.54 mm 1×8 header** (PZ254V-11-08P, LCSC C492407 —
+- **Interconnect:** a **2.54 mm 1×10 header** (PZ254V-11-10P, LCSC C492409 —
   well-stocked, cheap, mechanically supports the angled board; FFC was rejected,
-  ~2 pcs LCSC stock). Pinout `1=+3V3, 2=GND, 3=CLK(shared), 4=DIN1, 5=DIN2,
-  6=DIN3, 7=GND, 8=spare` — the TM1640 driver uses a **2-wire** bus, so it's a
-  shared clock + one data line per row driver (not SPI). Keep +3V3/GND wide for
-  the display LED current. `calcumaker-main:J3` ↔ `calcumaker-display:J1` pinouts
+  ~2 pcs LCSC stock). Pinout `1=+5V, 2=GND, 3=CLK(shared), 4=DIN1, 5=DIN2,
+  6=DIN3, 7=GND, 8=+3V3, 9=SDA, 10=SCL` — the TM1640 driver uses a **2-wire**
+  bus, so it's a shared clock + one data line per row driver (not SPI); pins
+  8–10 feed the **DNP-optional aux OLED** on the display board (3V3 I2C from
+  the MCU — unused when the OLED isn't populated). Keep +5V/GND wide for the
+  display LED current. `calcumaker-main:J3` ↔ `calcumaker-display:J1` pinouts
   must match; join with a short ribbon/cable for the upward angle.
+
+### Aux display: optional 128×32 OLED (the "DNP-optional aux" pattern)
+
+**Errors and rich status on a digits-only machine** are handled in two layers:
+
+1. **The glass is primary.** Errors show HP-16C-style codes — a transient
+   `Error N` on the X row (`CalcError::code()`: 0 math domain · 1 register/
+   flag · 2 bits/shift/word · 3 mode ranges · 4 too large · 5 no solution ·
+   6 stack/entry · 7 dates · 8 statistics · 9 reserved for crash recovery).
+   The calculator is **fully usable with no OLED**.
+2. **The aux OLED is optional detail.** A 0.91″ SSD1306 128×32 I2C module on
+   the **display board** (`AuxDisplay` sheet, J2 1×4 socket, **DNP by
+   default**), hand-placed alongside the THT digits. It shows the full error
+   text (`CalcError::text()`), SETUP/STATUS detail, and future PRGM listings —
+   everything `App` already produces as text. The emulator status line is the
+   host stand-in for this panel. I2C runs at 3V3 straight from the MCU across
+   interconnect pins 8–10; pull-ups R14/R15 (4.7 kΩ) sit on the main board,
+   DNP with the OLED. Firmware sleeps the panel in idle (~10 µA).
+
+**The pattern** (reusable): optional capability = a cheap socket/footprint on
+the board, DNP by default, module hand-placed by builders who want it — the
+base build's cost, power budget, and identity stay untouched, and the firmware
+degrades gracefully (glass codes) when the part is absent.
 
 ### Display: multi-row 7-segment (RPN stack), 2–3 rows
 
@@ -507,7 +532,8 @@ is identical.
 
 Resolved: ✅ MCU (Q7) · ✅ board partition = split (Q8) · ✅ hardware license =
 CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+digits
-(TM1640 + FJ5161AH) · ✅ interconnect (1×8 2.54 mm header). Remaining:
+(TM1640 + FJ5161AH) · ✅ interconnect (1×10 2.54 mm header) · ✅ aux OLED
+(DNP-optional, display board). Remaining:
 
 1. ✅ **KiCad symbols done** — digits use stock `CC56-12EWA`; TM1640 authored
    (`lib/symbols/calcumaker.kicad_sym`); display board generates + checks OK.
@@ -566,7 +592,8 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | MCU (main) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×12 | **FJ5161AH** 0.56" 4-digit CC (**THT**) | ✅ LCSC C8093, ~$0.19 — 4/row |
-| Interconnect | **PZ254V-11-08P** 1×8 2.54mm header (carries +5V) | ✅ LCSC C492407; main J3 ↔ display J1 |
+| Interconnect | **PZ254V-11-10P** 1×10 2.54mm header (carries +5V, +3V3, I2C) | ✅ LCSC C492409; main J3 ↔ display J1 |
+| Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyswitches (main) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
 | Key diodes (main) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
 | USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |

@@ -43,7 +43,7 @@ K.register_stdlib("Transistor_FET", "Q_PMOS_GSD")
 K.register_stdlib("Switch", "SW_Push")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
-K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08")
+K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08", "Conn_01x10")
 K.register_stdlib("74xx", "74AHCT125")  # level shifter symbol (use value "74HCT125"); 3V3->5V
 K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # LQFP-144 (stock)
 K.register_stdlib("Converter_DCDC", "TPS61022")        # 5V boost (stock)
@@ -236,9 +236,9 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
         dict(ref="U6", lib_id="74xx:74AHCT125", value="74HCT125",
              fp="Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
              lcsc="C352957", mpn="SN74HCT125DR", mfr="Texas Instruments"),
-        dict(ref="J3", lib_id="Connector_Generic:Conn_01x08", value="TO DISPLAY",
-             fp="Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
-             lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
+        dict(ref="J3", lib_id="Connector_Generic:Conn_01x10", value="TO DISPLAY",
+             fp="Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical",
+             lcsc="C492409", mpn="PZ254V-11-10P", mfr="XKB"),
     ],
     small=[
         dict(ref="L2", lib_id="Device:L", value="1uH", fp=L2016,
@@ -246,6 +246,7 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
         C("C8", "10uF", C0603), C("C9", "22uF", C0603), C("C10", "22uF", C0603),  # boost in / out (2x22u)
         C("C11", "100nF"),                                # 74HCT125 VCC(5V) decoupling
         R("R6", "732k"), R("R7", "100k"),                 # FB divider: Vout=0.6*(1+R6/R7)=~5.0V
+        R("R14", "4.7k"), R("R15", "4.7k"),               # I2C pull-ups for the aux OLED (DNP with it)
     ],
     note=(15, 110, "Calcumaker 16 main — Display 5V rail + interface. "
           "5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 "

@@ -702,12 +702,16 @@
       "calcumaker-display"
     ],
     [
-      "5655df7c-81b1-4acd-8ecd-e82f9f427e94",
+      "507d8e78-b2ea-45f3-98d7-267a14473170",
       "Display"
     ],
     [
-      "c4c3c015-b6ba-4dbd-a6a4-490d09c995d8",
+      "6885ee80-e191-4b5d-9a90-d31ab546f2b5",
       "Interconnect"
+    ],
+    [
+      "a66aef50-7a52-4b48-b96b-ed0e80888573",
+      "AuxDisplay"
     ]
   ],
   "text_variables": {},

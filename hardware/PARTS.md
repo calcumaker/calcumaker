@@ -29,7 +29,8 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | RTC xtal | Epson 32.768 kHz | C32346 | SMD 3215 2-pin | ✅ LSE (Clock sheet) + 2× 12pF load caps |
 | Keyswitches ×50 | Cherry MX (full size) | — | SW_Cherry_MX_1.00u_PCB | 5×10 matrix; Kailh hot-swap optional |
 | Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D11–D60 |
-| Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J3 → display; carries **+5V**) |
+| Interconnect | PZ254V-11-10P (1×10 2.54mm) | C492409 | header THT | ✅ (J3 → display; carries **+5V**, +3V3 + I2C for the aux OLED) |
+| I2C pull-ups | 4.7k 0402 ×2 (R14/R15) | C25900 | 0402 | ✅ DNP — populate with the aux OLED |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
 | Annunciator LED f (gold) | Everlight 19-213/Y2C (yellow) | C72038 | **0603** | ✅ D61, beside the f key |
 | Annunciator LED g (blue) | XL-1608UBC-04 | C965807 | **0603** | ✅ D62, beside the g key |
@@ -42,7 +43,8 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 |-------|------|------|-----------------|--------|
 | Driver ×3 | TM1640 | C5337152 | SOP-28 | ✅ ~$0.12 — 1 chip = 1 row of 16 CC digits |
 | Digits ×12 | FJ5161AH (0.56" 4-digit, **common-cathode**) | C8093 | **THROUGH-HOLE** | ✅ ~$0.19 — 4 per row |
-| Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J1 ← main) |
+| Interconnect | PZ254V-11-10P (1×10 2.54mm) | C492409 | header THT | ✅ (J1 ← main) |
+| Aux OLED socket | PZ254V-11-04P (1×4 2.54mm, J2) | C2691448 | header THT | ✅ DNP — receives a 0.91″ SSD1306 128×32 I2C module (sourced separately, not in the JLC library) |
 
 **Topology:** 3 rows × 16 digits. Each row = 1× TM1640 driving 4× FJ5161AH over
 a 2-wire bus (shared **CLK** + per-row **DIN1/2/3**). The **top row (U3 / DS9–12)

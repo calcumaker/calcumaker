@@ -36,7 +36,7 @@ ROOT_UUID = "ca1c0000-0000-4000-8000-0000000d1501"   # keep stable across regens
 
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C")
-K.register_stdlib("Connector_Generic", "Conn_01x08")
+K.register_stdlib("Connector_Generic", "Conn_01x08", "Conn_01x10", "Conn_01x04")
 # Digits: the FJ5161AH is a generic 0.56" 4-digit COMMON-CATHODE display — KiCad
 # bundles this exact topology as Display_Character:CC56-12* (12-pin). We reuse
 # CC56-12EWA (verify the FJ5161AH pinout matches CC56-12 at layout).
@@ -108,19 +108,45 @@ DISPLAY = dict(name="Display", file="display.kicad_sch",
 # ribbon/cable for the upward-angled mount.
 INTERCONNECT = dict(name="Interconnect", file="interconnect.kicad_sch",
     title="Main board interconnect", page="3", big=[
-        dict(ref="J1", lib_id="Connector_Generic:Conn_01x08", value="TO MAIN",
-             fp="Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical",
-             lcsc="C492407", mpn="PZ254V-11-08P", mfr="XKB"),
+        dict(ref="J1", lib_id="Connector_Generic:Conn_01x10", value="TO MAIN",
+             fp="Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical",
+             lcsc="C492409", mpn="PZ254V-11-10P", mfr="XKB"),
     ],
     small=[
         C("C5", "10uF", C0603),   # local 5V bulk at the connector
     ],
     note=(15, 95, "Calcumaker 16 display — Interconnect to the main board. J1 "
           "pinout (MUST match calcumaker-main J3): 1=+5V, 2=GND, 3=CLK (shared), "
-          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Display runs at +5V (TM1640 "
-          "VDD + LED); CLK/DIN are 5V-logic from the main-board 74HCT125 level "
-          "shifter. Wide +5V/GND for LED current. 2.54mm 1x8 header (C492407); "
-          "short cable to the angled display. See DESIGN.md Board Partition."))
+          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=+3V3, 9=SDA, 10=SCL. Display runs "
+          "at +5V (TM1640 VDD + LED); CLK/DIN are 5V-logic from the main-board "
+          "74HCT125. Pins 8-10 feed the OPTIONAL aux OLED (AuxDisplay sheet) at "
+          "3V3 I2C — unused when the OLED is not populated. Wide +5V/GND for "
+          "LED current. 2.54mm 1x10 header (C492409); short cable to the "
+          "angled display. See DESIGN.md Board Partition."))
+
+# ====================== Aux display sheet (DNP-optional) =====================
+# The "DNP-optional aux" pattern (DESIGN.md): a 0.91" SSD1306 128x32 I2C OLED
+# module socket, hand-placed only when wanted. Shows full error text, SETUP/
+# STATUS detail, and future PRGM listings; the calculator is fully usable
+# without it (glass shows HP-style `Error N`). Modules are not in the JLC
+# parts library -> the 1x4 socket rides the board's existing THT step and the
+# module is sourced separately.
+AUX = dict(name="AuxDisplay", file="aux.kicad_sch",
+    title="Aux OLED 128x32 (SSD1306 I2C) — DNP-optional", page="4",
+    big=[
+        dict(ref="J2", lib_id="Connector_Generic:Conn_01x04", value="OLED 128x32 (DNP)",
+             fp="Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
+             lcsc="C2691448", mpn="PZ254V-11-04P", mfr="XKB"),
+    ],
+    small=[],
+    note=(15, 80, "Calcumaker 16 display — OPTIONAL aux OLED (DNP by default). "
+          "J2 receives a standard 0.91\" SSD1306 128x32 I2C module (VCC GND SCL "
+          "SDA; module sourced separately, hand-placed with the THT digits). "
+          "Wiring: J2.1 VCC <- J1.8 (+3V3), J2.2 GND, J2.3 SCL <- J1.10, J2.4 "
+          "SDA <- J1.9. I2C runs at 3V3 straight from the MCU (pull-ups on the "
+          "main board, DNP alongside). Firmware sleeps the panel in idle "
+          "(~10uA). Shows full error text / SETUP / STATUS; the 7-seg glass "
+          "stays primary (Error N codes)."))
 
 # ============================ generate =======================================
 K.build(
@@ -129,5 +155,5 @@ K.build(
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
                          "Display board: 7-seg RPN stack + driver + interconnect (DRAFT)"]),
-    sheets=[DISPLAY, INTERCONNECT],
+    sheets=[DISPLAY, INTERCONNECT, AUX],
 )

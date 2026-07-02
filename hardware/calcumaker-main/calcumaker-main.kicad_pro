@@ -702,31 +702,31 @@
       "calcumaker-main"
     ],
     [
-      "63e350f7-90f9-4813-99bb-238fcb8e7e6b",
+      "da764cdd-8caf-4481-b72a-cf9dd25cafa9",
       "MCU"
     ],
     [
-      "bbba8897-e93d-41d0-80d4-76938f3cdc21",
+      "4dd16969-fa48-40a9-bf37-e7180cf6be85",
       "Clock"
     ],
     [
-      "717b1de1-4ec1-4dd6-8d05-79b4e5347191",
+      "da0f862c-ac78-45d0-9238-36e39d2db74c",
       "Programming"
     ],
     [
-      "a3fec239-0798-4706-8ad1-72f83b060563",
+      "b9ee67a8-aaed-4504-a49b-ae68f7f164a3",
       "PSU"
     ],
     [
-      "3712b048-21b8-45c6-a90e-4eb1d8a17eb6",
+      "65611b0d-545d-4fb9-857e-8b311a34bb2e",
       "Keypad"
     ],
     [
-      "354f9ce7-4ddf-44be-b9b3-f463ad410f0b",
+      "5a080947-7cc4-4e41-bc3c-27cf4b2ace01",
       "DisplayIF"
     ],
     [
-      "5e17fe55-5f88-4888-99a9-67282f4be76a",
+      "09ef021e-eba5-4a51-ac3b-4585f8d3f3ef",
       "Annunciators"
     ]
   ],

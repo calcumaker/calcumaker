@@ -1885,3 +1885,40 @@ fn rolldn_moves_x_to_bottom() {
     }
     assert_eq!(c.display(), "2"); // [3, 1, 2] -> X = 2
 }
+
+// ---- glass error codes (Error N) ----------------------------------------------
+
+/// Every error carries an HP-style class code for the 7-seg glass.
+#[test]
+fn error_codes_by_class() {
+    let mut c = Calc::new(64);
+    for t in ["5", "0"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.input("/").unwrap_err().code(), 0); // math domain
+    c.input("drop").unwrap();
+    assert_eq!(c.input("rcl7").unwrap_err().code(), 1); // register
+    assert_eq!(c.input("rl").unwrap_err().code(), 2); // bits/word
+    c.input("drop").unwrap();
+    c.input("999999").unwrap();
+    assert_eq!(c.input("prec").unwrap_err().code(), 3); // mode range
+    c.input("drop").unwrap();
+    for t in ["2", "10000000"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.input("pow").unwrap_err().code(), 4); // too large
+    for t in ["clear", "10", ">n", "1000", ">pv", "100", ">pmt", "1000", ">fv"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.input("i?").unwrap_err().code(), 5); // no solution
+    c.input("clear").unwrap();
+    assert_eq!(c.input("+").unwrap_err().code(), 6); // stack empty
+    for t in ["2.302026", "1"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.input("dateadd").unwrap_err().code(), 7); // dates
+    c.input("clear").unwrap();
+    assert_eq!(c.input("mean").unwrap_err().code(), 8); // statistics
+    // and every error still carries its full text
+    assert_eq!(c.input("mean").unwrap_err().text(), "need more data points (s+)");
+}

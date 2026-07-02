@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "bbba8897-e93d-41d0-80d4-76938f3cdc21")
+	(uuid "4dd16969-fa48-40a9-bf37-e7180cf6be85")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Main — LSE 32.768 kHz (RTC)")
@@ -364,7 +364,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3de301d6-7d75-4a46-9e8c-af92f9ba491b")
+		(uuid "8b01bd72-69f9-46b5-bfdc-71021030db2c")
 		(property "Reference" "Y1"
 			(at 34.2900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -393,11 +393,11 @@
 			(at 30.4800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "b7e2dd85-64c3-4f05-bb12-34b1feab85f5"))
-		(pin "2" (uuid "75463014-648c-4c20-8db1-761954f40d1d"))
+		(pin "1" (uuid "e4f30000-cfeb-4d16-b779-279468c190ec"))
+		(pin "2" (uuid "563353f0-3f98-4721-ade0-5c9c6affe1ae"))
 		(instances
 			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/bbba8897-e93d-41d0-80d4-76938f3cdc21"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
 					(reference "Y1")
 					(unit 1)
 				)
@@ -412,7 +412,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d69793e0-a933-400d-86bb-453b8b48389c")
+		(uuid "8d4028ac-1396-416e-b333-3fc78c5819a6")
 		(property "Reference" "C24"
 			(at 72.3900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -433,11 +433,11 @@
 			(at 68.5800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "c377470d-c38e-42d0-be01-0eca62d77623"))
-		(pin "2" (uuid "ea355cc5-f5ac-4b94-9789-90fd31d30e6f"))
+		(pin "1" (uuid "7c5dfb3a-8d66-4b2b-a263-253f5ef91144"))
+		(pin "2" (uuid "33cbf168-ee0f-4240-8fc2-09299c49f0a9"))
 		(instances
 			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/bbba8897-e93d-41d0-80d4-76938f3cdc21"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
 					(reference "C24")
 					(unit 1)
 				)
@@ -452,7 +452,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a964dfd8-0524-45fb-98f2-5f8445fbf7f7")
+		(uuid "20604f57-e7e8-4ed0-b5b3-a86d9f8a7ea8")
 		(property "Reference" "C25"
 			(at 110.4900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -473,11 +473,11 @@
 			(at 106.6800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "264e7359-2f73-4a62-8237-fc37d28721ce"))
-		(pin "2" (uuid "64ed44e2-adea-4789-a353-3aa7dfc7aa42"))
+		(pin "1" (uuid "4a8f4b8c-a5d9-4d0c-97f8-cff66350fb2a"))
+		(pin "2" (uuid "66792e44-821a-48ef-9cd2-ca054db372e1"))
 		(instances
 			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/bbba8897-e93d-41d0-80d4-76938f3cdc21"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
 					(reference "C25")
 					(unit 1)
 				)
@@ -488,7 +488,7 @@
 		(exclude_from_sim no)
 		(at 15.00 100.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "27de2294-7c58-47ec-8ae3-18c7a1859539")
+		(uuid "e38011c3-1037-4c11-ae77-d5db286819ac")
 	)
 	(sheet_instances
 		(path "/"

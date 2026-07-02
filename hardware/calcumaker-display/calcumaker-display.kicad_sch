@@ -19,7 +19,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "5655df7c-81b1-4acd-8ecd-e82f9f427e94")
+		(uuid "507d8e78-b2ea-45f3-98d7-267a14473170")
 		(property "Sheetname" "Display"
 			(at 40.64 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -35,13 +35,29 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "c4c3c015-b6ba-4dbd-a6a4-490d09c995d8")
+		(uuid "6885ee80-e191-4b5d-9a90-d31ab546f2b5")
 		(property "Sheetname" "Interconnect"
 			(at 96.52 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
 		(property "Sheetfile" "interconnect.kicad_sch"
 			(at 96.52 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 152.40 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "a66aef50-7a52-4b48-b96b-ed0e80888573")
+		(property "Sheetname" "AuxDisplay"
+			(at 152.40 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "aux.kicad_sch"
+			(at 152.40 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)

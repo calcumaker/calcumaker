@@ -145,11 +145,48 @@ pub enum CalcError {
     Parse(String),
     /// Stack underflow.
     Empty,
-    /// Wrong operand type / domain for the operation.
-    TypeError(&'static str),
     /// Division by zero.
     DivZero,
+    /// Any other operation error: an HP-style glass code (`Error N`, see
+    /// [`CalcError::code`]) plus the full text for host frontends / the aux
+    /// display.
+    Op(u8, &'static str),
 }
+
+impl CalcError {
+    /// HP-16C-style error class for the 7-seg glass (`Error N`):
+    /// 0 math domain · 1 register/flag · 2 bits/shift/word · 3 mode ranges ·
+    /// 4 result too large · 5 no solution · 6 stack/entry/usage · 7 dates ·
+    /// 8 statistics · 9 reserved (crash recovery).
+    pub fn code(&self) -> u8 {
+        match self {
+            CalcError::DivZero => 0,
+            CalcError::Parse(_) | CalcError::Empty => 6,
+            CalcError::Op(c, _) => *c,
+        }
+    }
+
+    /// Full error text — host frontends and the aux (OLED) display.
+    pub fn text(&self) -> &str {
+        match self {
+            CalcError::Parse(_) => "parse error",
+            CalcError::Empty => "stack empty",
+            CalcError::DivZero => "divide by zero",
+            CalcError::Op(_, m) => m,
+        }
+    }
+}
+
+// Class constructors — every operation error picks its glass code at the site.
+const fn e_domain(m: &'static str) -> CalcError { CalcError::Op(0, m) }
+const fn e_reg(m: &'static str) -> CalcError { CalcError::Op(1, m) }
+const fn e_bits(m: &'static str) -> CalcError { CalcError::Op(2, m) }
+const fn e_mode(m: &'static str) -> CalcError { CalcError::Op(3, m) }
+const fn e_big(m: &'static str) -> CalcError { CalcError::Op(4, m) }
+const fn e_nosol(m: &'static str) -> CalcError { CalcError::Op(5, m) }
+const fn e_use(m: &'static str) -> CalcError { CalcError::Op(6, m) }
+const fn e_date(m: &'static str) -> CalcError { CalcError::Op(7, m) }
+const fn e_stats(m: &'static str) -> CalcError { CalcError::Op(8, m) }
 
 /// STO/RCL register file size (one register per hex digit key, 0–F).
 pub const REGISTERS: usize = 16;
@@ -931,7 +968,7 @@ impl Calc {
     fn peek_int(&self, depth: usize, what: &'static str) -> Result<&Integer, CalcError> {
         match &self.stack[self.stack.len() - 1 - depth] {
             Value::Int(i) => Ok(i),
-            Value::Real(_) => Err(CalcError::TypeError(what)),
+            Value::Real(_) => Err(e_domain(what)),
         }
     }
 
@@ -944,7 +981,7 @@ impl Calc {
                 if !f.is_nan() && !f.is_inf() && f.clone().frac().is_zero() {
                     Ok(f.round_to_int())
                 } else {
-                    Err(CalcError::TypeError(what))
+                    Err(e_domain(what))
                 }
             }
         }
@@ -953,7 +990,7 @@ impl Calc {
     /// X as a small non-negative count, validated in place (integral reals
     /// accepted — see [`Self::peek_integral`]).
     fn peek_u32(&self, what: &'static str) -> Result<u32, CalcError> {
-        self.peek_integral(0, what)?.to_u32().ok_or(CalcError::TypeError(what))
+        self.peek_integral(0, what)?.to_u32().ok_or(e_domain(what))
     }
 
     /// Pop X, recording it as LASTx. Call only after validation succeeded.
@@ -1146,19 +1183,19 @@ impl Calc {
 
         let rotate = matches!(kind, ShiftKind::RotLeft | ShiftKind::RotRight);
         if self.word_bits.is_none() && rotate {
-            return Err(CalcError::TypeError("rotate needs a word size (wsize)"));
+            return Err(e_bits("rotate needs a word size (wsize)"));
         }
         if rotate {
             if let Some(n) = self.word_bits {
                 if k > n {
-                    return Err(CalcError::TypeError("rotate count exceeds the word size"));
+                    return Err(e_bits("rotate count exceeds the word size"));
                 }
             }
         }
         // Unbounded shifts/masks/bit-indexes allocate the result: same
         // result-size guard as pow (a slip like `1 4e9 shl` must not OOM).
         if self.word_bits.is_none() && k as u64 > MAX_POW_BITS {
-            return Err(CalcError::TypeError("shift count too large"));
+            return Err(e_bits("shift count too large"));
         }
 
         // Validated — commit the pops.
@@ -1233,7 +1270,7 @@ impl Calc {
     /// mode only.
     fn rot_carry(&mut self, left: bool, count_from_x: bool) -> Result<(), CalcError> {
         let Some(n) = self.word_bits else {
-            return Err(CalcError::TypeError("rotate needs a word size (wsize)"));
+            return Err(e_bits("rotate needs a word size (wsize)"));
         };
         let (k, val_depth) = if count_from_x {
             self.need(2)?;
@@ -1278,7 +1315,7 @@ impl Calc {
     /// shift count (HP-16C). Word mode only.
     fn left_justify(&mut self) -> Result<(), CalcError> {
         let Some(n) = self.word_bits else {
-            return Err(CalcError::TypeError("lj needs a word size (wsize)"));
+            return Err(e_bits("lj needs a word size (wsize)"));
         };
         self.need(1)?;
         self.peek_int(0, "lj needs an integer")?;
@@ -1299,10 +1336,10 @@ impl Calc {
     /// trip through canonical values (the 16C stores raw bits; we don't).
     fn dbl_mul(&mut self) -> Result<(), CalcError> {
         let Some(n) = self.word_bits else {
-            return Err(CalcError::TypeError("dbl* needs a word size (wsize)"));
+            return Err(e_bits("dbl* needs a word size (wsize)"));
         };
         if self.sign_mode == SignMode::Ones {
-            return Err(CalcError::TypeError("dbl ops need 2's complement or unsigned mode"));
+            return Err(e_mode("dbl ops need 2's complement or unsigned mode"));
         }
         self.need(2)?;
         self.peek_int(0, "dbl* needs integers")?;
@@ -1324,10 +1361,10 @@ impl Calc {
     /// errors without consuming anything (16C raises Error 0). Word mode only.
     fn dbl_div(&mut self, want_quotient: bool) -> Result<(), CalcError> {
         let Some(n) = self.word_bits else {
-            return Err(CalcError::TypeError("dbl/ needs a word size (wsize)"));
+            return Err(e_bits("dbl/ needs a word size (wsize)"));
         };
         if self.sign_mode == SignMode::Ones {
-            return Err(CalcError::TypeError("dbl ops need 2's complement or unsigned mode"));
+            return Err(e_mode("dbl ops need 2's complement or unsigned mode"));
         }
         self.need(3)?;
         let d = self.peek_int(0, "dbl/ needs integers")?;
@@ -1353,7 +1390,7 @@ impl Calc {
             let (w, ovf) = wrap(q.clone(), self.sign_mode, n);
             if ovf {
                 let _ = w;
-                return Err(CalcError::TypeError("double quotient exceeds the word size"));
+                return Err(e_bits("double quotient exceeds the word size"));
             }
             q
         } else {
@@ -1379,10 +1416,10 @@ impl Calc {
         let i = self.peek_u32(what)?;
         match self.word_bits {
             Some(n) if i >= n => {
-                return Err(CalcError::TypeError("bit index exceeds the word size"))
+                return Err(e_bits("bit index exceeds the word size"))
             }
             None if i as u64 > MAX_POW_BITS => {
-                return Err(CalcError::TypeError("bit index too large"))
+                return Err(e_bits("bit index too large"))
             }
             _ => {}
         }
@@ -1422,7 +1459,7 @@ impl Calc {
         let v = match (self.word_bits, left) {
             (Some(n), _) => {
                 if k > n {
-                    return Err(CalcError::TypeError("mask width exceeds the word size"));
+                    return Err(e_bits("mask width exceeds the word size"));
                 }
                 let ones = pow2(k) - one();
                 let bits = if left { ones << (n - k) } else { ones };
@@ -1430,11 +1467,11 @@ impl Calc {
             }
             (None, false) => {
                 if k as u64 > MAX_POW_BITS {
-                    return Err(CalcError::TypeError("mask width too large"));
+                    return Err(e_bits("mask width too large"));
                 }
                 pow2(k) - one()
             }
-            (None, true) => return Err(CalcError::TypeError("maskl needs a word size (wsize)")),
+            (None, true) => return Err(e_bits("maskl needs a word size (wsize)")),
         };
         let _ = self.pop_x();
         self.stack.push(Value::Int(v));
@@ -1451,7 +1488,7 @@ impl Calc {
                 .expect("masked pattern is non-negative"),
             None => x
                 .popcount()
-                .ok_or(CalcError::TypeError("popcount of a negative needs a word size"))?,
+                .ok_or(e_bits("popcount of a negative needs a word size"))?,
         };
         let _ = self.pop_x();
         self.push_int_canon(Integer::from_i64(count as i64));
@@ -1464,7 +1501,7 @@ impl Calc {
         // n! has ~n*log2(n) bits — same result-size guard as pow
         let bits = n as u64 * (64 - (n as u64 | 1).leading_zeros() as u64);
         if bits > MAX_POW_BITS {
-            return Err(CalcError::TypeError("result too large"));
+            return Err(e_big("result too large"));
         }
         let _ = self.pop_x();
         let v = self.canon_flagged(Integer::factorial(n));
@@ -1731,7 +1768,7 @@ impl Calc {
                         Some(e) if base.bit_len() as u64 * e as u64 <= MAX_POW_BITS => {
                             Some(Ok(base.pow_exact(e)))
                         }
-                        _ => Some(Err(CalcError::TypeError("power result too large"))),
+                        _ => Some(Err(e_big("power result too large"))),
                     }
                 }
             }
@@ -1764,7 +1801,7 @@ impl Calc {
             return self.unary_real(|x| x.sqrt());
         }
         if matches!(self.stack.last(), Some(Value::Int(x)) if x.is_negative()) {
-            return Err(CalcError::TypeError("sqrt of a negative integer (float it for nan)"));
+            return Err(e_domain("sqrt of a negative integer (float it for nan)"));
         }
         let Value::Int(x) = self.pop_x() else { unreachable!() };
         self.carry = !x.is_perfect_square(); // 16C: C = the root was inexact
@@ -1794,9 +1831,9 @@ impl Calc {
         self.need(1)?;
         if let Value::Int(n) = &self.stack[self.stack.len() - 1] {
             if !n.is_negative() {
-                let n = n.to_u32().ok_or(CalcError::TypeError("power result too large"))?;
+                let n = n.to_u32().ok_or(e_big("power result too large"))?;
                 if n as u64 * 4 > MAX_POW_BITS {
-                    return Err(CalcError::TypeError("power result too large"));
+                    return Err(e_big("power result too large"));
                 }
                 let _ = self.pop_x();
                 let v = self.canon_flagged(Integer::from_i64(10).pow_exact(n));
@@ -1866,7 +1903,7 @@ impl Calc {
             Value::Int(_) => Ok(()),
             Value::Real(f) => {
                 if f.is_nan() || f.is_inf() {
-                    return Err(CalcError::TypeError("cannot convert nan/inf to an integer"));
+                    return Err(e_domain("cannot convert nan/inf to an integer"));
                 }
                 let Value::Real(f) = self.pop_x() else { unreachable!() };
                 let v = self.canon_silent(conv(&f));
@@ -1892,7 +1929,7 @@ impl Calc {
         self.need(1)?;
         let n = self.peek_u32("word size out of range")?;
         if n > MAX_WORD_BITS {
-            return Err(CalcError::TypeError("word size out of range"));
+            return Err(e_mode("word size out of range"));
         }
         let _ = self.pop_x();
         self.set_word_bits(if n == 0 { None } else { Some(n) });
@@ -1904,7 +1941,7 @@ impl Calc {
         self.need(1)?;
         let n = self.peek_u32("precision out of range")?;
         if !(2..=MAX_PREC_BITS).contains(&n) {
-            return Err(CalcError::TypeError("precision out of range"));
+            return Err(e_mode("precision out of range"));
         }
         let _ = self.pop_x();
         self.set_prec(n);
@@ -1916,7 +1953,7 @@ impl Calc {
         self.need(1)?;
         let d = self.peek_u32("format digits out of range")?;
         if d > MAX_FMT_DIGITS {
-            return Err(CalcError::TypeError("format digits out of range"));
+            return Err(e_mode("format digits out of range"));
         }
         let _ = self.pop_x();
         self.float_fmt = match shape {
@@ -1934,7 +1971,7 @@ impl Calc {
         self.need(1)?;
         let i = self.peek_u32("flag index must be 0-5")?;
         if i > 5 {
-            return Err(CalcError::TypeError("flag index must be 0-5"));
+            return Err(e_reg("flag index must be 0-5"));
         }
         let _ = self.pop_x();
         match i {
@@ -1951,7 +1988,7 @@ impl Calc {
         self.need(1)?;
         let i = self.peek_u32("flag index must be 0-5")?;
         if i > 5 {
-            return Err(CalcError::TypeError("flag index must be 0-5"));
+            return Err(e_reg("flag index must be 0-5"));
         }
         let _ = self.pop_x();
         let v = match i {
@@ -1971,7 +2008,7 @@ impl Calc {
     fn sigma(&mut self, add: bool) -> Result<(), CalcError> {
         self.need(1)?;
         if !add && self.stats.as_ref().map_or(true, |s| s.n == 0) {
-            return Err(CalcError::TypeError("no data accumulated"));
+            return Err(e_stats("no data accumulated"));
         }
         let prec = self.prec;
         let x = self.stack.last().expect("validated").clone().to_real(prec);
@@ -2007,7 +2044,7 @@ impl Calc {
     fn stats_ref(&self, min_n: u64) -> Result<&Stats, CalcError> {
         match &self.stats {
             Some(s) if s.n >= min_n => Ok(s),
-            _ => Err(CalcError::TypeError("need more data points (s+)")),
+            _ => Err(e_stats("need more data points (s+)")),
         }
     }
 
@@ -2020,7 +2057,7 @@ impl Calc {
         let n = Float::from_i64(prec, s.n as i64);
         let den = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
         if den.is_zero() {
-            return Err(CalcError::TypeError("regression needs varying x data"));
+            return Err(e_stats("regression needs varying x data"));
         }
         let slope = (n.clone() * s.sxy.clone() - s.sx.clone() * s.sy.clone()) / den;
         let intercept = (s.sy.clone() - slope.clone() * s.sx.clone()) / n;
@@ -2073,7 +2110,7 @@ impl Calc {
             let cx = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
             let cy = n.clone() * s.syy.clone() - s.sy.clone() * s.sy.clone();
             if cx.is_zero() || cy.is_zero() {
-                return Err(CalcError::TypeError("correlation needs varying data"));
+                return Err(e_stats("correlation needs varying data"));
             }
             let cov = n * s.sxy.clone() - s.sx.clone() * s.sy.clone();
             cov / (cx * cy).sqrt()
@@ -2090,13 +2127,13 @@ impl Calc {
         let n = self.peek_integral(1, "ncr/npr need integers")?;
         let n = &n;
         if n.is_negative() {
-            return Err(CalcError::TypeError("ncr/npr need non-negative n"));
+            return Err(e_domain("ncr/npr need non-negative n"));
         }
         let v = if Integer::from_i64(r as i64) > n.clone() {
             Integer::new() // r > n → 0 (and skip a pointless huge r!)
         } else {
             if n.bit_len() as u64 * r as u64 > MAX_POW_BITS {
-                return Err(CalcError::TypeError("result too large"));
+                return Err(e_big("result too large"));
             }
             let b = n.binomial(r);
             if perm {
@@ -2244,14 +2281,14 @@ impl Calc {
             TvmReg::Pmt => {
                 if p_zero {
                     if t.n.is_zero() {
-                        return Err(CalcError::TypeError("pmt needs n != 0"));
+                        return Err(e_nosol("pmt needs n != 0"));
                     }
                     -(t.pv.clone() + t.fv.clone()) / t.n.clone()
                 } else {
                     let c = (one.clone() + p.clone()).pow(t.n.clone());
                     let ann = k * (c.clone() - one) / p;
                     if ann.is_zero() {
-                        return Err(CalcError::TypeError("pmt is undetermined (n = 0)"));
+                        return Err(e_nosol("pmt is undetermined (n = 0)"));
                     }
                     -(t.fv.clone() + t.pv.clone() * c) / ann
                 }
@@ -2259,7 +2296,7 @@ impl Calc {
             TvmReg::N => {
                 if p_zero {
                     if t.pmt.is_zero() {
-                        return Err(CalcError::TypeError("n is undetermined (i = 0, pmt = 0)"));
+                        return Err(e_nosol("n is undetermined (i = 0, pmt = 0)"));
                     }
                     -(t.pv.clone() + t.fv.clone()) / t.pmt.clone()
                 } else {
@@ -2267,11 +2304,11 @@ impl Calc {
                     let a = t.pmt.clone() * k / p.clone();
                     let den = t.pv.clone() + a.clone();
                     if den.is_zero() {
-                        return Err(CalcError::TypeError("n has no solution for these values"));
+                        return Err(e_nosol("n has no solution for these values"));
                     }
                     let c = (a - t.fv.clone()) / den;
                     if c.is_nan() || c.is_sign_negative() || c.is_zero() {
-                        return Err(CalcError::TypeError("n has no solution for these values"));
+                        return Err(e_nosol("n has no solution for these values"));
                     }
                     c.ln() / (one + p).ln()
                 }
@@ -2279,7 +2316,7 @@ impl Calc {
             TvmReg::I => self.tvm_solve_i()? * hundred,
         };
         if v.is_nan() || v.is_inf() {
-            return Err(CalcError::TypeError("no TVM solution for these values"));
+            return Err(e_nosol("no TVM solution for these values"));
         }
         let t = self.tvm_mut();
         match r {
@@ -2298,7 +2335,7 @@ impl Calc {
         let prec = self.prec;
         let t = self.tvm.as_ref().expect("caller ensured");
         bisect_rate(prec, |p| Self::tvm_balance(t, prec, p))
-            .ok_or(CalcError::TypeError("no i solution found"))
+            .ok_or(e_nosol("no i solution found"))
     }
 
     // ---- cash flows: NPV / IRR (12C) -------------------------------------------
@@ -2310,7 +2347,7 @@ impl Calc {
         if initial {
             self.cfs.clear();
         } else if self.cfs.is_empty() {
-            return Err(CalcError::TypeError("enter cf0 first"));
+            return Err(e_use("enter cf0 first"));
         }
         self.cfs.push((v, 1));
         Ok(())
@@ -2319,12 +2356,12 @@ impl Calc {
     /// Nⱼ — repeat count for the most recent flow (1–9999).
     fn cash_count(&mut self) -> Result<(), CalcError> {
         if self.cfs.is_empty() {
-            return Err(CalcError::TypeError("no cash flow to count (cfj first)"));
+            return Err(e_use("no cash flow to count (cfj first)"));
         }
         self.need(1)?;
         let n = self.peek_u32("nj must be 1-9999")?;
         if n == 0 || n > 9999 {
-            return Err(CalcError::TypeError("nj must be 1-9999"));
+            return Err(e_use("nj must be 1-9999"));
         }
         let _ = self.pop_x();
         self.cfs.last_mut().expect("checked").1 = n;
@@ -2356,7 +2393,7 @@ impl Calc {
     /// NPV — discounts the flow list at the TVM `i` register; pushes.
     fn npv_cmd(&mut self) -> Result<(), CalcError> {
         if self.cfs.is_empty() {
-            return Err(CalcError::TypeError("no cash flows (cf0/cfj)"));
+            return Err(e_use("no cash flows (cf0/cfj)"));
         }
         let prec = self.prec;
         let p = match &self.tvm {
@@ -2371,11 +2408,11 @@ impl Calc {
     /// IRR — the rate that zeroes NPV; pushed AND stored into `i` (12C).
     fn irr_cmd(&mut self) -> Result<(), CalcError> {
         if self.cfs.len() < 2 {
-            return Err(CalcError::TypeError("irr needs cf0 and at least one cfj"));
+            return Err(e_use("irr needs cf0 and at least one cfj"));
         }
         let prec = self.prec;
         let p = bisect_rate(prec, |p| self.npv_at(p))
-            .ok_or(CalcError::TypeError("no irr solution found"))?;
+            .ok_or(e_nosol("no irr solution found"))?;
         let i = p * Float::from_i64(prec, 100);
         self.tvm_mut().i = i.clone();
         self.stack.push(Value::Real(i));
@@ -2386,7 +2423,7 @@ impl Calc {
     /// Decode an M.DYYYY date float; errors on invalid dates (Gregorian,
     /// years 1583–9999).
     fn decode_date(&self, f: &Float) -> Result<(i64, i64, i64), CalcError> {
-        const BAD: CalcError = CalcError::TypeError("invalid date (use M.DYYYY)");
+        const BAD: CalcError = e_date("invalid date (use M.DYYYY)");
         if f.is_nan() || f.is_inf() || f.is_sign_negative() {
             return Err(BAD);
         }
@@ -2439,7 +2476,7 @@ impl Calc {
         let days = {
             let i = self.peek_integral(0, "day count must be a whole number")?;
             let mag =
-                i.clone().abs().to_u32().ok_or(CalcError::TypeError("day count out of range"))? as i64;
+                i.clone().abs().to_u32().ok_or(e_date("day count out of range"))? as i64;
             if i.is_negative() {
                 -mag
             } else {
@@ -2450,7 +2487,7 @@ impl Calc {
         let z = days_from_civil(d.0, d.1, d.2) + days;
         let (y, m, dd) = civil_from_days(z);
         if !(1583..=9999).contains(&y) {
-            return Err(CalcError::TypeError("date out of range"));
+            return Err(e_date("date out of range"));
         }
         let _ = self.pop_x();
         let _ = self.stack.pop();
@@ -2481,13 +2518,13 @@ impl Calc {
         self.need(1)?;
         let j = self.peek_u32("year must be a small positive integer")?;
         if j == 0 || j > 10_000 {
-            return Err(CalcError::TypeError("year must be a small positive integer"));
+            return Err(e_use("year must be a small positive integer"));
         }
         let prec = self.prec;
-        let t = self.tvm.as_ref().ok_or(CalcError::TypeError("set n (life), pv (cost), fv (salvage) first"))?;
+        let t = self.tvm.as_ref().ok_or(e_use("set n (life), pv (cost), fv (salvage) first"))?;
         let life = t.n.clone();
         if life.is_zero() || life.is_sign_negative() {
-            return Err(CalcError::TypeError("life (n) must be positive"));
+            return Err(e_use("life (n) must be positive"));
         }
         // beyond the life: fully depreciated
         let beyond = (life.clone() - Float::from_i64(prec, j as i64)).is_sign_negative();
@@ -2567,7 +2604,7 @@ impl Calc {
         let v = {
             let s = self.stats_ref(1)?;
             if s.sy.is_zero() {
-                return Err(CalcError::TypeError("weighted mean needs nonzero weights"));
+                return Err(e_stats("weighted mean needs nonzero weights"));
             }
             s.sxy.clone() / s.sy.clone()
         };
@@ -2595,7 +2632,7 @@ impl Calc {
                 self.stack.push(v.clone());
                 Ok(())
             }
-            None => Err(CalcError::TypeError("empty register")),
+            None => Err(e_reg("empty register")),
         }
     }
 

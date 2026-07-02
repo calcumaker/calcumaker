@@ -114,6 +114,19 @@ impl Float {
         self.unary(ffi::mpfr_frac)
     }
 
+    /// Exact equality (false when either is NaN — `mpfr_equal_p`).
+    pub fn equals(&self, other: &Float) -> bool {
+        unsafe { ffi::mpfr_equal_p(&self.raw, &other.raw) != 0 }
+    }
+
+    /// Remainder of `self / m`, same sign as self (`mpfr_fmod`), at `self`'s
+    /// precision.
+    pub fn fmod(&self, m: &Float) -> Float {
+        let mut r = Float::new(self.prec());
+        unsafe { ffi::mpfr_fmod(&mut r.raw, &self.raw, &m.raw, RNDN) };
+        r
+    }
+
     /// Normalized `"d.ffffe<exp>"` form with `ndigits` significant digits — the
     /// shape a `%g`-style formatter can post-process.
     pub fn to_string_radix(&self, base: i32, ndigits: usize) -> String {

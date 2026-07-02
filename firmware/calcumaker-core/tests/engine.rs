@@ -643,6 +643,94 @@ fn sqrt_of_negative_real_is_nan() {
     assert_eq!(run(64, &["-1.0", "sqrt"]), "nan");
 }
 
+// ---- angle modes (RAD default; DEG/GRAD reduce exactly + hit exact angles) ---
+
+#[test]
+fn rad_is_default_and_unchanged() {
+    // atan(1) = π/4 in radians — the pre-angle-mode behavior
+    let s = run(200, &["1", "atan"]);
+    assert!(s.starts_with("0.785398163397448309"), "atan(1) rad = {s}");
+}
+
+#[test]
+fn deg_quadrants_are_exact() {
+    assert_eq!(run(128, &["deg", "90", "sin"]), "1");
+    assert_eq!(run(128, &["deg", "180", "sin"]), "0"); // not a 2^-prec residue
+    assert_eq!(run(128, &["deg", "270", "sin"]), "-1");
+    assert_eq!(run(128, &["deg", "180", "cos"]), "-1");
+    assert_eq!(run(128, &["deg", "180", "tan"]), "0");
+    assert_eq!(run(128, &["deg", "90", "tan"]), "inf");
+}
+
+#[test]
+fn deg_half_exact_angles() {
+    assert_eq!(run(128, &["deg", "30", "sin"]), "0.5");
+    assert_eq!(run(128, &["deg", "150", "sin"]), "0.5");
+    assert_eq!(run(128, &["deg", "210", "sin"]), "-0.5");
+    assert_eq!(run(128, &["deg", "60", "cos"]), "0.5");
+    assert_eq!(run(128, &["deg", "120", "cos"]), "-0.5");
+    assert_eq!(run(128, &["deg", "45", "tan"]), "1");
+    assert_eq!(run(128, &["deg", "135", "tan"]), "-1");
+}
+
+#[test]
+fn deg_reduces_huge_and_negative_angles_exactly() {
+    assert_eq!(run(128, &["deg", "36000090", "sin"]), "1"); // ≡ 90°
+    assert_eq!(run(128, &["deg", "-90", "sin"]), "-1"); // ≡ 270°
+    assert_eq!(run(128, &["deg", "-30", "sin"]), "-0.5"); // ≡ 330°
+}
+
+#[test]
+fn deg_general_angle_correctly_rounded() {
+    // sin 60° = √3/2 — general path with guard bits
+    let s = run(200, &["deg", "60", "sin"]);
+    assert!(s.starts_with("0.86602540378443864676"), "sin 60° = {s}");
+}
+
+#[test]
+fn grad_quadrants_and_tan() {
+    assert_eq!(run(128, &["grad", "100", "sin"]), "1");
+    assert_eq!(run(128, &["grad", "200", "cos"]), "-1");
+    assert_eq!(run(128, &["grad", "50", "tan"]), "1");
+}
+
+#[test]
+fn inverse_trig_exact_hits_in_deg() {
+    assert_eq!(run(128, &["deg", "0.5", "asin"]), "30");
+    assert_eq!(run(128, &["deg", "1", "atan"]), "45");
+    assert_eq!(run(128, &["deg", "-1", "acos"]), "180");
+    assert_eq!(run(128, &["deg", "0", "acos"]), "90");
+    assert_eq!(run(128, &["grad", "1", "asin"]), "100");
+}
+
+#[test]
+fn inverse_trig_general_deg() {
+    // asin(0.6) = 36.86989764584402...°
+    let s = run(200, &["deg", "0.6", "asin"]);
+    assert!(s.starts_with("36.8698976458440212"), "asin(0.6)° = {s}");
+}
+
+#[test]
+fn anglemode_cycles() {
+    use calcumaker_core::AngleMode;
+    let mut c = Calc::new(64);
+    assert_eq!(c.angle_mode(), AngleMode::Rad);
+    c.input("anglemode").unwrap();
+    assert_eq!(c.angle_mode(), AngleMode::Deg);
+    c.input("anglemode").unwrap();
+    assert_eq!(c.angle_mode(), AngleMode::Grad);
+    c.input("anglemode").unwrap();
+    assert_eq!(c.angle_mode(), AngleMode::Rad);
+}
+
+#[test]
+fn hyperbolics_ignore_angle_mode() {
+    assert_eq!(run(128, &["deg", "0", "cosh"]), "1");
+    let rad = run(200, &["1", "sinh"]);
+    let deg = run(200, &["deg", "1", "sinh"]);
+    assert_eq!(rad, deg);
+}
+
 // ---- errors never consume operands ---------------------------------------------
 
 #[test]

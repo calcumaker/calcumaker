@@ -31,6 +31,8 @@ pub enum Key {
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
     // real display format (X = digit count; FmtAuto = %g-style)
     Fix, Sci, Eng, FmtAuto,
+    // angle unit for circular trig (cycles RAD → DEG → GRAD)
+    AngleMode,
     // arbitrary-precision control (the headline feature)
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
@@ -59,12 +61,12 @@ pub const LAYER_F: [[Key; COLS]; ROWS] = [
 ];
 
 /// g (blue) layer — hyperbolic / secondary. (FIX/SCI/ENG/auto sit over the
-/// radix keys: display format over display base.)
+/// radix keys — display format over display base; angle mode over WSIZE.)
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Fact,   Pct,  Round, Nop],
-    [Fix,    Sci,    Eng,  FmtAuto, Nop,   Nop,  Nop,    Nop,  Nop,   Nop],
+    [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Nop, Nop, Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
 ];
 

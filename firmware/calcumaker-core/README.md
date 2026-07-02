@@ -55,7 +55,9 @@ emulator: `../calcumaker-emu` (`cargo run`).
 
 Tokens:
 - arith: `+ - * / chs abs pow inv sq sqrt fact mod pct`
-- trig: `sin cos tan asin acos atan sinh cosh tanh`
+- trig: `sin cos tan asin acos atan sinh cosh tanh` · angle unit `rad deg grad`
+  (`anglemode` cycles; RAD default — DEG/GRAD reduce mod the circle exactly and
+  hit exact angles: `deg 180 sin` = 0, `deg 30 sin` = 0.5, `deg 1 atan` = 45)
 - log/const: `ln log exp exp10 e pi`
 - programmer: `and or xor not` · `sl sr asr rl rr` (X by one bit) ·
   `shl shr rln rrn` (Y by X bits) · `bset bclr btest maskl maskr popcnt` ·

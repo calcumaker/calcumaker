@@ -27,7 +27,7 @@ pub mod seg7;
 mod value;
 
 pub use app::App;
-pub use calc::{Calc, CalcError, FloatFmt, Radix, SignMode};
+pub use calc::{AngleMode, Calc, CalcError, FloatFmt, Radix, SignMode};
 pub use keys::Key;
 pub use value::Value;
 

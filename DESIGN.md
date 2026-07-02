@@ -449,6 +449,12 @@ the authored TM1640.
   key; on the keypad STO/RCL wait for the next digit key).
 - **Real display formats:** AUTO (`%g`-style) / `FIX n` / `SCI n` / `ENG n`
   (digit count from X; `std` = back to AUTO). Inf/NaN display as `inf`/`nan`.
+- **Angle modes** `rad` (default) / `deg` / `grad` for the circular trig
+  (hyperbolics unaffected; g-shift WSIZE cycles). Conversions run through MPFR
+  π with 32 guard bits; DEG/GRAD reduce mod the full circle **exactly** (fmod)
+  and special-case exactly-representable angles — `deg 180 sin` = 0 (not a
+  2^-prec residue), `30 sin` = 0.5, `45 tan` = 1, `0.5 asin` = 30; tan at
+  90°/270° shows `inf`.
 - **Errors never consume operands** — every op validates stack depth, types,
   and domain before popping (and LASTx updates only on success), so a failed
   op leaves the calculator exactly as it was (HP behaviour).

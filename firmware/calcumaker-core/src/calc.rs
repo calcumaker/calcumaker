@@ -59,6 +59,45 @@ pub enum FloatFmt {
     Eng(u8),
 }
 
+/// Angle unit for the circular trig functions (hyperbolics are unaffected).
+/// Radians is the default — the math-natural unit for an arbitrary-precision
+/// engine; `deg`/`grad` scale via MPFR π with guard bits, reduce mod the full
+/// circle exactly, and special-case the exactly-representable angles
+/// (90°-multiples, sin 30° = ½, tan 45° = 1, …) so `180 sin` is 0, not a
+/// 2^-prec residue.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum AngleMode {
+    Rad,
+    Deg,
+    Grad,
+}
+
+impl AngleMode {
+    /// Degrees in a half turn (π radians) — the conversion factor.
+    fn half_turn(self) -> i64 {
+        match self {
+            AngleMode::Rad => 0, // unused
+            AngleMode::Deg => 180,
+            AngleMode::Grad => 200,
+        }
+    }
+}
+
+/// Which circular function — needed for the exact-angle tables.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Circ {
+    Sin,
+    Cos,
+    Tan,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum InvCirc {
+    Asin,
+    Acos,
+    Atan,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum CalcError {
     /// Token was neither a number (in the active radix) nor a known command.
@@ -89,6 +128,7 @@ pub struct Calc {
     word_bits: Option<u32>,
     sign_mode: SignMode,
     float_fmt: FloatFmt,
+    angle_mode: AngleMode,
     carry: bool,
     overflow: bool,
     last_x: Option<Value>,
@@ -193,6 +233,7 @@ impl Calc {
             word_bits: None,
             sign_mode: SignMode::Twos,
             float_fmt: FloatFmt::Auto,
+            angle_mode: AngleMode::Rad,
             carry: false,
             overflow: false,
             last_x: None,
@@ -238,6 +279,12 @@ impl Calc {
     }
     pub fn set_float_fmt(&mut self, f: FloatFmt) {
         self.float_fmt = f;
+    }
+    pub fn angle_mode(&self) -> AngleMode {
+        self.angle_mode
+    }
+    pub fn set_angle_mode(&mut self, m: AngleMode) {
+        self.angle_mode = m;
     }
     /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
     pub fn carry(&self) -> bool {
@@ -357,16 +404,16 @@ impl Calc {
             "drop" => self.pop_unchecked().map(|_| ()),
             "dup" => self.dup(),
             "sqrt" => self.sqrt_op(),
-            "sin" => self.unary_real(|x| x.sin()),
-            "cos" => self.unary_real(|x| x.cos()),
-            "tan" => self.unary_real(|x| x.tan()),
+            "sin" => self.circ(Circ::Sin),
+            "cos" => self.circ(Circ::Cos),
+            "tan" => self.circ(Circ::Tan),
             "ln" => self.unary_real(|x| x.ln()),
             "exp" => self.unary_real(|x| x.exp()),
             "inv" => self.unary_real(|x| x.recip()),
             "sq" => self.sq(),
-            "asin" => self.unary_real(|x| x.asin()),
-            "acos" => self.unary_real(|x| x.acos()),
-            "atan" => self.unary_real(|x| x.atan()),
+            "asin" => self.inv_circ(InvCirc::Asin),
+            "acos" => self.inv_circ(InvCirc::Acos),
+            "atan" => self.inv_circ(InvCirc::Atan),
             "sinh" => self.unary_real(|x| x.sinh()),
             "cosh" => self.unary_real(|x| x.cosh()),
             "tanh" => self.unary_real(|x| x.tanh()),
@@ -440,6 +487,26 @@ impl Calc {
                     SignMode::Ones => SignMode::Unsigned,
                     SignMode::Unsigned => SignMode::Twos,
                 });
+                Ok(())
+            }
+            "rad" => {
+                self.angle_mode = AngleMode::Rad;
+                Ok(())
+            }
+            "deg" => {
+                self.angle_mode = AngleMode::Deg;
+                Ok(())
+            }
+            "grad" => {
+                self.angle_mode = AngleMode::Grad;
+                Ok(())
+            }
+            "anglemode" => {
+                self.angle_mode = match self.angle_mode {
+                    AngleMode::Rad => AngleMode::Deg,
+                    AngleMode::Deg => AngleMode::Grad,
+                    AngleMode::Grad => AngleMode::Rad,
+                };
                 Ok(())
             }
             "fix" => self.fmt_cmd(FloatFmt::Fix(0)),
@@ -821,6 +888,195 @@ impl Calc {
         Ok(())
     }
 
+    // ---- circular trig (angle-mode aware) ------------------------------------
+    fn circ(&mut self, kind: Circ) -> Result<(), CalcError> {
+        self.need(1)?;
+        let x = self.pop_x().to_real(self.prec);
+        let v = self.circ_value(kind, x);
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    fn circ_value(&self, kind: Circ, x: Float) -> Float {
+        if self.angle_mode == AngleMode::Rad {
+            return match kind {
+                Circ::Sin => x.sin(),
+                Circ::Cos => x.cos(),
+                Circ::Tan => x.tan(),
+            };
+        }
+        let half = self.angle_mode.half_turn();
+        // Reduce mod a full turn — exact for exactly-representable angles, so
+        // the table below fires for 36000090° as well as 90°.
+        let turn = Float::from_i64(self.prec, 2 * half);
+        let mut r = x.fmod(&turn);
+        if r.is_sign_negative() && !r.is_zero() {
+            r = r + turn;
+        }
+        if let Some(v) = self.circ_table(kind, &r, half) {
+            return v;
+        }
+        // General angle: convert with guard bits so the π multiply/divide
+        // doesn't eat working precision, then round back.
+        let p = self.prec + 32;
+        let theta = Float::with_prec(p, &r) * Float::pi(p) / Float::from_i64(p, half);
+        let v = match kind {
+            Circ::Sin => theta.sin(),
+            Circ::Cos => theta.cos(),
+            Circ::Tan => theta.tan(),
+        };
+        Float::with_prec(self.prec, &v)
+    }
+
+    /// Exactly-representable results at exactly-hit angles, `r ∈ [0, 2·half)`:
+    /// quadrant boundaries, the ½-exact sin/cos angles (degrees), tan = ±1.
+    fn circ_table(&self, kind: Circ, r: &Float, half: i64) -> Option<Float> {
+        let q = half / 2; // a quarter turn: 90° / 100g
+        let at = |v: i64| r.equals(&Float::from_i64(self.prec, v));
+        let int = |v: i64| Some(Float::from_i64(self.prec, v));
+        let half_of = |sign: i64| Some(Float::from_i64(self.prec, sign) / Float::from_i64(self.prec, 2));
+        // tan at a quadrant boundary: ±∞ (1/+0); HP errors here, we show inf.
+        let inf = || Some(Float::from_i64(self.prec, 0).recip());
+        for k in 0..4i64 {
+            if at(k * q) {
+                return match kind {
+                    Circ::Sin => int([0, 1, 0, -1][k as usize]),
+                    Circ::Cos => int([1, 0, -1, 0][k as usize]),
+                    Circ::Tan => {
+                        if k % 2 == 0 {
+                            int(0)
+                        } else {
+                            inf()
+                        }
+                    }
+                };
+            }
+        }
+        if half == 180 {
+            // sin/cos = ±½ (degrees only; the grad equivalents aren't integral)
+            match kind {
+                Circ::Sin => {
+                    if at(30) || at(150) {
+                        return half_of(1);
+                    }
+                    if at(210) || at(330) {
+                        return half_of(-1);
+                    }
+                }
+                Circ::Cos => {
+                    if at(60) || at(300) {
+                        return half_of(1);
+                    }
+                    if at(120) || at(240) {
+                        return half_of(-1);
+                    }
+                }
+                Circ::Tan => {}
+            }
+        }
+        if kind == Circ::Tan {
+            let e = half / 4; // 45° / 50g
+            if at(e) || at(e + 2 * q) {
+                return int(1);
+            }
+            if at(e + q) || at(e + 3 * q) {
+                return int(-1);
+            }
+        }
+        None
+    }
+
+    fn inv_circ(&mut self, kind: InvCirc) -> Result<(), CalcError> {
+        self.need(1)?;
+        let x = self.pop_x().to_real(self.prec);
+        let v = self.inv_circ_value(kind, x);
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    fn inv_circ_value(&self, kind: InvCirc, x: Float) -> Float {
+        if self.angle_mode == AngleMode::Rad {
+            return match kind {
+                InvCirc::Asin => x.asin(),
+                InvCirc::Acos => x.acos(),
+                InvCirc::Atan => x.atan(),
+            };
+        }
+        let half = self.angle_mode.half_turn();
+        if let Some(v) = self.inv_circ_table(kind, &x, half) {
+            return v;
+        }
+        let p = self.prec + 32;
+        let xp = Float::with_prec(p, &x);
+        let r = match kind {
+            InvCirc::Asin => xp.asin(),
+            InvCirc::Acos => xp.acos(),
+            InvCirc::Atan => xp.atan(),
+        };
+        let v = r * Float::from_i64(p, half) / Float::pi(p);
+        Float::with_prec(self.prec, &v)
+    }
+
+    /// Exact inverse-trig hits: asin ±1/±½/0, acos ±1/±½/0, atan ±1/0.
+    fn inv_circ_table(&self, kind: InvCirc, x: &Float, half: i64) -> Option<Float> {
+        let q = half / 2;
+        let eq = |v: i64| x.equals(&Float::from_i64(self.prec, v));
+        let int = |v: i64| Some(Float::from_i64(self.prec, v));
+        let one_half = Float::from_i64(self.prec, 1) / Float::from_i64(self.prec, 2);
+        let eq_half = |sign: i64| {
+            let t = if sign < 0 { -one_half.clone() } else { one_half.clone() };
+            x.equals(&t)
+        };
+        match kind {
+            InvCirc::Asin => {
+                if eq(0) {
+                    return int(0);
+                }
+                if eq(1) {
+                    return int(q);
+                }
+                if eq(-1) {
+                    return int(-q);
+                }
+                if half == 180 && eq_half(1) {
+                    return int(30);
+                }
+                if half == 180 && eq_half(-1) {
+                    return int(-30);
+                }
+            }
+            InvCirc::Acos => {
+                if eq(1) {
+                    return int(0);
+                }
+                if eq(-1) {
+                    return int(half);
+                }
+                if eq(0) {
+                    return int(q);
+                }
+                if half == 180 && eq_half(1) {
+                    return int(60);
+                }
+                if half == 180 && eq_half(-1) {
+                    return int(120);
+                }
+            }
+            InvCirc::Atan => {
+                if eq(0) {
+                    return int(0);
+                }
+                if eq(1) {
+                    return int(half / 4);
+                }
+                if eq(-1) {
+                    return int(-half / 4);
+                }
+            }
+        }
+        None
+    }
+
     /// |X| — preserves the integer/real kind.
     fn abs_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
@@ -1136,7 +1392,7 @@ fn is_command(t: &str) -> bool {
             | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
-            | "unsgn" | "1s" | "2s" | "signmode"
+            | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

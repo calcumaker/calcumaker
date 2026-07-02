@@ -328,6 +328,7 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::Sci => "sci",
         Key::Eng => "eng",
         Key::FmtAuto => "std",
+        Key::AngleMode => "anglemode",
         Key::Sin => "sin",
         Key::Cos => "cos",
         Key::Tan => "tan",

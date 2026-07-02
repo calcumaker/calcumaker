@@ -44,7 +44,12 @@ fn main() {
             if calc.carry() { " C" } else { "" },
             if calc.overflow() { " G" } else { "" },
         );
-        print!("[{:?} {}b{word}{flags}] {} > ", calc.radix(), calc.prec(), calc.display());
+        let angle = match calc.angle_mode() {
+            calcumaker_core::AngleMode::Rad => "",
+            calcumaker_core::AngleMode::Deg => " DEG",
+            calcumaker_core::AngleMode::Grad => " GRAD",
+        };
+        print!("[{:?} {}b{angle}{word}{flags}] {} > ", calc.radix(), calc.prec(), calc.display());
         io::stdout().flush().ok();
 
         let mut line = String::new();

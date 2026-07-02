@@ -93,6 +93,8 @@ extern "C" {
     pub fn mpfr_get_z(r: *mut mpz_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_frac(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_zero_p(a: *const mpfr_struct) -> c_int;
+    pub fn mpfr_equal_p(a: *const mpfr_struct, b: *const mpfr_struct) -> c_int;
+    pub fn mpfr_fmod(r: *mut mpfr_struct, x: *const mpfr_struct, y: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_nan_p(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_inf_p(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_signbit(a: *const mpfr_struct) -> c_int;

@@ -159,6 +159,7 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     G then S/C/T = sinh/cosh/tanh     G then L = log10   G then Q = 10^x
     G then 4/5/6 = x! / % / round (real X -> int)
     G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)
+    G then W = angle mode (RAD -> DEG -> GRAD)
 
   STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
@@ -187,6 +188,11 @@ fn frame(app: &App, help: bool, style: Style) -> String {
 
     let c = app.calc();
     let radix = format!("{:?}", c.radix()).to_uppercase();
+    let angle = match c.angle_mode() {
+        calcumaker_core::AngleMode::Rad => "RAD",
+        calcumaker_core::AngleMode::Deg => "DEG",
+        calcumaker_core::AngleMode::Grad => "GRAD",
+    };
     let word = match c.word_bits() {
         Some(b) => {
             let mode = match c.sign_mode() {
@@ -221,7 +227,7 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {radix}  prec {}  {word}{flags}{fmt}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(" {radix}  {angle}  prec {}  {word}{flags}{fmt}{shift}{reg}{msg}\n", c.prec()));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.

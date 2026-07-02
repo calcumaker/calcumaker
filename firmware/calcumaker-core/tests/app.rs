@@ -563,7 +563,9 @@ fn sci_division_is_real() {
     for _ in 0..6 {
         app.press_key(Key::RollDn);
     }
-    assert_eq!(app.text_rows()[1].trim_end(), "7 EntrY");
+    assert_eq!(app.text_rows()[1].trim_end(), "7 tYPE");
+    assert_eq!(app.text_rows()[2].trim_end(), "FLE");
+    app.press_key(Key::Enter);
     assert_eq!(app.text_rows()[2].trim_end(), "Int");
     app.press_key(Key::Enter);
     assert_eq!(app.text_rows()[2].trim_end(), "rEAL");

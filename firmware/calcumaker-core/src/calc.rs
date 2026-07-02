@@ -54,6 +54,20 @@ pub enum StackModel {
     Classic4,
 }
 
+/// The number-type mode — the 16C's mode-is-the-type model, as a setting.
+/// `Flex` (default): exact integers with SAFE division — an exact quotient
+/// stays an exact integer, an inexact one promotes to a real, never silent
+/// truncation. `Int`: proper 16C integer mode — division truncates and sets
+/// Carry on an inexact quotient (unbounded included). `Real`: the
+/// float-machine model (SCI/FIN default) — decimal entry parses as reals,
+/// division is real.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum NumMode {
+    Flex,
+    Int,
+    Real,
+}
+
 /// Integer sign interpretation under a word size (HP-16C UNSGN / 1's / 2's).
 /// Only meaningful with `wsize` set; 2's complement is the default.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -212,9 +226,8 @@ pub struct Calc {
     angle_mode: AngleMode,
     leading_zeros: bool,
     radix_suffix: bool,
-    /// Decimal entry parses as a Real even without a point — the float-machine
-    /// model (SCI/FIN personalities default this on; 16C stays exact-integer).
-    real_entry: bool,
+    /// Number-type mode (see [`NumMode`]).
+    num_mode: NumMode,
     user_flags: [bool; 3],
     carry: bool,
     overflow: bool,
@@ -337,7 +350,7 @@ impl Calc {
             angle_mode: AngleMode::Rad,
             leading_zeros: false,
             radix_suffix: true,
-            real_entry: false,
+            num_mode: NumMode::Flex,
             user_flags: [false; 3],
             carry: false,
             overflow: false,
@@ -437,12 +450,18 @@ impl Calc {
     pub fn set_radix_suffix(&mut self, on: bool) {
         self.radix_suffix = on;
     }
-    /// Float-machine entry: decimal digits parse as Reals without a point.
+    pub fn num_mode(&self) -> NumMode {
+        self.num_mode
+    }
+    pub fn set_num_mode(&mut self, m: NumMode) {
+        self.num_mode = m;
+    }
+    /// Float-machine entry active (compat shim over [`NumMode`]).
     pub fn real_entry(&self) -> bool {
-        self.real_entry
+        self.num_mode == NumMode::Real
     }
     pub fn set_real_entry(&mut self, on: bool) {
-        self.real_entry = on;
+        self.num_mode = if on { NumMode::Real } else { NumMode::Flex };
     }
     pub fn stack_model(&self) -> StackModel {
         self.stack_model
@@ -631,7 +650,10 @@ impl Calc {
 
     fn try_parse_number(&self, t: &str) -> Option<Value> {
         if self.radix == Radix::Dec
-            && (self.real_entry || t.contains('.') || t.contains('e') || t.contains('E'))
+            && (self.num_mode == NumMode::Real
+                || t.contains('.')
+                || t.contains('e')
+                || t.contains('E'))
         {
             return Float::from_str(self.prec, t).map(Value::Real);
         }
@@ -777,12 +799,16 @@ impl Calc {
                 self.radix_suffix = !self.radix_suffix;
                 Ok(())
             }
-            "floatentry" => {
-                self.real_entry = true;
+            "realmode" | "floatentry" => {
+                self.num_mode = NumMode::Real;
                 Ok(())
             }
-            "intentry" => {
-                self.real_entry = false;
+            "intmode" => {
+                self.num_mode = NumMode::Int;
+                Ok(())
+            }
+            "flexmode" | "intentry" => {
+                self.num_mode = NumMode::Flex;
                 Ok(())
             }
             "stack4" => {
@@ -944,6 +970,9 @@ impl Calc {
 
     fn set_radix_ok(&mut self, r: Radix) -> Result<(), CalcError> {
         self.radix = r;
+        if self.num_mode == NumMode::Real {
+            self.num_mode = NumMode::Flex; // 16C: a base key exits FLOAT mode
+        }
         Ok(())
     }
 
@@ -1009,16 +1038,31 @@ impl Calc {
                 };
             }
 
-            // Division never truncates silently: an inexact integer quotient
-            // PROMOTES to a real in unbounded mode. Truncation happens only
-            // where it's expected and visible — under a word size (the 16C
-            // programmer context, with its annunciators) or via `idiv`.
+            // The number MODE decides unbounded division (16C: mode is the
+            // type). Real → real quotient. Flex (default) → SAFE: an inexact
+            // quotient promotes to a real, never silent truncation. Int →
+            // proper 16C integer mode: truncate + Carry on an inexact
+            // quotient. Word-size mode truncates regardless (its own 16C
+            // semantics, annunciators lit).
             if op == '/' && self.word_bits.is_none() {
-                let r = a.clone() % b.clone();
-                if !r.is_zero() {
-                    let q = Float::from_integer(self.prec, &a) / Float::from_integer(self.prec, &b);
-                    self.stack.push(Value::Real(q));
-                    return Ok(());
+                match self.num_mode {
+                    NumMode::Real => {
+                        let q = Float::from_integer(self.prec, &a)
+                            / Float::from_integer(self.prec, &b);
+                        self.stack.push(Value::Real(q));
+                        return Ok(());
+                    }
+                    NumMode::Int => {
+                        self.carry = !(a.clone() % b.clone()).is_zero();
+                    }
+                    NumMode::Flex => {
+                        if !(a.clone() % b.clone()).is_zero() {
+                            let q = Float::from_integer(self.prec, &a)
+                                / Float::from_integer(self.prec, &b);
+                            self.stack.push(Value::Real(q));
+                            return Ok(());
+                        }
+                    }
                 }
             }
             let exact = match op {
@@ -1803,9 +1847,10 @@ impl Calc {
         Ok(())
     }
 
-    /// FLOAT — convert an integer X to a real (no-op on reals).
+    /// FLOAT — enter Real mode (the 16C's FLOAT-mode switch), converting an
+    /// integer X on the way in (also 16C). Radix keys return to Int mode.
     fn to_float(&mut self) -> Result<(), CalcError> {
-        self.need(1)?;
+        self.num_mode = NumMode::Real;
         if matches!(self.stack.last(), Some(Value::Int(_))) {
             let Value::Int(x) = self.pop_x() else { unreachable!() };
             let f = Float::from_integer(self.prec, &x);

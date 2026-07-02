@@ -230,6 +230,12 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         calcumaker_core::AngleMode::Deg => "DEG",
         calcumaker_core::AngleMode::Grad => "GRAD",
     };
+    // number-type mode: FLEX is the quiet default; INT/REAL are announced
+    let numty = match c.num_mode() {
+        calcumaker_core::NumMode::Flex => "",
+        calcumaker_core::NumMode::Int => "INT  ",
+        calcumaker_core::NumMode::Real => "REAL  ",
+    };
     let word = match c.word_bits() {
         Some(b) => {
             let mode = match c.sign_mode() {
@@ -278,7 +284,7 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {pers}{radix}  {angle}  prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(" {pers}{radix}  {angle}  {numty}prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.

@@ -79,7 +79,9 @@ Tokens:
   with sign modes `2s 1s unsgn` (or `signmode` to cycle) · real formats
   `<d> fix / sci / eng`, `std` = auto · `lz` = leading zeros to the word width
   (16C flag 3) · `suffix` = toggle the glass's `h o b` base letter (on by
-  default) · angle `rad deg grad` / `anglemode` · stack `stack4` (classic HP
+  default) · number type `flexmode` (safe: inexact ÷ promotes, default) /
+  `intmode` (16C: ÷ truncates + carry) / `realmode` (float machine) ·
+  angle `rad deg grad` / `anglemode` · stack `stack4` (classic HP
   X/Y/Z/T with T-replication + lift discipline) / `stackfree` (unbounded,
   default) — all also in the on-device SETUP menu (g-CLx)
 - word-mode flags: `carry()` (C) and `overflow()` (G) — add/sub carry-borrow,

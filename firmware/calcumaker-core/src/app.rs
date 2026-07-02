@@ -62,7 +62,7 @@ impl SetupItem {
             SetupItem::Sign => "SIGn",
             SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
             SetupItem::Pers => "PErS",     // personality (keymap) selector
-            SetupItem::Entry => "EntrY",   // Int (exact) / rEAL (float machine)
+            SetupItem::Entry => "tYPE",    // FLE (safe) / Int (16C) / rEAL
         }
     }
 
@@ -86,13 +86,11 @@ impl SetupItem {
                 StackModel::Classic4 => "HP4",
             },
             SetupItem::Pers => "", // rendered from the App's keymap, not Calc
-            SetupItem::Entry => {
-                if c.real_entry() {
-                    "rEAL"
-                } else {
-                    "Int"
-                }
-            }
+            SetupItem::Entry => match c.num_mode() {
+                crate::calc::NumMode::Flex => "FLE",
+                crate::calc::NumMode::Int => "Int",
+                crate::calc::NumMode::Real => "rEAL",
+            },
         }
     }
 
@@ -115,7 +113,11 @@ impl SetupItem {
                 StackModel::Classic4 => StackModel::Unbounded,
             }),
             SetupItem::Pers => {} // handled by the App (keymap lives there)
-            SetupItem::Entry => c.set_real_entry(!c.real_entry()),
+            SetupItem::Entry => c.set_num_mode(match c.num_mode() {
+                crate::calc::NumMode::Flex => crate::calc::NumMode::Int,
+                crate::calc::NumMode::Int => crate::calc::NumMode::Real,
+                crate::calc::NumMode::Real => crate::calc::NumMode::Flex,
+            }),
         }
     }
 }
@@ -526,7 +528,11 @@ impl App {
                 "P{} b{}{}",
                 c.prec(),
                 c.word_bits().unwrap_or(0),
-                if c.real_entry() { " r" } else { "" }
+                match c.num_mode() {
+                    crate::calc::NumMode::Real => " r",
+                    crate::calc::NumMode::Int => " i",
+                    crate::calc::NumMode::Flex => "",
+                }
             ),
             alloc::format!("{fmt} {bits}"),
         ];

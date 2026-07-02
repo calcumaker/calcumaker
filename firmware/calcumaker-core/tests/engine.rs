@@ -15,12 +15,51 @@ fn int_add() {
     assert_eq!(run(128, &["2", "3", "+"]), "5");
 }
 
-/// Division NEVER truncates silently: an inexact integer quotient promotes
-/// to a real ("3 2 / = 1" was an elementary desk-calculator trap).
+/// FLEX mode (default): division NEVER truncates silently — an inexact
+/// integer quotient promotes to a real ("3 2 / = 1" was an elementary
+/// desk-calculator trap).
 #[test]
-fn inexact_int_division_promotes() {
+fn flex_inexact_division_promotes() {
     assert_eq!(run(128, &["3", "2", "/"]), "1.5");
     assert_eq!(run(128, &["7", "2", "/"]), "3.5");
+}
+
+/// INT mode (setting): proper 16C integer division — truncates and sets
+/// Carry on an inexact quotient, unbounded included.
+#[test]
+fn int_mode_truncates_with_carry() {
+    let mut c = Calc::new(128);
+    for t in ["intmode", "7", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3");
+    assert!(c.carry());
+    for t in ["drop", "6", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3");
+    assert!(!c.carry());
+    // flexmode restores the safe default
+    for t in ["flexmode", "drop", "3", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1.5");
+}
+
+/// FLOAT key semantics: 'float' enters REAL mode (16C), a radix key exits
+/// it back to FLEX; INT mode persists through radix presses.
+#[test]
+fn num_mode_switching_keys() {
+    use calcumaker_core::NumMode;
+    let mut c = Calc::new(128);
+    c.input("float").unwrap();
+    assert_eq!(c.num_mode(), NumMode::Real);
+    c.input("hex").unwrap();
+    assert_eq!(c.num_mode(), NumMode::Flex);
+    c.input("dec").unwrap();
+    c.input("intmode").unwrap();
+    c.input("hex").unwrap();
+    assert_eq!(c.num_mode(), NumMode::Int); // radix keys don't downgrade INT
 }
 
 /// …but an exact quotient stays an exact integer (the exactness contract).

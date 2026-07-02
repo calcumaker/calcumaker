@@ -449,10 +449,14 @@ the authored TM1640.
   quotient **promotes to a real** (`3 2 /` = 1.5) — division never truncates
   silently; truncation lives only where it's expected and visible: under a
   word size (16C programmer division, annunciators lit) or the explicit
-  `idiv`. **Entry mode** (`EntrY` in SETUP; `floatentry`/`intentry`): the
-  float-machine model parses plain decimal digits as reals — SCI/FIN default
-  it on (they're float machines), 16C stays exact-integer; counts/indexes
-  accept integral reals everywhere.
+  `idiv`. **Number-type mode** (`tYPE` in SETUP; tokens `flexmode` /
+  `intmode` / `realmode`): **FLE** (flexible, default) = the safe model above;
+  **Int** = proper 16C integer mode as a setting — division truncates and
+  sets Carry on an inexact quotient, unbounded included; **rEAL** = the
+  float-machine model (plain decimal digits parse as reals) — SCI/FIN
+  default. The FLOAT key enters rEAL (converting X, 16C-faithful); a radix
+  key exits rEAL back to FLE (Int persists). INT/REAL annunciators show the
+  non-default modes; counts/indexes accept integral reals everywhere.
   `sqrt` on an integer is the 16C-style **integer root** (⌊√x⌋, carry = the
   root was inexact; negative errors) — enter `2.0` or `float` for the real
   root. Negative exponents (fractional results) promote to MPFR.

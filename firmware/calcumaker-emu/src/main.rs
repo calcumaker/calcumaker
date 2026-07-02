@@ -140,23 +140,60 @@ fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
     l
 }
 
+/// Printable name for a host key.
+fn host_key_name(ch: char) -> String {
+    match ch {
+        '\x08' => "Bks".into(),
+        '\n' => "Ent".into(),
+        c => c.to_string(),
+    }
+}
+
 /// Help = the ACTIVE personality's key grid, rendered live from the same
-/// tables the device uses (`keydoc`), plus the fixed host-key legend. The
-/// grid follows PErS switches automatically and can never drift.
+/// tables the device uses (`keydoc::label`), with **the host key to press
+/// inside each box**. Follows PErS switches automatically and can't drift.
 fn help_text(app: &App) -> String {
-    let mut out = calcumaker_core::keydoc::render(app.keymap());
-    out.push_str(
-        "\nHost keys, row by row (matching the grid above):\n\
-  S    C    T    L    Q    P    I    E    Bksp X\n\
-  a    b    c    d    e    f    7    8    9    /\n\
-  &    |    ^    ~    <    >    4    5    6    *\n\
-  H    D    O    B    W    x    1    2    3    -\n\
-  F    G    m    r    v    Entr 0    .    n    +\n\
-\n\
-F/G = gold/blue shifts. STO/RCL: m or r, then 0-f = register.\n\
-G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
---personality 16C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n",
+    use calcumaker_core::keydoc::label;
+    let km = app.keymap();
+
+    // column width: widest of labels and bracketed host keys
+    let mut w = 5; // "[Bks]"
+    for layer in [&km.base, &km.f, &km.g] {
+        for row in layer.iter() {
+            for &k in row.iter() {
+                w = w.max(label(k).len());
+            }
+        }
+    }
+
+    let mut out = format!(
+        "PERSONALITY: {}   (each box: [key you press] / f gold / KEY FACE / g blue)\n\n",
+        km.name
     );
+    let mut border = String::new();
+    for _ in 0..COLS {
+        border += "+";
+        border += &"-".repeat(w + 2);
+    }
+    border += "+\n";
+    for r in 0..ROWS {
+        out += &border;
+        // host key line
+        for c in 0..COLS {
+            out += &format!("| {:<w$} ", format!("[{}]", host_key_name(HOST_KEYS[r][c])));
+        }
+        out += "|\n";
+        for layer in [&km.f, &km.base, &km.g] {
+            for c in 0..COLS {
+                out += &format!("| {:<w$} ", label(layer[r][c]));
+            }
+            out += "|\n";
+        }
+    }
+    out += &border;
+    out += "\nF/G = gold/blue shifts. STO/RCL: m or r, then a digit 0-f = the register.\n\
+G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
+--personality 16C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n";
     out
 }
 

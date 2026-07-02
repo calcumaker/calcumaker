@@ -359,6 +359,28 @@ impl App {
             .iter()
             .map(|v| crate::format::format_fit(v, &self.calc, DIGITS_PER_ROW))
             .collect();
+        // 16C radix letter on the X readout — the only base indicator the
+        // glass has (hardware carries no radix lamps). Non-decimal integers
+        // get " h"/" o"/" b"; a bare number is decimal (deviation from the
+        // 16C, which also marks `d`). Skipped when the value alone already
+        // fills the row (the window annunciator + STATUS carry the base).
+        if self.entry.is_none() {
+            let letter = match self.calc.radix() {
+                Radix::Hex => Some('h'),
+                Radix::Oct => Some('o'),
+                Radix::Bin => Some('b'),
+                Radix::Dec => None,
+            };
+            if let (Some(l), Some(crate::Value::Int(_)), Some(last)) =
+                (letter, self.calc.stack().last(), items.last_mut())
+            {
+                // integer texts carry no dots: chars == display cells
+                if last.chars().count() + 2 <= DIGITS_PER_ROW {
+                    last.push(' ');
+                    last.push(l);
+                }
+            }
+        }
         if let Some(b) = &self.entry {
             let mut line = b.clone();
             line.push('_');

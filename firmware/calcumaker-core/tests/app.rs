@@ -119,7 +119,7 @@ fn hex_entry_and_bitwise() {
         &mut app,
         &[Key::Hex, Key::Digit(15), Key::Digit(15), Key::Enter, Key::Digit(0), Key::Digit(15), Key::And],
     );
-    assert_eq!(x_row(&app), "F");
+    assert_eq!(x_row(&app), "F h"); // 16C radix letter on the glass
 }
 
 #[test]
@@ -128,7 +128,48 @@ fn wsize_key_sets_word_from_x() {
     press_all(&mut app, &[Key::Digit(8), Key::WordSize]);
     assert_eq!(app.calc().word_bits(), Some(8));
     press_all(&mut app, &[Key::Hex, Key::Digit(0), Key::Digit(15), Key::Not]);
-    assert_eq!(x_row(&app), "F0");
+    assert_eq!(x_row(&app), "F0 h");
+}
+
+/// 16C radix letter: non-decimal integer X carries its base on the glass —
+/// the hardware has no radix lamps. Decimal is unmarked (deviation from the
+/// 16C, documented); reals, entry, and row-filling values are unmarked too.
+#[test]
+fn radix_suffix_letter() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(5), Key::Enter]);
+    assert_eq!(x_row(&app), "5"); // decimal: bare
+    app.press_key(Key::Oct);
+    assert_eq!(x_row(&app), "5 o");
+    app.press_key(Key::Bin);
+    assert_eq!(x_row(&app), "101 b");
+    app.press_key(Key::Hex);
+    assert_eq!(x_row(&app), "5 h");
+    // during entry: no suffix
+    app.press_key(Key::Digit(10));
+    assert_eq!(x_row(&app), "A_");
+    app.press_key(Key::Enter);
+    assert_eq!(x_row(&app), "A h");
+}
+
+#[test]
+fn radix_suffix_skipped_when_it_cannot_fit() {
+    let mut app = App::new(128);
+    // 15-digit binary value + suffix (2 cells) would exceed the row: bare
+    press_all(&mut app, &[Key::Digit(2), Key::Digit(0), Key::WordSize, Key::Bin, Key::Digit(1)]);
+    for _ in 0..14 {
+        app.press_key(Key::Digit(0));
+    }
+    app.press_key(Key::Enter);
+    assert_eq!(x_row(&app).len(), 15); // 15 digits, no " b"
+    assert!(!x_row(&app).ends_with('b'));
+}
+
+#[test]
+fn radix_suffix_not_on_reals() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Enter]);
+    assert_eq!(x_row(&app), "1.5");
 }
 
 #[test]

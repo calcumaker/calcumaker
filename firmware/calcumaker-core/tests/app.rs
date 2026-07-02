@@ -170,6 +170,39 @@ fn three_rows_show_stack_top() {
     assert_eq!(rows[2], "4_"); // X = live entry
 }
 
+/// The glass rounds AUTO reals to the window (HP behaviour): a binary value a
+/// hair under 382.1 shows as 382.1, not 382.09999… spilling off the row.
+#[test]
+fn glass_rounds_auto_reals_to_the_window() {
+    let mut app = App::new(256);
+    press_all(
+        &mut app,
+        &[Key::Digit(3), Key::Digit(8), Key::Digit(2), Key::Dot, Key::Digit(1), Key::Enter],
+    );
+    assert_eq!(x_row(&app), "382.1");
+    // …while the register keeps full precision (the X:/SHOW view).
+    assert!(app.x_full().len() > 20, "x_full = {}", app.x_full());
+}
+
+#[test]
+fn glass_shows_16_digits_of_pi() {
+    let mut app = App::new(256);
+    app.press_key(Key::Pi);
+    assert_eq!(x_row(&app), "3.141592653589793");
+    assert!(app.x_full().len() > 70); // full precision below
+}
+
+/// Exponent-bound values go scientific on the glass with maximal digits.
+#[test]
+fn glass_forces_sci_when_plain_is_too_wide() {
+    let mut app = App::new(256);
+    press_all(
+        &mut app,
+        &[Key::Digit(1), Key::Dot, Key::Digit(2), Key::Digit(3), Key::Digit(4), Key::Digit(5), Key::Eex, Key::Digit(1), Key::Digit(7), Key::Enter],
+    );
+    assert_eq!(x_row(&app), "1.2345e17");
+}
+
 #[test]
 fn seg_rows_encode_x() {
     let mut app = App::new(128);

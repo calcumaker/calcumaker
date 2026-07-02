@@ -237,14 +237,31 @@ impl App {
     }
 
     // ---- display ------------------------------------------------------------
+    /// X at full precision (or the live entry with its cursor) — the SHOW view;
+    /// the glass rows round AUTO reals to the window instead.
+    pub fn x_full(&self) -> String {
+        if let Some(b) = &self.entry {
+            let mut line = b.clone();
+            line.push('_');
+            return line;
+        }
+        self.calc
+            .stack()
+            .last()
+            .map(|v| crate::format::format(v, &self.calc))
+            .unwrap_or_default()
+    }
+
     /// The display rows as text, index 0 = top. X (or the live entry, cursor
     /// `_`) is the bottom row, Y above it, … — the top of the RPN stack.
+    /// AUTO-mode reals are display-rounded to the row width (HP behaviour —
+    /// the stored value keeps full precision, see [`App::x_full`]).
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
         let mut items: Vec<String> = self
             .calc
             .stack()
             .iter()
-            .map(|v| crate::format::format(v, &self.calc))
+            .map(|v| crate::format::format_fit(v, &self.calc, DIGITS_PER_ROW))
             .collect();
         if let Some(b) = &self.entry {
             let mut line = b.clone();

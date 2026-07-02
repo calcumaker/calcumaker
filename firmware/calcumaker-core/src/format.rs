@@ -212,12 +212,57 @@ fn eng(f: &Float, d: usize) -> String {
     format!("{sign}{body}e{e3}")
 }
 
+// ---- fit-to-window (the glass rounds, the register doesn't) ------------------
+
+/// Display cells a string occupies on the 7-seg row (dots fold into the
+/// preceding digit's dp, so they're free — matches `seg7::encode_row`).
+fn cells_of(s: &str) -> usize {
+    s.chars().filter(|&c| c != '.').count()
+}
+
+/// Like [`format`], but AUTO-mode reals are rounded (correctly, by MPFR) to
+/// the largest digit count that fits `max_cells` — HP behaviour: the display
+/// rounds to the window, the stored value keeps full precision. So a value a
+/// hair under 382.1 shows as `382.1`, not `382.09999…` off the glass.
+/// Integers and explicit FIX/SCI/ENG are shown as configured (the 7-seg
+/// overflow marker handles what still doesn't fit).
+pub(crate) fn format_fit(v: &Value, c: &Calc, max_cells: usize) -> String {
+    let full = format(v, c);
+    if cells_of(&full) <= max_cells {
+        return full;
+    }
+    let Value::Real(f) = v else { return full };
+    if !matches!(c.float_fmt(), FloatFmt::Auto) || f.is_nan() || f.is_inf() || f.is_zero() {
+        return full;
+    }
+    let start = dec_digits(c.prec()).min(max_cells).max(1);
+    let mut last = full;
+    for sig in (1..=start).rev() {
+        let raw = f.to_string_radix(10, sig);
+        let plain = reformat(&raw);
+        if cells_of(&plain) <= max_cells {
+            return plain;
+        }
+        // Plain form is exponent-bound (e.g. 1.2345e17): force scientific at
+        // this digit count instead of losing digits waiting for the flip.
+        let (sign, digits, e) = parts(&raw);
+        let scis = sci(sign, &digits, e);
+        if cells_of(&scis) <= max_cells {
+            return scis;
+        }
+        last = scis;
+    }
+    last
+}
+
 // ---- AUTO (%g-style) --------------------------------------------------------
 
 /// Beyond this many leading/trailing zeros, switch to scientific notation.
 const PLAIN_RANGE: i64 = 12;
 
-fn reformat(s: &str) -> String {
+/// Sign, significant digits (trailing zeros trimmed, no point), exponent of
+/// the normalized `d.ffffe<exp>` form.
+fn parts(s: &str) -> (&'static str, String, i64) {
     let (sign, rest) = match s.strip_prefix('-') {
         Some(r) => ("-", r),
         None => ("", s),
@@ -226,12 +271,15 @@ fn reformat(s: &str) -> String {
         Some((m, e)) => (m, e.parse::<i64>().unwrap_or(0)),
         None => (rest, 0),
     };
-
-    // Significant digits with no point; drop trailing zeros (keep one).
     let mut digits: String = mant.chars().filter(|c| *c != '.').collect();
     while digits.len() > 1 && digits.ends_with('0') {
         digits.pop();
     }
+    (sign, digits, exp)
+}
+
+fn reformat(s: &str) -> String {
+    let (sign, digits, exp) = parts(s);
 
     // Decimal point sits after `point` digits (mant is normalized to d.ffff).
     let point = exp + 1;

@@ -82,12 +82,13 @@ impl Style {
 
 /// One display row of segment bytes as three lines of terminal art.
 ///
-/// Block style, per digit (left col = f/e, two middle cols = a/g/d as
-/// bottom-half bars so they hug the digit body, right col = b/c, 5th col = dp):
+/// Block style, per digit: the top bar spans the full digit width so it meets
+/// the corner posts, and the bottom bar falls back into the corner columns
+/// when e/c are unlit — segments connect like real glass ('9' below):
 /// ```text
-///  ▄▄    <- a
+/// ▄▄▄▄   <- a
 /// █▄▄█   <- f g b
-/// █▄▄█▖  <- e d c dp
+/// ▄▄▄█▖  <- (d corner) d c dp
 /// ```
 fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
     let mut l: [String; 3] = Default::default();
@@ -96,17 +97,24 @@ fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
         match style {
             Style::Block => {
                 let bar = |m: u8| if on(m) { "▄▄" } else { "  " };
-                let post = |m: u8| if on(m) { '█' } else { ' ' };
-                l[0].push(' ');
-                l[0].push_str(bar(SEG_A));
-                l[0].push_str("  ");
-                l[1].push(post(SEG_F));
+                // corner: full-height post, else the horizontal bar passes through
+                let corner = |post: u8, bar: u8| {
+                    if on(post) {
+                        '█'
+                    } else if on(bar) {
+                        '▄'
+                    } else {
+                        ' '
+                    }
+                };
+                l[0].push_str(if on(SEG_A) { "▄▄▄▄ " } else { "     " });
+                l[1].push(if on(SEG_F) { '█' } else { ' ' });
                 l[1].push_str(bar(SEG_G));
-                l[1].push(post(SEG_B));
+                l[1].push(if on(SEG_B) { '█' } else { ' ' });
                 l[1].push(' ');
-                l[2].push(post(SEG_E));
+                l[2].push(corner(SEG_E, SEG_D));
                 l[2].push_str(bar(SEG_D));
-                l[2].push(post(SEG_C));
+                l[2].push(corner(SEG_C, SEG_D));
                 l[2].push(if on(SEG_DP) { '▖' } else { ' ' });
             }
             Style::Ascii => {
@@ -212,10 +220,9 @@ fn frame(app: &App, help: bool, style: Style) -> String {
     };
     out.push_str(&format!(" {radix}  prec {}  {word}{fmt}{shift}{reg}{msg}\n", c.prec()));
 
-    // The 16-digit window truncates long values; show X in full here — this is
-    // where the arbitrary precision is visible on the host.
-    let x = app.text_rows()[calcumaker_core::seg7::DISPLAY_ROWS - 1].clone();
-    out.push_str(&format!(" X: {x}\n"));
+    // The glass rounds to its 16 digits (HP-style); this line is the SHOW
+    // view — X at full precision, where the arbitrary precision is visible.
+    out.push_str(&format!(" X: {}\n", app.x_full()));
 
     if help {
         out.push('\n');

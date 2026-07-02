@@ -282,8 +282,13 @@ cargo run -- --prec 1024 --press "FE"  # f-shift E = pi, at 1024 bits
 ```
 
 Display policy (initial, revisit with real glass): X (or the live entry) on the
-bottom row, Y/Z above; values right-aligned; >16-digit values truncated with the
-overflow marker — **windowing/scrolling is an open item**. Engine modes are RPN
+bottom row, Y/Z above; values right-aligned. **AUTO-mode reals are
+display-rounded to the 16-digit window** (correctly, by MPFR — HP behaviour:
+the glass rounds, the register keeps full precision; a value a hair under
+382.1 shows `382.1`, not `382.09999…`; exponent-bound values go scientific
+with maximal digits). The emulator's `X:` line is the SHOW view — X at full
+precision. Integers and explicit FIX/SCI/ENG still truncate with the overflow
+marker — **integer windowing/scrolling is an open item**. Engine modes are RPN
 postfix like the HP-16C: `<bits> W` (WSIZE, 0 = unbounded), f-shift `I`
 (= `prec`, pops X as the MPFR working precision), f-shift WSIZE cycles the sign
 mode, g-shift over the radix keys sets FIX/SCI/ENG/auto (digits from X). The

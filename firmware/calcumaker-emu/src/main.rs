@@ -338,3 +338,32 @@ fn usage(msg: &str) -> ! {
     eprintln!("calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii]");
     std::process::exit(2);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use calcumaker_core::seg7;
+
+    /// The decimal point must be visible: its glyph inks the right half of its
+    /// own column (air on its left, toward the digit) and a gap column follows
+    /// (air on its right, toward the next digit). Regression: 3.89 read as 389.
+    #[test]
+    fn block_dp_is_visible_and_separated() {
+        let row = seg7::encode_row("3.89");
+        let art = seg_art(&row, Style::Block);
+        let bottom: Vec<char> = art[2].chars().collect();
+        let i = bottom.iter().position(|&c| c == '▗').expect("dp glyph rendered");
+        assert_eq!(bottom[i + 1], ' ', "gap column after the dp");
+    }
+
+    /// Every art line is exactly rows × digit_cols wide, both styles.
+    #[test]
+    fn art_width_matches_style() {
+        for style in [Style::Block, Style::Ascii] {
+            let row = seg7::encode_row("8.8");
+            for line in seg_art(&row, style) {
+                assert_eq!(line.chars().count(), seg7::DIGITS_PER_ROW * style.digit_cols());
+            }
+        }
+    }
+}

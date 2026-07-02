@@ -130,6 +130,7 @@ pub struct Calc {
     float_fmt: FloatFmt,
     angle_mode: AngleMode,
     leading_zeros: bool,
+    user_flags: [bool; 3],
     carry: bool,
     overflow: bool,
     last_x: Option<Value>,
@@ -236,6 +237,7 @@ impl Calc {
             float_fmt: FloatFmt::Auto,
             angle_mode: AngleMode::Rad,
             leading_zeros: false,
+            user_flags: [false; 3],
             carry: false,
             overflow: false,
             last_x: None,
@@ -295,6 +297,10 @@ impl Calc {
     pub fn set_leading_zeros(&mut self, on: bool) {
         self.leading_zeros = on;
     }
+    /// User flag 0–2 (16C flags; 3/4/5 are lz/carry/overflow — see `sf`/`cf`).
+    pub fn user_flag(&self, i: usize) -> bool {
+        self.user_flags.get(i).copied().unwrap_or(false)
+    }
     /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
     pub fn carry(&self) -> bool {
         self.carry
@@ -316,6 +322,15 @@ impl Calc {
     pub fn display(&self) -> String {
         match self.stack.last() {
             Some(v) => crate::format::format(v, self),
+            None => String::new(),
+        }
+    }
+
+    /// X formatted in another radix without switching modes — the 16C f-SHOW
+    /// view (word size / sign mode / lz still apply).
+    pub fn show_in(&self, r: Radix) -> String {
+        match self.stack.last() {
+            Some(v) => crate::format::format_radix(v, self, r),
             None => String::new(),
         }
     }
@@ -520,6 +535,13 @@ impl Calc {
             }
             "lz" => {
                 self.leading_zeros = !self.leading_zeros;
+                Ok(())
+            }
+            "sf" => self.set_flag(true),
+            "cf" => self.set_flag(false),
+            "ftest" => self.flag_test(),
+            "clreg" => {
+                self.regs = vec![None; REGISTERS];
                 Ok(())
             }
             "anglemode" => {
@@ -1455,6 +1477,42 @@ impl Calc {
         Ok(())
     }
 
+    /// SF/CF i — set/clear flag i (pop X as the index). 0–2 = user flags;
+    /// 3 = leading zeros, 4 = carry, 5 = out-of-range (16C aliases).
+    fn set_flag(&mut self, on: bool) -> Result<(), CalcError> {
+        self.need(1)?;
+        let i = self.peek_u32("flag index must be 0-5")?;
+        if i > 5 {
+            return Err(CalcError::TypeError("flag index must be 0-5"));
+        }
+        let _ = self.pop_x();
+        match i {
+            0..=2 => self.user_flags[i as usize] = on,
+            3 => self.leading_zeros = on,
+            4 => self.carry = on,
+            _ => self.overflow = on,
+        }
+        Ok(())
+    }
+
+    /// F? i — pop the flag index, push 0/1.
+    fn flag_test(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let i = self.peek_u32("flag index must be 0-5")?;
+        if i > 5 {
+            return Err(CalcError::TypeError("flag index must be 0-5"));
+        }
+        let _ = self.pop_x();
+        let v = match i {
+            0..=2 => self.user_flags[i as usize],
+            3 => self.leading_zeros,
+            4 => self.carry,
+            _ => self.overflow,
+        };
+        self.stack.push(Value::Int(Integer::from_i64(v as i64)));
+        Ok(())
+    }
+
     /// STO i — copy X into register i (X stays, LASTx untouched).
     fn sto(&mut self, i: usize) -> Result<(), CalcError> {
         self.need(1)?;
@@ -1556,6 +1614,7 @@ fn is_command(t: &str) -> bool {
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
             | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
+            | "sf" | "cf" | "ftest" | "clreg"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

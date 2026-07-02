@@ -203,6 +203,24 @@ fn glass_forces_sci_when_plain_is_too_wide() {
     assert_eq!(x_row(&app), "1.2345e17");
 }
 
+/// f-SHOW: transient view of X in another base via the status message.
+#[test]
+fn show_base_is_a_transient_message() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(2), Key::Digit(5), Key::Digit(5), Key::ShowHex]);
+    assert_eq!(app.message(), Some("hex: FF"));
+    assert_eq!(x_row(&app), "255"); // display radix unchanged
+    app.press_key(Key::Enter);
+    assert_eq!(app.message(), None); // gone on the next key
+}
+
+#[test]
+fn clrreg_key_wipes_registers() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(7), Key::Sto, Key::Digit(2), Key::ClrReg, Key::Rcl, Key::Digit(2)]);
+    assert_eq!(app.message(), Some("empty register"));
+}
+
 #[test]
 fn seg_rows_encode_x() {
     let mut app = App::new(128);

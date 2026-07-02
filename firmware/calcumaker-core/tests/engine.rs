@@ -773,6 +773,71 @@ fn sto_rcl_registers() {
 }
 
 #[test]
+fn user_flags_set_clear_test() {
+    let mut c = Calc::new(64);
+    for t in ["1", "sf", "1", "ftest"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1");
+    assert!(c.user_flag(1));
+    assert!(!c.user_flag(0));
+    for t in ["drop", "1", "cf", "1", "ftest"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0");
+}
+
+/// Flags 3/4/5 alias leading-zeros / carry / overflow (16C).
+#[test]
+fn flag_aliases() {
+    let mut c = Calc::new(64);
+    for t in ["3", "sf"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.leading_zeros());
+    for t in ["4", "sf", "4", "ftest"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1");
+    assert!(c.carry());
+    for t in ["drop", "5", "sf"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.overflow());
+}
+
+#[test]
+fn flag_index_out_of_range_errors() {
+    let mut c = Calc::new(64);
+    c.input("6").unwrap();
+    assert!(c.input("sf").is_err());
+    assert_eq!(c.display(), "6"); // untouched
+}
+
+#[test]
+fn clreg_clears_the_register_file() {
+    let mut c = Calc::new(64);
+    for t in ["42", "sto5", "sto0", "clreg"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("rcl5").is_err());
+    assert!(c.input("rcl0").is_err());
+    assert_eq!(c.display(), "42"); // X untouched
+}
+
+#[test]
+fn show_in_formats_x_in_another_radix() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "lz", "15", "chs"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-15");
+    assert_eq!(c.show_in(Radix::Hex), "F1"); // word + lz apply
+    assert_eq!(c.show_in(Radix::Bin), "11110001");
+    assert_eq!(c.radix(), Radix::Dec); // mode untouched
+}
+
+#[test]
 fn clear_empties_stack_and_flags() {
     let mut c = Calc::new(64);
     for t in ["8", "wsize", "200", "100", "+", "clear"] {

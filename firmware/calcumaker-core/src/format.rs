@@ -18,9 +18,15 @@ fn dec_digits(prec: u32) -> usize {
 }
 
 pub fn format(v: &Value, c: &Calc) -> String {
+    format_radix(v, c, c.radix())
+}
+
+/// [`format`] with a radix override — the SHOW-base view (16C f-SHOW):
+/// X momentarily in another base without switching modes.
+pub(crate) fn format_radix(v: &Value, c: &Calc, radix: Radix) -> String {
     match v {
         Value::Int(i) => {
-            let s = match (c.word_bits(), c.radix()) {
+            let s = match (c.word_bits(), radix) {
                 // Word mode: hex/oct/bin show the n-bit pattern (-15 @16b 2's
                 // comp is FFF1); decimal shows the signed value. With leading
                 // zeros on (16C flag 3), pad to the word width.
@@ -41,7 +47,7 @@ pub fn format(v: &Value, c: &Calc) -> String {
                 }
                 (_, r) => i.to_string_radix(r.base()),
             };
-            if c.radix() == Radix::Hex {
+            if radix == Radix::Hex {
                 s.to_uppercase()
             } else {
                 s

@@ -20,7 +20,11 @@ pub enum Key {
     // arithmetic
     Add, Sub, Mul, Div,
     // stack / memory
-    Enter, Swap, RollDn, RollUp, LastX, Sto, Rcl,
+    Enter, Swap, RollDn, RollUp, LastX, Sto, Rcl, ClrReg,
+    // flags (X = index 0-5; 3/4/5 alias lz/carry/overflow)
+    Sf, Cf, Ftest,
+    // SHOW: transient display of X in another base (App-level, 16C f-SHOW)
+    ShowHex, ShowDec, ShowOct, ShowBin,
     // base / word modes (programmer)
     Hex, Dec, Oct, Bin, WordSize, SignMode, Float,
     // bitwise / shift / rotate (programmer)
@@ -57,10 +61,10 @@ pub const BASE: [[Key; COLS]; ROWS] = [
 /// f (gold) layer — inverse / advanced / set. (Nop = unassigned, refine later.)
 pub const LAYER_F: [[Key; COLS]; ROWS] = [
     [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Nop],
-    [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Nop, Nop, Nop],
+    [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Sf,  Cf,    Ftest],
     [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  DblMul, DblDiv, DblRem, Nop],
-    [Float,  Float,  Float,Float,SignMode, RollUp, Nop,  Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, Nop,  Nop,  RollUp,   Nop,  Off,    Nop,  Eex,   Nop],
+    [ShowHex,ShowDec,ShowOct,ShowBin,SignMode, Float, Nop, Nop, Nop,  Nop],
+    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  Nop,  Off,    Nop,  Eex,   Nop],
 ];
 
 /// g (blue) layer — hyperbolic / secondary. (FIX/SCI/ENG/auto sit over the

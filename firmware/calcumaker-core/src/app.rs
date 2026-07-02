@@ -33,7 +33,7 @@ pub struct App {
     shift: Shift,
     entry: Option<String>,
     pending_reg: Option<RegOp>,
-    msg: Option<&'static str>,
+    msg: Option<String>,
 }
 
 impl App {
@@ -60,9 +60,9 @@ impl App {
             Shift::G => Some('g'),
         }
     }
-    /// Status blip from the last press (error, unassigned key, …).
-    pub fn message(&self) -> Option<&'static str> {
-        self.msg
+    /// Status blip from the last press (error, SHOW view, unassigned key, …).
+    pub fn message(&self) -> Option<&str> {
+        self.msg.as_deref()
     }
     /// STO/RCL waiting for a register digit: `Some("STO")` / `Some("RCL")`.
     pub fn pending_register(&self) -> Option<&'static str> {
@@ -98,7 +98,7 @@ impl App {
                     self.run_owned(&tok);
                     return;
                 }
-                _ => self.msg = Some("register select cancelled"),
+                _ => self.msg = Some("register select cancelled".into()),
             }
             return;
         }
@@ -118,22 +118,38 @@ impl App {
             Key::Back => self.backspace(),
             Key::ClrX => self.clear_x(),
             Key::Enter => self.enter(),
-            Key::Off => self.msg = Some("off"),
+            Key::ShowHex => self.show(Radix::Hex),
+            Key::ShowDec => self.show(Radix::Dec),
+            Key::ShowOct => self.show(Radix::Oct),
+            Key::ShowBin => self.show(Radix::Bin),
+            Key::Off => self.msg = Some("off".into()),
             Key::Nop | Key::ShiftF | Key::ShiftG => {}
             other => match token_for(other) {
                 Some(tok) => {
                     self.flush();
                     self.run(tok);
                 }
-                None => self.msg = Some("not implemented"),
+                None => self.msg = Some("not implemented".into()),
             },
         }
+    }
+
+    /// SHOW — X momentarily in another base, in the status line (16C f-SHOW).
+    fn show(&mut self, r: Radix) {
+        self.flush();
+        let tag = match r {
+            Radix::Hex => "hex",
+            Radix::Dec => "dec",
+            Radix::Oct => "oct",
+            Radix::Bin => "bin",
+        };
+        self.msg = Some(alloc::format!("{tag}: {}", self.calc.show_in(r)));
     }
 
     // ---- entry editing ------------------------------------------------------
     fn digit(&mut self, n: u8) {
         if i32::from(n) >= self.calc.radix().base() {
-            self.msg = Some("bad digit for radix");
+            self.msg = Some("bad digit for radix".into());
             return;
         }
         let c = char::from_digit(u32::from(n), 16).unwrap().to_ascii_uppercase();
@@ -142,24 +158,24 @@ impl App {
 
     fn dot(&mut self) {
         if self.calc.radix() != Radix::Dec {
-            self.msg = Some("reals are decimal only");
+            self.msg = Some("reals are decimal only".into());
             return;
         }
         match &mut self.entry {
             None => self.entry = Some("0.".to_string()),
-            Some(b) if b.contains('.') || b.contains('e') => self.msg = Some("misplaced ."),
+            Some(b) if b.contains('.') || b.contains('e') => self.msg = Some("misplaced .".into()),
             Some(b) => b.push('.'),
         }
     }
 
     fn eex(&mut self) {
         if self.calc.radix() != Radix::Dec {
-            self.msg = Some("reals are decimal only");
+            self.msg = Some("reals are decimal only".into());
             return;
         }
         match &mut self.entry {
             None => self.entry = Some("1e".to_string()),
-            Some(b) if b.contains('e') => self.msg = Some("misplaced EEX"),
+            Some(b) if b.contains('e') => self.msg = Some("misplaced EEX".into()),
             Some(b) => b.push('e'),
         }
     }
@@ -227,12 +243,15 @@ impl App {
 
     fn run_owned(&mut self, tok: &str) {
         if let Err(e) = self.calc.input(tok) {
-            self.msg = Some(match e {
-                CalcError::Parse(_) => "parse error",
-                CalcError::Empty => "stack empty",
-                CalcError::TypeError(t) => t,
-                CalcError::DivZero => "divide by zero",
-            });
+            self.msg = Some(
+                match e {
+                    CalcError::Parse(_) => "parse error",
+                    CalcError::Empty => "stack empty",
+                    CalcError::TypeError(t) => t,
+                    CalcError::DivZero => "divide by zero",
+                }
+                .into(),
+            );
         }
     }
 
@@ -321,6 +340,10 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::DblMul => "dbl*",
         Key::DblDiv => "dbl/",
         Key::DblRem => "dblr",
+        Key::Sf => "sf",
+        Key::Cf => "cf",
+        Key::Ftest => "ftest",
+        Key::ClrReg => "clreg",
         Key::BitSet => "bset",
         Key::BitClr => "bclr",
         Key::BitTest => "btest",

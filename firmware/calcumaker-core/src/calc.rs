@@ -1,11 +1,20 @@
 //! The RPN calculator engine: a value stack + operations over the
-//! arbitrary-precision [`Value`] type. One numeric path (GMP + MPFR via rug).
+//! arbitrary-precision [`Value`] type. One numeric path (GMP + MPFR).
 //!
-//! Integers stay integers through `+ - * /` and the bitwise ops (HP-16C
-//! programmer model, masked to the word size); the scientific functions promote
-//! to MPFR reals. Input is token-at-a-time so it drives both the REPL and tests.
+//! Integers stay integers through `+ - * /` and the bitwise ops; the scientific
+//! functions promote to MPFR reals. With a word size set the engine follows the
+//! HP-16C programmer model: values are interpreted per the **sign mode**
+//! (unsigned / 1's / 2's complement), results wrap into the word (setting the
+//! **G** overflow flag), adds/subs/shifts/rotates report **carry** (C), and the
+//! non-decimal radices display the raw bit pattern. Without a word size,
+//! integers are unbounded GMP values and the flags stay untouched.
+//!
+//! Errors never consume operands: every operation validates its stack depth,
+//! operand types, and domain **before** popping, so a failed op leaves the
+//! stack (and LASTx) exactly as it was — HP behaviour.
 
 use alloc::string::{String, ToString};
+use alloc::vec;
 use alloc::vec::Vec;
 
 use gmp_mpfr_nostd::{Float, Integer};
@@ -32,36 +41,158 @@ impl Radix {
     }
 }
 
+/// Integer sign interpretation under a word size (HP-16C UNSGN / 1's / 2's).
+/// Only meaningful with `wsize` set; 2's complement is the default.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum SignMode {
+    Unsigned,
+    Ones,
+    Twos,
+}
+
+/// Real-number display format (HP FIX/SCI/ENG; `Auto` is `%g`-style).
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum FloatFmt {
+    Auto,
+    Fix(u8),
+    Sci(u8),
+    Eng(u8),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum CalcError {
     /// Token was neither a number (in the active radix) nor a known command.
     Parse(String),
     /// Stack underflow.
     Empty,
-    /// Wrong operand type for the operation.
+    /// Wrong operand type / domain for the operation.
     TypeError(&'static str),
     /// Division by zero.
     DivZero,
 }
+
+/// STO/RCL register file size (one register per hex digit key, 0–F).
+pub const REGISTERS: usize = 16;
+
+/// Word sizes beyond this are almost certainly a slip; refuse them.
+const MAX_WORD_BITS: u32 = 16384;
+const MAX_FMT_DIGITS: u32 = 32;
 
 pub struct Calc {
     stack: Vec<Value>,
     prec: u32,
     radix: Radix,
     word_bits: Option<u32>,
+    sign_mode: SignMode,
+    float_fmt: FloatFmt,
+    carry: bool,
+    overflow: bool,
     last_x: Option<Value>,
+    regs: Vec<Option<Value>>,
+}
+
+// ---- word-size helpers (shared with the formatter) --------------------------
+
+fn one() -> Integer {
+    Integer::from_i64(1)
+}
+
+fn pow2(n: u32) -> Integer {
+    one() << n
+}
+
+/// Euclidean modulus (result in `[0, m)`), built from GMP's truncating `%`.
+fn euclid_mod(v: Integer, m: &Integer) -> Integer {
+    let r = v % m.clone();
+    if r.is_negative() {
+        r + m.clone()
+    } else {
+        r
+    }
+}
+
+/// Canonical signed value → its n-bit pattern in `[0, 2^n)`.
+pub(crate) fn encode_bits(v: &Integer, mode: SignMode, n: u32) -> Integer {
+    if !v.is_negative() {
+        return v.clone();
+    }
+    match mode {
+        SignMode::Unsigned => v.clone(), // canonical unsigned is never negative
+        SignMode::Twos => v.clone() + pow2(n),
+        // 1's complement: -x is the bitwise complement; -0 folds onto +0.
+        SignMode::Ones => v.clone() + pow2(n) - one(),
+    }
+}
+
+/// n-bit pattern in `[0, 2^n)` → the canonical signed value for the mode.
+fn decode_bits(bits: Integer, mode: SignMode, n: u32) -> Integer {
+    let half = pow2(n - 1);
+    match mode {
+        SignMode::Unsigned => bits,
+        SignMode::Twos => {
+            if bits >= half {
+                bits - pow2(n)
+            } else {
+                bits
+            }
+        }
+        SignMode::Ones => {
+            // The all-ones pattern (-0) decodes to 0 via 2^n-1 - (2^n-1).
+            if bits >= half {
+                bits - (pow2(n) - one())
+            } else {
+                bits
+            }
+        }
+    }
+}
+
+/// Wrap an exact signed result into the mode's canonical range; the flag
+/// reports whether anything was lost (the G / out-of-range condition).
+fn wrap(v: Integer, mode: SignMode, n: u32) -> (Integer, bool) {
+    let w = match mode {
+        SignMode::Unsigned => euclid_mod(v.clone(), &pow2(n)),
+        SignMode::Twos => decode_bits(euclid_mod(v.clone(), &pow2(n)), SignMode::Twos, n),
+        SignMode::Ones => {
+            // 1's-complement arithmetic is mod 2^n - 1 (end-around carry).
+            let m = pow2(n) - one();
+            let t = euclid_mod(v.clone(), &m);
+            if t >= pow2(n - 1) {
+                t - m
+            } else {
+                t
+            }
+        }
+    };
+    let ovf = w != v;
+    (w, ovf)
+}
+
+/// Kinds of single-value shift/rotate (`X` by one, or `Y` by `X`).
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ShiftKind {
+    Left,     // SL: logical left
+    Right,    // SR: logical right (zero fill)
+    ArithR,   // ASR: right, sign fill
+    RotLeft,  // RL
+    RotRight, // RR
 }
 
 impl Calc {
     /// New calculator with `prec` bits of MPFR working precision (e.g. 256 ≈ 77
-    /// decimal digits). Decimal radix, unbounded integers.
+    /// decimal digits). Decimal radix, unbounded integers, 2's complement.
     pub fn new(prec: u32) -> Self {
         Self {
             stack: Vec::new(),
             prec: prec.max(2),
             radix: Radix::Dec,
             word_bits: None,
+            sign_mode: SignMode::Twos,
+            float_fmt: FloatFmt::Auto,
+            carry: false,
+            overflow: false,
             last_x: None,
+            regs: vec![None; REGISTERS],
         }
     }
 
@@ -79,22 +210,89 @@ impl Calc {
         self.radix = r;
     }
     /// Word size in bits for the programmer modes; `None` = unbounded (GMP).
+    /// Stack integers are reinterpreted bit-pattern-preserving (HP behaviour).
     pub fn set_word_bits(&mut self, bits: Option<u32>) {
+        let old = (self.word_bits, self.sign_mode);
         self.word_bits = bits;
+        self.renormalize(old);
     }
     pub fn word_bits(&self) -> Option<u32> {
         self.word_bits
     }
+    /// Sign interpretation under the word size. Changing it reinterprets the
+    /// bit patterns on the stack (HP behaviour), not the signed values.
+    pub fn set_sign_mode(&mut self, m: SignMode) {
+        let old = (self.word_bits, self.sign_mode);
+        self.sign_mode = m;
+        self.renormalize(old);
+    }
+    pub fn sign_mode(&self) -> SignMode {
+        self.sign_mode
+    }
+    pub fn float_fmt(&self) -> FloatFmt {
+        self.float_fmt
+    }
+    pub fn set_float_fmt(&mut self, f: FloatFmt) {
+        self.float_fmt = f;
+    }
+    /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
+    pub fn carry(&self) -> bool {
+        self.carry
+    }
+    /// Out-of-range flag (G) — set when a word-mode result wrapped.
+    pub fn overflow(&self) -> bool {
+        self.overflow
+    }
     pub fn stack(&self) -> &[Value] {
         &self.stack
+    }
+    /// STO/RCL register file (read-only view; `sto<i>`/`rcl<i>` mutate).
+    pub fn registers(&self) -> &[Option<Value>] {
+        &self.regs
     }
 
     /// Format the top of stack (X) for the display; empty string if the stack is
     /// empty.
     pub fn display(&self) -> String {
         match self.stack.last() {
-            Some(v) => crate::format::format(v, self.radix, self.prec),
+            Some(v) => crate::format::format(v, self),
             None => String::new(),
+        }
+    }
+
+    /// Reinterpret stack integers after a word-size / sign-mode change,
+    /// preserving bit patterns like the 16C (registers are left alone).
+    fn renormalize(&mut self, (old_bits, old_mode): (Option<u32>, SignMode)) {
+        let new = (self.word_bits, self.sign_mode);
+        if new == (old_bits, old_mode) {
+            return;
+        }
+        for v in &mut self.stack {
+            if let Value::Int(i) = v {
+                let bits = match old_bits {
+                    Some(n) => encode_bits(i, old_mode, n),
+                    None => i.clone(), // unbounded → take the value as-is
+                };
+                *i = match self.word_bits {
+                    Some(n) => {
+                        let pattern = if bits.is_negative() {
+                            // negative unbounded value entering a word: wrap
+                            euclid_mod(bits, &pow2(n))
+                        } else {
+                            euclid_mod(bits, &pow2(n))
+                        };
+                        decode_bits(pattern, self.sign_mode, n)
+                    }
+                    None => {
+                        if old_bits.is_some() {
+                            // leaving word mode: keep the signed value
+                            decode_bits_back(bits, old_mode, old_bits.unwrap())
+                        } else {
+                            bits
+                        }
+                    }
+                };
+            }
         }
     }
 
@@ -107,6 +305,12 @@ impl Calc {
             return Ok(());
         }
         let lower = t.to_ascii_lowercase();
+        if let Some(i) = reg_index(&lower, "sto") {
+            return self.sto(i);
+        }
+        if let Some(i) = reg_index(&lower, "rcl") {
+            return self.rcl(i);
+        }
         if is_command(&lower) {
             return self.command(&lower);
         }
@@ -121,7 +325,20 @@ impl Calc {
         if self.radix == Radix::Dec && (t.contains('.') || t.contains('e') || t.contains('E')) {
             return Float::from_str(self.prec, t).map(Value::Real);
         }
-        Integer::from_str_radix(t, self.radix.base()).map(Value::Int)
+        let v = Integer::from_str_radix(t, self.radix.base())?;
+        Some(Value::Int(self.canon_entry(v)))
+    }
+
+    /// Canonicalize an entered integer under the word size: non-decimal entry
+    /// is a raw bit pattern (16C style), decimal entry a signed value; both
+    /// wrap silently (flags are op-only).
+    fn canon_entry(&self, v: Integer) -> Integer {
+        let Some(n) = self.word_bits else { return v };
+        if self.radix != Radix::Dec && !v.is_negative() {
+            decode_bits(euclid_mod(v, &pow2(n)), self.sign_mode, n)
+        } else {
+            wrap(v, self.sign_mode, n).0
+        }
     }
 
     // ---- dispatch ---------------------------------------------------------
@@ -133,7 +350,7 @@ impl Calc {
             "/" => self.arith('/'),
             "chs" => self.chs(),
             "swap" => self.swap(),
-            "drop" => self.pop().map(|_| ()),
+            "drop" => self.pop_unchecked().map(|_| ()),
             "dup" => self.dup(),
             "sqrt" => self.unary_real(|x| x.sqrt()),
             "sin" => self.unary_real(|x| x.sin()),
@@ -157,6 +374,7 @@ impl Calc {
             "abs" => self.abs_op(),
             "pow" => self.pow_op(),
             "mod" => self.mod_op(),
+            "pct" => self.pct(),
             "e" => {
                 self.push_e();
                 Ok(())
@@ -166,7 +384,7 @@ impl Calc {
                 Ok(())
             }
             "lastx" => self.lastx(),
-            "enter" => self.enter(),
+            "enter" => self.dup(),
             "over" => self.over(),
             "rolldn" | "roll" => self.roll_down(),
             "rollup" => self.roll_up(),
@@ -174,29 +392,105 @@ impl Calc {
             "or" => self.bitwise('|'),
             "xor" => self.bitwise('^'),
             "not" => self.not_op(),
-            "shl" => self.shift(true),
-            "shr" => self.shift(false),
+            "sl" => self.shift_rot(ShiftKind::Left, false),
+            "sr" => self.shift_rot(ShiftKind::Right, false),
+            "asr" => self.shift_rot(ShiftKind::ArithR, false),
+            "rl" => self.shift_rot(ShiftKind::RotLeft, false),
+            "rr" => self.shift_rot(ShiftKind::RotRight, false),
+            "shl" | "sln" => self.shift_rot(ShiftKind::Left, true),
+            "shr" | "srn" => self.shift_rot(ShiftKind::Right, true),
+            "asrn" => self.shift_rot(ShiftKind::ArithR, true),
+            "rln" => self.shift_rot(ShiftKind::RotLeft, true),
+            "rrn" => self.shift_rot(ShiftKind::RotRight, true),
+            "bset" => self.bit_op(BitOp::Set),
+            "bclr" => self.bit_op(BitOp::Clear),
+            "btest" => self.bit_op(BitOp::Test),
+            "maskl" => self.mask_op(true),
+            "maskr" => self.mask_op(false),
+            "popcnt" => self.popcnt(),
             "fact" | "!" => self.fact(),
+            "float" => self.to_float(),
+            "round" => self.real_to_int(|f| f.round_to_int()),
+            "trunc" => self.real_to_int(|f| f.trunc_to_int()),
+            "floor" => self.real_to_int(|f| f.floor_to_int()),
+            "ceil" => self.real_to_int(|f| f.ceil_to_int()),
+            "frac" => self.frac(),
             "hex" => self.set_radix_ok(Radix::Hex),
             "dec" => self.set_radix_ok(Radix::Dec),
             "oct" => self.set_radix_ok(Radix::Oct),
             "bin" => self.set_radix_ok(Radix::Bin),
             "wsize" => self.wsize(),
             "prec" => self.prec_cmd(),
+            "unsgn" => {
+                self.set_sign_mode(SignMode::Unsigned);
+                Ok(())
+            }
+            "1s" => {
+                self.set_sign_mode(SignMode::Ones);
+                Ok(())
+            }
+            "2s" => {
+                self.set_sign_mode(SignMode::Twos);
+                Ok(())
+            }
+            "signmode" => {
+                self.set_sign_mode(match self.sign_mode {
+                    SignMode::Twos => SignMode::Ones,
+                    SignMode::Ones => SignMode::Unsigned,
+                    SignMode::Unsigned => SignMode::Twos,
+                });
+                Ok(())
+            }
+            "fix" => self.fmt_cmd(FloatFmt::Fix(0)),
+            "sci" => self.fmt_cmd(FloatFmt::Sci(0)),
+            "eng" => self.fmt_cmd(FloatFmt::Eng(0)),
+            "std" => {
+                self.float_fmt = FloatFmt::Auto;
+                Ok(())
+            }
+            "clear" => {
+                self.stack.clear();
+                self.carry = false;
+                self.overflow = false;
+                self.last_x = None;
+                Ok(())
+            }
             _ => Err(CalcError::Parse(cmd.to_string())),
         }
     }
 
-    // ---- helpers ----------------------------------------------------------
-    fn pop(&mut self) -> Result<Value, CalcError> {
-        self.stack.pop().ok_or(CalcError::Empty)
+    // ---- validation helpers (before any pop — errors must not consume) -----
+    fn need(&self, n: usize) -> Result<(), CalcError> {
+        if self.stack.len() < n {
+            Err(CalcError::Empty)
+        } else {
+            Ok(())
+        }
     }
 
-    /// Pop the X register, recording it as LASTx (recalled by `lastx`).
-    fn take_x(&mut self) -> Result<Value, CalcError> {
-        let v = self.pop()?;
+    /// Operand at `depth` (0 = X) as an integer, or a TypeError.
+    fn peek_int(&self, depth: usize, what: &'static str) -> Result<&Integer, CalcError> {
+        match &self.stack[self.stack.len() - 1 - depth] {
+            Value::Int(i) => Ok(i),
+            Value::Real(_) => Err(CalcError::TypeError(what)),
+        }
+    }
+
+    /// X as a small non-negative count, validated in place.
+    fn peek_u32(&self, what: &'static str) -> Result<u32, CalcError> {
+        self.peek_int(0, what)?.to_u32().ok_or(CalcError::TypeError(what))
+    }
+
+    /// Pop X, recording it as LASTx. Call only after validation succeeded.
+    fn pop_x(&mut self) -> Value {
+        let v = self.stack.pop().expect("validated");
         self.last_x = Some(v.clone());
-        Ok(v)
+        v
+    }
+
+    /// Pop without touching LASTx (drop, and inner operands).
+    fn pop_unchecked(&mut self) -> Result<Value, CalcError> {
+        self.stack.pop().ok_or(CalcError::Empty)
     }
 
     fn set_radix_ok(&mut self, r: Radix) -> Result<(), CalcError> {
@@ -204,114 +498,301 @@ impl Calc {
         Ok(())
     }
 
-    fn mask(&self, r: Integer) -> Integer {
+    /// Wrap a word-mode result and record the G flag; identity when unbounded.
+    fn canon_flagged(&mut self, v: Integer) -> Integer {
         match self.word_bits {
             Some(n) => {
-                let m = (Integer::from_i64(1) << n) - Integer::from_i64(1);
-                r & m
+                let (w, ovf) = wrap(v, self.sign_mode, n);
+                self.overflow = ovf;
+                w
             }
-            None => r,
+            None => v,
         }
     }
 
+    /// Wrap without flag side effects (conversions, masks).
+    fn canon_silent(&self, v: Integer) -> Integer {
+        match self.word_bits {
+            Some(n) => wrap(v, self.sign_mode, n).0,
+            None => v,
+        }
+    }
+
+    // ---- operations ---------------------------------------------------------
     fn arith(&mut self, op: char) -> Result<(), CalcError> {
-        let b = self.take_x()?;
-        let a = self.pop()?;
-        let v = match (a, b) {
-            (Value::Int(x), Value::Int(y)) => {
-                let r = match op {
-                    '+' => x + y,
-                    '-' => x - y,
-                    '*' => x * y,
-                    '/' => {
-                        if y.is_zero() {
-                            // Error leaves the stack as it was (HP behaviour).
-                            self.stack.push(Value::Int(x));
-                            self.stack.push(Value::Int(y));
-                            return Err(CalcError::DivZero);
-                        }
-                        x / y
+        self.need(2)?;
+        let len = self.stack.len();
+        let both_int = matches!(&self.stack[len - 1], Value::Int(_))
+            && matches!(&self.stack[len - 2], Value::Int(_));
+        if both_int {
+            if op == '/' {
+                if let Value::Int(d) = &self.stack[len - 1] {
+                    if d.is_zero() {
+                        return Err(CalcError::DivZero);
                     }
-                    _ => unreachable!(),
-                };
-                Value::Int(self.mask(r))
+                }
             }
-            (a, b) => {
-                let x = a.to_real(self.prec);
-                let y = b.to_real(self.prec);
-                let r = match op {
-                    '+' => x + y,
-                    '-' => x - y,
-                    '*' => x * y,
-                    '/' => x / y,
-                    _ => unreachable!(),
+            let Value::Int(b) = self.pop_x() else { unreachable!() };
+            let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+
+            // Carry: computed in the bit domain before the operands move.
+            if let Some(n) = self.word_bits {
+                self.carry = match op {
+                    '+' => {
+                        let m = match self.sign_mode {
+                            SignMode::Ones => pow2(n) - one(),
+                            _ => pow2(n),
+                        };
+                        encode_bits(&a, self.sign_mode, n) + encode_bits(&b, self.sign_mode, n) >= m
+                    }
+                    '-' => encode_bits(&a, self.sign_mode, n) < encode_bits(&b, self.sign_mode, n),
+                    _ => false,
                 };
-                Value::Real(r)
             }
-        };
-        self.stack.push(v);
+
+            let exact = match op {
+                '+' => a + b,
+                '-' => a - b,
+                '*' => a * b,
+                '/' => a / b,
+                _ => unreachable!(),
+            };
+            let v = self.canon_flagged(exact);
+            self.stack.push(Value::Int(v));
+        } else {
+            let b = self.pop_x().to_real(self.prec);
+            let a = self.stack.pop().expect("validated").to_real(self.prec);
+            let r = match op {
+                '+' => a + b,
+                '-' => a - b,
+                '*' => a * b,
+                '/' => a / b,
+                _ => unreachable!(),
+            };
+            self.stack.push(Value::Real(r));
+        }
         Ok(())
     }
 
     fn bitwise(&mut self, op: char) -> Result<(), CalcError> {
-        let b = self.take_x()?;
-        let a = self.pop()?;
-        match (a, b) {
-            (Value::Int(x), Value::Int(y)) => {
-                let r = match op {
-                    '&' => x & y,
-                    '|' => x | y,
-                    '^' => x ^ y,
+        self.need(2)?;
+        self.peek_int(0, "bitwise needs integers")?;
+        self.peek_int(1, "bitwise needs integers")?;
+        let Value::Int(b) = self.pop_x() else { unreachable!() };
+        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let v = match self.word_bits {
+            Some(n) => {
+                let (pa, pb) = (encode_bits(&a, self.sign_mode, n), encode_bits(&b, self.sign_mode, n));
+                let bits = match op {
+                    '&' => pa & pb,
+                    '|' => pa | pb,
+                    '^' => pa ^ pb,
                     _ => unreachable!(),
                 };
-                self.stack.push(Value::Int(self.mask(r)));
-                Ok(())
+                decode_bits(bits, self.sign_mode, n)
             }
-            _ => Err(CalcError::TypeError("bitwise needs integers")),
-        }
+            // Unbounded: GMP's infinite two's-complement semantics.
+            None => match op {
+                '&' => a & b,
+                '|' => a | b,
+                '^' => a ^ b,
+                _ => unreachable!(),
+            },
+        };
+        self.stack.push(Value::Int(v));
+        Ok(())
     }
 
     fn not_op(&mut self) -> Result<(), CalcError> {
-        match self.take_x()? {
-            Value::Int(x) => {
-                let r = self.mask(!x);
-                self.stack.push(Value::Int(r));
-                Ok(())
+        self.need(1)?;
+        self.peek_int(0, "not needs an integer")?;
+        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        let v = match self.word_bits {
+            Some(n) => {
+                let bits = encode_bits(&x, self.sign_mode, n) ^ (pow2(n) - one());
+                decode_bits(bits, self.sign_mode, n)
             }
-            _ => Err(CalcError::TypeError("not needs an integer")),
-        }
+            None => !x,
+        };
+        self.stack.push(Value::Int(v));
+        Ok(())
     }
 
-    fn shift(&mut self, left: bool) -> Result<(), CalcError> {
-        let cnt = self.take_x()?;
-        let val = self.pop()?;
-        let n = match cnt {
-            Value::Int(c) => c.to_u32().ok_or(CalcError::TypeError("shift count out of range"))?,
-            _ => return Err(CalcError::TypeError("shift count must be an integer")),
+    /// SL/SR/ASR/RL/RR (X by one bit) and their count forms (Y by X bits).
+    fn shift_rot(&mut self, kind: ShiftKind, count_from_x: bool) -> Result<(), CalcError> {
+        let (k, val_depth) = if count_from_x {
+            self.need(2)?;
+            (self.peek_u32("shift/rotate count out of range")?, 1)
+        } else {
+            self.need(1)?;
+            (1, 0)
         };
-        let x = match val {
-            Value::Int(x) => x,
-            _ => return Err(CalcError::TypeError("shift value must be an integer")),
+        self.peek_int(val_depth, "shift/rotate needs an integer")?;
+
+        let rotate = matches!(kind, ShiftKind::RotLeft | ShiftKind::RotRight);
+        if self.word_bits.is_none() && rotate {
+            return Err(CalcError::TypeError("rotate needs a word size (wsize)"));
+        }
+
+        // Validated — commit the pops.
+        let x = if count_from_x {
+            let c = self.pop_x();
+            let Value::Int(v) = self.stack.pop().expect("validated") else { unreachable!() };
+            let _ = c;
+            v
+        } else {
+            let Value::Int(v) = self.pop_x() else { unreachable!() };
+            v
         };
-        let r = if left { x << n } else { x >> n };
-        self.stack.push(Value::Int(self.mask(r)));
+
+        let v = match self.word_bits {
+            Some(n) => {
+                let bits = encode_bits(&x, self.sign_mode, n);
+                let mask = pow2(n) - one();
+                let bit = |b: &Integer, i: u32| -> bool {
+                    if i >= n {
+                        return false;
+                    }
+                    !((b.clone() >> i) & one()).is_zero()
+                };
+                let (out, carry) = match kind {
+                    ShiftKind::Left => {
+                        let c = k >= 1 && k <= n && bit(&bits, n - k);
+                        ((bits << k.min(n + 1)) & mask, c)
+                    }
+                    ShiftKind::Right => {
+                        let c = k >= 1 && bit(&bits, k - 1);
+                        (bits >> k.min(n + 1), c)
+                    }
+                    ShiftKind::ArithR => {
+                        let c = k >= 1 && bit(&bits, k - 1);
+                        let fill = if bit(&bits, n - 1) {
+                            // sign-fill: the top min(k,n) bits become ones
+                            let kk = k.min(n);
+                            (pow2(kk) - one()) << (n - kk)
+                        } else {
+                            Integer::new()
+                        };
+                        ((bits >> k.min(n + 1)) | fill, c)
+                    }
+                    ShiftKind::RotLeft => {
+                        let k = k % n;
+                        let c = k >= 1 && bit(&bits, n - k);
+                        (((bits.clone() << k) | (bits >> (n - k).min(n))) & mask, c)
+                    }
+                    ShiftKind::RotRight => {
+                        let k = k % n;
+                        let c = k >= 1 && bit(&bits, k - 1);
+                        (((bits.clone() >> k) | (bits << (n - k.min(n)))) & mask, c)
+                    }
+                };
+                self.carry = carry;
+                self.overflow = false;
+                decode_bits(out, self.sign_mode, n)
+            }
+            None => match kind {
+                ShiftKind::Left => x << k,
+                ShiftKind::Right => x >> k, // truncating (toward zero)
+                ShiftKind::ArithR => x.shr_floor(k), // sign-extending
+                _ => unreachable!("rotate rejected above"),
+            },
+        };
+        self.stack.push(Value::Int(v));
+        Ok(())
+    }
+
+    /// Mathematical bit `i` of a signed value (infinite two's complement),
+    /// via Euclidean mod — correct for negatives where `>>` (tdiv) is not.
+    fn math_bit(v: &Integer, i: u32) -> bool {
+        euclid_mod(v.clone(), &pow2(i + 1)) >= pow2(i)
+    }
+
+    fn bit_index(&self, what: &'static str) -> Result<u32, CalcError> {
+        let i = self.peek_u32(what)?;
+        if let Some(n) = self.word_bits {
+            if i >= n {
+                return Err(CalcError::TypeError("bit index exceeds the word size"));
+            }
+        }
+        Ok(i)
+    }
+
+    fn bit_op(&mut self, op: BitOp) -> Result<(), CalcError> {
+        self.need(2)?;
+        let i = self.bit_index("bit index out of range")?;
+        self.peek_int(1, "bit ops need integers")?;
+        let _ = self.pop_x(); // the index
+        match op {
+            BitOp::Test => {
+                // Y stays put; the 0/1 answer lands in X above it.
+                let Value::Int(y) = self.stack.last().expect("validated") else { unreachable!() };
+                let t = Self::math_bit(y, i);
+                self.stack.push(Value::Int(Integer::from_i64(t as i64)));
+            }
+            BitOp::Set | BitOp::Clear => {
+                let Value::Int(y) = self.stack.pop().expect("validated") else { unreachable!() };
+                let exact = match op {
+                    BitOp::Set => y | (one() << i),
+                    BitOp::Clear => y & !(one() << i),
+                    BitOp::Test => unreachable!(),
+                };
+                let v = self.canon_silent(exact);
+                self.stack.push(Value::Int(v));
+            }
+        }
+        Ok(())
+    }
+
+    /// MASKL (n leading ones — needs a word size) / MASKR (n trailing ones).
+    fn mask_op(&mut self, left: bool) -> Result<(), CalcError> {
+        self.need(1)?;
+        let k = self.peek_u32("mask width out of range")?;
+        let v = match (self.word_bits, left) {
+            (Some(n), _) => {
+                if k > n {
+                    return Err(CalcError::TypeError("mask width exceeds the word size"));
+                }
+                let ones = pow2(k) - one();
+                let bits = if left { ones << (n - k) } else { ones };
+                decode_bits(bits, self.sign_mode, n)
+            }
+            (None, false) => pow2(k) - one(),
+            (None, true) => return Err(CalcError::TypeError("maskl needs a word size (wsize)")),
+        };
+        let _ = self.pop_x();
+        self.stack.push(Value::Int(v));
+        Ok(())
+    }
+
+    /// #B — count of one-bits in X's word pattern.
+    fn popcnt(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let x = self.peek_int(0, "popcount needs an integer")?;
+        let count = match self.word_bits {
+            Some(n) => encode_bits(x, self.sign_mode, n).popcount().expect("pattern is non-negative"),
+            None => x
+                .popcount()
+                .ok_or(CalcError::TypeError("popcount of a negative needs a word size"))?,
+        };
+        let _ = self.pop_x();
+        self.stack.push(Value::Int(Integer::from_i64(count as i64)));
         Ok(())
     }
 
     fn fact(&mut self) -> Result<(), CalcError> {
-        match self.take_x()? {
-            Value::Int(x) => {
-                let n = x.to_u32().ok_or(CalcError::TypeError("factorial needs a small non-negative integer"))?;
-                self.stack.push(Value::Int(Integer::factorial(n)));
-                Ok(())
-            }
-            _ => Err(CalcError::TypeError("factorial needs an integer")),
-        }
+        self.need(1)?;
+        self.peek_int(0, "factorial needs an integer")?;
+        let n = self.peek_u32("factorial needs a small non-negative integer")?;
+        let _ = self.pop_x();
+        let v = self.canon_flagged(Integer::factorial(n));
+        self.stack.push(Value::Int(v));
+        Ok(())
     }
 
     fn chs(&mut self) -> Result<(), CalcError> {
-        let v = match self.take_x()? {
-            Value::Int(x) => Value::Int(-x),
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Int(x) => Value::Int(self.canon_flagged(-x)),
             Value::Real(f) => Value::Real(-f),
         };
         self.stack.push(v);
@@ -319,29 +800,31 @@ impl Calc {
     }
 
     fn swap(&mut self) -> Result<(), CalcError> {
-        let b = self.pop()?;
-        let a = self.pop()?;
-        self.stack.push(b);
-        self.stack.push(a);
+        self.need(2)?;
+        let len = self.stack.len();
+        self.stack.swap(len - 1, len - 2);
         Ok(())
     }
 
     fn dup(&mut self) -> Result<(), CalcError> {
-        let top = self.stack.last().ok_or(CalcError::Empty)?.clone();
+        self.need(1)?;
+        let top = self.stack.last().expect("validated").clone();
         self.stack.push(top);
         Ok(())
     }
 
     fn unary_real(&mut self, f: impl FnOnce(Float) -> Float) -> Result<(), CalcError> {
-        let x = self.take_x()?.to_real(self.prec);
+        self.need(1)?;
+        let x = self.pop_x().to_real(self.prec);
         self.stack.push(Value::Real(f(x)));
         Ok(())
     }
 
     /// |X| — preserves the integer/real kind.
     fn abs_op(&mut self) -> Result<(), CalcError> {
-        let v = match self.take_x()? {
-            Value::Int(x) => Value::Int(x.abs()),
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Int(x) => Value::Int(self.canon_flagged(x.abs())),
             Value::Real(f) => Value::Real(f.abs()),
         };
         self.stack.push(v);
@@ -350,52 +833,129 @@ impl Calc {
 
     /// Y ^ X (always real).
     fn pow_op(&mut self) -> Result<(), CalcError> {
-        let x = self.take_x()?.to_real(self.prec);
-        let y = self.pop()?.to_real(self.prec);
+        self.need(2)?;
+        let x = self.pop_x().to_real(self.prec);
+        let y = self.stack.pop().expect("validated").to_real(self.prec);
         self.stack.push(Value::Real(y.pow(x)));
         Ok(())
     }
 
     /// Y mod X (integers only; truncating remainder).
     fn mod_op(&mut self) -> Result<(), CalcError> {
-        let x = self.take_x()?;
-        let y = self.pop()?;
-        match (y, x) {
-            (Value::Int(a), Value::Int(b)) => {
-                if b.is_zero() {
-                    // Error leaves the stack as it was (HP behaviour).
-                    self.stack.push(Value::Int(a));
-                    self.stack.push(Value::Int(b));
-                    return Err(CalcError::DivZero);
+        self.need(2)?;
+        let d = self.peek_int(0, "mod needs integers")?;
+        if d.is_zero() {
+            return Err(CalcError::DivZero);
+        }
+        self.peek_int(1, "mod needs integers")?;
+        let Value::Int(b) = self.pop_x() else { unreachable!() };
+        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        self.stack.push(Value::Int(self.canon_silent(a % b)));
+        Ok(())
+    }
+
+    /// % — X becomes X percent of Y; Y is preserved (HP behaviour).
+    fn pct(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let x = self.pop_x().to_real(self.prec);
+        let y = self.stack.last().expect("validated").to_real(self.prec);
+        let hundred = Float::from_i64(self.prec, 100);
+        self.stack.push(Value::Real(y * x / hundred));
+        Ok(())
+    }
+
+    /// FLOAT — convert an integer X to a real (no-op on reals).
+    fn to_float(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        if matches!(self.stack.last(), Some(Value::Int(_))) {
+            let Value::Int(x) = self.pop_x() else { unreachable!() };
+            let f = Float::from_integer(self.prec, &x);
+            self.stack.push(Value::Real(f));
+        }
+        Ok(())
+    }
+
+    /// round/trunc/floor/ceil — convert a real X to an integer (no-op on ints).
+    fn real_to_int(&mut self, conv: impl FnOnce(&Float) -> Integer) -> Result<(), CalcError> {
+        self.need(1)?;
+        match self.stack.last().expect("validated") {
+            Value::Int(_) => Ok(()),
+            Value::Real(f) => {
+                if f.is_nan() || f.is_inf() {
+                    return Err(CalcError::TypeError("cannot convert nan/inf to an integer"));
                 }
-                self.stack.push(Value::Int(self.mask(a % b)));
+                let Value::Real(f) = self.pop_x() else { unreachable!() };
+                let v = self.canon_silent(conv(&f));
+                self.stack.push(Value::Int(v));
                 Ok(())
             }
-            _ => Err(CalcError::TypeError("mod needs integers")),
         }
+    }
+
+    /// FRAC — fractional part; 0 for integers (kind-preserving).
+    fn frac(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Int(_) => Value::Int(Integer::new()),
+            Value::Real(f) => Value::Real(f.frac()),
+        };
+        self.stack.push(v);
+        Ok(())
     }
 
     /// WSIZE (HP-16C): pop X as the word size in bits; 0 = unbounded (GMP).
     fn wsize(&mut self) -> Result<(), CalcError> {
-        match self.take_x()? {
-            Value::Int(x) => {
-                let n = x.to_u32().ok_or(CalcError::TypeError("word size out of range"))?;
-                self.word_bits = if n == 0 { None } else { Some(n) };
-                Ok(())
-            }
-            _ => Err(CalcError::TypeError("word size must be an integer")),
+        self.need(1)?;
+        let n = self.peek_u32("word size out of range")?;
+        if n > MAX_WORD_BITS {
+            return Err(CalcError::TypeError("word size out of range"));
         }
+        let _ = self.pop_x();
+        self.set_word_bits(if n == 0 { None } else { Some(n) });
+        Ok(())
     }
 
     /// Pop X as the MPFR working precision in bits.
     fn prec_cmd(&mut self) -> Result<(), CalcError> {
-        match self.take_x()? {
-            Value::Int(x) => {
-                let n = x.to_u32().ok_or(CalcError::TypeError("precision out of range"))?;
-                self.set_prec(n);
+        self.need(1)?;
+        let n = self.peek_u32("precision out of range")?;
+        let _ = self.pop_x();
+        self.set_prec(n);
+        Ok(())
+    }
+
+    /// FIX/SCI/ENG n — pop X as the digit count.
+    fn fmt_cmd(&mut self, shape: FloatFmt) -> Result<(), CalcError> {
+        self.need(1)?;
+        let d = self.peek_u32("format digits out of range")?;
+        if d > MAX_FMT_DIGITS {
+            return Err(CalcError::TypeError("format digits out of range"));
+        }
+        let _ = self.pop_x();
+        self.float_fmt = match shape {
+            FloatFmt::Fix(_) => FloatFmt::Fix(d as u8),
+            FloatFmt::Sci(_) => FloatFmt::Sci(d as u8),
+            FloatFmt::Eng(_) => FloatFmt::Eng(d as u8),
+            FloatFmt::Auto => FloatFmt::Auto,
+        };
+        Ok(())
+    }
+
+    /// STO i — copy X into register i (X stays, LASTx untouched).
+    fn sto(&mut self, i: usize) -> Result<(), CalcError> {
+        self.need(1)?;
+        self.regs[i] = Some(self.stack.last().expect("validated").clone());
+        Ok(())
+    }
+
+    /// RCL i — push register i.
+    fn rcl(&mut self, i: usize) -> Result<(), CalcError> {
+        match &self.regs[i] {
+            Some(v) => {
+                self.stack.push(v.clone());
                 Ok(())
             }
-            _ => Err(CalcError::TypeError("precision must be an integer")),
+            None => Err(CalcError::TypeError("empty register")),
         }
     }
 
@@ -416,37 +976,56 @@ impl Calc {
         }
     }
 
-    /// Duplicate X onto the stack (RPN ENTER).
-    fn enter(&mut self) -> Result<(), CalcError> {
-        self.dup()
-    }
-
     /// Copy Y above X (… Y X → … Y X Y).
     fn over(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
         let n = self.stack.len();
-        if n < 2 {
-            return Err(CalcError::Empty);
-        }
         self.stack.push(self.stack[n - 2].clone());
         Ok(())
     }
 
     /// Roll the stack down: X drops to the bottom.
     fn roll_down(&mut self) -> Result<(), CalcError> {
-        let x = self.pop()?;
+        self.need(1)?;
+        let x = self.stack.pop().expect("validated");
         self.stack.insert(0, x);
         Ok(())
     }
 
     /// Roll the stack up: the bottom element rises to X.
     fn roll_up(&mut self) -> Result<(), CalcError> {
-        if self.stack.is_empty() {
-            return Err(CalcError::Empty);
-        }
+        self.need(1)?;
         let b = self.stack.remove(0);
         self.stack.push(b);
         Ok(())
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum BitOp {
+    Set,
+    Clear,
+    Test,
+}
+
+/// Leaving word mode: a pattern-domain value back to signed (helper for
+/// [`Calc::renormalize`]).
+fn decode_bits_back(bits: Integer, mode: SignMode, n: u32) -> Integer {
+    if bits.is_negative() {
+        // encode of a canonical value is never negative; belt and braces
+        bits
+    } else {
+        decode_bits(bits, mode, n)
+    }
+}
+
+/// `sto<h>` / `rcl<h>` → register index.
+fn reg_index(t: &str, prefix: &str) -> Option<usize> {
+    let rest = t.strip_prefix(prefix)?;
+    if rest.len() != 1 {
+        return None;
+    }
+    rest.chars().next()?.to_digit(16).map(|d| d as usize)
 }
 
 fn is_command(t: &str) -> bool {
@@ -455,8 +1034,14 @@ fn is_command(t: &str) -> bool {
         "+" | "-" | "*" | "/" | "chs" | "swap" | "drop" | "dup" | "sqrt" | "sin"
             | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
             | "ln" | "log" | "exp" | "exp10" | "inv" | "sq" | "abs" | "pow"
-            | "mod" | "e" | "pi" | "and" | "or" | "xor" | "not" | "shl" | "shr"
-            | "fact" | "!" | "hex" | "dec" | "oct" | "bin" | "lastx" | "enter"
-            | "over" | "rolldn" | "roll" | "rollup" | "wsize" | "prec"
+            | "mod" | "pct" | "e" | "pi" | "and" | "or" | "xor" | "not"
+            | "sl" | "sr" | "asr" | "rl" | "rr"
+            | "shl" | "shr" | "sln" | "srn" | "asrn" | "rln" | "rrn"
+            | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
+            | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
+            | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
+            | "unsgn" | "1s" | "2s" | "signmode"
+            | "fix" | "sci" | "eng" | "std" | "clear"
+            | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )
 }

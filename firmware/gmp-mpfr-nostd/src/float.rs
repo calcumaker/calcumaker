@@ -72,6 +72,48 @@ impl Float {
         unsafe { ffi::mpfr_zero_p(&self.raw) != 0 }
     }
 
+    pub fn is_nan(&self) -> bool {
+        unsafe { ffi::mpfr_nan_p(&self.raw) != 0 }
+    }
+
+    pub fn is_inf(&self) -> bool {
+        unsafe { ffi::mpfr_inf_p(&self.raw) != 0 }
+    }
+
+    pub fn is_sign_negative(&self) -> bool {
+        unsafe { ffi::mpfr_signbit(&self.raw) != 0 }
+    }
+
+    /// Convert to an integer with the given direction (NaN/Inf are the caller's
+    /// problem — check first).
+    fn to_integer_rnd(&self, rnd: c_int) -> Integer {
+        let mut r = Integer::new();
+        unsafe { ffi::mpfr_get_z(r.as_raw_mut(), &self.raw, rnd) };
+        r
+    }
+
+    /// Round to the nearest integer (ties to even).
+    pub fn round_to_int(&self) -> Integer {
+        self.to_integer_rnd(ffi::RNDN)
+    }
+    /// Truncate toward zero.
+    pub fn trunc_to_int(&self) -> Integer {
+        self.to_integer_rnd(ffi::RNDZ)
+    }
+    /// Floor (toward −∞).
+    pub fn floor_to_int(&self) -> Integer {
+        self.to_integer_rnd(ffi::RNDD)
+    }
+    /// Ceiling (toward +∞).
+    pub fn ceil_to_int(&self) -> Integer {
+        self.to_integer_rnd(ffi::RNDU)
+    }
+
+    /// Fractional part (same sign as self).
+    pub fn frac(self) -> Float {
+        self.unary(ffi::mpfr_frac)
+    }
+
     /// Normalized `"d.ffffe<exp>"` form with `ndigits` significant digits — the
     /// shape a `%g`-style formatter can post-process.
     pub fn to_string_radix(&self, base: i32, ndigits: usize) -> String {

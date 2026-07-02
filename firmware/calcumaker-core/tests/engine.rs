@@ -163,6 +163,358 @@ fn over_copies_y_above_x() {
     assert_eq!(c.stack().len(), 3);
 }
 
+// ---- word size, sign modes, flags ------------------------------------------
+
+/// -15 at 16-bit 2's complement displays as the bit pattern FFF1 in hex,
+/// and as the signed value in decimal.
+#[test]
+fn twos_complement_hex_display() {
+    let mut c = Calc::new(64);
+    for t in ["16", "wsize", "15", "chs"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-15");
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "FFF1");
+}
+
+/// Entering a high bit pattern in hex decodes per the sign mode.
+#[test]
+fn pattern_entry_decodes_by_sign_mode() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "ff", "dec"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-1"); // 2's comp default
+    for t in ["hex", "unsgn", "dec"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "255"); // same bits, unsigned view
+}
+
+#[test]
+fn ones_complement_negation_is_bit_complement() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "1s", "5", "chs"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-5");
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "FA"); // ~00000101 = 11111010
+}
+
+#[test]
+fn add_wraps_and_sets_flags() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "unsgn", "200", "100", "+"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "44"); // 300 mod 256
+    assert!(c.carry(), "carry out of bit 8");
+    assert!(c.overflow(), "result wrapped");
+}
+
+/// Decimal entry wraps into the word silently; the *add* then overflows the
+/// signed range without a carry (100+100 = 200 > 127 @8b 2's comp).
+#[test]
+fn signed_overflow_without_carry() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "100", "100", "+"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-56");
+    assert!(!c.carry());
+    assert!(c.overflow());
+}
+
+#[test]
+fn add_in_range_clears_flags() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "3", "4", "+"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "7");
+    assert!(!c.carry());
+    assert!(!c.overflow());
+}
+
+#[test]
+fn sub_borrow_sets_carry() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "3", "5", "-"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-2");
+    assert!(c.carry(), "borrow");
+}
+
+#[test]
+fn wsize_change_preserves_bit_pattern() {
+    let mut c = Calc::new(64);
+    for t in ["16", "wsize", "15", "chs"] {
+        c.input(t).unwrap();
+    }
+    // FFF1 @16b → narrow to 8 bits keeps the low byte F1 = -15 (2's comp)
+    for t in ["8", "wsize"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "F1");
+}
+
+// ---- shifts, rotates, bit ops ------------------------------------------------
+
+#[test]
+fn sl_shifts_x_by_one_and_carries_msb() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "81", "sl"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2");
+    assert!(c.carry(), "MSB shifted out");
+}
+
+#[test]
+fn asr_fills_with_sign() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "f0", "asr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "F8"); // sign bit replicated
+}
+
+#[test]
+fn rotate_left_wraps_msb_to_lsb() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "81", "rl"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3"); // 1000_0001 → 0000_0011
+    assert!(c.carry());
+}
+
+#[test]
+fn rotate_needs_word_size() {
+    let mut c = Calc::new(64);
+    for t in ["5"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("rl").is_err());
+    assert_eq!(c.stack().len(), 1); // operand preserved on error
+}
+
+#[test]
+fn rln_rotates_y_by_x() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "12", "4", "rln"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "21"); // nibble swap
+}
+
+#[test]
+fn bset_bclr_btest() {
+    let mut c = Calc::new(64);
+    for t in ["0", "3", "bset"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "8");
+    for t in ["3", "btest"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1"); // bit is set; value stays in Y
+    assert_eq!(c.stack().len(), 2);
+    for t in ["drop", "3", "bclr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0");
+}
+
+#[test]
+fn maskl_maskr() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "unsgn", "4", "maskl"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "F0");
+    for t in ["drop", "4", "maskr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "F");
+}
+
+#[test]
+fn popcnt_counts_pattern_bits() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "ff", "popcnt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "8");
+}
+
+// ---- conversions, %, registers ------------------------------------------------
+
+#[test]
+fn float_and_round_convert_kinds() {
+    let mut c = Calc::new(128);
+    for t in ["7", "float"] {
+        c.input(t).unwrap();
+    }
+    for t in ["2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3.5"); // real division after FLOAT
+    c.input("round").unwrap();
+    assert_eq!(c.display(), "4");
+}
+
+#[test]
+fn floor_ceil_trunc_frac() {
+    let mut c = Calc::new(128);
+    c.input("-2.5").unwrap();
+    c.input("floor").unwrap();
+    assert_eq!(c.display(), "-3");
+    c.input("drop").unwrap();
+    c.input("-2.5").unwrap();
+    c.input("ceil").unwrap();
+    assert_eq!(c.display(), "-2");
+    c.input("drop").unwrap();
+    c.input("-2.5").unwrap();
+    c.input("trunc").unwrap();
+    assert_eq!(c.display(), "-2");
+    c.input("drop").unwrap();
+    c.input("2.75").unwrap();
+    c.input("frac").unwrap();
+    assert_eq!(c.display(), "0.75");
+}
+
+#[test]
+fn pct_preserves_y() {
+    let mut c = Calc::new(128);
+    for t in ["200", "15", "pct"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "30");
+    assert_eq!(c.stack().len(), 2); // Y = 200 still there
+}
+
+#[test]
+fn sto_rcl_registers() {
+    let mut c = Calc::new(64);
+    for t in ["42", "sto5", "drop", "rcl5"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "42");
+    assert!(c.input("rcl6").is_err()); // empty register
+}
+
+#[test]
+fn clear_empties_stack_and_flags() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "200", "100", "+", "clear"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.stack().is_empty());
+    assert!(!c.carry() && !c.overflow());
+}
+
+// ---- FIX / SCI / ENG -----------------------------------------------------------
+
+#[test]
+fn fix_mode() {
+    let mut c = Calc::new(200);
+    for t in ["4", "fix", "pi"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3.1416");
+
+    let mut c2 = Calc::new(200);
+    for t in ["2", "fix", "0.0049"] {
+        c2.input(t).unwrap();
+    }
+    assert_eq!(c2.display(), "0.00"); // below the last decimal
+    for t in ["drop", "0.006"] {
+        c2.input(t).unwrap();
+    }
+    assert_eq!(c2.display(), "0.01"); // rounds up into view
+}
+
+#[test]
+fn sci_mode() {
+    let mut c = Calc::new(200);
+    for t in ["3", "sci", "1500", "float"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1.500e3");
+}
+
+#[test]
+fn eng_mode() {
+    let mut c = Calc::new(200);
+    for t in ["2", "eng", "0.0472"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "47.2e-3");
+}
+
+#[test]
+fn std_returns_to_auto() {
+    let mut c = Calc::new(200);
+    for t in ["4", "fix", "0.5", "std"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0.5");
+}
+
+#[test]
+fn real_div_zero_is_inf() {
+    let mut c = Calc::new(64);
+    for t in ["1.0", "0", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "inf");
+}
+
+#[test]
+fn sqrt_of_negative_is_nan() {
+    assert_eq!(run(64, &["-1", "sqrt"]), "nan");
+}
+
+// ---- errors never consume operands ---------------------------------------------
+
+#[test]
+fn type_error_preserves_stack() {
+    let mut c = Calc::new(64);
+    for t in ["1.5", "2"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("and").is_err()); // Y is a real
+    assert_eq!(c.stack().len(), 2);
+    assert_eq!(c.display(), "2");
+}
+
+#[test]
+fn lastx_untouched_by_failed_op() {
+    let mut c = Calc::new(64);
+    for t in ["2", "3", "+"] {
+        c.input(t).unwrap();
+    }
+    let _ = c.input("and").err(); // fails: one operand only... actually 5 is X
+    let mut c = Calc::new(64);
+    for t in ["2", "3", "+", "0", "/"] {
+        c.input(t).unwrap_or(());
+    }
+    c.input("lastx").unwrap();
+    assert_eq!(c.display(), "3"); // still the + operand, not the failed /
+}
+
 #[test]
 fn div_zero_preserves_stack() {
     let mut c = Calc::new(64);

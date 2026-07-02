@@ -48,6 +48,8 @@ pub const fn encode(c: char) -> Option<u8> {
         'G' | 'g' => 0x3D,
         'H' => 0x76,
         'h' => 0x74,
+        'I' => 0x06, // same segments as 1, classic 7-seg
+        'i' => 0x04,
         'L' | 'l' => 0x38,
         'n' | 'N' => 0x54,
         'o' | 'O' => 0x5C,

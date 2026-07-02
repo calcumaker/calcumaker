@@ -18,8 +18,12 @@ pub type mp_bitcnt_t = c_ulong;
 pub type mpfr_prec_t = c_long;
 pub type mpfr_exp_t = c_long;
 
-/// MPFR_RNDN — round to nearest (ties to even). We round-to-nearest throughout.
+/// MPFR_RNDN — round to nearest (ties to even). We round-to-nearest throughout;
+/// RNDZ/RNDU/RNDD serve the real→integer conversions (trunc/ceil/floor).
 pub const RNDN: c_int = 0;
+pub const RNDZ: c_int = 1;
+pub const RNDU: c_int = 2;
+pub const RNDD: c_int = 3;
 
 #[repr(C)]
 pub struct mpz_struct {
@@ -57,8 +61,11 @@ extern "C" {
     pub fn __gmpz_com(r: *mut mpz_struct, a: *const mpz_struct);
     pub fn __gmpz_mul_2exp(r: *mut mpz_struct, a: *const mpz_struct, n: mp_bitcnt_t);
     pub fn __gmpz_tdiv_q_2exp(r: *mut mpz_struct, a: *const mpz_struct, n: mp_bitcnt_t);
+    pub fn __gmpz_fdiv_q_2exp(r: *mut mpz_struct, a: *const mpz_struct, n: mp_bitcnt_t);
     pub fn __gmpz_neg(r: *mut mpz_struct, a: *const mpz_struct);
+    pub fn __gmpz_cmp(a: *const mpz_struct, b: *const mpz_struct) -> c_int;
     pub fn __gmpz_cmp_si(a: *const mpz_struct, b: c_long) -> c_int;
+    pub fn __gmpz_popcount(a: *const mpz_struct) -> mp_bitcnt_t;
     pub fn __gmpz_fac_ui(r: *mut mpz_struct, n: c_ulong);
     pub fn __gmpz_fits_ulong_p(a: *const mpz_struct) -> c_int;
     pub fn __gmpz_get_ui(a: *const mpz_struct) -> c_ulong;
@@ -80,7 +87,12 @@ extern "C" {
         rnd: c_int,
     ) -> *mut c_char;
     pub fn mpfr_free_str(s: *mut c_char);
+    pub fn mpfr_get_z(r: *mut mpz_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_frac(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_zero_p(a: *const mpfr_struct) -> c_int;
+    pub fn mpfr_nan_p(a: *const mpfr_struct) -> c_int;
+    pub fn mpfr_inf_p(a: *const mpfr_struct) -> c_int;
+    pub fn mpfr_signbit(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_add(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_sub(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_mul(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;

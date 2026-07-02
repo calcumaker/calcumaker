@@ -1,12 +1,14 @@
-//! Render a [`Value`] for the display, honoring the integer radix and the
-//! working precision.
+//! Render a [`Value`] for the display, honoring the integer radix, word size /
+//! sign mode (non-decimal radices show the raw bit pattern, 16C style), the
+//! real display format (AUTO `%g` / FIX / SCI / ENG), and the working
+//! precision.
 
 use alloc::format;
 use alloc::string::{String, ToString};
 
 use gmp_mpfr_nostd::Float;
 
-use crate::calc::Radix;
+use crate::calc::{encode_bits, Calc, FloatFmt, Radix};
 use crate::value::Value;
 
 /// Decimal significant digits worth showing for a given binary precision.
@@ -15,31 +17,205 @@ fn dec_digits(prec: u32) -> usize {
     ((prec as f64) * 0.30103) as usize + 1
 }
 
-pub fn format(v: &Value, radix: Radix, prec: u32) -> String {
+pub fn format(v: &Value, c: &Calc) -> String {
     match v {
         Value::Int(i) => {
-            let s = i.to_string_radix(radix.base());
-            if radix == Radix::Hex {
+            let s = match (c.word_bits(), c.radix()) {
+                // Word mode: hex/oct/bin show the n-bit pattern (-15 @16b 2's
+                // comp is FFF1); decimal shows the signed value.
+                (Some(n), r) if r != Radix::Dec => {
+                    encode_bits(i, c.sign_mode(), n).to_string_radix(r.base())
+                }
+                (_, r) => i.to_string_radix(r.base()),
+            };
+            if c.radix() == Radix::Hex {
                 s.to_uppercase()
             } else {
                 s
             }
         }
-        Value::Real(f) => format_real(f, prec),
+        Value::Real(f) => format_real(f, c.prec(), c.float_fmt()),
     }
 }
+
+/// FIX with an integer part wider than this falls back to SCI (16C-style
+/// "doesn't fit" escape; the 7-seg row is 16 digits anyway).
+const FIX_MAX_EXP: i64 = 40;
+
+fn format_real(f: &Float, prec: u32, fmt: FloatFmt) -> String {
+    if f.is_nan() {
+        return "nan".to_string();
+    }
+    if f.is_inf() {
+        return if f.is_sign_negative() { "-inf" } else { "inf" }.to_string();
+    }
+    if f.is_zero() {
+        return zero_str(fmt);
+    }
+    match fmt {
+        FloatFmt::Auto => reformat(&f.to_string_radix(10, dec_digits(prec))),
+        FloatFmt::Fix(d) => fix(f, d as i64),
+        FloatFmt::Sci(d) => sci_n(f, d as usize),
+        FloatFmt::Eng(d) => eng(f, d as usize),
+    }
+}
+
+fn zero_str(fmt: FloatFmt) -> String {
+    match fmt {
+        FloatFmt::Auto => "0".to_string(),
+        FloatFmt::Fix(d) => fixed_zero(d as i64),
+        FloatFmt::Sci(d) | FloatFmt::Eng(d) => {
+            let mut s = pad_decimals("0", d as usize);
+            s.push_str("e0");
+            s
+        }
+    }
+}
+
+fn fixed_zero(d: i64) -> String {
+    pad_decimals("0", d.max(0) as usize)
+}
+
+/// `int_digits` plus exactly `d` decimals (appends `.` + zero-padding).
+fn pad_decimals(int: &str, d: usize) -> String {
+    if d == 0 {
+        return int.to_string();
+    }
+    format!("{int}.{}", "0".repeat(d))
+}
+
+/// Sign, significant digits (exactly `sig`, no point), and the normalized
+/// exponent (value = 0.digits × 10^(exp+1), i.e. d.fff × 10^exp).
+fn split_sig(f: &Float, sig: usize) -> (&'static str, String, i64) {
+    if sig >= 2 {
+        return split_raw(f, sig);
+    }
+    // MPFR won't produce a single digit — take two and round by hand
+    // (half away from zero, HP-style).
+    let (sign, digits, mut exp) = split_raw(f, 2);
+    let b = digits.as_bytes();
+    let mut d1 = b[0] - b'0';
+    if b[1] >= b'5' {
+        d1 += 1;
+    }
+    let digits = if d1 == 10 {
+        exp += 1;
+        "1".to_string()
+    } else {
+        char::from(b'0' + d1).to_string()
+    };
+    (sign, digits, exp)
+}
+
+fn split_raw(f: &Float, sig: usize) -> (&'static str, String, i64) {
+    let s = f.to_string_radix(10, sig);
+    let (sign, rest) = match s.strip_prefix('-') {
+        Some(r) => ("-", r),
+        None => ("", s.as_str()),
+    };
+    let (mant, exp) = match rest.split_once(['e', 'E']) {
+        Some((m, e)) => (m, e.parse::<i64>().unwrap_or(0)),
+        None => (rest, 0),
+    };
+    let digits: String = mant.chars().filter(|c| *c != '.').collect();
+    (sign, digits, exp)
+}
+
+/// FIX d — exactly `d` digits after the decimal point.
+fn fix(f: &Float, d: i64) -> String {
+    let (_, _, e0) = split_sig(f, 2); // exponent probe
+    if e0 > FIX_MAX_EXP {
+        return sci_n(f, d.max(0) as usize);
+    }
+    let sig = e0 + 1 + d;
+    if sig <= 0 {
+        // The value sits below the last displayed decimal. Probe with plenty
+        // of digits (no double rounding) and decide: zero, or it rounds up
+        // into the last decimal place.
+        let (sign, digits, e1) = split_raw(f, 20);
+        if e1 >= -d {
+            return fix_from(sign, &digits, e1, d); // all-nines bump into view
+        }
+        if e1 == -(d + 1) && digits.as_bytes()[0] >= b'5' {
+            if d == 0 {
+                return format!("{sign}1");
+            }
+            return format!("{sign}0.{}1", "0".repeat((d - 1) as usize));
+        }
+        return fixed_zero(d);
+    }
+    let (sign, digits, e1) = split_sig(f, sig as usize);
+    fix_from(sign, &digits, e1, d)
+}
+
+/// Assemble a fixed-point string from `digits` (value = d.fff × 10^e1) with
+/// exactly `d` decimals. `digits` always covers the decimals (the caller sized
+/// it); the integer part is zero-padded if rounding shortened it.
+fn fix_from(sign: &str, digits: &str, e1: i64, d: i64) -> String {
+    let d = d.max(0) as usize;
+    if e1 < 0 {
+        let lead = (-e1 - 1) as usize;
+        let mut dec: String = "0".repeat(lead);
+        dec.push_str(digits);
+        dec.truncate(d);
+        while dec.len() < d {
+            dec.push('0');
+        }
+        if d == 0 {
+            return format!("{sign}0");
+        }
+        return format!("{sign}0.{dec}");
+    }
+    let int_w = (e1 + 1) as usize;
+    let mut all: String = digits.to_string();
+    while all.len() < int_w + d {
+        all.push('0');
+    }
+    let (int, dec) = all.split_at(int_w);
+    if d == 0 {
+        return format!("{sign}{int}");
+    }
+    format!("{sign}{int}.{}", &dec[..d])
+}
+
+/// SCI d — d.ffffe±X with exactly `d` digits after the point.
+fn sci_n(f: &Float, d: usize) -> String {
+    let (sign, digits, e) = split_sig(f, d + 1);
+    let (first, rest) = digits.split_at(1);
+    let mut mant = first.to_string();
+    if d > 0 {
+        let mut dec = rest.to_string();
+        dec.truncate(d);
+        while dec.len() < d {
+            dec.push('0');
+        }
+        mant = format!("{mant}.{dec}");
+    }
+    format!("{sign}{mant}e{e}")
+}
+
+/// ENG d — like SCI but the exponent is a multiple of 3 (d+1 significant
+/// digits, 1–3 of them before the point).
+fn eng(f: &Float, d: usize) -> String {
+    let (sign, mut digits, e) = split_sig(f, d + 1);
+    let shift = e.rem_euclid(3) as usize; // int part is shift+1 digits
+    let e3 = e - shift as i64;
+    while digits.len() < shift + 1 {
+        digits.push('0');
+    }
+    let (int, dec) = digits.split_at(shift + 1);
+    let body = if dec.is_empty() {
+        int.to_string()
+    } else {
+        format!("{int}.{dec}")
+    };
+    format!("{sign}{body}e{e3}")
+}
+
+// ---- AUTO (%g-style) --------------------------------------------------------
 
 /// Beyond this many leading/trailing zeros, switch to scientific notation.
 const PLAIN_RANGE: i64 = 12;
-
-fn format_real(f: &Float, prec: u32) -> String {
-    if f.is_zero() {
-        return "0".to_string();
-    }
-    // MPFR emits a normalized "d.ffff e±EXP" form; reformat it %g-style.
-    let s = f.to_string_radix(10, dec_digits(prec));
-    reformat(&s)
-}
 
 fn reformat(s: &str) -> String {
     let (sign, rest) = match s.strip_prefix('-') {

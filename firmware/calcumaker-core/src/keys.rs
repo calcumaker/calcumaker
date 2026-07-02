@@ -29,6 +29,8 @@ pub enum Key {
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
+    // real display format (X = digit count; FmtAuto = %g-style)
+    Fix, Sci, Eng, FmtAuto,
     // arbitrary-precision control (the headline feature)
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
@@ -56,12 +58,13 @@ pub const LAYER_F: [[Key; COLS]; ROWS] = [
     [ShiftF, ShiftG, Nop,  Nop,  RollUp,   Nop,  Off,    Nop,  Eex,   Nop],
 ];
 
-/// g (blue) layer — hyperbolic / secondary.
+/// g (blue) layer — hyperbolic / secondary. (FIX/SCI/ENG/auto sit over the
+/// radix keys: display format over display base.)
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Fact,   Pct,  Round, Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Fix,    Sci,    Eng,  FmtAuto, Nop,   Nop,  Nop,    Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
 ];
 

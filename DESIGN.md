@@ -176,7 +176,9 @@ keypress wakes the MCU from Stop, so no dedicated ON key is needed.
   arbitrary-precision working digits), π, LASTx; over A–F → bit set/clear/test,
   MASKL/MASKR, bit-count; over AND…SR → RL/RR/ASR/RMD; over HEX/DEC/OCT/BIN →
   FLOAT; WSIZE → sign mode (unsigned / 1's / 2's); R↓ → R↑.
-- **g (blue)** → secondary: SINH/COSH/TANH, LOG, 10ˣ, n!, %, RND, OFF.
+- **g (blue)** → secondary: SINH/COSH/TANH, LOG, 10ˣ, n!, %, RND (real → int);
+  over HEX/DEC/OCT/BIN → **FIX/SCI/ENG/auto** (display format over display
+  base; digit count from X). OFF sits on the f layer.
 - The full keymap is the source of truth in
   **`firmware/calcumaker-core/src/keys.rs`** (`BASE` / `LAYER_F` / `LAYER_G`) —
   keep the two in sync. It lives in the core (not the board crate) because the
@@ -282,7 +284,10 @@ Display policy (initial, revisit with real glass): X (or the live entry) on the
 bottom row, Y/Z above; values right-aligned; >16-digit values truncated with the
 overflow marker — **windowing/scrolling is an open item**. Engine modes are RPN
 postfix like the HP-16C: `<bits> W` (WSIZE, 0 = unbounded), f-shift `I`
-(= `prec`, pops X as the MPFR working precision).
+(= `prec`, pops X as the MPFR working precision), f-shift WSIZE cycles the sign
+mode, g-shift over the radix keys sets FIX/SCI/ENG/auto (digits from X). The
+annunciator line shows radix, prec, word size + sign mode, the **C**/**G**
+flags, the format, a pending f/g shift or STO/RCL, and error blips.
 
 ## GMP/MPFR on the target (✅ cross-built + link-verified)
 
@@ -412,10 +417,30 @@ the authored TM1640.
 - `Value` = `Int(gmp_mpfr_nostd::Integer)` (GMP) **or**
   `Real(gmp_mpfr_nostd::Float)` (MPFR).
 - `Calc` = the RPN stack + token input; integers stay integers through
-  `+ - * /` and the bitwise/shift ops (HP-16C model, masked to the word size);
-  the scientific functions promote to MPFR reals.
+  `+ - * /` and the bitwise/shift ops; the scientific functions promote to MPFR
+  reals. `float` / `round` / `trunc` / `floor` / `ceil` / `frac` convert
+  between the kinds explicitly.
+- **HP-16C programmer model** under a word size (`<bits> wsize`; 0 = unbounded):
+  - **Sign modes** `2s` / `1s` / `unsgn` (2's default). Values are stored as
+    canonical signed integers; bitwise/shift/rotate ops act on the n-bit
+    pattern; hex/oct/bin display the **pattern** (−15 @16b 2's = `FFF1`),
+    decimal displays the signed value; non-decimal entry is a pattern, decimal
+    entry a signed value. Mode / word-size changes reinterpret the stack
+    **bit-pattern-preserving** (16C behaviour). 1's complement folds −0 onto 0.
+  - **Flags:** **C** carry (add carry-out, subtract borrow, the bit shifted or
+    rotated out) and **G** out-of-range (result wrapped). Word mode only.
+  - `sl sr asr rl rr` act on X by one bit (the panel keys); `shl shr rln rrn`
+    shift/rotate Y by X bits. `bset bclr btest maskl maskr popcnt` cover the
+    bit ops (`btest` leaves the value in Y and pushes 0/1).
+- **16 STO/RCL registers** (`sto0`…`stof` / `rcl0`…`rclf` — one per hex digit
+  key; on the keypad STO/RCL wait for the next digit key).
+- **Real display formats:** AUTO (`%g`-style) / `FIX n` / `SCI n` / `ENG n`
+  (digit count from X; `std` = back to AUTO). Inf/NaN display as `inf`/`nan`.
+- **Errors never consume operands** — every op validates stack depth, types,
+  and domain before popping (and LASTx updates only on success), so a failed
+  op leaves the calculator exactly as it was (HP behaviour).
 - HAL-free and fully **host-testable** (`cargo test`) + runnable
-  (`cargo run --example repl`).
+  (`cargo run --example repl`, or the full UI in `calcumaker-emu`).
 
 The firmware consumes this crate; on the target the only thing that changes is
 where GMP/MPFR come from (cross-built, linked at the FFI layer) — the engine code

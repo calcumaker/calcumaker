@@ -139,11 +139,23 @@ fn prec_key_sets_precision_from_x() {
 }
 
 #[test]
-fn unassigned_key_reports_not_implemented() {
+fn sto_rcl_via_pending_register_digit() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(1), Key::Enter, Key::Sto]);
-    assert_eq!(app.message(), Some("not implemented"));
-    assert_eq!(x_row(&app), "1"); // X untouched
+    press_all(&mut app, &[Key::Digit(4), Key::Digit(2), Key::Sto]);
+    assert_eq!(app.pending_register(), Some("STO"));
+    app.press_key(Key::Digit(5)); // register 5
+    assert_eq!(x_row(&app), "42"); // STO keeps X
+    press_all(&mut app, &[Key::ClrX, Key::Rcl, Key::Digit(5)]);
+    assert_eq!(x_row(&app), "42");
+}
+
+#[test]
+fn pending_register_cancelled_by_non_digit() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(7), Key::Sto, Key::Add]);
+    assert_eq!(app.message(), Some("register select cancelled"));
+    assert_eq!(app.pending_register(), None);
+    assert_eq!(x_row(&app), "7"); // the Add was swallowed, X untouched
 }
 
 #[test]

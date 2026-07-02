@@ -21,10 +21,18 @@ use crate::calc::{Calc, CalcError, Radix};
 use crate::keys::{Key, Shift};
 use crate::seg7::{self, DIGITS_PER_ROW, DISPLAY_ROWS};
 
+/// A pending STO/RCL waiting for its register digit (0–F).
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum RegOp {
+    Sto,
+    Rcl,
+}
+
 pub struct App {
     calc: Calc,
     shift: Shift,
     entry: Option<String>,
+    pending_reg: Option<RegOp>,
     msg: Option<&'static str>,
 }
 
@@ -35,6 +43,7 @@ impl App {
             calc: Calc::new(prec),
             shift: Shift::None,
             entry: None,
+            pending_reg: None,
             msg: None,
         }
     }
@@ -55,6 +64,13 @@ impl App {
     pub fn message(&self) -> Option<&'static str> {
         self.msg
     }
+    /// STO/RCL waiting for a register digit: `Some("STO")` / `Some("RCL")`.
+    pub fn pending_register(&self) -> Option<&'static str> {
+        self.pending_reg.map(|r| match r {
+            RegOp::Sto => "STO",
+            RegOp::Rcl => "RCL",
+        })
+    }
 
     // ---- input --------------------------------------------------------------
     /// A physical key press at matrix position `(row, col)`, resolved through
@@ -69,8 +85,33 @@ impl App {
     /// backend, public for tests and scripted input.
     pub fn press_key(&mut self, k: Key) {
         self.msg = None;
+        // A pending STO/RCL claims the next digit key as its register (0-F,
+        // radix-independent); any other key cancels it.
+        if let Some(op) = self.pending_reg.take() {
+            match k {
+                Key::Digit(n) => {
+                    let prefix = match op {
+                        RegOp::Sto => "sto",
+                        RegOp::Rcl => "rcl",
+                    };
+                    let tok = alloc::format!("{prefix}{n:x}");
+                    self.run_owned(&tok);
+                    return;
+                }
+                _ => self.msg = Some("register select cancelled"),
+            }
+            return;
+        }
         match k {
             Key::Digit(n) => self.digit(n),
+            Key::Sto => {
+                self.flush();
+                self.pending_reg = Some(RegOp::Sto);
+            }
+            Key::Rcl => {
+                self.flush();
+                self.pending_reg = Some(RegOp::Rcl);
+            }
             Key::Dot => self.dot(),
             Key::Eex => self.eex(),
             Key::Chs => self.chs(),
@@ -203,7 +244,7 @@ impl App {
             .calc
             .stack()
             .iter()
-            .map(|v| crate::format::format(v, self.calc.radix(), self.calc.prec()))
+            .map(|v| crate::format::format(v, &self.calc))
             .collect();
         if let Some(b) = &self.entry {
             let mut line = b.clone();
@@ -227,8 +268,8 @@ impl App {
     }
 }
 
-/// Engine token for a logical key; `None` = not implemented in the engine yet
-/// (rotate/bit ops, sto/rcl, %, round, float/sign modes — see DESIGN.md).
+/// Engine token for a logical key; `None` = not a calculator function
+/// (Sto/Rcl run through the pending-register flow, Off is a system key).
 fn token_for(k: Key) -> Option<&'static str> {
     Some(match k {
         Key::Add => "+",
@@ -244,14 +285,32 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::Oct => "oct",
         Key::Bin => "bin",
         Key::WordSize => "wsize",
+        Key::SignMode => "signmode",
+        Key::Float => "float",
         Key::Prec => "prec",
         Key::And => "and",
         Key::Or => "or",
         Key::Xor => "xor",
         Key::Not => "not",
-        Key::Shl => "shl",
-        Key::Shr => "shr",
+        // the panel shift/rotate keys act on X by one bit (16C style)
+        Key::Shl => "sl",
+        Key::Shr => "sr",
+        Key::Asr => "asr",
+        Key::Rotl => "rl",
+        Key::Rotr => "rr",
+        Key::BitSet => "bset",
+        Key::BitClr => "bclr",
+        Key::BitTest => "btest",
+        Key::MaskL => "maskl",
+        Key::MaskR => "maskr",
+        Key::BitCount => "popcnt",
         Key::Rmd => "mod",
+        Key::Pct => "pct",
+        Key::Round => "round",
+        Key::Fix => "fix",
+        Key::Sci => "sci",
+        Key::Eng => "eng",
+        Key::FmtAuto => "std",
         Key::Sin => "sin",
         Key::Cos => "cos",
         Key::Tan => "tan",

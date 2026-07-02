@@ -48,13 +48,21 @@ Or the full device UI — keymap, shifts, entry editing, 7-seg display — in th
 emulator: `../calcumaker-emu` (`cargo run`).
 
 Tokens:
-- arith: `+ - * / chs abs pow inv sq sqrt fact mod`
+- arith: `+ - * / chs abs pow inv sq sqrt fact mod pct`
 - trig: `sin cos tan asin acos atan sinh cosh tanh`
 - log/const: `ln log exp exp10 e pi`
-- programmer: `and or xor not shl shr` · radix `hex dec oct bin`
-- stack: `enter dup drop swap over rolldn rollup lastx`
-- modes (RPN postfix, pop X): `<bits> prec`, `<bits> wsize` (`0 wsize` = unbounded)
-- REPL meta: `stack`, `clear`, `quit`
+- programmer: `and or xor not` · `sl sr asr rl rr` (X by one bit) ·
+  `shl shr rln rrn` (Y by X bits) · `bset bclr btest maskl maskr popcnt` ·
+  radix `hex dec oct bin`
+- conversions: `float round trunc floor ceil frac`
+- stack/memory: `enter dup drop swap over rolldn rollup lastx clear` ·
+  registers `sto0`–`stof` / `rcl0`–`rclf`
+- modes (RPN postfix, pop X): `<bits> prec` · `<bits> wsize` (`0` = unbounded)
+  with sign modes `2s 1s unsgn` (or `signmode` to cycle) · real formats
+  `<d> fix / sci / eng`, `std` = auto
+- word-mode flags: `carry()` (C) and `overflow()` (G) — add/sub carry-borrow,
+  shifted/rotated-out bits, wrapped results
+- REPL meta: `stack`, `quit`
 
 ## API
 

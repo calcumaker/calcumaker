@@ -27,10 +27,11 @@ pub mod seg7;
 mod value;
 
 pub use app::App;
-pub use calc::{Calc, CalcError, Radix};
+pub use calc::{Calc, CalcError, FloatFmt, Radix, SignMode};
 pub use keys::Key;
 pub use value::Value;
 
-/// Format any [`Value`] for display in the given radix / precision (the same
-/// formatting [`Calc::display`] uses for the top of stack).
+/// Format any [`Value`] for display under the calculator's current modes
+/// (radix, word size / sign mode, FIX/SCI/ENG) — the same formatting
+/// [`Calc::display`] uses for the top of stack.
 pub use format::format as display_value;

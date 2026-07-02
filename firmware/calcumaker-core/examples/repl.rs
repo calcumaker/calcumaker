@@ -7,7 +7,7 @@
 //!
 //! Enter whitespace-separated tokens. Numbers push; commands apply.
 //! Precision and word size are RPN too: `256 prec`, `16 wsize` (`0 wsize` =
-//! unbounded). Meta: `stack`, `clear`, `quit`.
+//! unbounded). Meta: `stack`, `quit` (`clear` is an engine command).
 
 use std::io::{self, BufRead, Write};
 
@@ -16,17 +16,32 @@ use calcumaker_core::Calc;
 fn main() {
     let mut calc = Calc::new(256);
     println!("Calcumaker 16 — RPN engine (GMP + MPFR), {}-bit precision.", calc.prec());
-    println!("arith : + - * / chs abs pow  inv sq sqrt  fact mod");
+    println!("arith : + - * / chs abs pow  inv sq sqrt  fact mod pct");
     println!("trig  : sin cos tan asin acos atan  sinh cosh tanh");
     println!("log   : ln log exp exp10 e pi");
-    println!("prog  : and or xor not shl shr  | radix: hex dec oct bin");
-    println!("stack : enter dup drop swap over rolldn rollup lastx");
-    println!("modes : <bits> prec, <bits> wsize (0 = unbounded)");
-    println!("meta  : stack, clear, quit\n");
+    println!("prog  : and or xor not  sl sr asr rl rr (X by 1; shl shr rln rrn = Y by X)");
+    println!("bits  : bset bclr btest maskl maskr popcnt  | radix: hex dec oct bin");
+    println!("conv  : float round trunc floor ceil frac");
+    println!("stack : enter dup drop swap over rolldn rollup lastx clear  | sto0-f rcl0-f");
+    println!("modes : <bits> prec | <bits> wsize (0=unbounded) | unsgn 1s 2s | <d> fix/sci/eng, std");
+    println!("meta  : stack, quit\n");
 
     let stdin = io::stdin();
     loop {
-        print!("[{:?} {}b] {} > ", calc.radix(), calc.prec(), calc.display());
+        let word = match calc.word_bits() {
+            Some(n) => format!(
+                " w{n}{}{}{}",
+                match calc.sign_mode() {
+                    calcumaker_core::SignMode::Unsigned => "u",
+                    calcumaker_core::SignMode::Ones => "·1s",
+                    calcumaker_core::SignMode::Twos => "·2s",
+                },
+                if calc.carry() { " C" } else { "" },
+                if calc.overflow() { " G" } else { "" },
+            ),
+            None => String::new(),
+        };
+        print!("[{:?} {}b{word}] {} > ", calc.radix(), calc.prec(), calc.display());
         io::stdout().flush().ok();
 
         let mut line = String::new();
@@ -38,10 +53,9 @@ fn main() {
         for tok in line.split_whitespace() {
             match tok {
                 "quit" | "q" | "exit" => return,
-                "clear" => calc = Calc::new(calc.prec()),
                 "stack" => {
                     for (i, v) in calc.stack().iter().enumerate().rev() {
-                        println!("  {i}: {}", calcumaker_core::display_value(v, calc.radix(), calc.prec()));
+                        println!("  {i}: {}", calcumaker_core::display_value(v, &calc));
                     }
                 }
                 _ => {

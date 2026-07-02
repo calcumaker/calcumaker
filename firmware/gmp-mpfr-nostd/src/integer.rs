@@ -84,8 +84,51 @@ impl Integer {
         r
     }
 
+    pub fn is_negative(&self) -> bool {
+        unsafe { ffi::__gmpz_cmp_si(&self.raw, 0) < 0 }
+    }
+
+    /// Number of one-bits. `None` for negative values (infinitely many ones in
+    /// GMP's two's-complement view).
+    pub fn popcount(&self) -> Option<u64> {
+        if self.is_negative() {
+            return None;
+        }
+        Some(unsafe { ffi::__gmpz_popcount(&self.raw) as u64 })
+    }
+
+    /// Arithmetic (floor) shift right — sign-extends, unlike `>>` which
+    /// truncates toward zero.
+    pub fn shr_floor(self, n: u32) -> Self {
+        let mut r = Self::new();
+        unsafe { ffi::__gmpz_fdiv_q_2exp(&mut r.raw, &self.raw, n as ffi::mp_bitcnt_t) };
+        r
+    }
+
     pub(crate) fn as_raw(&self) -> *const ffi::mpz_struct {
         &self.raw
+    }
+
+    pub(crate) fn as_raw_mut(&mut self) -> *mut ffi::mpz_struct {
+        &mut self.raw
+    }
+}
+
+impl PartialEq for Integer {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { ffi::__gmpz_cmp(&self.raw, &other.raw) == 0 }
+    }
+}
+impl Eq for Integer {}
+
+impl PartialOrd for Integer {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for Integer {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
+        unsafe { ffi::__gmpz_cmp(&self.raw, &other.raw) }.cmp(&0)
     }
 }
 

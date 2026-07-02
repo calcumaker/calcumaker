@@ -96,12 +96,17 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
   Shifted (press F or G first, like the device):
     F then S/C/T = asin/acos/atan     F then L = e^x     F then Q = x^2
     F then I = prec (X bits)          F then E = pi      F then Bksp = LASTx
-    F then a/b/c... = bit-set/clr/test/maskL/maskR/popcount, rotl/rotr/asr/rmd
-    F then v = roll-up                G then S/C/T = sinh/cosh/tanh
-    G then L = log10   G then Q = 10^x   G then 4/5/6 = x!/%/round
+    F then a-f = bit-set/clr/test, maskL/maskR, popcount (index/width from X)
+    F then &/|/^  = rotate-l/rotate-r/asr   F then ~ = rmd (Y mod X)
+    F then H/D/O/B = FLOAT (int X -> real)  F then W = sign mode (2's/1's/unsgn)
+    F then v = roll-up
+    G then S/C/T = sinh/cosh/tanh     G then L = log10   G then Q = 10^x
+    G then 4/5/6 = x! / % / round (real X -> int)
+    G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)
 
-  Modes: type bits then W (wsize; 0 = unbounded) or F,I (prec).
-  Esc cancels a pending shift. ? toggles this help. Ctrl-C quits.";
+  STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
+  Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
+  G (overflow) in word mode. Esc cancels a pending shift. ? = help. Ctrl-C quits.";
 
 /// Render one full frame: 7-seg rows, annunciators, the untruncated X, footer.
 fn frame(app: &App, help: bool) -> String {
@@ -117,20 +122,43 @@ fn frame(app: &App, help: bool) -> String {
     }
     out.push_str(&format!("+{}+\n", "-".repeat(width + 2)));
 
-    let radix = format!("{:?}", app.calc().radix()).to_uppercase();
-    let word = match app.calc().word_bits() {
-        Some(b) => format!("word {b}"),
+    let c = app.calc();
+    let radix = format!("{:?}", c.radix()).to_uppercase();
+    let word = match c.word_bits() {
+        Some(b) => {
+            let mode = match c.sign_mode() {
+                calcumaker_core::SignMode::Unsigned => "unsgn",
+                calcumaker_core::SignMode::Ones => "1's",
+                calcumaker_core::SignMode::Twos => "2's",
+            };
+            let flags = format!(
+                "{}{}",
+                if c.carry() { "  C" } else { "" },
+                if c.overflow() { "  G" } else { "" }
+            );
+            format!("word {b} {mode}{flags}")
+        }
         None => "word unbounded".into(),
+    };
+    let fmt = match c.float_fmt() {
+        calcumaker_core::FloatFmt::Auto => String::new(),
+        calcumaker_core::FloatFmt::Fix(d) => format!("  FIX{d}"),
+        calcumaker_core::FloatFmt::Sci(d) => format!("  SCI{d}"),
+        calcumaker_core::FloatFmt::Eng(d) => format!("  ENG{d}"),
     };
     let shift = match app.shift() {
         Some(s) => format!("  [{s}]"),
+        None => String::new(),
+    };
+    let reg = match app.pending_register() {
+        Some(r) => format!("  {r} _"),
         None => String::new(),
     };
     let msg = match app.message() {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {radix}  prec {}  {word}{shift}{msg}\n", app.calc().prec()));
+    out.push_str(&format!(" {radix}  prec {}  {word}{fmt}{shift}{reg}{msg}\n", c.prec()));
 
     // The 16-digit window truncates long values; show X in full here — this is
     // where the arbitrary precision is visible on the host.

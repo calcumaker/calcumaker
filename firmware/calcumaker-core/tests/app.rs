@@ -682,3 +682,40 @@ fn glass_shows_error_code() {
     app.press_key(Key::ClrX);
     assert_eq!(x_row(&app), "0"); // the 0 divisor still there
 }
+
+/// The aux OLED content (4x21, one code path for firmware + emulator):
+/// flags header + message/full-precision X; SETUP > OLEd toggles the header.
+#[test]
+fn aux_oled_lines() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div]);
+    let l = app.aux_lines();
+    assert_eq!(l[0], "16C DEC RAD FLEX");
+    assert_eq!(l[1], "P128");
+    assert_eq!(l[2], "divide by zero");
+    assert!(l.iter().all(|s| s.chars().count() <= 21));
+    // idle: the body is the full-precision X (windowing helper)
+    app.press_key(Key::ClrX);
+    press_all(&mut app, &[Key::Digit(7), Key::Enter]);
+    assert_eq!(app.aux_lines()[2], "7");
+    // SETUP > OLEd (item 8) toggles the flags header off -> all body
+    app.press_key(Key::Setup);
+    for _ in 0..7 {
+        app.press_key(Key::RollDn);
+    }
+    assert_eq!(app.text_rows()[1].trim_end(), "8 OLEd");
+    assert_eq!(app.text_rows()[2].trim_end(), "FLAG");
+    app.press_key(Key::Enter);
+    assert_eq!(app.text_rows()[2].trim_end(), "oFF");
+    app.press_key(Key::ClrX);
+    assert!(!app.aux_shows_flags());
+    assert_eq!(app.aux_lines()[0], "7"); // body starts at line 0 now
+    // long errors wrap across the full width
+    app.calc_mut().set_num_mode(calcumaker_core::NumMode::Flex);
+    press_all(&mut app, &[Key::Digit(2), Key::Dot, Key::Digit(5), Key::Enter]);
+    app.press_key(Key::Sto);
+    app.press_key(Key::Add); // "register select cancelled"
+    let l = app.aux_lines();
+    assert_eq!(l[0], "register select cance");
+    assert_eq!(l[1], "lled");
+}

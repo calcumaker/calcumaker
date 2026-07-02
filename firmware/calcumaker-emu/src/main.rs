@@ -197,8 +197,9 @@ G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
     out
 }
 
-/// Render one full frame: 7-seg rows, annunciators, the untruncated X, footer.
-fn frame(app: &App, help: bool, style: Style) -> String {
+/// Render one full frame: 7-seg rows, annunciators, the untruncated X, the
+/// mock aux OLED (unless the base --no-oled build), footer.
+fn frame(app: &App, help: bool, style: Style, oled: bool) -> String {
     let mut out = String::new();
     let width = DIGITS_PER_ROW * style.digit_cols();
     let (tl, tr, bl, br, h, v) = match style {
@@ -290,6 +291,17 @@ fn frame(app: &App, help: bool, style: Style) -> String {
     // view — X at full precision, where the arbitrary precision is visible.
     out.push_str(&format!(" X: {}\n", app.x_full()));
 
+    // Mock of the DNP-optional aux OLED (128x32 = 4 lines x 21 chars): the
+    // SAME App::aux_lines the firmware panel will draw. SETUP > OLEd toggles
+    // the flags header.
+    if oled {
+        out.push_str(&format!(" ┌{}┐ aux OLED\n", "─".repeat(23)));
+        for l in app.aux_lines() {
+            out.push_str(&format!(" │ {l:<21} │\n"));
+        }
+        out.push_str(&format!(" └{}┘\n", "─".repeat(23)));
+    }
+
     if help {
         out.push('\n');
         out.push_str(&help_text(app));
@@ -300,26 +312,26 @@ fn frame(app: &App, help: bool, style: Style) -> String {
     out
 }
 
-fn draw(stdout: &mut impl Write, app: &App, help: bool, style: Style) -> io::Result<()> {
+fn draw(stdout: &mut impl Write, app: &App, help: bool, style: Style, oled: bool) -> io::Result<()> {
     execute!(
         stdout,
         terminal::Clear(terminal::ClearType::All),
         cursor::MoveTo(0, 0)
     )?;
-    for line in frame(app, help, style).lines() {
+    for line in frame(app, help, style, oled).lines() {
         write!(stdout, "{line}\r\n")?;
     }
     stdout.flush()
 }
 
-fn interactive(mut app: App, style: Style) -> io::Result<()> {
+fn interactive(mut app: App, style: Style, oled: bool) -> io::Result<()> {
     let mut stdout = io::stdout();
     terminal::enable_raw_mode()?;
     execute!(stdout, terminal::EnterAlternateScreen, cursor::Hide)?;
     let mut help = false;
 
     let result = (|| -> io::Result<()> {
-        draw(&mut stdout, &app, help, style)?;
+        draw(&mut stdout, &app, help, style, oled)?;
         loop {
             let Event::Key(KeyEvent { code, modifiers, kind, .. }) = event::read()? else {
                 continue;
@@ -345,7 +357,7 @@ fn interactive(mut app: App, style: Style) -> io::Result<()> {
                 KeyCode::Char(c) => feed(&mut app, c),
                 _ => {}
             }
-            draw(&mut stdout, &app, help, style)?;
+            draw(&mut stdout, &app, help, style, oled)?;
         }
     })();
 
@@ -365,6 +377,7 @@ fn main() -> io::Result<()> {
     let mut script: Option<String> = None;
     let mut style = Style::Block;
     let mut no_suffix = false;
+    let mut oled = true;
     let mut personality: Option<&'static calcumaker_core::keys::Keymap> = None;
 
     let mut args = std::env::args().skip(1);
@@ -381,6 +394,7 @@ fn main() -> io::Result<()> {
             }
             "--ascii" => style = Style::Ascii,
             "--no-suffix" => no_suffix = true,
+            "--no-oled" => oled = false,
             "--personality" => {
                 let name = args.next().unwrap_or_else(|| usage("--personality needs a name"));
                 personality = Some(
@@ -393,7 +407,7 @@ fn main() -> io::Result<()> {
             }
             "--help" | "-h" => {
                 println!(
-                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]\n"
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|SCI|FIN]\n"
                 );
                 let app = App::new(256);
                 println!("{}", help_text(&app));
@@ -414,15 +428,15 @@ fn main() -> io::Result<()> {
         for ch in s.replace("\\n", "\n").chars() {
             feed(&mut app, ch);
         }
-        print!("{}", frame(&app, false, style));
+        print!("{}", frame(&app, false, style, oled));
         return Ok(());
     }
-    interactive(app, style)
+    interactive(app, style, oled)
 }
 
 fn usage(msg: &str) -> ! {
     eprintln!(
-        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]"
+        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|SCI|FIN]"
     );
     std::process::exit(2);
 }

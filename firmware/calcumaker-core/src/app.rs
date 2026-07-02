@@ -41,9 +41,10 @@ enum SetupItem {
     Stack,
     Pers,
     Entry,
+    Aux,
 }
 
-const SETUP_ITEMS: [SetupItem; 7] = [
+const SETUP_ITEMS: [SetupItem; 8] = [
     SetupItem::Suffix,
     SetupItem::LeadZeros,
     SetupItem::Angle,
@@ -51,6 +52,7 @@ const SETUP_ITEMS: [SetupItem; 7] = [
     SetupItem::Stack,
     SetupItem::Pers,
     SetupItem::Entry,
+    SetupItem::Aux,
 ];
 
 impl SetupItem {
@@ -63,6 +65,7 @@ impl SetupItem {
             SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
             SetupItem::Pers => "PErS",     // personality (keymap) selector
             SetupItem::Entry => "tYPE",    // FLE (safe) / Int (16C) / rEAL
+            SetupItem::Aux => "OLEd",      // aux OLED: show the flags header
         }
     }
 
@@ -91,6 +94,7 @@ impl SetupItem {
                 crate::calc::NumMode::Int => "Int",
                 crate::calc::NumMode::Real => "rEAL",
             },
+            SetupItem::Aux => "", // App state (aux_flags), rendered by the App
         }
     }
 
@@ -118,6 +122,7 @@ impl SetupItem {
                 crate::calc::NumMode::Int => crate::calc::NumMode::Real,
                 crate::calc::NumMode::Real => crate::calc::NumMode::Flex,
             }),
+            SetupItem::Aux => {} // handled by the App (aux_flags lives there)
         }
     }
 }
@@ -138,6 +143,8 @@ pub struct App {
     /// Transient HP-style glass error (`Error N` on the X row) — cleared,
     /// like `msg`, on the next key.
     glass_err: Option<u8>,
+    /// Aux OLED shows the status-flags header (SETUP > OLEd; on by default).
+    aux_flags: bool,
     msg: Option<String>,
 }
 
@@ -154,6 +161,7 @@ impl App {
             status_view: false,
             setup: None,
             glass_err: None,
+            aux_flags: true,
             msg: None,
         }
     }
@@ -236,6 +244,7 @@ impl App {
                             self.msg = Some("top 4 kept".into());
                         }
                     }
+                    SetupItem::Aux => self.aux_flags = !self.aux_flags,
                     item => item.cycle(&mut self.calc),
                 },
                 Key::Setup | Key::ClrX | Key::Back => self.setup = None,
@@ -471,6 +480,90 @@ impl App {
     // ---- display ------------------------------------------------------------
     /// X at full precision (or the live entry with its cursor) — the SHOW view;
     /// the glass rows round AUTO reals to the window instead.
+    /// Aux OLED content — 4 lines x 21 chars (128x32, 6x8 font), the ONE
+    /// code path for the firmware panel and the emulator's mock. With the
+    /// flags header (SETUP > OLEd, default): two status lines, then the
+    /// message / full-precision X. Without: all four lines of text — the
+    /// error text or the untruncated X (windowing helper).
+    pub fn aux_lines(&self) -> [String; 4] {
+        const W: usize = 21;
+        let c = &self.calc;
+        let body: String = match &self.msg {
+            Some(m) => m.clone(),
+            None => self.x_full(),
+        };
+        let mut out: [String; 4] = Default::default();
+        let mut row = 0;
+        if self.aux_flags {
+            let angle = match c.angle_mode() {
+                crate::calc::AngleMode::Rad => "RAD",
+                crate::calc::AngleMode::Deg => "DEG",
+                crate::calc::AngleMode::Grad => "GRAD",
+            };
+            let mode = match c.num_mode() {
+                crate::calc::NumMode::Flex => "FLEX",
+                crate::calc::NumMode::Int => "INT",
+                crate::calc::NumMode::Real => "REAL",
+            };
+            let radix = match c.radix() {
+                Radix::Hex => "HEX",
+                Radix::Dec => "DEC",
+                Radix::Oct => "OCT",
+                Radix::Bin => "BIN",
+            };
+            out[0] = alloc::format!("{} {radix} {angle} {mode}", self.keymap.name);
+            let mut l1 = alloc::format!("P{}", c.prec());
+            if let Some(b) = c.word_bits() {
+                let sgn = match c.sign_mode() {
+                    crate::calc::SignMode::Twos => "2S",
+                    crate::calc::SignMode::Ones => "1S",
+                    crate::calc::SignMode::Unsigned => "US",
+                };
+                l1 += &alloc::format!(" w{b} {sgn}");
+            }
+            if c.carry() {
+                l1 += " C";
+            }
+            if c.overflow() {
+                l1 += " G";
+            }
+            match c.float_fmt() {
+                crate::calc::FloatFmt::Auto => {}
+                crate::calc::FloatFmt::Fix(d) => l1 += &alloc::format!(" FIX{d}"),
+                crate::calc::FloatFmt::Sci(d) => l1 += &alloc::format!(" SCI{d}"),
+                crate::calc::FloatFmt::Eng(d) => l1 += &alloc::format!(" ENG{d}"),
+            }
+            if let Some(sh) = self.shift() {
+                l1 += &alloc::format!(" [{sh}]");
+            }
+            if let Some(r) = self.pending_register() {
+                l1 += " ";
+                l1 += r;
+            }
+            out[1] = l1;
+            row = 2;
+        }
+        // wrap the body over the remaining lines
+        let mut chars = body.chars();
+        while row < 4 {
+            let line: String = chars.by_ref().take(W).collect();
+            if line.is_empty() && row > 2 {
+                break;
+            }
+            out[row] = line;
+            row += 1;
+        }
+        for l in &mut out {
+            l.truncate(W);
+        }
+        out
+    }
+
+    /// Whether the aux OLED shows the flags header (SETUP > OLEd).
+    pub fn aux_shows_flags(&self) -> bool {
+        self.aux_flags
+    }
+
     pub fn x_full(&self) -> String {
         if let Some(b) = &self.entry {
             let mut line = b.clone();
@@ -551,6 +644,13 @@ impl App {
             let item = SETUP_ITEMS[i];
             let value = match item {
                 SetupItem::Pers => self.keymap.name,
+                SetupItem::Aux => {
+                    if self.aux_flags {
+                        "FLAG"
+                    } else {
+                        "oFF"
+                    }
+                }
                 other => other.value(&self.calc),
             };
             let mut rows = [

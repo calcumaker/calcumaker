@@ -83,7 +83,8 @@ Tokens:
   `intmode` (16C: ÷ truncates + carry) / `realmode` (float machine) ·
   angle `rad deg grad` / `anglemode` · stack `stack4` (classic HP
   X/Y/Z/T with T-replication + lift discipline) / `stackfree` (unbounded,
-  default) — all also in the on-device SETUP menu (g-CLx)
+  default) · aux OLED flags header `OLEd` (SETUP only) — all also in the
+  on-device SETUP menu (g-CLx)
 - word-mode flags: `carry()` (C) and `overflow()` (G) — add/sub carry-borrow,
   shifted/rotated-out bits, wrapped results
 - REPL meta: `stack`, `quit`

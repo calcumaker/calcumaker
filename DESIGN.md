@@ -130,12 +130,16 @@ dozens of segment/digit lines — which is what **simplifies the wiring**.
    The calculator is **fully usable with no OLED**.
 2. **The aux OLED is optional detail.** A 0.91″ SSD1306 128×32 I2C module on
    the **display board** (`AuxDisplay` sheet, J2 1×4 socket, **DNP by
-   default**), hand-placed alongside the THT digits. It shows the full error
-   text (`CalcError::text()`), SETUP/STATUS detail, and future PRGM listings —
-   everything `App` already produces as text. The emulator status line is the
-   host stand-in for this panel. I2C runs at 3V3 straight from the MCU across
-   interconnect pins 8–10; pull-ups R14/R15 (4.7 kΩ) sit on the main board,
-   DNP with the OLED. Firmware sleeps the panel in idle (~10 µA).
+   default**), hand-placed alongside the THT digits. Content is
+   **`App::aux_lines()`** — 4 lines × 21 chars (6×8 font), ONE code path for
+   the firmware panel and the emulator's mock panel: an optional
+   **status-flags header** (personality/radix/angle/number-mode, then
+   prec/word/sign/C/G/format/shift/pending-register — SETUP > `OLEd`
+   FLAG/oFF, default on), followed by the error text (`CalcError::text()`)
+   or the **full-precision X** when idle (the windowing helper). I2C runs at
+   3V3 straight from the MCU across interconnect pins 8–10; pull-ups R14/R15
+   (4.7 kΩ) sit on the main board, DNP with the OLED. Firmware sleeps the
+   panel in idle (~10 µA).
 
 **The pattern** (reusable): optional capability = a cheap socket/footprint on
 the board, DNP by default, module hand-placed by builders who want it — the

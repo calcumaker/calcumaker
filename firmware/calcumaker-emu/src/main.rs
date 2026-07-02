@@ -181,6 +181,14 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
   H/D/O/B/W row = FIX/SCI/ENG/auto/angle-mode. F layer: sinh/cosh/tanh, L.R./
   yhat/corr/CLstat. G layer: nCr nPr RAN# seed (over &/|/^/~). Defaults on
   switch: DEG, FIX 4, decimal.
+
+  FIN personality (--personality fin, or SETUP > PErS): a-e cells = the 12C
+  TVM row n i PV PMT FV — a keyed number STORES, a bare press SOLVES; f = %;
+  &/|/^/~/</> row = CF0 CFj Nj NPV IRR d%; H/D/O/B/W row = FIX/SCI/ENG/auto/
+  %T. F layer: 12x 12div (over n/i), SL/SOYD/DB (over 7/8/9), dDYS DATE+ DOW
+  x-bar-w (over the CF row), CLFIN (over RCL). G layer: BEG/END (over
+  PMT/FV), CLCF (over CF0). Defaults on switch: FIX 2, decimal.
+
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
   G (overflow) in word mode. Esc cancels a pending shift. ? = help. Ctrl-C quits.";
 
@@ -369,12 +377,12 @@ fn main() -> io::Result<()> {
                         .iter()
                         .find(|km| km.name.eq_ignore_ascii_case(&name))
                         .copied()
-                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, SCI)"))),
+                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, SCI, FIN)"))),
                 );
             }
             "--help" | "-h" => {
                 println!(
-                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI]\n\n{HELP}"
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]\n\n{HELP}"
                 );
                 return Ok(());
             }
@@ -401,7 +409,7 @@ fn main() -> io::Result<()> {
 
 fn usage(msg: &str) -> ! {
     eprintln!(
-        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI]"
+        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]"
     );
     std::process::exit(2);
 }

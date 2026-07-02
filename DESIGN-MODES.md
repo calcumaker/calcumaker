@@ -73,14 +73,24 @@ struct rather than file-level consts. **No behavior change.**
   decimal; 16C's bundle restores RAD + AUTO. Data (stack/registers/prec) is
   never touched by a switch.
 
-### 4.3 `FIN` — HP-12C-flavored financial
-- **Engine additions needed**: TVM solver (n, i, PV, PMT, FV — an iterative
-  root-find on MPFR; well-understood), amortization, NPV/IRR (iterative),
-  date arithmetic (calendar math, no MPFR involvement).
-- **Keymap**: top row becomes n/i/PV/PMT/FV like the 12C.
-- **This is the largest work item** and the least aligned with the
-  "programmer's calculator" identity — phase it last, decide separately
-  whether it's wanted at all.
+### 4.3 `FIN` — HP-12C-flavored financial (✅ implemented; bonds deferred)
+Product call: being a useful desk calculator IS the identity, so FIN is in.
+- **Engine** (all at working precision, non-destructive errors): TVM
+  registers n/i/PV/PMT/FV + BEG/END (`>reg` stores, `reg?` solves — the
+  solved value is stored back like the 12C; `i?` via bracketed bisection);
+  grouped cash flows `cf0/cfj/nj` with `npv` (discounts at the `i` register)
+  and `irr` (stored into `i`); dates as M.DYYYY floats (`ddays` actual +
+  30/360, `dateadd`, `dow`; Gregorian 1583–9999); depreciation
+  `depsl/depsoyd/depdb` over cost=PV/salvage=FV/life=n (DB factor from `i`,
+  salvage-floored); percent family `pctchg`/`pctt`/`wmean`; `12*`/`12/`.
+- **Keymap** (`keys::FIN`): the 12C's TVM row lands on the hex-digit row —
+  **a keyed number stores, a bare press solves** (the 12C trick, driven by
+  the App's pending-entry state); cash-flow row below; f = 12×/12÷ + dates +
+  depreciation; g = BEG/END + CLCF. Defaults: FIX 2, decimal.
+- **Deferred to FIN v2**: bonds (PRICE/YTM — semiannual actual/actual day
+  counting; the classic off-by-a-penny territory; wants golden vectors from
+  the 12C handbook first), AMORT (amortization schedules), and odd-period
+  (fractional-n) TVM.
 
 ### 4.4 Not planned
 10C/11C (subsets of SCI, no distinct value), 41/42S (alphanumeric display
@@ -177,7 +187,7 @@ follow:
 | **P1** ✅ | `Keymap` struct + `HP16C` static + `PERSONALITIES` registry + App plumbing + `PErS` menu entry (single personality; emulator `--personality` deferred until a second exists) | done |
 | **P2** ✅ | `StackModel::Classic4` in the engine + stack-lift entry discipline + `StAC` menu entry + tests | done |
 | **P3** ✅ | `SCI` personality: keymap + statistics/PRNG/comb-perm engine additions; DEG/FIX-4 defaults; emulator `--personality`; keymap-dispatchability test across all personalities | done |
-| **P4** | `FIN` personality: TVM/NPV/IRR/date engine pack | high effort; separate go/no-go |
+| **P4** ✅ | `FIN` personality: TVM/NPV/IRR/dates/depreciation engine pack + keymap (bonds/AMORT/odd-period → FIN v2) | done |
 | — | Complex numbers via MPC (SCI v2) | own design round |
 
 Each phase follows the established loop: tests at every stage, subagent

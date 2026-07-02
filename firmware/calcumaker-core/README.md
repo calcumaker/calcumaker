@@ -68,6 +68,10 @@ Tokens:
   flags `sf cf ftest` (0-2 user; 3/4/5 = lz/C/G) · radix `hex dec oct bin`
 - statistics/combinatorics (SCI pack): `s+ s- mean sdev lr yhat corr clstat`
   · exact `ncr npr` · `ran seed`
+- finance (FIN pack): TVM `>n >i >pv >pmt >fv` / solve `n? i? pv? pmt? fv?` /
+  `rcln`… · `beg end clfin 12* 12/` · cash flows `cf0 cfj nj clcf npv irr` ·
+  dates `ddays dateadd dow` (M.DYYYY) · depreciation `depsl depsoyd depdb` ·
+  `pctchg pctt wmean`
 - conversions: `float round trunc floor ceil frac`
 - stack/memory: `enter dup drop swap over rolldn rollup lastx clear` ·
   registers `sto0`–`stof` / `rcl0`–`rclf` / `clreg`

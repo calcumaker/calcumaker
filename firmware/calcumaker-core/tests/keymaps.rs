@@ -5,9 +5,10 @@ use calcumaker_core::{keydoc, keys};
 
 #[test]
 fn keymap_docs_are_fresh() {
-    let committed: [(&keys::Keymap, &str); 2] = [
+    let committed: [(&keys::Keymap, &str); 3] = [
         (&keys::HP16C, include_str!("../../../doc/keymap-16c.txt")),
         (&keys::SCI, include_str!("../../../doc/keymap-sci.txt")),
+        (&keys::FIN, include_str!("../../../doc/keymap-fin.txt")),
     ];
     // Also guards against a personality being added without its diagram.
     assert_eq!(committed.len(), keys::PERSONALITIES.len(), "add the new personality's diagram");

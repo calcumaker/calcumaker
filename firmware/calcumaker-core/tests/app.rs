@@ -447,6 +447,8 @@ fn setup_stack_and_pers_items() {
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
     app.press_key(Key::Enter); // cycles to SCI…
     assert_eq!(app.keymap().name, "SCI");
+    app.press_key(Key::Enter); // …then FIN…
+    assert_eq!(app.keymap().name, "FIN");
     app.press_key(Key::Enter); // …and back
     assert_eq!(app.keymap().name, "16C");
     app.press_key(Key::ClrX);
@@ -496,7 +498,8 @@ fn pers_cycles_to_sci_and_back() {
     assert_eq!(app.text_rows()[2].trim_end(), "SCI");
     assert_eq!(app.calc().angle_mode(), AngleMode::Deg);
     assert_eq!(app.calc().float_fmt(), FloatFmt::Fix(4));
-    app.press_key(Key::Enter);
+    app.press_key(Key::Enter); // FIN
+    app.press_key(Key::Enter); // back to 16C
     assert_eq!(app.keymap().name, "16C");
     assert_eq!(app.calc().angle_mode(), AngleMode::Rad);
     app.press_key(Key::ClrX); // exit menu
@@ -525,6 +528,58 @@ fn sci_keymap_positions() {
     app.press(4, 1); // g shift
     app.press(2, 0); // nCr
     assert_eq!(x_row(&app), "10"); // C(5,2)
+}
+
+/// FIN TVM keys: a keyed number stores, a bare press solves (12C).
+#[test]
+fn fin_tvm_keys_store_then_solve() {
+    let mut app = App::new(256);
+    app.set_keymap(&calcumaker_core::keys::FIN); // applies FIX 2
+    // 360 n | 0.5 i | 100000 PV | 0 FV | PMT (bare = solve)
+    press_all(&mut app, &[Key::Digit(3), Key::Digit(6), Key::Digit(0), Key::TvmN]);
+    press_all(&mut app, &[Key::Digit(0), Key::Dot, Key::Digit(5), Key::TvmI]);
+    for d in [1, 0, 0, 0, 0, 0] {
+        app.press_key(Key::Digit(d));
+    }
+    app.press_key(Key::TvmPv);
+    press_all(&mut app, &[Key::Digit(0), Key::TvmFv]);
+    app.press_key(Key::TvmPmt); // no entry pending → solve
+    assert_eq!(x_row(&app), "-599.55");
+}
+
+/// FIN matrix positions: the TVM row sits on the old hex-digit row.
+#[test]
+fn fin_keymap_positions() {
+    let mut app = App::new(256);
+    app.set_keymap(&calcumaker_core::keys::FIN);
+    assert_eq!(app.calc().float_fmt(), calcumaker_core::FloatFmt::Fix(2));
+    press_all(&mut app, &[Key::Digit(1), Key::Digit(2)]);
+    app.press(1, 0); // TvmN cell (was hex 'A')
+    app.press_key(Key::Enter); // nothing pending: engine enter dups
+    let _ = app.calc();
+    // g-BEG on the PMT cell; f-12× on the n cell
+    app.press(4, 1); // g
+    app.press(1, 3); // BegKey
+    app.press(4, 0); // f
+    app.press(1, 0); // X12Mul — needs X; harmless error is fine
+    assert_ne!(app.message(), Some("not implemented"));
+}
+
+/// PErS cycles all three: 16C → SCI → FIN → 16C.
+#[test]
+fn pers_cycles_three_ways() {
+    let mut app = App::new(128);
+    app.press_key(Key::Setup);
+    for _ in 0..5 {
+        app.press_key(Key::RollDn);
+    }
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "SCI");
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "FIN");
+    assert_eq!(app.calc().float_fmt(), calcumaker_core::FloatFmt::Fix(2));
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "16C");
 }
 
 /// In HP4 mode, keyed-number + ENTER duplicates (the real HP model):

@@ -49,6 +49,13 @@ pub enum Key {
     WinL, WinR,
     // statistics / combinatorics / random (SCI personality; engine superset)
     SigmaPlus, SigmaMinus, Mean, Sdev, Lr, Yhat, Corr, ClStat, Ncr, Npr, Ran, Seed,
+    // finance (FIN personality): TVM keys store on pending entry, solve
+    // otherwise (12C); cash flows, dates, depreciation, percent family
+    TvmN, TvmI, TvmPv, TvmPmt, TvmFv, X12Mul, X12Div, BegKey, EndKey, ClFin,
+    Cf0, Cfj, NjKey, Npv, Irr, ClCf,
+    PctChg, PctT, Wmean,
+    Ddays, DateAdd, Dow,
+    DepSl, DepSoyd, DepDb,
     // arbitrary-precision control (the headline feature)
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
@@ -159,8 +166,54 @@ pub static SCI: Keymap = Keymap {
     apply_defaults: defaults_sci,
 };
 
+// ---- FIN personality (HP-12C-flavored financial) -----------------------------
+// Same invariants as SCI: digits, ENTER, shifts, arithmetic, STATUS (f-CLx)
+// and SETUP (g-CLx) at the 16C positions. The 12C's famous TVM row lands on
+// the hex-digit row; cash flows below it; f = 12×/12÷ + dates + depreciation;
+// g = BEG/END + CLCF. Sci row 0 stays — a desk calculator keeps its math.
+
+pub const FIN_BASE: [[Key; COLS]; ROWS] = [
+    [Sin,    Cos,    Tan,  Ln,   Sqrt,     Pow,  Recip,  Eex,  Back, ClrX],
+    [TvmN,   TvmI,   TvmPv,TvmPmt,TvmFv,   Pct,  d(7),   d(8), d(9),  Div],
+    [Cf0,    Cfj,    NjKey,Npv,  Irr,      PctChg, d(4), d(5), d(6),  Mul],
+    [Fix,    Sci,    Eng,  FmtAuto, PctT,  Swap, d(1),   d(2), d(3),  Sub],
+    [ShiftF, ShiftG, Sto,  Rcl,  RollDn,   Enter,d(0),   Dot,  Chs,   Add],
+];
+
+pub const FIN_LAYER_F: [[Key; COLS]; ROWS] = [
+    [Sinh,   Cosh,   Tanh, Prec, Sq,       Nop,  Nop,    Pi,   LastX, Status],
+    [X12Mul, X12Div, Nop,  Nop,  Nop,      Nop,  DepSl,  DepSoyd, DepDb, Nop],
+    [Ddays,  DateAdd,Dow,  Wmean, Nop,     Nop,  Nop,    Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Float,Nop,    Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, ClFin, RollUp, Nop, Off,    Nop,  Eex,   Nop],
+];
+
+pub const FIN_LAYER_G: [[Key; COLS]; ROWS] = [
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
+    [Nop,    Nop,    Nop,  BegKey, EndKey, Nop,  Nop,    Nop,  Nop,   Nop],
+    [ClCf,   Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Nop,  Round, Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+];
+
+fn defaults_fin(c: &mut crate::calc::Calc) {
+    // 12C conventions: FIX 2, decimal (angle irrelevant, left alone).
+    c.set_float_fmt(crate::calc::FloatFmt::Fix(2));
+    c.set_radix(crate::calc::Radix::Dec);
+}
+
+/// The financial personality (12C-flavored; bonds deferred — see
+/// DESIGN-MODES.md §4.3).
+pub static FIN: Keymap = Keymap {
+    name: "FIN",
+    base: FIN_BASE,
+    f: FIN_LAYER_F,
+    g: FIN_LAYER_G,
+    apply_defaults: defaults_fin,
+};
+
 /// Installed personalities, in `PErS`-menu cycle order.
-pub static PERSONALITIES: &[&Keymap] = &[&HP16C, &SCI];
+pub static PERSONALITIES: &[&Keymap] = &[&HP16C, &SCI, &FIN];
 
 /// Pending shift modifier (f = gold, g = blue). Press toggles; any resolved key
 /// clears it (HP-Voyager behaviour).

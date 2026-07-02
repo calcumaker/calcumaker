@@ -1295,6 +1295,64 @@ fn invalid_dates_error_non_destructively() {
     assert_eq!(c.stack().len(), 1);
 }
 
+// ---- FIN pack: depreciation ------------------------------------------------------
+
+/// Cost 10000, salvage 1000, life 5 — the standard textbook asset.
+fn dep_setup(c: &mut Calc) {
+    for t in ["2", "fix", "5", ">n", "10000", ">pv", "1000", ">fv"] {
+        c.input(t).unwrap();
+    }
+}
+
+#[test]
+fn depreciation_straight_line() {
+    let mut c = Calc::new(256);
+    dep_setup(&mut c);
+    for t in ["3", "depsl"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1800.00"); // (10000−1000)/5
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "3600.00"); // 9000 − 3·1800
+}
+
+#[test]
+fn depreciation_soyd() {
+    let mut c = Calc::new(256);
+    dep_setup(&mut c);
+    for t in ["1", "depsoyd"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3000.00"); // 9000·5/15
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "6000.00");
+}
+
+/// 200% declining balance floors at the salvage value in year 5.
+#[test]
+fn depreciation_db_floors_at_salvage() {
+    let mut c = Calc::new(256);
+    dep_setup(&mut c);
+    for t in ["200", ">i", "2", "depdb"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2400.00"); // book 6000 × 0.4
+    for t in ["drop", "drop", "5", "depdb"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "296.00"); // clamped: book 1296 → salvage 1000
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "0.00");
+}
+
+#[test]
+fn depreciation_needs_registers() {
+    let mut c = Calc::new(256);
+    c.input("3").unwrap();
+    assert!(c.input("depsl").is_err());
+    assert_eq!(c.display(), "3");
+}
+
 // ---- SCI pack: statistics, combinatorics, RAN# --------------------------------
 
 #[test]

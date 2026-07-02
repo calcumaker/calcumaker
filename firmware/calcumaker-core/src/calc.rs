@@ -118,6 +118,13 @@ enum StatFn {
     Lr,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Dep {
+    Sl,
+    Soyd,
+    Db,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum CalcError {
     /// Token was neither a number (in the active radix) nor a known command.
@@ -780,6 +787,9 @@ impl Calc {
             "ddays" => self.ddays(),
             "dateadd" => self.date_add(),
             "dow" => self.day_of_week(),
+            "depsl" => self.depreciation(Dep::Sl),
+            "depsoyd" => self.depreciation(Dep::Soyd),
+            "depdb" => self.depreciation(Dep::Db),
             "ran" => {
                 let f = self.next_ran();
                 self.stack.push(Value::Real(f));
@@ -2271,6 +2281,74 @@ impl Calc {
         Ok(())
     }
 
+    // ---- depreciation (12C: cost = PV, salvage = FV, life = n) ------------------
+    /// SL / SOYD / DB — pop the year j from X; push the remaining depreciable
+    /// value (→ Y) then year-j depreciation (→ X), 12C style. DB reads the
+    /// declining-balance factor (percent, e.g. 200) from `i` and floors at
+    /// the salvage value. Integer whole years only (odd-period conventions
+    /// deferred with the TVM odd-period note).
+    fn depreciation(&mut self, kind: Dep) -> Result<(), CalcError> {
+        self.need(1)?;
+        let j = self.peek_u32("year must be a small positive integer")?;
+        if j == 0 || j > 10_000 {
+            return Err(CalcError::TypeError("year must be a small positive integer"));
+        }
+        let prec = self.prec;
+        let t = self.tvm.as_ref().ok_or(CalcError::TypeError("set n (life), pv (cost), fv (salvage) first"))?;
+        let life = t.n.clone();
+        if life.is_zero() || life.is_sign_negative() {
+            return Err(CalcError::TypeError("life (n) must be positive"));
+        }
+        // beyond the life: fully depreciated
+        let beyond = (life.clone() - Float::from_i64(prec, j as i64)).is_sign_negative();
+        let base = t.pv.clone() - t.fv.clone(); // depreciable amount
+        let zero = || Float::from_i64(prec, 0);
+        let (dep, remaining) = if beyond && kind != Dep::Db {
+            (zero(), zero())
+        } else {
+            match kind {
+                Dep::Sl => {
+                    let dep = base.clone() / life.clone();
+                    let rem = base - dep.clone() * Float::from_i64(prec, j as i64);
+                    let rem = if rem.is_sign_negative() { zero() } else { rem };
+                    (dep, rem)
+                }
+                Dep::Soyd => {
+                    let one = Float::from_i64(prec, 1);
+                    let two = Float::from_i64(prec, 2);
+                    let soyd = life.clone() * (life.clone() + one.clone()) / two.clone();
+                    let jf = Float::from_i64(prec, j as i64);
+                    let dep = base.clone() * (life.clone() - jf.clone() + one) / soyd.clone();
+                    let lj = life - jf;
+                    let rem = base * lj.clone() * (lj + Float::from_i64(prec, 1)) / two / soyd;
+                    (dep, rem)
+                }
+                Dep::Db => {
+                    // rate per year = (i/100)/life; iterate, flooring at salvage
+                    let rate = t.i.clone() / Float::from_i64(prec, 100) / life;
+                    let mut book = t.pv.clone();
+                    let mut dep = zero();
+                    for _ in 0..j {
+                        dep = book.clone() * rate.clone();
+                        let floor_room = book.clone() - dep.clone() - t.fv.clone();
+                        if floor_room.is_sign_negative() {
+                            dep = book.clone() - t.fv.clone();
+                            if dep.is_sign_negative() {
+                                dep = zero();
+                            }
+                        }
+                        book = book - dep.clone();
+                    }
+                    (dep, book - t.fv.clone())
+                }
+            }
+        };
+        let _ = self.pop_x();
+        self.stack.push(Value::Real(remaining));
+        self.stack.push(Value::Real(dep));
+        Ok(())
+    }
+
     // ---- percent family (12C) -------------------------------------------------
     /// Δ% (`true`) or %T (`false`) — X becomes the result, Y is preserved.
     fn pct_of(&mut self, change: bool) -> Result<(), CalcError> {
@@ -2506,7 +2584,7 @@ fn is_command(t: &str) -> bool {
             | "beg" | "end" | "clfin" | "12/" | "12*"
             | "pctchg" | "pctt" | "wmean"
             | "cf0" | "cfj" | "nj" | "clcf" | "npv" | "irr"
-            | "ddays" | "dateadd" | "dow"
+            | "ddays" | "dateadd" | "dow" | "depsl" | "depsoyd" | "depdb"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

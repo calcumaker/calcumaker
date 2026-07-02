@@ -284,6 +284,26 @@ impl App {
             Key::Back => self.backspace(),
             Key::ClrX => self.clear_x(),
             Key::Enter => self.enter(),
+            // TVM keys (12C): a keyed number stores into the register; a bare
+            // press solves for it from the other four.
+            Key::TvmN | Key::TvmI | Key::TvmPv | Key::TvmPmt | Key::TvmFv => {
+                let solving = self.entry.is_none();
+                self.flush();
+                let tok = match (k, solving) {
+                    (Key::TvmN, false) => ">n",
+                    (Key::TvmN, true) => "n?",
+                    (Key::TvmI, false) => ">i",
+                    (Key::TvmI, true) => "i?",
+                    (Key::TvmPv, false) => ">pv",
+                    (Key::TvmPv, true) => "pv?",
+                    (Key::TvmPmt, false) => ">pmt",
+                    (Key::TvmPmt, true) => "pmt?",
+                    (Key::TvmFv, false) => ">fv",
+                    (Key::TvmFv, true) => "fv?",
+                    _ => unreachable!(),
+                };
+                self.run(tok);
+            }
             Key::ShowHex => self.show(Radix::Hex),
             Key::ShowDec => self.show(Radix::Dec),
             Key::ShowOct => self.show(Radix::Oct),
@@ -667,6 +687,26 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::Npr => "npr",
         Key::Ran => "ran",
         Key::Seed => "seed",
+        Key::X12Mul => "12*",
+        Key::X12Div => "12/",
+        Key::BegKey => "beg",
+        Key::EndKey => "end",
+        Key::ClFin => "clfin",
+        Key::Cf0 => "cf0",
+        Key::Cfj => "cfj",
+        Key::NjKey => "nj",
+        Key::Npv => "npv",
+        Key::Irr => "irr",
+        Key::ClCf => "clcf",
+        Key::PctChg => "pctchg",
+        Key::PctT => "pctt",
+        Key::Wmean => "wmean",
+        Key::Ddays => "ddays",
+        Key::DateAdd => "dateadd",
+        Key::Dow => "dow",
+        Key::DepSl => "depsl",
+        Key::DepSoyd => "depsoyd",
+        Key::DepDb => "depdb",
         Key::Sin => "sin",
         Key::Cos => "cos",
         Key::Tan => "tan",

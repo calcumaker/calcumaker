@@ -78,6 +78,10 @@ pub const REGISTERS: usize = 16;
 const MAX_WORD_BITS: u32 = 16384;
 const MAX_FMT_DIGITS: u32 = 32;
 
+/// Exact-power results are capped at ~1 Mbit (≈300k decimal digits) so a slip
+/// like `2 1e9 pow` errors instead of exhausting memory. Generous for real use.
+const MAX_POW_BITS: u64 = 1 << 20;
+
 pub struct Calc {
     stack: Vec<Value>,
     prec: u32,
@@ -359,10 +363,7 @@ impl Calc {
             "ln" => self.unary_real(|x| x.ln()),
             "exp" => self.unary_real(|x| x.exp()),
             "inv" => self.unary_real(|x| x.recip()),
-            "sq" => self.unary_real(|x| {
-                let y = x.clone();
-                x * y
-            }),
+            "sq" => self.sq(),
             "asin" => self.unary_real(|x| x.asin()),
             "acos" => self.unary_real(|x| x.acos()),
             "atan" => self.unary_real(|x| x.atan()),
@@ -370,7 +371,7 @@ impl Calc {
             "cosh" => self.unary_real(|x| x.cosh()),
             "tanh" => self.unary_real(|x| x.tanh()),
             "log" => self.unary_real(|x| x.log10()),
-            "exp10" => self.unary_real(|x| x.exp10()),
+            "exp10" => self.exp10_op(),
             "abs" => self.abs_op(),
             "pow" => self.pow_op(),
             "mod" => self.mod_op(),
@@ -831,13 +832,91 @@ impl Calc {
         Ok(())
     }
 
-    /// Y ^ X (always real).
+    /// Y ^ X. **Integer base and non-negative integer exponent stay exact**
+    /// (GMP `pow` — no rounding); anything else is MPFR real. A negative
+    /// integer exponent promotes (the result is fractional). Computed from
+    /// peeks so an oversized power errors without consuming operands.
     fn pow_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
-        let x = self.pop_x().to_real(self.prec);
-        let y = self.stack.pop().expect("validated").to_real(self.prec);
-        self.stack.push(Value::Real(y.pow(x)));
+        let len = self.stack.len();
+        let exact = match (&self.stack[len - 2], &self.stack[len - 1]) {
+            (Value::Int(base), Value::Int(e)) if !e.is_negative() => {
+                let one = Integer::from_i64(1);
+                if base.is_zero() || *base == one || *base == -one.clone() {
+                    // 0 / ±1 bases are exact for ANY exponent size.
+                    Some(Ok(if base.is_zero() {
+                        if e.is_zero() {
+                            one // 0^0 = 1 (mpz_pow_ui convention)
+                        } else {
+                            Integer::new()
+                        }
+                    } else if base.is_negative() && Self::math_bit(e, 0) {
+                        -one
+                    } else {
+                        one
+                    }))
+                } else {
+                    match e.to_u32() {
+                        Some(e) if base.bit_len() as u64 * e as u64 <= MAX_POW_BITS => {
+                            Some(Ok(base.pow_exact(e)))
+                        }
+                        _ => Some(Err(CalcError::TypeError("power result too large"))),
+                    }
+                }
+            }
+            _ => None,
+        };
+        match exact {
+            Some(Ok(v)) => {
+                let _ = self.pop_x();
+                let _ = self.stack.pop();
+                let v = self.canon_flagged(v);
+                self.stack.push(Value::Int(v));
+                Ok(())
+            }
+            Some(Err(e)) => Err(e),
+            None => {
+                let x = self.pop_x().to_real(self.prec);
+                let y = self.stack.pop().expect("validated").to_real(self.prec);
+                self.stack.push(Value::Real(y.pow(x)));
+                Ok(())
+            }
+        }
+    }
+
+    /// x² — exact for integers, real otherwise.
+    fn sq(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Int(x) => {
+                let v = self.canon_flagged(x.clone() * x);
+                Value::Int(v)
+            }
+            Value::Real(f) => {
+                let g = f.clone();
+                Value::Real(f * g)
+            }
+        };
+        self.stack.push(v);
         Ok(())
+    }
+
+    /// 10^X — exact for non-negative integer X, real otherwise.
+    fn exp10_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        if let Value::Int(n) = &self.stack[self.stack.len() - 1] {
+            if !n.is_negative() {
+                let n = n.to_u32().ok_or(CalcError::TypeError("power result too large"))?;
+                if n as u64 * 4 > MAX_POW_BITS {
+                    return Err(CalcError::TypeError("power result too large"));
+                }
+                let _ = self.pop_x();
+                let v = self.canon_flagged(Integer::from_i64(10).pow_exact(n));
+                self.stack.push(Value::Int(v));
+                return Ok(());
+            }
+        }
+        self.unary_real(|x| x.exp10())
     }
 
     /// Y mod X (integers only; truncating remainder).

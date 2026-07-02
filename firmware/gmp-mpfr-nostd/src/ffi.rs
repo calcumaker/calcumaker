@@ -67,6 +67,9 @@ extern "C" {
     pub fn __gmpz_cmp_si(a: *const mpz_struct, b: c_long) -> c_int;
     pub fn __gmpz_popcount(a: *const mpz_struct) -> mp_bitcnt_t;
     pub fn __gmpz_fac_ui(r: *mut mpz_struct, n: c_ulong);
+    pub fn __gmpz_pow_ui(r: *mut mpz_struct, b: *const mpz_struct, e: c_ulong);
+    pub fn __gmpz_sqrt(r: *mut mpz_struct, a: *const mpz_struct);
+    pub fn __gmpz_perfect_square_p(a: *const mpz_struct) -> c_int;
     pub fn __gmpz_fits_ulong_p(a: *const mpz_struct) -> c_int;
     pub fn __gmpz_get_ui(a: *const mpz_struct) -> c_ulong;
 

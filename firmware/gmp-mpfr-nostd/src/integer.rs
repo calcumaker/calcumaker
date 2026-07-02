@@ -88,6 +88,33 @@ impl Integer {
         unsafe { ffi::__gmpz_cmp_si(&self.raw, 0) < 0 }
     }
 
+    /// `self ^ e`, exact (no rounding — the point of GMP).
+    pub fn pow_exact(&self, e: u32) -> Self {
+        let mut r = Self::new();
+        unsafe { ffi::__gmpz_pow_ui(&mut r.raw, &self.raw, e as c_ulong) };
+        r
+    }
+
+    /// `⌊√self⌋` — integer square root. `self` must be non-negative.
+    pub fn isqrt(&self) -> Self {
+        let mut r = Self::new();
+        unsafe { ffi::__gmpz_sqrt(&mut r.raw, &self.raw) };
+        r
+    }
+
+    /// Whether `self` is a perfect square (false for negatives).
+    pub fn is_perfect_square(&self) -> bool {
+        if self.is_negative() {
+            return false;
+        }
+        unsafe { ffi::__gmpz_perfect_square_p(&self.raw) != 0 }
+    }
+
+    /// Bits in |self| (`sizeinbase 2`; 1 for zero).
+    pub fn bit_len(&self) -> usize {
+        unsafe { ffi::__gmpz_sizeinbase(&self.raw, 2) }
+    }
+
     /// Number of one-bits. `None` for negative values (infinitely many ones in
     /// GMP's two's-complement view).
     pub fn popcount(&self) -> Option<u64> {

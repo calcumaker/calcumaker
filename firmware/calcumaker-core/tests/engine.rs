@@ -102,6 +102,103 @@ fn pow_2_10_is_1024() {
     assert_eq!(run(128, &["2", "10", "pow"]), "1024");
 }
 
+// ---- exact integer results (the arbitrary-precision contract) ---------------
+
+/// int^int is exact GMP, not a rounded real: every digit of 2^100.
+#[test]
+fn pow_int_stays_exact() {
+    let mut c = Calc::new(64); // tiny real precision — must not matter
+    for t in ["2", "100", "pow"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1267650600228229401496703205376");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Int(_)));
+}
+
+#[test]
+fn pow_big_base_exact() {
+    // (10^12 - 1)^3, exact
+    assert_eq!(
+        run(64, &["999999999999", "3", "pow"]),
+        "999999999997000000000002999999999999"
+    );
+}
+
+#[test]
+fn pow_negative_exponent_promotes_to_real() {
+    assert_eq!(run(128, &["2", "2", "chs", "pow"]), "0.25");
+}
+
+#[test]
+fn pow_real_operand_is_real() {
+    let mut c = Calc::new(128);
+    for t in ["2.0", "10", "pow"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1024");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Real(_)));
+}
+
+#[test]
+fn pow_result_too_large_errors_and_preserves_stack() {
+    let mut c = Calc::new(64);
+    for t in ["2", "10000000"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("pow").is_err());
+    assert_eq!(c.stack().len(), 2); // operands intact
+    assert_eq!(c.display(), "10000000");
+}
+
+/// 0/±1 bases are exact for any exponent size (no guard needed).
+#[test]
+fn pow_unit_base_huge_exponent() {
+    assert_eq!(run(64, &["1", "99999999999999999999", "pow"]), "1");
+    assert_eq!(run(64, &["-1", "99999999999999999999", "pow"]), "-1"); // odd
+    assert_eq!(run(64, &["0", "99999999999999999999", "pow"]), "0");
+    assert_eq!(run(64, &["0", "0", "pow"]), "1");
+}
+
+#[test]
+fn pow_word_mode_wraps_with_overflow_flag() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "2", "10", "pow"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0"); // 1024 mod 256
+    assert!(c.overflow());
+}
+
+#[test]
+fn sq_int_exact() {
+    assert_eq!(
+        run(64, &["12345678901234567890", "sq"]),
+        "152415787532388367501905199875019052100"
+    );
+}
+
+#[test]
+fn exp10_int_exact() {
+    assert_eq!(run(64, &["30", "exp10"]), "1000000000000000000000000000000");
+    let mut c = Calc::new(64);
+    for t in ["30", "exp10"] {
+        c.input(t).unwrap();
+    }
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Int(_)));
+}
+
+/// Negative exponent promotes to real (10^-3 is not binary-exact, so assert
+/// through FIX which display-rounds).
+#[test]
+fn exp10_negative_promotes_to_real() {
+    let mut c = Calc::new(128);
+    for t in ["6", "fix", "3", "chs", "exp10"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0.001000");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Real(_)));
+}
+
 #[test]
 fn atan1_is_quarter_pi() {
     let s = run(200, &["1", "atan"]);

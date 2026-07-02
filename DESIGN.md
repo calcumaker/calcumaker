@@ -300,6 +300,9 @@ postfix like the HP-16C: `<bits> W` (WSIZE, 0 = unbounded), f-shift `I`
 mode, g-shift over the radix keys sets FIX/SCI/ENG/auto (digits from X). The
 annunciator line shows radix, prec, word size + sign mode, the **C**/**G**
 flags, the format, a pending f/g shift or STO/RCL, and error blips.
+Runtime configuration lives in the **SETUP menu** (g-shift CLx): suffix /
+leading zeros / angle / sign mode today, personalities later
+(`DESIGN-MODES.md` §5.6); numeric settings stay RPN-postfix.
 
 ## GMP/MPFR on the target (✅ cross-built + link-verified)
 

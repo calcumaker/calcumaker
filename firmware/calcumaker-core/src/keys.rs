@@ -27,6 +27,9 @@ pub enum Key {
     ShowHex, ShowDec, ShowOct, ShowBin,
     // STATUS: momentary all-modes view on the glass (App-level, 16C STATUS)
     Status,
+    // SETUP: interactive settings menu on the glass (App-level; runtime
+    // configuration of the display/interaction tunables)
+    Setup,
     // base / word modes (programmer)
     Hex, Dec, Oct, Bin, WordSize, SignMode, Float,
     // bitwise / shift / rotate (programmer)
@@ -74,7 +77,7 @@ pub const LAYER_F: [[Key; COLS]; ROWS] = [
 /// g (blue) layer — hyperbolic / secondary. (FIX/SCI/ENG/auto sit over the
 /// radix keys — display format over display base; angle mode over WSIZE.)
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
-    [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Nop],
+    [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Lz,     Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Pct,  Round, Nop],
     [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Nop, Nop, Nop,  Nop,   Nop],

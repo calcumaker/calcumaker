@@ -28,6 +28,67 @@ enum RegOp {
     Rcl,
 }
 
+/// One SETUP-menu entry: a runtime tunable with a 7-seg-renderable name,
+/// a value renderer, and a cycle/toggle action. Numeric settings (prec,
+/// wsize, FIX digits) stay RPN-postfix — they need digit entry, which the
+/// keypad already does well. Future: the personality selector (DESIGN-MODES).
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SetupItem {
+    Suffix,
+    LeadZeros,
+    Angle,
+    Sign,
+}
+
+const SETUP_ITEMS: [SetupItem; 4] =
+    [SetupItem::Suffix, SetupItem::LeadZeros, SetupItem::Angle, SetupItem::Sign];
+
+impl SetupItem {
+    fn name(self) -> &'static str {
+        match self {
+            SetupItem::Suffix => "SUFF",   // the h/o/b base letter on the glass
+            SetupItem::LeadZeros => "LEAd 0",
+            SetupItem::Angle => "AnGLE",
+            SetupItem::Sign => "SIGn",
+        }
+    }
+
+    fn value(self, c: &Calc) -> &'static str {
+        let onoff = |on: bool| if on { "on" } else { "oFF" };
+        match self {
+            SetupItem::Suffix => onoff(c.radix_suffix()),
+            SetupItem::LeadZeros => onoff(c.leading_zeros()),
+            SetupItem::Angle => match c.angle_mode() {
+                crate::calc::AngleMode::Rad => "rAd",
+                crate::calc::AngleMode::Deg => "dEG",
+                crate::calc::AngleMode::Grad => "GrAd",
+            },
+            SetupItem::Sign => match c.sign_mode() {
+                crate::calc::SignMode::Twos => "2S",
+                crate::calc::SignMode::Ones => "1S",
+                crate::calc::SignMode::Unsigned => "UnS",
+            },
+        }
+    }
+
+    fn cycle(self, c: &mut Calc) {
+        match self {
+            SetupItem::Suffix => c.set_radix_suffix(!c.radix_suffix()),
+            SetupItem::LeadZeros => c.set_leading_zeros(!c.leading_zeros()),
+            SetupItem::Angle => c.set_angle_mode(match c.angle_mode() {
+                crate::calc::AngleMode::Rad => crate::calc::AngleMode::Deg,
+                crate::calc::AngleMode::Deg => crate::calc::AngleMode::Grad,
+                crate::calc::AngleMode::Grad => crate::calc::AngleMode::Rad,
+            }),
+            SetupItem::Sign => c.set_sign_mode(match c.sign_mode() {
+                crate::calc::SignMode::Twos => crate::calc::SignMode::Ones,
+                crate::calc::SignMode::Ones => crate::calc::SignMode::Unsigned,
+                crate::calc::SignMode::Unsigned => crate::calc::SignMode::Twos,
+            }),
+        }
+    }
+}
+
 pub struct App {
     calc: Calc,
     shift: Shift,
@@ -37,6 +98,8 @@ pub struct App {
     win: usize,
     /// STATUS view active — the glass shows modes/flags instead of the stack.
     status_view: bool,
+    /// SETUP menu active — index of the selected item.
+    setup: Option<usize>,
     msg: Option<String>,
 }
 
@@ -50,6 +113,7 @@ impl App {
             pending_reg: None,
             win: 0,
             status_view: false,
+            setup: None,
             msg: None,
         }
     }
@@ -96,6 +160,24 @@ impl App {
     /// backend, public for tests and scripted input.
     pub fn press_key(&mut self, k: Key) {
         self.msg = None;
+        // SETUP menu captures navigation until dismissed.
+        if let Some(i) = self.setup {
+            match k {
+                Key::RollDn => self.setup = Some((i + 1) % SETUP_ITEMS.len()),
+                Key::RollUp => self.setup = Some((i + SETUP_ITEMS.len() - 1) % SETUP_ITEMS.len()),
+                Key::Enter => SETUP_ITEMS[i].cycle(&mut self.calc),
+                Key::Setup | Key::ClrX | Key::Back => self.setup = None,
+                Key::ShiftF | Key::ShiftG | Key::Nop => {}
+                _ => self.msg = Some("SEtUP: R-dn/up moves, ENTER changes, CLx exits".into()),
+            }
+            return;
+        }
+        if k == Key::Setup {
+            self.setup = Some(0);
+            self.status_view = false;
+            self.win = 0;
+            return;
+        }
         // STATUS is momentary (16C): it takes the glass until the next key.
         if k == Key::Status {
             self.status_view = true;
@@ -355,6 +437,20 @@ impl App {
     /// the stored value keeps full precision, see [`App::x_full`]). With the
     /// STATUS view active, the rows are the mode summary instead.
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
+        if let Some(i) = self.setup {
+            let item = SETUP_ITEMS[i];
+            let mut rows = [
+                "SEtUP".to_string(),
+                alloc::format!("{} {}", i + 1, item.name()),
+                item.value(&self.calc).to_string(),
+            ];
+            for r in &mut rows {
+                while r.len() < DIGITS_PER_ROW {
+                    r.push(' ');
+                }
+            }
+            return rows;
+        }
         if self.status_view {
             return self.status_rows();
         }

@@ -32,15 +32,19 @@ per-personality math.
 
 ## 3. The hardware constraint that shapes everything
 
-**Keycap legends are printed.** A physical unit cannot relabel its keys, so:
+**Keycap legends are printed.** A physical unit cannot relabel its keys, but
+that constrains *legends*, not *switching*:
 
-- A physical device ships as **one primary personality** (a keycap SKU
-  decision at ordering time — same PCB, different caps). Cherry MX makes this
-  cheap: relegendable or swapped keycap sets, and the hot-swap socket option
-  already in the design allows switch/cap experimentation.
-- Personality switching **at runtime** is still worth having for: the
-  emulator (free relabeling on screen), field debugging, and users who accept
-  legends not matching (HP calculator hobbyists routinely do).
+- **Runtime switching works on hardware too** — a personality is firmware
+  state, selected from the **SETUP menu** (see §5.6; the menu itself is
+  implemented today for the display/interaction tunables, and the
+  personality selector becomes one more entry, `PErS`, in P1). Legends of
+  the printed personality then simply don't match — acceptable for field
+  debugging and for HP-hobbyist users, and the emulator relabels for free.
+- A physical device still ships with **one printed personality** (a keycap
+  SKU decision at ordering time — same PCB, different caps). Cherry MX makes
+  this cheap: relegendable or swapped keycap sets, and the hot-swap socket
+  option already in the design allows switch/cap experimentation.
 - The **NATIVE** personality is the escape hatch: a superset keymap where the
   printed 16C legends stay truthful and extras live on f/g layers — this is
   approximately what exists today and remains the default.
@@ -120,10 +124,10 @@ Semantics to implement for `Classic4` (the part that needs care):
 ### 5.3 Personality selection & persistence
 - `App::set_personality(&'static Keymap)` + a `Calc` defaults bundle per
   personality (angle default, FIX default, stack model suggestion).
-- **No keypad key** for switching (too easy to hit; legends would lie):
-  emulator flag `--personality sci` + a runtime emulator command; on
-  hardware, a boot-time chord (hold `f`+`g` at power-on → selector shown as
-  a STATUS-style screen) — needs nothing new electrically.
+- **Selected from the SETUP menu** (§5.6) on hardware and emulator alike — a
+  `PErS` entry cycling `16C → SCI → FIN → 16C`. No dedicated key, so it
+  can't be hit accidentally, and no boot chord is needed. The emulator
+  additionally takes `--personality <name>` for scripting.
 - Personality + all modes join the continuous-memory state (the existing
   planned `Calc` serialization for flash) so the device wakes as configured.
 - Mode carryover on switch: `Calc` state (stack, registers, prec, radix…)
@@ -144,6 +148,21 @@ Small table-driven differences, all in App/format:
   it removes a hand-maintained duplicate of `keys.rs`).
 - Keymap-diff test: every personality's tables contain only keys the App can
   dispatch (no `Nop` regressions on printed faces).
+
+### 5.6 The SETUP menu (✅ implemented — the runtime-configuration surface)
+`g`-shift CLx opens an interactive settings menu on the glass:
+`SEtUP` / `<n> <name>` / `<value>`; R↓/R↑ move between items, ENTER cycles
+the value, CLx/Backspace/SETUP exits; all other keys are swallowed with a
+hint. Items today: `SUFF` (radix letter), `LEAd 0` (leading zeros), `AnGLE`
+(rad/deg/grad), `SIGn` (2's/1's/unsigned). Ground rules, which future items
+follow:
+- **Toggles and cycles only** — numeric settings (prec, wsize, FIX digits)
+  stay RPN-postfix, because the keypad already does number entry well.
+- Names and values must be **7-seg renderable** (enforced by test).
+- The menu mutates `Calc` through the same setters the tokens use — no
+  parallel state.
+- Planned additions land here rather than growing new keys: `PErS`
+  (personality, P1), `StAC` (stack model, P2), MPFR rounding mode if added.
 
 ## 6. Phasing
 
@@ -168,8 +187,7 @@ validation, per-stage commits.
 3. **Keycap SKUs** — do we ever actually print non-16C caps, or are SCI/FIN
    emulator-first personalities indefinitely? (Affects how much P3/P4 UI
    polish matters.)
-4. **Boot chord vs settings register** for hardware personality selection.
-5. **Does `FIN` belong in this product at all**, or is it a separate
+4. **Does `FIN` belong in this product at all**, or is it a separate
    firmware image for the same hardware? (Flash is 2 MB — space is not the
    constraint; identity is.)
 

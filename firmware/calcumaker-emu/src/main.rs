@@ -169,6 +169,9 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     G then W = angle mode (RAD -> DEG -> GRAD)
     G then & = leading zeros toggle (pad hex/oct/bin to the word width)
     G then </> = scroll the display window over values wider than 16 digits
+    G then X (CLx cell) = SETUP menu: R-dn/R-up (v / F,v) moves, ENTER changes
+                          the value, CLx exits (suffix, leading zeros, angle,
+                          sign mode; numeric settings stay RPN: 256 prec etc.)
 
   STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and

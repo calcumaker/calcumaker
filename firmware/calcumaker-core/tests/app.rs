@@ -374,6 +374,65 @@ fn status_reflects_carry_and_word_flags() {
     assert_eq!(rows[2].trim_end(), "AUtO 010000");
 }
 
+/// g-SETUP: interactive settings menu — navigate, change, exit; the tunables
+/// it flips are live on the glass afterwards.
+#[test]
+fn setup_menu_toggles_the_suffix() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Hex, Key::Digit(15), Key::Enter]);
+    assert_eq!(x_row(&app), "F h");
+    app.press_key(Key::Setup);
+    let rows = app.text_rows();
+    assert_eq!(rows[0].trim_end(), "SEtUP");
+    assert_eq!(rows[1].trim_end(), "1 SUFF");
+    assert_eq!(rows[2].trim_end(), "on");
+    app.press_key(Key::Enter); // toggle
+    assert_eq!(app.text_rows()[2].trim_end(), "oFF");
+    app.press_key(Key::ClrX); // exit — ClrX must NOT drop X here
+    assert_eq!(x_row(&app), "F"); // suffix off, X intact
+    assert_eq!(app.calc().stack().len(), 1);
+}
+
+#[test]
+fn setup_menu_navigates_and_cycles_angle() {
+    let mut app = App::new(128);
+    app.press_key(Key::Setup);
+    app.press_key(Key::RollDn); // 2 LEAd 0
+    app.press_key(Key::RollDn); // 3 AnGLE
+    assert_eq!(app.text_rows()[1].trim_end(), "3 AnGLE");
+    assert_eq!(app.text_rows()[2].trim_end(), "rAd");
+    app.press_key(Key::Enter);
+    assert_eq!(app.text_rows()[2].trim_end(), "dEG");
+    assert_eq!(app.calc().angle_mode(), calcumaker_core::AngleMode::Deg);
+    app.press_key(Key::RollUp); // back to 2
+    assert_eq!(app.text_rows()[1].trim_end(), "2 LEAd 0");
+    app.press_key(Key::Setup); // toggle key exits too
+    assert_eq!(app.text_rows()[0].trim_end(), "");
+    // every menu character is 7-seg renderable
+    app.press_key(Key::Setup);
+    for _ in 0..4 {
+        for r in app.text_rows() {
+            for ch in r.chars() {
+                assert!(
+                    ch == ' ' || calcumaker_core::seg7::encode(ch).is_some(),
+                    "unrenderable {ch:?} in {r:?}"
+                );
+            }
+        }
+        app.press_key(Key::RollDn);
+    }
+}
+
+#[test]
+fn setup_swallows_other_keys() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Digit(7), Key::Enter, Key::Setup, Key::Add]);
+    assert!(app.message().is_some()); // hint, not an engine op
+    assert_eq!(app.calc().stack().len(), 1); // 7 untouched
+    app.press_key(Key::Back); // exits
+    assert_eq!(x_row(&app), "7");
+}
+
 #[test]
 fn window_is_single_for_short_values() {
     let mut app = App::new(128);

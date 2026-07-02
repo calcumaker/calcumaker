@@ -3,15 +3,17 @@
 
 //! Calcumaker 16 firmware — hardware skeleton.
 //!
-//! The calculator logic + arbitrary-precision math live in the
-//! **`calcumaker-core`** library (RPN engine over GMP + MPFR, single path,
-//! host-tested). This crate is the board bring-up: clocks, the Cherry MX matrix
-//! scan, the 7-segment display driver, and (eventually) hosting the engine.
+//! Everything calculator lives in **`calcumaker-core`** (host-tested, and
+//! emulated on a terminal by `calcumaker-emu`): the RPN engine over GMP + MPFR,
+//! the keymap + f/g shift layers (`keys`), entry editing + dispatch (`App`),
+//! and the 7-seg segment encoding (`seg7`). This crate is only the board:
+//! clocks, the Cherry MX matrix scan → `(row, col)`, and the TM1640 bus that
+//! pushes `App::seg_rows()` bytes to the glass.
 //!
-//! Engine integration is the open task: `calcumaker-core` is `std`/`rug` for
-//! host testing; on the STM32 we link the SAME GMP/MPFR cross-built for
-//! thumbv8m and route GMP's allocator to the global heap below
-//! (`mp_set_memory_functions`). See ../../DESIGN.md → Numeric core.
+//! GMP/MPFR are cross-built for thumbv8m (firmware/scripts/, link-verified);
+//! remaining bring-up: embassy clocks/GPIO, newlib libc/libm at final link, and
+//! routing GMP's allocator to the heap below via `mp_set_memory_functions`.
+//! See ../../DESIGN.md → Numeric core.
 
 extern crate alloc;
 
@@ -43,17 +45,17 @@ fn init_heap() {
 fn main() -> ! {
     init_heap();
 
-    // TODO(mcu): clocks + GPIO/SPI init via embassy-stm32 once pinned.
-    // TODO(engine): construct a calcumaker_core::Calc here once the engine is
-    // linked for the target (point GMP's allocator at the heap above).
+    // TODO(mcu): clocks + GPIO init via embassy-stm32 once pinned.
+    // TODO(engine): once GMP's allocator is routed to the heap, this loop is
+    //   let mut app = calcumaker_core::App::new(256);
+    //   ... app.press(row, col); display.render(&app.seg_rows());
+    // (exactly what calcumaker-emu runs on the host today).
     let mut display = display::Display::new();
     let mut keypad = keypad::Keypad::new();
 
     loop {
-        if let Some(_key) = keypad.scan() {
-            // TODO(engine): feed `_key` into the Calc engine, then render its
-            // formatted stack rows:
-            display.render(&[]);
+        if let Some((_row, _col)) = keypad.scan() {
+            display.render(&[[0; display::DIGITS_PER_ROW]; display::ROWS]);
         }
         // TODO(mcu): enter low-power Stop mode, wake on a key-matrix interrupt.
         cortex_m::asm::wfi();

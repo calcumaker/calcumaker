@@ -49,20 +49,30 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   ```
 
 ## Firmware (Rust)
-- **Engine: `firmware/calcumaker-core/`** — the RPN + arbitrary-precision math,
-  a `no_std` **host-testable library** over **GMP + MPFR** (single path, no
-  fallback). Math is our own no_std FFI crate **`firmware/gmp-mpfr-nostd/`**
-  (`Integer`/`Float`) — *like rug, but no_std*; host links system GMP/MPFR
-  (`brew install gmp mpfr`), target links cross-built. `cargo test` /
-  `cargo run --example repl`. **Do not add `rug`/`std` to the engine.** Logic
-  lives here.
+- **The calculator: `firmware/calcumaker-core/`** — everything
+  device-independent, a `no_std` **host-testable library**: the RPN +
+  arbitrary-precision engine (`Calc`) over **GMP + MPFR** (single path, no
+  fallback), the **keymap + f/g shift layers** (`keys` — design source of
+  truth), key handling / entry editing (`App`), and the 7-seg encoding
+  (`seg7`, TM1640 byte layout). Math is our own no_std FFI crate
+  **`firmware/gmp-mpfr-nostd/`** (`Integer`/`Float`) — *like rug, but no_std*;
+  host links system GMP/MPFR (`brew install gmp mpfr`), target links
+  cross-built. `cargo test` / `cargo run --example repl`. **Do not add
+  `rug`/`std` to the engine.** Logic lives here — not in the frontends.
+- **Emulator: `firmware/calcumaker-emu/`** — the same `App` on a host terminal
+  (crossterm): host keys → matrix cells, display = ASCII 7-seg from the real
+  TM1640 segment bytes. `cargo run` (interactive) or
+  `cargo run -- --press "2;3+"` (scripted; `;` = ENTER) for tests/demos.
 - **Board crate: `firmware/calcumaker-fw/`** — **STM32U575ZGT6**, Cortex-M33,
   `no_std`, async via `embassy-stm32` (`stm32u575zg`), target
-  `thumbv8m.main-none-eabihf`. Heap via `embedded-alloc` (GMP → it via
-  `mp_set_memory_functions`). It hosts the core engine; on-target GMP/MPFR are
-  **cross-built** and FFI-linked (the open hard step — see DESIGN.md).
+  `thumbv8m.main-none-eabihf`. Hardware only: matrix scan → `(row,col)`,
+  TM1640 bus, heap via `embedded-alloc` (GMP → it via
+  `mp_set_memory_functions`). On-target GMP/MPFR are **cross-built +
+  link-verified** (`firmware/scripts/build-gmp-mpfr-arm.sh`); remaining
+  bring-up: embassy clocks/GPIO + newlib at final link (see DESIGN.md).
 - **Do not reintroduce a second numeric backend** (no pure-Rust fallback / no
-  `numeric-*` features) — one GMP/MPFR path only.
+  `numeric-*` features) — one GMP/MPFR path only. Same for the UI: emulator
+  and firmware must stay thin I/O bindings around `calcumaker_core::App`.
 - `common/` and `shared/` hold cross-target glue / protocol definitions.
 
 ## Licensing

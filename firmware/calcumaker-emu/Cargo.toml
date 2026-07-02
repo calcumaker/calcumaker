@@ -1,0 +1,11 @@
+[package]
+name = "calcumaker-emu"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0"
+description = "Calcumaker 16 emulator — the calculator app (keymap + engine + 7-seg display) on a host terminal"
+readme = "README.md"
+
+[dependencies]
+calcumaker-core = { path = "../calcumaker-core" }
+crossterm = "0.29"

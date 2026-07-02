@@ -19,11 +19,16 @@
 
 extern crate alloc;
 
+mod app;
 mod calc;
 mod format;
+pub mod keys;
+pub mod seg7;
 mod value;
 
+pub use app::App;
 pub use calc::{Calc, CalcError, Radix};
+pub use keys::Key;
 pub use value::Value;
 
 /// Format any [`Value`] for display in the given radix / precision (the same

@@ -156,6 +156,9 @@ impl Float {
     pub fn exp(self) -> Float {
         self.unary(ffi::mpfr_exp)
     }
+    pub fn exp10(self) -> Float {
+        self.unary(ffi::mpfr_exp10)
+    }
     pub fn recip(self) -> Float {
         let mut r = Float::new(self.prec());
         unsafe { ffi::mpfr_ui_div(&mut r.raw, 1, &self.raw, RNDN) };

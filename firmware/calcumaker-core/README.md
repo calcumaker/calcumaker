@@ -1,12 +1,19 @@
 # calcumaker-core
 
-The **Calcumaker 16 calculator engine** — the RPN stack + arbitrary-precision
-math, as a plain library you can unit-test and run against on the host.
+The **Calcumaker 16 calculator** — everything device-independent, as a plain
+library you can unit-test and run against on the host:
+
+- **`Calc`** — the RPN stack + arbitrary-precision math engine;
+- **`keys`** — the 50-key matrix keymap + f/g shift layers (design source of
+  truth, shared by firmware and emulator);
+- **`App`** — key handling over the engine: HP-style digit-by-digit entry,
+  shift resolution, dispatch, display rows;
+- **`seg7`** — text → TM1640 segment bytes (what the glass actually shows).
 
 **Single math path.** Real **GNU MP** (integers) + **MPFR** (correctly-rounded
 floats and transcendentals) via our own `no_std` bindings crate
 **`gmp-mpfr-nostd`** — **no `std`, no feature-gated pure-Rust fallback.** The
-engine itself is `#![no_std]` + `alloc`, so the *same* crate runs on the host and
+crate is `#![no_std]` + `alloc`, so the *same* code runs on the host and
 compiles for the MCU.
 
 ## Test it
@@ -19,9 +26,12 @@ cargo test
 Builds in well under a second (it links the system GMP/MPFR — no build from
 source). The tests exercise the real C libraries: `sqrt(2)` and `e` to hundreds
 of digits, `cos(0)=1`, `100!` as a 158-digit integer, hex bitwise ops, word-size
-masking, and integer-vs-real promotion.
+masking, integer-vs-real promotion — plus key-press sequences through `App` and
+the 7-seg byte encoding.
 
 ## Run it
+
+Two ways. The token REPL (engine only):
 
 ```sh
 cargo run --example repl
@@ -29,18 +39,22 @@ cargo run --example repl
 
 ```
 [Dec 256b]  > 2 sqrt
-[Dec 256b] 1.4142135623730950488016887242096980785696718753769480731766797... > prec 64
+[Dec 256b] 1.4142135623730950488016887242096980785696718753769480731766797... > 64 prec
 [Dec 64b] ... > hex  ff 0f and          # -> F
 [Hex 64b] F > dec  20 fact              # -> 2432902008176640000
 ```
 
+Or the full device UI — keymap, shifts, entry editing, 7-seg display — in the
+emulator: `../calcumaker-emu` (`cargo run`).
+
 Tokens:
 - arith: `+ - * / chs abs pow inv sq sqrt fact mod`
 - trig: `sin cos tan asin acos atan sinh cosh tanh`
-- log/const: `ln log exp e pi`
+- log/const: `ln log exp exp10 e pi`
 - programmer: `and or xor not shl shr` · radix `hex dec oct bin`
 - stack: `enter dup drop swap over rolldn rollup lastx`
-- meta: `prec <bits>`, `words <bits|none>`, `stack`, `clear`, `quit`
+- modes (RPN postfix, pop X): `<bits> prec`, `<bits> wsize` (`0 wsize` = unbounded)
+- REPL meta: `stack`, `clear`, `quit`
 
 ## API
 
@@ -54,13 +68,25 @@ assert_eq!(c.display(), "5");
 `Calc::input(tok)` pushes a number or applies a command; `display()` formats X.
 `set_radix`, `set_prec`, `set_word_bits` control modes.
 
+One level up, `App` speaks key presses instead of tokens:
+
+```rust
+use calcumaker_core::{App, Key};
+let mut app = App::new(256);
+app.press(4, 6);                      // matrix (row,col): the '0' key…
+app.press_key(Key::Digit(2));         // …or logical keys directly
+app.press_key(Key::Enter);
+let rows = app.seg_rows();            // [[u8; 16]; 3] TM1640 segment bytes
+```
+
 ## Relationship to the firmware
 
-This crate is the **canonical engine** — `no_std`, math via `gmp-mpfr-nostd`. On
-the host it links the system GMP/MPFR for dev + testing; the **same crate**
-compiles for `thumbv8m`, where the STM32 firmware (`../calcumaker-fw`) links the
-**cross-built** GMP/MPFR (GMP allocator → the firmware heap). That cross-build is
-the remaining integration; see `../../DESIGN.md` → "GMP/MPFR on the target".
+This crate is the **canonical calculator** — `no_std`, math via
+`gmp-mpfr-nostd`. On the host it links the system GMP/MPFR for dev + testing
+(and powers `../calcumaker-emu`); the **same crate** compiles for `thumbv8m`,
+where the STM32 firmware (`../calcumaker-fw`) links the **cross-built** GMP/MPFR
+(built + link-verified — see `../../DESIGN.md` → "GMP/MPFR on the target") and
+contributes only the matrix scan and the TM1640 bus.
 
 ## License
 

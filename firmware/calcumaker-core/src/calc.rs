@@ -82,6 +82,9 @@ impl Calc {
     pub fn set_word_bits(&mut self, bits: Option<u32>) {
         self.word_bits = bits;
     }
+    pub fn word_bits(&self) -> Option<u32> {
+        self.word_bits
+    }
     pub fn stack(&self) -> &[Value] {
         &self.stack
     }
@@ -150,6 +153,7 @@ impl Calc {
             "cosh" => self.unary_real(|x| x.cosh()),
             "tanh" => self.unary_real(|x| x.tanh()),
             "log" => self.unary_real(|x| x.log10()),
+            "exp10" => self.unary_real(|x| x.exp10()),
             "abs" => self.abs_op(),
             "pow" => self.pow_op(),
             "mod" => self.mod_op(),
@@ -177,6 +181,8 @@ impl Calc {
             "dec" => self.set_radix_ok(Radix::Dec),
             "oct" => self.set_radix_ok(Radix::Oct),
             "bin" => self.set_radix_ok(Radix::Bin),
+            "wsize" => self.wsize(),
+            "prec" => self.prec_cmd(),
             _ => Err(CalcError::Parse(cmd.to_string())),
         }
     }
@@ -219,6 +225,9 @@ impl Calc {
                     '*' => x * y,
                     '/' => {
                         if y.is_zero() {
+                            // Error leaves the stack as it was (HP behaviour).
+                            self.stack.push(Value::Int(x));
+                            self.stack.push(Value::Int(y));
                             return Err(CalcError::DivZero);
                         }
                         x / y
@@ -354,12 +363,39 @@ impl Calc {
         match (y, x) {
             (Value::Int(a), Value::Int(b)) => {
                 if b.is_zero() {
+                    // Error leaves the stack as it was (HP behaviour).
+                    self.stack.push(Value::Int(a));
+                    self.stack.push(Value::Int(b));
                     return Err(CalcError::DivZero);
                 }
                 self.stack.push(Value::Int(self.mask(a % b)));
                 Ok(())
             }
             _ => Err(CalcError::TypeError("mod needs integers")),
+        }
+    }
+
+    /// WSIZE (HP-16C): pop X as the word size in bits; 0 = unbounded (GMP).
+    fn wsize(&mut self) -> Result<(), CalcError> {
+        match self.take_x()? {
+            Value::Int(x) => {
+                let n = x.to_u32().ok_or(CalcError::TypeError("word size out of range"))?;
+                self.word_bits = if n == 0 { None } else { Some(n) };
+                Ok(())
+            }
+            _ => Err(CalcError::TypeError("word size must be an integer")),
+        }
+    }
+
+    /// Pop X as the MPFR working precision in bits.
+    fn prec_cmd(&mut self) -> Result<(), CalcError> {
+        match self.take_x()? {
+            Value::Int(x) => {
+                let n = x.to_u32().ok_or(CalcError::TypeError("precision out of range"))?;
+                self.set_prec(n);
+                Ok(())
+            }
+            _ => Err(CalcError::TypeError("precision must be an integer")),
         }
     }
 
@@ -418,9 +454,9 @@ fn is_command(t: &str) -> bool {
         t,
         "+" | "-" | "*" | "/" | "chs" | "swap" | "drop" | "dup" | "sqrt" | "sin"
             | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
-            | "ln" | "log" | "exp" | "inv" | "sq" | "abs" | "pow" | "mod" | "e"
-            | "pi" | "and" | "or" | "xor" | "not" | "shl" | "shr" | "fact" | "!"
-            | "hex" | "dec" | "oct" | "bin" | "lastx" | "enter" | "over"
-            | "rolldn" | "roll" | "rollup"
+            | "ln" | "log" | "exp" | "exp10" | "inv" | "sq" | "abs" | "pow"
+            | "mod" | "e" | "pi" | "and" | "or" | "xor" | "not" | "shl" | "shr"
+            | "fact" | "!" | "hex" | "dec" | "oct" | "bin" | "lastx" | "enter"
+            | "over" | "rolldn" | "roll" | "rollup" | "wsize" | "prec"
     )
 }

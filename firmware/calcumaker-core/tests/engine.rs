@@ -164,6 +164,47 @@ fn over_copies_y_above_x() {
 }
 
 #[test]
+fn div_zero_preserves_stack() {
+    let mut c = Calc::new(64);
+    for t in ["5", "0"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.input("/"), Err(calcumaker_core::CalcError::DivZero));
+    assert_eq!(c.stack().len(), 2); // 5 and 0 still there
+    assert_eq!(c.display(), "0");
+}
+
+#[test]
+fn wsize_command_sets_word_from_x() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "0f", "not"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "F0");
+    assert_eq!(c.word_bits(), Some(8));
+    for t in ["0", "wsize"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.word_bits(), None); // 0 = unbounded
+}
+
+#[test]
+fn prec_command_sets_precision_from_x() {
+    let mut c = Calc::new(64);
+    for t in ["512", "prec"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.prec(), 512);
+    assert!(c.stack().is_empty());
+}
+
+#[test]
+fn exp10_of_3_is_1000() {
+    assert_eq!(run(128, &["3", "exp10"]), "1000");
+}
+
+#[test]
 fn rolldn_moves_x_to_bottom() {
     let mut c = Calc::new(64);
     for t in ["1", "2", "3", "rolldn"] {

@@ -178,8 +178,11 @@ keypress wakes the MCU from Stop, so no dedicated ON key is needed.
   FLOAT; WSIZE → sign mode (unsigned / 1's / 2's); R↓ → R↑.
 - **g (blue)** → secondary: SINH/COSH/TANH, LOG, 10ˣ, n!, %, RND, OFF.
 - The full keymap is the source of truth in
-  `firmware/calcumaker-fw/src/keypad.rs` (`BASE` / `LAYER_F` / `LAYER_G`) — keep
-  the two in sync. Shift assignments marked `Nop` are open for refinement.
+  **`firmware/calcumaker-core/src/keys.rs`** (`BASE` / `LAYER_F` / `LAYER_G`) —
+  keep the two in sync. It lives in the core (not the board crate) because the
+  emulator and the firmware share it; the f/g shift resolution
+  (`keys::Shift`) and all key handling (`App`) sit beside it. Shift assignments
+  marked `Nop` are open for refinement.
 
 **Electrical:** 5-row × 10-col scanned matrix. ROWr = GPIO outputs, COLc = GPIO
 inputs on **internal pull-ups** (no external resistors — lower idle current;
@@ -220,7 +223,8 @@ and **GMP/MPFR on the target** below.
 | Flash/debug | **`probe-rs`** (`cargo run`/`cargo embed`) | set the chip name in `.cargo/config.toml` |
 | Logging | `defmt` + RTT (optional) | |
 | Math bindings | **`gmp-mpfr-nostd`** (own no_std FFI) | host links system GMP/MPFR; target links cross-built |
-| Engine | **`calcumaker-core`** (RPN, no_std) | one path; host-tested + REPL |
+| Engine + app | **`calcumaker-core`** (RPN, no_std) | one path; engine (`Calc`), keymap + shifts (`keys`), key handling + entry editing (`App`), 7-seg encoding (`seg7`) |
+| Emulator | **`calcumaker-emu`** (host, crossterm) | the same `App` on a terminal — ASCII 7-seg from the real TM1640 segment bytes |
 
 ---
 
@@ -236,14 +240,49 @@ under a second:
 ```sh
 brew install gmp mpfr                 # one-time host deps (apt: libgmp-dev libmpfr-dev)
 cd firmware/calcumaker-core
-cargo test                            # 12 engine tests vs real GMP/MPFR
-cargo run --example repl              # interactive RPN
+cargo test                            # engine + app + seg7 tests vs real GMP/MPFR
+cargo run --example repl              # interactive RPN (token REPL)
 ```
 
 Crucially this is **one crate, `no_std`** — it also compiles for the MCU target
 (`cargo build --target thumbv8m.main-none-eabihf` succeeds today); only the final
 link to the C libraries differs. This is the single source of truth for the
 calculator logic and math.
+
+## Emulator (host CLI) — the device UI without the device
+
+**`firmware/calcumaker-emu/`** runs the calculator on a standard terminal. It
+is not a mock: the whole device-independent calculator lives in
+`calcumaker-core` and the emulator hosts it exactly as the firmware will —
+
+- **`keys`** — the 50-key matrix keymap + f/g shift layers + resolution
+  (`Shift`), the design source of truth;
+- **`App`** — key handling on top of the engine: HP-style digit-by-digit entry
+  (live `_` cursor, backspace, EEX, CHS-in-entry flips the mantissa/exponent
+  sign), flush-on-operation, CLx/ENTER semantics, error → status message;
+- **`seg7`** — text → per-digit **TM1640 segment bytes** (a..g+dp bit layout,
+  `.` folds into the previous digit's dp, right-aligned, `]`-shaped overflow
+  marker in the last cell when a value exceeds 16 digits).
+
+Both frontends are thin I/O bindings around `App::press(row, col)` +
+`App::seg_rows()`: the firmware contributes the matrix scan and the TM1640
+bus; the emulator maps host keys to matrix cells and renders **the same
+segment bytes** as ASCII 7-seg art (plus annunciators and the untruncated X,
+where the arbitrary precision is visible). If it works in the emulator, the
+only difference on the device is GPIO.
+
+```sh
+cd firmware/calcumaker-emu
+cargo run                            # interactive; ? = key map, Ctrl-C = quit
+cargo run -- --press "2;3+"          # scripted: 2 ENTER 3 + → prints the frame
+cargo run -- --prec 1024 --press "FE"  # f-shift E = pi, at 1024 bits
+```
+
+Display policy (initial, revisit with real glass): X (or the live entry) on the
+bottom row, Y/Z above; values right-aligned; >16-digit values truncated with the
+overflow marker — **windowing/scrolling is an open item**. Engine modes are RPN
+postfix like the HP-16C: `<bits> W` (WSIZE, 0 = unbounded), f-shift `I`
+(= `prec`, pops X as the MPFR working precision).
 
 ## GMP/MPFR on the target (✅ cross-built + link-verified)
 
@@ -401,10 +440,13 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    inductor Isat at layout. (TPS61022 + STM32U575 symbols turned out stock in
    KiCad, so the main board generates with no custom authoring.)
 3. ✅ **Numeric engine = single GMP/MPFR path** (`gmp-mpfr-nostd` + `calcumaker-core`),
-   host-tested (23 engine tests) + REPL, compiles for `thumbv8m`. ✅ **GMP/MPFR
-   cross-built + link-verified** for Cortex-M33 hard-float (build script +
-   `build.rs` wired). Remaining is firmware bring-up: route GMP's allocator to
-   the heap + resolve newlib at final link (folded into the MCU/HAL work).
+   host-tested + REPL, compiles for `thumbv8m`. ✅ **GMP/MPFR cross-built +
+   link-verified** for Cortex-M33 hard-float (build script + `build.rs` wired).
+   ✅ **Emulator target** (`calcumaker-emu`): the full device UI (keymap/App/
+   seg7, now in the core) on a host terminal. Remaining is firmware bring-up:
+   route GMP's allocator to the heap + resolve newlib at final link (folded
+   into the MCU/HAL work). Display **windowing/scrolling** for >16-digit
+   values is an open UI policy (emulator shows the overflow marker + full X).
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols

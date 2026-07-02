@@ -10,7 +10,9 @@ readme = "README.md"
 # `cargo add` once the MCU is pinned (see ../../DESIGN.md research notes).
 
 [dependencies]
-cortex-m = "0.7"
+# critical-section-single-core: the critical-section impl embedded-alloc's
+# heap locking needs (single-core U575: disable interrupts).
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
 panic-halt = "1.0"
 # Heap for the arbitrary-precision allocator. GMP is pointed at it via

@@ -26,6 +26,9 @@ keeps it alive between keystrokes.
   - Packaged as the **`calcumaker-core`** library (`no_std`) over our own
     **`gmp-mpfr-nostd`** FFI bindings — host-testable and runnable today
     (`cargo test`, `cargo run --example repl`).
+- **Host emulator:** `calcumaker-emu` runs the whole device UI — keymap, f/g
+  shifts, digit entry, the multi-row 7-seg display rendered from the real
+  TM1640 segment bytes — on a standard terminal (`cargo run`).
 - **Visible RPN stack:** multi-row 7-segment display (2–3 rows) shows the top of
   the stack at once.
 - **Split design:** the display lives on its **own PCB** that angles upward;
@@ -89,14 +92,16 @@ calcumaker/
 │   └── fp-lib-table
 ├── firmware/
 │   ├── gmp-mpfr-nostd/           # own no_std FFI to GMP/MPFR ("rug, but no_std")
-│   ├── calcumaker-core/          # the ENGINE: RPN + GMP/MPFR. no_std, host-tested lib.
-│   │   ├── src/                  #   lib, calc, value, format
+│   ├── calcumaker-core/          # the CALCULATOR: engine + keymap + App + 7-seg
+│   │   ├── src/                  #   lib, calc, value, format, keys, app, seg7
 │   │   ├── tests/ · examples/repl.rs
 │   │   └── Cargo.toml            #   single math path (no fallback)
-│   ├── calcumaker-fw/            # Rust no_std board app (STM32U575 / embassy)
+│   ├── calcumaker-emu/           # HOST EMULATOR: the same App on a terminal
+│   ├── calcumaker-fw/            # Rust no_std board binary (STM32U575 / embassy)
 │   │   ├── Cargo.toml · .cargo/config.toml
 │   │   ├── memory.x · build.rs · rust-toolchain.toml
-│   │   └── src/                  #   main, keypad, display (hosts the engine)
+│   │   └── src/                  #   main, keypad (scan), display (TM1640 bus)
+│   ├── scripts/                  # build-gmp-mpfr-arm.sh (cross-build for thumbv8m)
 │   ├── common/                   # shared HAL/utilities
 │   └── shared/                   # shared protocol/definitions
 ├── reference/                    # datasheets + dependency pointers
@@ -114,15 +119,17 @@ calcumaker/
 | Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
 | Interconnect | 1×8 2.54mm header (PZ254V-11-08P), carries +5V | ✅ LCSC C492407 |
 | Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
-| Math | GNU MP + MPFR via `calcumaker-core` + own `gmp-mpfr-nostd` (single path) | ✅ no_std, host-tested + REPL; on-target cross-build is the open step |
+| Math | GNU MP + MPFR via `calcumaker-core` + own `gmp-mpfr-nostd` (single path) | ✅ no_std, host-tested + REPL + emulator; cross-built + link-verified for the target |
 
 ## Status
 
-Repo scaffold (split hardware framework + Rust firmware skeleton + design doc)
-is in. **MCU, software stack, and the display BOM are decided** (see `DESIGN.md`
-/ `hardware/PARTS.md`); remaining part-selection: the keypad layout, custom KiCad
-symbols for the TM1640/FJ5161AH, and buck-boost sizing. Hardware/firmware are not
-yet built or fabricated.
+**The calculator works on the host today**: engine + keymap + display pipeline
+are host-tested, and `calcumaker-emu` runs the full device UI on a terminal.
+GMP/MPFR are cross-built + link-verified for the STM32 target. **MCU, keypad
+layout (5×10), software stack, display BOM, and power rails are decided** (see
+`DESIGN.md` / `hardware/PARTS.md`); both boards generate from their manifests
+and pass structure checks. Remaining: eeschema wiring, firmware MCU bring-up
+(embassy + newlib link + heap routing), battery sizing. Not yet fabricated.
 
 ## License
 

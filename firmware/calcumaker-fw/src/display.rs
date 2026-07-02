@@ -1,16 +1,20 @@
-//! Multi-row 7-segment display — the top of the RPN stack.
+//! Multi-row 7-segment display — the TM1640 bus half of the display.
 //!
 //! Driver: 3× TM1640 (one per row), each driving 16 common-cathode digits over a
 //! 2-wire bus (shared CLK + per-row DIN1/2/3), across the board-to-board
 //! interconnect to the display PCB. See ../../DESIGN.md → Display.
-//! Skeleton — the TM1640 bit-bang/timing is wired after the MCU bring-up.
+//!
+//! The **content pipeline lives in `calcumaker_core`**: `App::seg_rows()`
+//! produces the per-digit segment bytes (`seg7` bit layout = TM1640 SEG1..8 =
+//! a..g + dp) that this driver pushes to the chips verbatim — the emulator
+//! renders the same bytes. Skeleton — bit-bang/timing wired after MCU bring-up.
 
 /// Rows shown at once. Board is laid out for 3; set to 2 for the 2-row build
-/// (top row unpopulated). See ../../DESIGN.md → Display.
+/// (top row unpopulated). Must match `calcumaker_core::seg7::DISPLAY_ROWS`.
 pub const ROWS: usize = 3;
 
-/// Digits per row (one TM1640 = 16 digits; fits a 64-bit hex word, or a signed
-/// mantissa + exponent).
+/// Digit cells per row (one TM1640 = 16 digits). Must match
+/// `calcumaker_core::seg7::DIGITS_PER_ROW`.
 pub const DIGITS_PER_ROW: usize = 16;
 
 pub struct Display {
@@ -22,11 +26,11 @@ impl Display {
         Self {}
     }
 
-    /// Render the top stack rows (already formatted by the engine, top first).
-    /// Arbitrary-precision values longer than `DIGITS_PER_ROW` are
-    /// windowed/scrolled (policy TBD).
-    pub fn render(&mut self, _rows: &[&str]) {
-        // TODO(mcu): map each row's text to 7-seg patterns and push to the
-        // TM1640 chain (CLK + per-row DIN).
+    /// Push the segment bytes for every row (index 0 = top) to the TM1640s —
+    /// the same bytes `calcumaker_core::App::seg_rows()` returns.
+    pub fn render(&mut self, _rows: &[[u8; DIGITS_PER_ROW]; ROWS]) {
+        // TODO(mcu): per row: START, address auto-increment command, 16 data
+        // bytes on CLK + that row's DIN, brightness/display-on. (TM1640 has no
+        // ACK — pure 2-wire push.)
     }
 }

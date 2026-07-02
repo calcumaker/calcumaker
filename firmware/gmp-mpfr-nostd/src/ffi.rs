@@ -101,6 +101,7 @@ extern "C" {
     pub fn mpfr_log(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_log10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_exp(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_exp10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_pow(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_const_pi(r: *mut mpfr_struct, rnd: c_int) -> c_int;
 }

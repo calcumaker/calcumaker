@@ -57,18 +57,21 @@ What is implemented now: the full 16C programmer model plus our extensions
 contract). Formalizing means naming it and routing it through the `Keymap`
 struct rather than file-level consts. **No behavior change.**
 
-### 4.2 `SCI` — HP-15C-flavored scientific
-- **Keymap**: promote the scientific set to primary faces (trig unshifted,
-  `y^x`, `1/x`, `%`, statistics), demote the programmer row (bitops/radix
-  move to f/g or disappear).
-- **Engine additions needed**: statistics registers (Σ+, mean, s, linear
-  regression) — straightforward on MPFR; `RAN#` (PRNG — decide determinism
-  policy); combinations/permutations (GMP exact — cheap).
-- **Explicitly out of scope for SCI v1**: 15C complex numbers and matrices.
-  Complex wants **MPC** (the MPFR-based complex library) — a real dependency
-  decision (cross-build, memory) that gets its own design round if ever.
-- **Display**: FIX 4 default (HP convention), DEG default angle mode — note
-  this personality flips the angle default; see §7.
+### 4.2 `SCI` — HP-15C-flavored scientific (✅ implemented)
+- **Keymap** (`keys::SCI`): digits/ENTER/shifts/arithmetic/STATUS/SETUP at
+  the identical physical positions as 16C; the hex-digit row becomes inverse
+  trig + log10/eˣ/10ˣ, the bitops row becomes Σ+/Σ−/mean/sdev/x!/%, the
+  radix row becomes FIX/SCI/ENG/auto/angle-mode. f = hyperbolics +
+  L.R./ŷ/r/CLΣ; g = nCr/nPr/RAN#/seed (+ the shared window keys).
+- **Engine additions** (all in, engine superset as designed): Σ registers at
+  working precision (`s+ s- mean sdev lr yhat corr clstat`), **exact** GMP
+  `ncr`/`npr` (mpz binomial; size-guarded), `ran`/`seed` (xorshift64,
+  deterministic until seeded; firmware seeds from hardware entropy).
+- **Explicitly out of scope for SCI v1**: 15C complex numbers and matrices
+  (MPC — own design round if ever).
+- **Display defaults on switch** (`Keymap::apply_defaults`): DEG, FIX 4,
+  decimal; 16C's bundle restores RAD + AUTO. Data (stack/registers/prec) is
+  never touched by a switch.
 
 ### 4.3 `FIN` — HP-12C-flavored financial
 - **Engine additions needed**: TVM solver (n, i, PV, PMT, FV — an iterative
@@ -173,7 +176,7 @@ follow:
 |-------|-------|------|
 | **P1** ✅ | `Keymap` struct + `HP16C` static + `PERSONALITIES` registry + App plumbing + `PErS` menu entry (single personality; emulator `--personality` deferred until a second exists) | done |
 | **P2** ✅ | `StackModel::Classic4` in the engine + stack-lift entry discipline + `StAC` menu entry + tests | done |
-| **P3** | `SCI` personality: keymap + statistics/PRNG/comb-perm engine additions; DEG/FIX-4 defaults | medium |
+| **P3** ✅ | `SCI` personality: keymap + statistics/PRNG/comb-perm engine additions; DEG/FIX-4 defaults; emulator `--personality`; keymap-dispatchability test across all personalities | done |
 | **P4** | `FIN` personality: TVM/NPV/IRR/date engine pack | high effort; separate go/no-go |
 | — | Complex numbers via MPC (SCI v2) | own design round |
 

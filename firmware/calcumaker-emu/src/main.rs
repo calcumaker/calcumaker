@@ -174,6 +174,13 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
                           sign mode; numeric settings stay RPN: 256 prec etc.)
 
   STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
+
+  SCI personality (--personality sci, or SETUP > PErS): digits/ENTER/shifts/
+  arithmetic keep their positions; S/C/T row unchanged; a-f row = asin/acos/
+  atan/log10/e^x/10^x; &/|/^/~ row = Sigma+/Sigma-/mean/sdev, </> = x!/%;
+  H/D/O/B/W row = FIX/SCI/ENG/auto/angle-mode. F layer: sinh/cosh/tanh, L.R./
+  yhat/corr/CLstat. G layer: nCr nPr RAN# seed (over &/|/^/~). Defaults on
+  switch: DEG, FIX 4, decimal.
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
   G (overflow) in word mode. Esc cancels a pending shift. ? = help. Ctrl-C quits.";
 
@@ -199,6 +206,11 @@ fn frame(app: &App, help: bool, style: Style) -> String {
     out.push_str(&format!("{bl}{}{br}\n", h.to_string().repeat(width + 2)));
 
     let c = app.calc();
+    let pers = if app.keymap().name == "16C" {
+        String::new()
+    } else {
+        format!("{}  ", app.keymap().name)
+    };
     let radix = format!("{:?}", c.radix()).to_uppercase();
     let angle = match c.angle_mode() {
         calcumaker_core::AngleMode::Rad => "RAD",
@@ -253,7 +265,7 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {radix}  {angle}  prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(" {pers}{radix}  {angle}  prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.
@@ -334,6 +346,7 @@ fn main() -> io::Result<()> {
     let mut script: Option<String> = None;
     let mut style = Style::Block;
     let mut no_suffix = false;
+    let mut personality: Option<&'static calcumaker_core::keys::Keymap> = None;
 
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -349,9 +362,19 @@ fn main() -> io::Result<()> {
             }
             "--ascii" => style = Style::Ascii,
             "--no-suffix" => no_suffix = true,
+            "--personality" => {
+                let name = args.next().unwrap_or_else(|| usage("--personality needs a name"));
+                personality = Some(
+                    calcumaker_core::keys::PERSONALITIES
+                        .iter()
+                        .find(|km| km.name.eq_ignore_ascii_case(&name))
+                        .copied()
+                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, SCI)"))),
+                );
+            }
             "--help" | "-h" => {
                 println!(
-                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix]\n\n{HELP}"
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI]\n\n{HELP}"
                 );
                 return Ok(());
             }
@@ -360,6 +383,9 @@ fn main() -> io::Result<()> {
     }
 
     let mut app = App::new(prec);
+    if let Some(km) = personality {
+        app.set_keymap(km);
+    }
     if no_suffix {
         app.calc_mut().set_radix_suffix(false);
     }
@@ -374,7 +400,9 @@ fn main() -> io::Result<()> {
 }
 
 fn usage(msg: &str) -> ! {
-    eprintln!("calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii]");
+    eprintln!(
+        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI]"
+    );
     std::process::exit(2);
 }
 

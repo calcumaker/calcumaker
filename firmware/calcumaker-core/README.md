@@ -63,6 +63,8 @@ Tokens:
   `shl shr rln rrn` (Y by X bits) · `rlc rrc rlcn rrcn` (through carry) ·
   `bset bclr btest maskl maskr popcnt lj` · `dbl* dbl/ dblr` (double-word) ·
   flags `sf cf ftest` (0-2 user; 3/4/5 = lz/C/G) · radix `hex dec oct bin`
+- statistics/combinatorics (SCI pack): `s+ s- mean sdev lr yhat corr clstat`
+  · exact `ncr npr` · `ran seed`
 - conversions: `float round trunc floor ceil frac`
 - stack/memory: `enter dup drop swap over rolldn rollup lastx clear` ·
   registers `sto0`–`stof` / `rcl0`–`rclf` / `clreg`

@@ -47,6 +47,8 @@ pub enum Key {
     Lz,
     // display window scroll for values wider than the row (16C < / >)
     WinL, WinR,
+    // statistics / combinatorics / random (SCI personality; engine superset)
+    SigmaPlus, SigmaMinus, Mean, Sdev, Lr, Yhat, Corr, ClStat, Ncr, Npr, Ran, Seed,
     // arbitrary-precision control (the headline feature)
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
@@ -93,13 +95,72 @@ pub struct Keymap {
     pub base: [[Key; COLS]; ROWS],
     pub f: [[Key; COLS]; ROWS],
     pub g: [[Key; COLS]; ROWS],
+    /// Display-mode defaults applied when this personality is selected
+    /// (angle/format/radix conventions — data is never touched).
+    pub apply_defaults: fn(&mut crate::calc::Calc),
+}
+
+fn defaults_16c(c: &mut crate::calc::Calc) {
+    c.set_angle_mode(crate::calc::AngleMode::Rad);
+    c.set_float_fmt(crate::calc::FloatFmt::Auto);
+}
+
+fn defaults_sci(c: &mut crate::calc::Calc) {
+    // 15C conventions: degrees, FIX 4, decimal.
+    c.set_angle_mode(crate::calc::AngleMode::Deg);
+    c.set_float_fmt(crate::calc::FloatFmt::Fix(4));
+    c.set_radix(crate::calc::Radix::Dec);
 }
 
 /// The default personality — the tables above.
-pub static HP16C: Keymap = Keymap { name: "16C", base: BASE, f: LAYER_F, g: LAYER_G };
+pub static HP16C: Keymap =
+    Keymap { name: "16C", base: BASE, f: LAYER_F, g: LAYER_G, apply_defaults: defaults_16c };
+
+// ---- SCI personality (HP-15C-flavored scientific) ---------------------------
+// Digits, ENTER, shifts, arithmetic, STATUS (f-CLx) and SETUP (g-CLx) keep the
+// SAME physical positions as 16C — muscle memory carries over. The programmer
+// row (bitops/radix) gives way to inverse trig / logs / statistics on primary
+// faces; f = hyperbolics + regression; g = combinatorics + random.
+
+/// SCI base layer.
+pub const SCI_BASE: [[Key; COLS]; ROWS] = [
+    [Sin,    Cos,    Tan,  Ln,   Sqrt,     Pow,  Recip,  Eex,  Back, ClrX],
+    [Asin,   Acos,   Atan, Log10,Exp,      Exp10,d(7),   d(8), d(9),  Div],
+    [SigmaPlus, SigmaMinus, Mean, Sdev,    Fact, Pct,  d(4),   d(5), d(6),  Mul],
+    [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Swap, d(1), d(2), d(3), Sub],
+    [ShiftF, ShiftG, Sto,  Rcl,  RollDn,   Enter,d(0),   Dot,  Chs,   Add],
+];
+
+/// SCI f (gold) layer — hyperbolics, regression, precision.
+pub const SCI_LAYER_F: [[Key; COLS]; ROWS] = [
+    [Sinh,   Cosh,   Tanh, Prec, Sq,       Nop,  Nop,    Pi,   LastX, Status],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Lr,     Yhat,   Corr, ClStat, Nop,    Nop,  Nop,    Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Float,Nop,    Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  Nop,  Off,    Nop,  Eex,   Nop],
+];
+
+/// SCI g (blue) layer — combinatorics, random, display windows, SETUP.
+pub const SCI_LAYER_G: [[Key; COLS]; ROWS] = [
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+];
+
+/// The scientific personality (15C-flavored; decimal machine — defaults set
+/// DEG + FIX 4 + Dec on switch, see `App::set_keymap`).
+pub static SCI: Keymap = Keymap {
+    name: "SCI",
+    base: SCI_BASE,
+    f: SCI_LAYER_F,
+    g: SCI_LAYER_G,
+    apply_defaults: defaults_sci,
+};
 
 /// Installed personalities, in `PErS`-menu cycle order.
-pub static PERSONALITIES: &[&Keymap] = &[&HP16C];
+pub static PERSONALITIES: &[&Keymap] = &[&HP16C, &SCI];
 
 /// Pending shift modifier (f = gold, g = blue). Press toggles; any resolved key
 /// clears it (HP-Voyager behaviour).

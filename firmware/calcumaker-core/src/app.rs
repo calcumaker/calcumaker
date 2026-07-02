@@ -157,6 +157,7 @@ impl App {
     pub fn set_keymap(&mut self, km: &'static Keymap) {
         self.keymap = km;
         self.shift = Shift::None;
+        (km.apply_defaults)(&mut self.calc);
     }
     /// Pending shift for the annunciator: `Some('f')` / `Some('g')`.
     pub fn shift(&self) -> Option<char> {
@@ -654,6 +655,18 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::FmtAuto => "std",
         Key::AngleMode => "anglemode",
         Key::Lz => "lz",
+        Key::SigmaPlus => "s+",
+        Key::SigmaMinus => "s-",
+        Key::Mean => "mean",
+        Key::Sdev => "sdev",
+        Key::Lr => "lr",
+        Key::Yhat => "yhat",
+        Key::Corr => "corr",
+        Key::ClStat => "clstat",
+        Key::Ncr => "ncr",
+        Key::Npr => "npr",
+        Key::Ran => "ran",
+        Key::Seed => "seed",
         Key::Sin => "sin",
         Key::Cos => "cos",
         Key::Tan => "tan",

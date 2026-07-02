@@ -445,11 +445,86 @@ fn setup_stack_and_pers_items() {
     app.press_key(Key::RollDn);
     assert_eq!(app.text_rows()[1].trim_end(), "6 PErS");
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
-    app.press_key(Key::Enter); // only one personality installed
-    assert_eq!(app.message(), Some("only 16C installed"));
+    app.press_key(Key::Enter); // cycles to SCI…
+    assert_eq!(app.keymap().name, "SCI");
+    app.press_key(Key::Enter); // …and back
     assert_eq!(app.keymap().name, "16C");
     app.press_key(Key::ClrX);
     assert_eq!(x_row(&app), "5"); // classic stack view, X intact
+}
+
+/// Every non-Nop key in every personality's three layers must dispatch —
+/// "not implemented" on a printed face is a keymap regression.
+#[test]
+fn all_personality_keys_dispatch() {
+    for km in calcumaker_core::keys::PERSONALITIES {
+        for layer in [&km.base, &km.f, &km.g] {
+            for row in layer.iter() {
+                for &k in row.iter() {
+                    let mut app = App::new(64);
+                    app.set_keymap(km);
+                    // a stack of two small integers satisfies most preconditions
+                    for kk in [Key::Digit(2), Key::Enter, Key::Digit(3), Key::Enter] {
+                        app.press_key(kk);
+                    }
+                    app.press_key(k);
+                    assert_ne!(
+                        app.message(),
+                        Some("not implemented"),
+                        "{}: key {k:?} is unmapped",
+                        km.name
+                    );
+                }
+            }
+        }
+    }
+}
+
+/// PErS actually switches now: SCI applies its defaults (DEG, FIX 4, Dec)
+/// and its keymap; cycling again returns to 16C (RAD, AUTO).
+#[test]
+fn pers_cycles_to_sci_and_back() {
+    use calcumaker_core::{AngleMode, FloatFmt};
+    let mut app = App::new(128);
+    app.press_key(Key::Setup);
+    for _ in 0..5 {
+        app.press_key(Key::RollDn); // item 6: PErS
+    }
+    assert_eq!(app.text_rows()[2].trim_end(), "16C");
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "SCI");
+    assert_eq!(app.text_rows()[2].trim_end(), "SCI");
+    assert_eq!(app.calc().angle_mode(), AngleMode::Deg);
+    assert_eq!(app.calc().float_fmt(), FloatFmt::Fix(4));
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "16C");
+    assert_eq!(app.calc().angle_mode(), AngleMode::Rad);
+    app.press_key(Key::ClrX); // exit menu
+    // SCI again via API: the matrix now resolves SCI faces
+    app.set_keymap(&calcumaker_core::keys::SCI);
+    app.press(0, 0); // Sin in both — but at (2,0) SCI has Σ+
+    let _ = app.calc();
+}
+
+/// SCI physical positions: digits unchanged; (2,0) is Σ+; g-(2,0) is nCr.
+#[test]
+fn sci_keymap_positions() {
+    let mut app = App::new(128);
+    app.set_keymap(&calcumaker_core::keys::SCI);
+    // digits at 16C positions
+    app.press(4, 6); // 0 key
+    app.press(3, 6); // 1 key
+    assert_eq!(x_row(&app), "01_");
+    app.press_key(Key::ClrX);
+    // Σ+ on the old AND key
+    app.press(3, 6); // 1
+    app.press(2, 0); // Σ+
+    assert_eq!(x_row(&app), "1"); // n = 1 (FIX shows ints plain)
+    // g-shifted nCr on the same key
+    press_all(&mut app, &[Key::ClrX, Key::Digit(5), Key::Enter, Key::Digit(2)]);
+    app.press(4, 1); // g shift
+    app.press(2, 0); // nCr
+    assert_eq!(x_row(&app), "10"); // C(5,2)
 }
 
 /// In HP4 mode, keyed-number + ENTER duplicates (the real HP model):

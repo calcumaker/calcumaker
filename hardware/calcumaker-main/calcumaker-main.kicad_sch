@@ -19,7 +19,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "d3184a48-4e57-4dd4-8657-28f06ea51a50")
+		(uuid "63e350f7-90f9-4813-99bb-238fcb8e7e6b")
 		(property "Sheetname" "MCU"
 			(at 40.64 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -35,7 +35,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "29225b8b-b6d0-4464-80fa-dde1b6aba1e3")
+		(uuid "bbba8897-e93d-41d0-80d4-76938f3cdc21")
 		(property "Sheetname" "Clock"
 			(at 96.52 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -51,7 +51,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "71b58d6d-f987-4e22-9835-fb974e168907")
+		(uuid "717b1de1-4ec1-4dd6-8d05-79b4e5347191")
 		(property "Sheetname" "Programming"
 			(at 152.40 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -67,7 +67,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "5282cf56-e703-4461-9ce5-56ef809a75ea")
+		(uuid "a3fec239-0798-4706-8ad1-72f83b060563")
 		(property "Sheetname" "PSU"
 			(at 208.28 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -83,7 +83,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "079dfd14-cd0c-48b6-90bb-0183924059fa")
+		(uuid "3712b048-21b8-45c6-a90e-4eb1d8a17eb6")
 		(property "Sheetname" "Keypad"
 			(at 264.16 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -99,13 +99,29 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "f9b95f10-9b2d-40c8-a772-d4d132aff963")
+		(uuid "354f9ce7-4ddf-44be-b9b3-f463ad410f0b")
 		(property "Sheetname" "DisplayIF"
 			(at 320.04 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
 		(property "Sheetfile" "display_if.kicad_sch"
 			(at 320.04 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 375.92 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "5e17fe55-5f88-4888-99a9-67282f4be76a")
+		(property "Sheetname" "Annunciators"
+			(at 375.92 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "annunc.kicad_sch"
+			(at 375.92 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)

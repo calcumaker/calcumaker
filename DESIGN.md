@@ -384,6 +384,8 @@ use (all on the main board):
 - **SWD** (PA13/PA14) → Tag-Connect programming header.
 - **LSE 32.768 kHz** crystal → RTC (sleep timing).
 - **ADC** → battery voltage sense.
+- **Annunciator LEDs** → 5 GPIOs (active high): f, g, C, G, low-batt
+  (Annunciators sheet, D61–D65 + R9–R13).
 
 ---
 
@@ -404,9 +406,10 @@ then wired in eeschema.
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (50 SW + 50 diodes) + wake line |
 | DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + J3 → display |
+| Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D61–D65 + R9–R13) ← MCU GPIO |
 
 Both boards **generate from their manifests and pass the structure check**
-(placed-not-wired): `calcumaker-main` = 149 components across the 6 subsheets
+(placed-not-wired): `calcumaker-main` = 159 components across the 7 subsheets
 above; `calcumaker-display` = 21 components. All symbols are stock KiCad except
 the authored TM1640.
 
@@ -503,20 +506,20 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    `<`/`>`) implemented. Remaining is firmware bring-up: route GMP's
    allocator to the heap + resolve newlib at final link (folded into the
    MCU/HAL work).
-6. **Annunciators (status line → hardware).** The emulator's status line has
-   no hardware counterpart yet — the schematics carry digits only. Mapping
-   plan (16C precedent: lamps ONLY for f/g/C/G/PRGM/battery; the rest lives in
-   the digits): **(a)** five discrete LEDs on the main board's top edge under
-   the display bezel — f (gold), g (blue) beside the shift keys, C, G, low-
-   battery — MCU GPIO direct, zero interconnect impact (recommended; the
-   display-board alternative needs a 4th TM1640 + DIN4 on a spare header pin
-   *and* a 5th level-shifter channel — the HCT125's four are all used);
-   **(b)** radix as a 16C-style `h d o b` suffix letter in the X row
-   (firmware); **(c)** an **f-STATUS momentary view** rendering prec / wsize /
-   sign mode / angle / FIX-SCI-ENG / flags as 7-seg text across the rows
-   (firmware); **(d)** errors + SHOW as transient X-row text (firmware).
-   Decision pending: confirm (a) vs the display-board strip, then add the
-   LEDs to the main-board manifest and the STATUS view to the App.
+6. ✅ **Annunciators (status line → hardware) — decided + implemented.**
+   16C precedent: lamps ONLY for what must be visible mid-keystroke; the rest
+   lives in the digits. **(a) Five main-board LEDs** (new `Annunciators`
+   sheet, D61–D65 + R9–R13 470R, MCU GPIO direct, zero interconnect impact):
+   f yellow C72038 + g blue C965807 beside the shift keys; C / G / low-batt
+   red C2286 along the top edge under the display bezel. (The display-board
+   alternative was rejected: it needs a 4th TM1640 + DIN4 *and* a 5th
+   level-shifter channel.) **(b)** ✅ **f-STATUS momentary view** in the App
+   (f-CLx): `bASE 16 2S rAd` / `P256 b8` / `AUtO 010000` (fmt + flags 543210)
+   as 7-seg text until the next key — emulator shows it on the glass.
+   **(c)** errors + SHOW already render as transient text. Remaining:
+   radix as a 16C-style `h d o b` suffix letter in the X row (firmware,
+   optional); wire the LED GPIOs at eeschema time; LOWBAT needs the battery
+   ADC (PSU).
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols

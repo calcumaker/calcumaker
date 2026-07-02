@@ -31,6 +31,10 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D11–D60 |
 | Interconnect | PZ254V-11-08P (1×8 2.54mm) | C492407 | header THT | ✅ (J3 → display; carries **+5V**) |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
+| Annunciator LED f (gold) | Everlight 19-213/Y2C (yellow) | C72038 | **0603** | ✅ D61, beside the f key |
+| Annunciator LED g (blue) | XL-1608UBC-04 | C965807 | **0603** | ✅ D62, beside the g key |
+| Annunciator LEDs C / G / low-batt | KT-0603R (red) ×3 | C2286 | **0603** | ✅ D63–D65, top edge under the display bezel |
+| Annunciator resistors ×5 | 470 Ω | C25117 | 0402 | ✅ R9–R13 (~1.3–2.8 mA @3V3; tune per color at bring-up) |
 
 ## calcumaker-display (7-seg stack + drivers + interconnect)
 

@@ -59,6 +59,7 @@ C0402 = "Capacitor_SMD:C_0402_1005Metric"
 C0603 = "Capacitor_SMD:C_0603_1608Metric"   # bulk MLCCs (10/22uF @ >=16V)
 L2016 = "Inductor_SMD:L_0805_2012Metric"     # ~2x1.6mm power inductor (verify land vs part)
 LED0402 = "LED_SMD:LED_0402_1005Metric"
+LED0603 = "LED_SMD:LED_0603_1608Metric"      # annunciators (visible indicators)
 SOT235 = "Package_TO_SOT_SMD:SOT-23-5"
 SOT236 = "Package_TO_SOT_SMD:SOT-23-6"
 SOT23 = "Package_TO_SOT_SMD:SOT-23"
@@ -68,7 +69,7 @@ XTAL_FP = "Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 
 RLCSC = {"5.1k": "C25905", "4.7k": "C25900", "10k": "C25744",
-         "100k": "C25741", "1k": "C11702", "0R": "C17168"}
+         "100k": "C25741", "1k": "C11702", "470": "C25117", "0R": "C17168"}
 # Per-rail voltage differs, so 10uF/22uF LCSC# live in hardware/PARTS.md, not here.
 CLCSC = {"100nF": "C1525", "1uF": "C29266", "12pF": "C1547"}
 
@@ -256,6 +257,41 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
           "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Wide +5V/GND (LED current). "
           "See DESIGN.md Power Tree / Board Partition."))
 
+# ======================= Annunciator LEDs sheet ==============================
+# The emulator's status line, mapped to hardware (DESIGN.md Open Q6, decided):
+# lamps ONLY for what must be visible mid-keystroke — f (gold) and g (blue)
+# beside the shift keys, C (carry), G (overflow), and low-battery along the
+# board's top edge under the display bezel. MCU GPIO direct (5 pins, active
+# high), zero interconnect impact. Everything else (radix, STATUS view,
+# errors, SHOW) renders in the 7-seg digits (firmware, calcumaker-core::App).
+# 470R @3V3: ~1.3mA (blue, Vf~2.7) to ~2.8mA (red/yellow, Vf~2.0) — annunciator
+# brightness; tune per-color at bring-up if needed.
+def ALED(ref, val, lcsc, mpn, mfr):
+    return dict(ref=ref, lib_id="Device:LED", value=val, fp=LED0603,
+                lcsc=lcsc, mpn=mpn, mfr=mfr)
+
+
+ANNUNC = dict(name="Annunciators", file="annunc.kicad_sch",
+    title="Annunciator LEDs (f g C G low-batt)", page="8",
+    big=[],
+    small=[
+        ALED("D61", "f (yellow)", "C72038", "19-213/Y2C-CQ2R2L/3T(CY)", "Everlight"),
+        ALED("D62", "g (blue)", "C965807", "XL-1608UBC-04", "XINGLIGHT"),
+        ALED("D63", "C (red)", "C2286", "KT-0603R", "KENTO"),
+        ALED("D64", "G (red)", "C2286", "KT-0603R", "KENTO"),
+        ALED("D65", "LOWBAT (red)", "C2286", "KT-0603R", "KENTO"),
+        R("R9", "470"), R("R10", "470"), R("R11", "470"),
+        R("R12", "470"), R("R13", "470"),
+    ],
+    note=(15, 105, "Calcumaker 16 main — Annunciator LEDs (DESIGN.md status-line "
+          "mapping). PLACED, not wired. Five MCU GPIOs (active high), each -> "
+          "Rn 470R -> LED -> GND: D61 'f' yellow + D62 'g' blue mounted BESIDE "
+          "the f/g keys; D63 'C' carry, D64 'G' overflow, D65 low-battery along "
+          "the top edge under the display bezel. 470R @3V3 = ~1.3-2.8mA; adjust "
+          "per color at bring-up. Firmware: calcumaker-core App drives f/g from "
+          "keys::Shift, C/G from Calc::carry()/overflow(); LOWBAT from the "
+          "battery ADC (PSU). Radix/STATUS/errors render in the digits."))
+
 # ============================ generate =======================================
 K.build(
     project="calcumaker-main", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
@@ -263,5 +299,5 @@ K.build(
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
                          "Main board: MCU + PSU + keypad + display interconnect (DRAFT)"]),
-    sheets=[MCU, CLOCK, PROG, PSU, KEYPAD, DISPLAY_IF],
+    sheets=[MCU, CLOCK, PROG, PSU, KEYPAD, DISPLAY_IF, ANNUNC],
 )

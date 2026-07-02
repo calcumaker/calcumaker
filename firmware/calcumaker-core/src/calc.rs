@@ -144,6 +144,10 @@ pub const REGISTERS: usize = 16;
 const MAX_WORD_BITS: u32 = 16384;
 const MAX_FMT_DIGITS: u32 = 32;
 
+/// Working precision is capped like the word size — an absurd `prec` is a
+/// slip that would exhaust the device heap on the next real operation.
+const MAX_PREC_BITS: u32 = 16384;
+
 /// Exact-power results are capped at ~1 Mbit (≈300k decimal digits) so a slip
 /// like `2 1e9 pow` errors instead of exhausting memory. Generous for real use.
 const MAX_POW_BITS: u64 = 1 << 20;
@@ -350,8 +354,31 @@ impl Calc {
     pub fn prec(&self) -> u32 {
         self.prec
     }
+    /// Set the working precision (clamped to 2..=16384 bits). Live Σ / TVM /
+    /// cash-flow registers are re-rounded so later accumulation happens at
+    /// the NEW precision (Float ops take the left operand's precision — the
+    /// old behavior silently froze them at creation-time precision).
     pub fn set_prec(&mut self, prec: u32) {
-        self.prec = prec.max(2);
+        let p = prec.clamp(2, MAX_PREC_BITS);
+        self.prec = p;
+        let re = |f: &mut Float| *f = Float::with_prec(p, f);
+        if let Some(st) = &mut self.stats {
+            re(&mut st.sx);
+            re(&mut st.sxx);
+            re(&mut st.sy);
+            re(&mut st.syy);
+            re(&mut st.sxy);
+        }
+        if let Some(t) = &mut self.tvm {
+            re(&mut t.n);
+            re(&mut t.i);
+            re(&mut t.pv);
+            re(&mut t.pmt);
+            re(&mut t.fv);
+        }
+        for (a, _) in &mut self.cfs {
+            re(a);
+        }
     }
     pub fn radix(&self) -> Radix {
         self.radix
@@ -528,16 +555,30 @@ impl Calc {
             self.post_op_classic4("rcl");
             return Ok(());
         }
-        if is_command(&lower) {
-            self.command(&lower)?;
-            self.post_op_classic4(&lower);
-            return Ok(());
+        // Commands match first (so `and`/`dec` are operators even in hex);
+        // the Parse fallback arm means "not a command — try it as a number".
+        match self.command(&lower) {
+            Err(CalcError::Parse(_)) => {}
+            r => {
+                r?;
+                self.post_op_classic4(&lower);
+                return Ok(());
+            }
         }
-        if let Some(v) = self.try_parse_number(t) {
-            self.push_entry(v);
-            return Ok(());
+        self.push_number(t)
+    }
+
+    /// Push a NUMBER, bypassing command matching entirely — the door the
+    /// keypad's digit-entry buffer uses, so hex entries that spell command
+    /// names (`E`, `DEC`, `CF`…) are never stolen by the command table.
+    pub fn push_number(&mut self, t: &str) -> Result<(), CalcError> {
+        match self.try_parse_number(t.trim()) {
+            Some(v) => {
+                self.push_entry(v);
+                Ok(())
+            }
+            None => Err(CalcError::Parse(t.trim().to_string())),
         }
-        Err(CalcError::Parse(t.to_string()))
     }
 
     /// Push an entered number, honoring the Classic4 stack-lift discipline.
@@ -573,7 +614,7 @@ impl Calc {
             "drop" => self.stack.push(zero_value()), // CLx: X := 0, Y/Z/T kept
             _ => self.replicate4(),
         }
-        self.lift = !matches!(cmd, "enter" | "drop" | "clear");
+        self.lift = !matches!(cmd, "enter" | "drop" | "clear" | "s+" | "s-");
     }
 
     /// Trim/refill to exactly four levels: excess falls off the top (T lost —
@@ -918,6 +959,15 @@ impl Calc {
         }
     }
 
+    /// Push an Integer result canonicalized into the current word mode —
+    /// EVERY integer producer must go through this (or canon_flagged) so the
+    /// word-mode canonical-range invariant holds (review finding: rcl/lastx/
+    /// ddays/dow/sigma bypassed it, panicking lj/popcnt downstream).
+    fn push_int_canon(&mut self, v: Integer) {
+        let v = self.canon_silent(v);
+        self.stack.push(Value::Int(v));
+    }
+
     /// Wrap without flag side effects (conversions, masks).
     fn canon_silent(&self, v: Integer) -> Integer {
         match self.word_bits {
@@ -954,6 +1004,7 @@ impl Calc {
                         encode_bits(&a, self.sign_mode, n) + encode_bits(&b, self.sign_mode, n) >= m
                     }
                     '-' => encode_bits(&a, self.sign_mode, n) < encode_bits(&b, self.sign_mode, n),
+                    '/' => !(a.clone() % b.clone()).is_zero(), // 16C: C = inexact quotient
                     _ => false,
                 };
             }
@@ -1052,6 +1103,18 @@ impl Calc {
         let rotate = matches!(kind, ShiftKind::RotLeft | ShiftKind::RotRight);
         if self.word_bits.is_none() && rotate {
             return Err(CalcError::TypeError("rotate needs a word size (wsize)"));
+        }
+        if rotate {
+            if let Some(n) = self.word_bits {
+                if k > n {
+                    return Err(CalcError::TypeError("rotate count exceeds the word size"));
+                }
+            }
+        }
+        // Unbounded shifts/masks/bit-indexes allocate the result: same
+        // result-size guard as pow (a slip like `1 4e9 shl` must not OOM).
+        if self.word_bits.is_none() && k as u64 > MAX_POW_BITS {
+            return Err(CalcError::TypeError("shift count too large"));
         }
 
         // Validated — commit the pops.
@@ -1176,7 +1239,7 @@ impl Calc {
         self.need(1)?;
         self.peek_int(0, "lj needs an integer")?;
         let Value::Int(x) = self.pop_x() else { unreachable!() };
-        let bits = encode_bits(&x, self.sign_mode, n);
+        let bits = encode_bits(&x, self.sign_mode, n) & (pow2(n) - one());
         let shifts = if bits.is_zero() { 0 } else { n as usize - bits.bit_len() };
         let justified = decode_bits(bits << shifts as u32, self.sign_mode, n);
         self.stack.push(Value::Int(justified));
@@ -1270,10 +1333,14 @@ impl Calc {
 
     fn bit_index(&self, what: &'static str) -> Result<u32, CalcError> {
         let i = self.peek_u32(what)?;
-        if let Some(n) = self.word_bits {
-            if i >= n {
-                return Err(CalcError::TypeError("bit index exceeds the word size"));
+        match self.word_bits {
+            Some(n) if i >= n => {
+                return Err(CalcError::TypeError("bit index exceeds the word size"))
             }
+            None if i as u64 > MAX_POW_BITS => {
+                return Err(CalcError::TypeError("bit index too large"))
+            }
+            _ => {}
         }
         Ok(i)
     }
@@ -1288,7 +1355,7 @@ impl Calc {
                 // Y stays put; the 0/1 answer lands in X above it.
                 let Value::Int(y) = self.stack.last().expect("validated") else { unreachable!() };
                 let t = Self::math_bit(y, i);
-                self.stack.push(Value::Int(Integer::from_i64(t as i64)));
+                self.push_int_canon(Integer::from_i64(t as i64));
             }
             BitOp::Set | BitOp::Clear => {
                 let Value::Int(y) = self.stack.pop().expect("validated") else { unreachable!() };
@@ -1317,7 +1384,12 @@ impl Calc {
                 let bits = if left { ones << (n - k) } else { ones };
                 decode_bits(bits, self.sign_mode, n)
             }
-            (None, false) => pow2(k) - one(),
+            (None, false) => {
+                if k as u64 > MAX_POW_BITS {
+                    return Err(CalcError::TypeError("mask width too large"));
+                }
+                pow2(k) - one()
+            }
             (None, true) => return Err(CalcError::TypeError("maskl needs a word size (wsize)")),
         };
         let _ = self.pop_x();
@@ -1330,19 +1402,26 @@ impl Calc {
         self.need(1)?;
         let x = self.peek_int(0, "popcount needs an integer")?;
         let count = match self.word_bits {
-            Some(n) => encode_bits(x, self.sign_mode, n).popcount().expect("pattern is non-negative"),
+            Some(n) => (encode_bits(x, self.sign_mode, n) & (pow2(n) - one()))
+                .popcount()
+                .expect("masked pattern is non-negative"),
             None => x
                 .popcount()
                 .ok_or(CalcError::TypeError("popcount of a negative needs a word size"))?,
         };
         let _ = self.pop_x();
-        self.stack.push(Value::Int(Integer::from_i64(count as i64)));
+        self.push_int_canon(Integer::from_i64(count as i64));
         Ok(())
     }
 
     fn fact(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
         let n = self.peek_u32("factorial needs a small non-negative integer")?;
+        // n! has ~n*log2(n) bits — same result-size guard as pow
+        let bits = n as u64 * (64 - (n as u64 | 1).leading_zeros() as u64);
+        if bits > MAX_POW_BITS {
+            return Err(CalcError::TypeError("result too large"));
+        }
         let _ = self.pop_x();
         let v = self.canon_flagged(Integer::factorial(n));
         self.stack.push(Value::Int(v));
@@ -1779,6 +1858,9 @@ impl Calc {
     fn prec_cmd(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
         let n = self.peek_u32("precision out of range")?;
+        if !(2..=MAX_PREC_BITS).contains(&n) {
+            return Err(CalcError::TypeError("precision out of range"));
+        }
         let _ = self.pop_x();
         self.set_prec(n);
         Ok(())
@@ -1833,7 +1915,7 @@ impl Calc {
             4 => self.carry,
             _ => self.overflow,
         };
-        self.stack.push(Value::Int(Integer::from_i64(v as i64)));
+        self.push_int_canon(Integer::from_i64(v as i64));
         Ok(())
     }
 
@@ -1871,8 +1953,9 @@ impl Calc {
         }
         self.last_x = Some(self.stack.last().expect("validated").clone());
         let n = st.n as i64;
+        let nc = self.canon_silent(Integer::from_i64(n));
         let l = self.stack.len();
-        self.stack[l - 1] = Value::Int(Integer::from_i64(n));
+        self.stack[l - 1] = Value::Int(nc);
         Ok(())
     }
 
@@ -2299,8 +2382,8 @@ impl Calc {
             dd2 = 30;
         }
         let d360 = 360 * (d2.0 - d1.0) + 30 * (d2.1 - d1.1) + (dd2 - dd1);
-        self.stack.push(Value::Int(Integer::from_i64(d360)));
-        self.stack.push(Value::Int(Integer::from_i64(actual)));
+        self.push_int_canon(Integer::from_i64(d360));
+        self.push_int_canon(Integer::from_i64(actual));
         Ok(())
     }
 
@@ -2339,7 +2422,7 @@ impl Calc {
         let _ = self.pop_x();
         let z = days_from_civil(d.0, d.1, d.2);
         let dow = (z + 3).rem_euclid(7) + 1;
-        self.stack.push(Value::Int(Integer::from_i64(dow)));
+        self.push_int_canon(Integer::from_i64(dow));
         Ok(())
     }
 
@@ -2454,9 +2537,15 @@ impl Calc {
         Ok(())
     }
 
-    /// RCL i — push register i.
+    /// RCL i — push register i (integers wrap into the current word mode:
+    /// registers keep full values across mode changes, the stack does not).
     fn rcl(&mut self, i: usize) -> Result<(), CalcError> {
         match &self.regs[i] {
+            Some(Value::Int(x)) => {
+                let x = x.clone();
+                self.push_int_canon(x);
+                Ok(())
+            }
             Some(v) => {
                 self.stack.push(v.clone());
                 Ok(())
@@ -2474,6 +2563,11 @@ impl Calc {
     /// Recall LASTx (the X consumed by the previous operation).
     fn lastx(&mut self) -> Result<(), CalcError> {
         match &self.last_x {
+            Some(Value::Int(x)) => {
+                let x = x.clone();
+                self.push_int_canon(x);
+                Ok(())
+            }
             Some(v) => {
                 self.stack.push(v.clone());
                 Ok(())
@@ -2623,32 +2717,3 @@ fn reg_index(t: &str, prefix: &str) -> Option<usize> {
     rest.chars().next()?.to_digit(16).map(|d| d as usize)
 }
 
-fn is_command(t: &str) -> bool {
-    matches!(
-        t,
-        "+" | "-" | "*" | "/" | "chs" | "swap" | "drop" | "dup" | "sqrt" | "sin"
-            | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
-            | "ln" | "log" | "exp" | "exp10" | "inv" | "sq" | "abs" | "pow"
-            | "mod" | "pct" | "e" | "pi" | "and" | "or" | "xor" | "not"
-            | "sl" | "sr" | "asr" | "rl" | "rr" | "rlc" | "rrc"
-            | "shl" | "shr" | "sln" | "srn" | "asrn" | "rln" | "rrn"
-            | "rlcn" | "rrcn" | "lj" | "dbl*" | "dbl/" | "dblr"
-            | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
-            | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
-            | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
-            | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
-            | "sf" | "cf" | "ftest" | "clreg" | "suffix" | "stack4" | "stackfree"
-            | "idiv" | "floatentry" | "intentry"
-            | "s+" | "s-" | "mean" | "sdev" | "lr" | "yhat" | "corr" | "clstat"
-            | "ncr" | "npr" | "ran" | "seed"
-            | ">n" | ">i" | ">pv" | ">pmt" | ">fv"
-            | "n?" | "i?" | "pv?" | "pmt?" | "fv?"
-            | "rcln" | "rcli" | "rclpv" | "rclpmt" | "rclfv"
-            | "beg" | "end" | "clfin" | "12/" | "12*"
-            | "pctchg" | "pctt" | "wmean"
-            | "cf0" | "cfj" | "nj" | "clcf" | "npv" | "irr"
-            | "ddays" | "dateadd" | "dow" | "depsl" | "depsoyd" | "depdb"
-            | "fix" | "sci" | "eng" | "std" | "clear"
-            | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
-    )
-}

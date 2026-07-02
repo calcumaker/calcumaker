@@ -51,3 +51,20 @@ fn float_from_integer_and_str() {
     let x = Float::from_str(64, "0.25").unwrap();
     assert!(x.to_string_radix(10, 4).starts_with("2.5"), "0.25 -> 2.5e-1");
 }
+
+/// 32-bit-target regression: from_i64 must not truncate through c_long
+/// (i32 on arm-none-eabi). These pass trivially on 64-bit hosts but pin the
+/// portable assembly path.
+#[test]
+fn from_i64_full_range() {
+    use gmp_mpfr_nostd::Integer;
+    for v in [
+        0xFFFF_FFFFi64,
+        i64::MAX,
+        i64::MIN + 1,
+        -0x1_0000_0001i64,
+        1i64 << 40,
+    ] {
+        assert_eq!(Integer::from_i64(v).to_string_radix(10), v.to_string());
+    }
+}

@@ -164,6 +164,19 @@ fn fix(f: &Float, d: i64) -> String {
         return fixed_zero(d);
     }
     let (sign, digits, e1) = split_sig(f, sig as usize);
+    // The 2-digit exponent probe can overshoot for mantissas in [9.95, 10)
+    // (999.6 probes as 1.0e3): the sig-digit split then lands at a LOWER
+    // exponent with one digit too many, and slicing would truncate instead of
+    // round (review finding: `0 fix 999.6` showed 999). Re-split at the digit
+    // count the true exponent needs — a rounding bump there pads correctly.
+    if e1 < e0 {
+        let sig2 = e1 + 1 + d;
+        if sig2 <= 0 {
+            return fixed_zero(d);
+        }
+        let (sign, digits, e2) = split_sig(f, sig2 as usize);
+        return fix_from(sign, &digits, e2, d);
+    }
     fix_from(sign, &digits, e1, d)
 }
 

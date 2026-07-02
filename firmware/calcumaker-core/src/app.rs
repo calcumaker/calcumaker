@@ -437,7 +437,19 @@ impl App {
         if s.is_empty() {
             return;
         }
-        self.run_owned(&s);
+        // The entry buffer is KNOWN to be a number: use the number-only door
+        // so hex entries spelling command names (E, DEC, CF…) aren't stolen.
+        if let Err(e) = self.calc.push_number(&s) {
+            self.msg = Some(
+                match e {
+                    CalcError::Parse(_) => "parse error",
+                    CalcError::Empty => "stack empty",
+                    CalcError::TypeError(t) => t,
+                    CalcError::DivZero => "divide by zero",
+                }
+                .into(),
+            );
+        }
     }
 
     fn run(&mut self, tok: &'static str) {

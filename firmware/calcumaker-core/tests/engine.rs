@@ -1633,6 +1633,142 @@ fn classic4_wsize_replicates() {
     assert_eq!(c.display(), "9"); // stack dropped, T=9 replicated
 }
 
+// ---- review-finding regressions (2026-07 review) --------------------------------
+
+/// Word-mode canonical invariant: rcl/lastx/ddays/sigma wrap into the word;
+/// lj/popcnt never panic on out-of-range values (they used to).
+#[test]
+fn review_canonical_producers_and_no_panics() {
+    // rcl of a wide value into a narrow word wraps instead of leaking
+    let mut c = Calc::new(64);
+    for t in ["100000", "sto0", "drop", "16", "wsize", "rcl0"] {
+        c.input(t).unwrap();
+    }
+    c.input("lj").unwrap(); // used to panic (bit_len > word)
+    assert_eq!(c.stack().len(), 2); // justified value + shift count
+
+    // negative value recalled in unsigned mode: popcnt no longer panics
+    let mut c = Calc::new(64);
+    for t in ["5", "chs", "sto0", "drop", "16", "wsize", "unsgn", "rcl0"] {
+        c.input(t).unwrap();
+    }
+    c.input("popcnt").unwrap();
+    assert_eq!(c.stack().len(), 1);
+
+    // ddays results wrap into an 8-bit word like any other integer result
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "6.032004", "10.142005", "ddays"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-14"); // 498 mod 256 = 242 → -14 in 2's comp
+}
+
+/// FIX rounding across a decade: 999.6 at FIX 0 is 1000, never 999.
+#[test]
+fn review_fix_rounds_across_decades() {
+    let mut c = Calc::new(200);
+    for t in ["0", "fix", "999.6"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1000");
+    let mut c = Calc::new(200);
+    for t in ["1", "fix", "9.96"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "10.0");
+    let mut c = Calc::new(200);
+    for t in ["2", "fix", "99.996"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "100.00");
+    // and the non-bump neighbors still round down correctly
+    let mut c = Calc::new(200);
+    for t in ["0", "fix", "999.4"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "999");
+}
+
+/// prec / fact / shift counts are guarded against heap-exhausting slips.
+#[test]
+fn review_resource_guards() {
+    let mut c = Calc::new(64);
+    c.input("4000000000").unwrap();
+    assert!(c.input("prec").is_err());
+    assert_eq!(c.prec(), 64); // untouched
+    c.input("drop").unwrap();
+    for t in ["100000000"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("fact").is_err());
+    c.input("drop").unwrap();
+    for t in ["1", "2000000"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("shl").is_err());
+    for t in ["drop", "2000000"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("maskr").is_err());
+    assert!(c.input("bset").is_err());
+}
+
+/// Σ+ disables stack lift in the classic stack (15C): the n left in X is
+/// overwritten by the next entry, not lifted into Σy.
+#[test]
+fn review_classic4_sigma_disables_lift() {
+    let mut c = Calc::new(128);
+    c.input("stack4").unwrap();
+    for t in ["3", "s+", "4", "s+", "mean", "swap"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0"); // ȳ = 0 — no n leaked into Σy
+}
+
+/// Word-mode division sets carry when the quotient is inexact (16C).
+#[test]
+fn review_word_division_carry() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "7", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3");
+    assert!(c.carry());
+    for t in ["drop", "6", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert!(!c.carry());
+}
+
+/// Rotate counts beyond the word error (16C Error 2), non-destructively.
+#[test]
+fn review_rotate_count_guard() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "1", "9"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("rln").is_err());
+    assert_eq!(c.stack().len(), 2); // untouched
+}
+
+/// Raising prec mid-accumulation re-rounds the Σ registers so new points
+/// accumulate at the new precision (they used to freeze at creation prec).
+#[test]
+fn review_prec_change_rerounds_registers() {
+    let mut c = Calc::new(64);
+    for t in ["1", "s+", "drop", "2", "s+", "drop"] {
+        c.input(t).unwrap();
+    }
+    c.input("256").unwrap();
+    c.input("prec").unwrap();
+    for t in ["4", "s+", "drop", "mean"] {
+        c.input(t).unwrap();
+    }
+    // 7/3 at ~full 256-bit precision: many correct digits, not 19
+    let s = c.display();
+    assert!(s.starts_with("2.33333333333333333333333333333333333333"), "mean = {s}");
+}
+
 // ---- errors never consume operands ---------------------------------------------
 
 #[test]

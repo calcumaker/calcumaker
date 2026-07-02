@@ -23,12 +23,27 @@ impl Integer {
         }
     }
 
-    /// From a machine integer. (On 32-bit targets `c_long` is 32-bit, so very
-    /// large `v` would truncate — entry uses [`from_str_radix`] for big values.)
+    /// From a machine integer — correct on 32-bit targets too (`c_long` is
+    /// i32 on arm-none-eabi; values outside its range are assembled from
+    /// 31-bit halves instead of truncating).
+    // irrefutable on 64-bit hosts only — c_long is i32 on arm-none-eabi
+    #[allow(irrefutable_let_patterns)]
     pub fn from_i64(v: i64) -> Self {
-        let mut x = Self::new();
-        unsafe { ffi::__gmpz_set_si(&mut x.raw, v as c_long) };
-        x
+        if let Ok(sv) = c_long::try_from(v) {
+            let mut x = Self::new();
+            unsafe { ffi::__gmpz_set_si(&mut x.raw, sv) };
+            return x;
+        }
+        let neg = v < 0;
+        let uv = v.unsigned_abs();
+        let hi = (uv >> 31) as i64; // < 2^33 … recurse at most twice
+        let lo = (uv & 0x7FFF_FFFF) as i64; // fits c_long everywhere
+        let x = (Self::from_i64(hi) << 31) | Self::from_i64(lo);
+        if neg {
+            -x
+        } else {
+            x
+        }
     }
 
     /// Parse in the given radix (2..=62). `None` on a malformed string.

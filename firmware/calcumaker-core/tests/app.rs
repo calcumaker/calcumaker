@@ -131,6 +131,25 @@ fn wsize_key_sets_word_from_x() {
     assert_eq!(x_row(&app), "F0 h");
 }
 
+/// Hex entries that spell command names are NUMBERS, not commands: the entry
+/// buffer goes through the number-only door (review finding: 'E' pushed
+/// Euler's constant, 'DEC' switched radix, 0xCF was unenterable).
+#[test]
+fn hex_entry_is_never_stolen_by_commands() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Hex, Key::Digit(14), Key::Enter]); // E
+    assert_eq!(x_row(&app), "E h");
+    press_all(&mut app, &[Key::Digit(12), Key::Digit(15), Key::Enter]); // CF
+    assert_eq!(x_row(&app), "CF h");
+    press_all(
+        &mut app,
+        &[Key::Digit(13), Key::Digit(14), Key::Digit(12), Key::Enter], // DEC
+    );
+    assert_eq!(x_row(&app), "DEC h");
+    assert_eq!(app.calc().radix(), calcumaker_core::Radix::Hex); // no mode switch
+    assert_eq!(app.calc().stack().len(), 3);
+}
+
 /// 16C radix letter: non-decimal integer X carries its base on the glass —
 /// the hardware has no radix lamps. Decimal is unmarked (deviation from the
 /// 16C, documented); reals, entry, and row-filling values are unmarked too.

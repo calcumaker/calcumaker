@@ -53,6 +53,9 @@ for the real root.
 Or the full device UI — keymap, shifts, entry editing, 7-seg display — in the
 emulator: `../calcumaker-emu` (`cargo run`).
 
+Keymap diagrams (ASCII, one per personality, generated + freshness-tested):
+`../../doc/keymap-*.txt` — regenerate with `cargo run --example keymaps`.
+
 Tokens:
 - arith: `+ - * / chs abs pow inv sq sqrt fact mod pct`
 - trig: `sin cos tan asin acos atan sinh cosh tanh` · angle unit `rad deg grad`

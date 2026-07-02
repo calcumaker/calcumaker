@@ -22,6 +22,7 @@ extern crate alloc;
 mod app;
 mod calc;
 mod format;
+pub mod keydoc;
 pub mod keys;
 pub mod seg7;
 mod value;

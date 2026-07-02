@@ -187,6 +187,10 @@ keypress wakes the MCU from Stop, so no dedicated ON key is needed.
   emulator and the firmware share it; the f/g shift resolution
   (`keys::Shift`) and all key handling (`App`) sit beside it. Shift assignments
   marked `Nop` are open for refinement.
+- **Visual diagrams:** `doc/keymap-16c.txt` / `doc/keymap-sci.txt` — ASCII
+  key grids **generated from keys.rs** (`cargo run --example keymaps`), one
+  per personality, freshness-enforced by a golden test so they can't drift.
+  These are the reference for keycap-legend planning.
 
 **Electrical:** 5-row × 10-col scanned matrix. ROWr = GPIO outputs, COLc = GPIO
 inputs on **internal pull-ups** (no external resistors — lower idle current;

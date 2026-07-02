@@ -1054,6 +1054,152 @@ fn hyperbolics_ignore_angle_mode() {
     assert_eq!(rad, deg);
 }
 
+// ---- FIN pack: TVM + percent family --------------------------------------------
+
+/// The classic 30-year mortgage: 100k at 6%/yr monthly → payment −599.55.
+#[test]
+fn tvm_mortgage_payment() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "360", ">n", "6", "12/", "100000", ">pv", "0", ">fv", "pmt?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-599.55");
+}
+
+/// Savings: 120 monthly deposits of 100 at 0.5%/period → 16387.93.
+#[test]
+fn tvm_future_value_of_savings() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "120", ">n", "0.5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "16387.93");
+}
+
+/// Doubling time at 1% per period: n = ln 2 / ln 1.01 ≈ 69.66.
+#[test]
+fn tvm_solve_n() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "1", ">i", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "n?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "69.66");
+}
+
+/// Pure compound rate: −1000 → 2000 in 10 periods: i = (2^(1/10) − 1)·100.
+#[test]
+fn tvm_solve_i_compound() {
+    let mut c = Calc::new(256);
+    for t in ["4", "fix", "10", ">n", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "i?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "7.1773");
+}
+
+/// Annuity i-solve: 360 payments of −599.55 against 100k → ~0.5% (6%/yr).
+#[test]
+fn tvm_solve_i_annuity() {
+    let mut c = Calc::new(256);
+    for t in [
+        "4", "fix", "360", ">n", "100000", ">pv", "599.55", "chs", ">pmt", "0", ">fv", "i?",
+    ] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0.5000");
+}
+
+/// BEG mode: annuity due multiplies the annuity leg by (1+p).
+#[test]
+fn tvm_begin_mode() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "10", ">n", "5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1257.79"); // END
+    for t in ["beg", "fv?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1320.68"); // ×1.05
+    c.input("end").unwrap();
+}
+
+/// i = 0 degenerates to the linear relation pv + n·pmt + fv = 0.
+#[test]
+fn tvm_zero_interest() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "10", ">n", "0", ">i", "1000", "chs", ">pv", "100", ">pmt", "fv?"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0.00");
+}
+
+/// Solving stores the result back into the register (12C behavior).
+#[test]
+fn tvm_solve_stores_and_recalls() {
+    let mut c = Calc::new(256);
+    for t in ["2", "fix", "360", ">n", "0.5", ">i", "100000", ">pv", "0", ">fv", "pmt?", "drop", "rclpmt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "-599.55");
+    c.input("clfin").unwrap();
+    c.input("rclpmt").unwrap();
+    assert_eq!(c.display(), "0.00"); // cleared
+}
+
+#[test]
+fn tvm_12_div_stores_i() {
+    let mut c = Calc::new(256);
+    for t in ["6", "12/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0.5");
+    c.input("rcli").unwrap();
+    assert_eq!(c.display(), "0.5");
+    for t in ["30", "12*", "rcln"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "360");
+}
+
+/// Unsolvable i errors non-destructively.
+#[test]
+fn tvm_no_i_solution_errors() {
+    let mut c = Calc::new(256);
+    // all-positive flows never balance
+    for t in ["10", ">n", "1000", ">pv", "100", ">pmt", "1000", ">fv"] {
+        c.input(t).unwrap();
+    }
+    let depth = c.stack().len();
+    assert!(c.input("i?").is_err());
+    assert_eq!(c.stack().len(), depth);
+}
+
+#[test]
+fn percent_change_and_of_total() {
+    let mut c = Calc::new(128);
+    for t in ["100", "120", "pctchg"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "20");
+    assert_eq!(c.stack().len(), 2); // Y = 100 kept
+    let mut c = Calc::new(128);
+    for t in ["500", "25", "pctt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "5");
+}
+
+/// Weighted mean over the Σ registers: x values weighted by y.
+#[test]
+fn weighted_mean_from_sigma() {
+    let mut c = Calc::new(128);
+    // (x=10, w=2), (x=20, w=3) → (20+60)/5 = 16
+    for t in ["2", "10", "s+", "drop", "drop", "3", "20", "s+", "drop", "drop", "wmean"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "16");
+}
+
 // ---- SCI pack: statistics, combinatorics, RAN# --------------------------------
 
 #[test]

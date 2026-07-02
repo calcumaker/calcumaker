@@ -159,6 +159,34 @@ impl Stats {
     }
 }
 
+/// TVM registers (HP-12C model): `i` is the periodic rate in **percent**;
+/// `begin` selects annuity-due (BEG) vs ordinary (END) payments. The sign
+/// convention is cash-flow: money paid out is negative.
+struct Tvm {
+    n: Float,
+    i: Float,
+    pv: Float,
+    pmt: Float,
+    fv: Float,
+    begin: bool,
+}
+
+impl Tvm {
+    fn new(prec: u32) -> Self {
+        let z = || Float::from_i64(prec, 0);
+        Tvm { n: z(), i: z(), pv: z(), pmt: z(), fv: z(), begin: false }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TvmReg {
+    N,
+    I,
+    Pv,
+    Pmt,
+    Fv,
+}
+
 pub struct Calc {
     stack: Vec<Value>,
     stack_model: StackModel,
@@ -179,6 +207,7 @@ pub struct Calc {
     last_x: Option<Value>,
     regs: Vec<Option<Value>>,
     stats: Option<Stats>,
+    tvm: Option<Tvm>,
     /// xorshift64 PRNG state for `ran` (deterministic; `seed` re-seeds —
     /// firmware seeds from hardware entropy at boot). Never zero.
     rng: u64,
@@ -297,6 +326,7 @@ impl Calc {
             last_x: None,
             regs: vec![None; REGISTERS],
             stats: None,
+            tvm: None,
             rng: 0x9E37_79B9_7F4A_7C15,
         }
     }
@@ -702,6 +732,38 @@ impl Calc {
             }
             "ncr" => self.comb_perm(false),
             "npr" => self.comb_perm(true),
+            ">n" => self.tvm_store(TvmReg::N),
+            ">i" => self.tvm_store(TvmReg::I),
+            ">pv" => self.tvm_store(TvmReg::Pv),
+            ">pmt" => self.tvm_store(TvmReg::Pmt),
+            ">fv" => self.tvm_store(TvmReg::Fv),
+            "n?" => self.tvm_solve(TvmReg::N),
+            "i?" => self.tvm_solve(TvmReg::I),
+            "pv?" => self.tvm_solve(TvmReg::Pv),
+            "pmt?" => self.tvm_solve(TvmReg::Pmt),
+            "fv?" => self.tvm_solve(TvmReg::Fv),
+            "rcln" => self.tvm_recall(TvmReg::N),
+            "rcli" => self.tvm_recall(TvmReg::I),
+            "rclpv" => self.tvm_recall(TvmReg::Pv),
+            "rclpmt" => self.tvm_recall(TvmReg::Pmt),
+            "rclfv" => self.tvm_recall(TvmReg::Fv),
+            "beg" => {
+                self.tvm_mut().begin = true;
+                Ok(())
+            }
+            "end" => {
+                self.tvm_mut().begin = false;
+                Ok(())
+            }
+            "clfin" => {
+                self.tvm = None;
+                Ok(())
+            }
+            "12/" => self.tvm_by12(false),
+            "12*" => self.tvm_by12(true),
+            "pctchg" => self.pct_of(true),
+            "pctt" => self.pct_of(false),
+            "wmean" => self.weighted_mean(),
             "ran" => {
                 let f = self.next_ran();
                 self.stack.push(Value::Real(f));
@@ -1861,6 +1923,245 @@ impl Calc {
         Ok(())
     }
 
+    // ---- TVM (HP-12C time-value-of-money) ------------------------------------
+    // Equation (END mode; k = 1+p in BEG): with p = i/100 per period,
+    //   pv·(1+p)^n + pmt·k·((1+p)^n − 1)/p + fv = 0
+    // and the linear p = 0 limit: pv + pmt·n + fv = 0.
+
+    fn tvm_mut(&mut self) -> &mut Tvm {
+        let prec = self.prec;
+        self.tvm.get_or_insert_with(|| Tvm::new(prec))
+    }
+
+    /// `>reg` — copy X into a TVM register (X stays, like STO).
+    fn tvm_store(&mut self, r: TvmReg) -> Result<(), CalcError> {
+        self.need(1)?;
+        let prec = self.prec;
+        let v = self.stack.last().expect("validated").clone().to_real(prec);
+        let t = self.tvm_mut();
+        match r {
+            TvmReg::N => t.n = v,
+            TvmReg::I => t.i = v,
+            TvmReg::Pv => t.pv = v,
+            TvmReg::Pmt => t.pmt = v,
+            TvmReg::Fv => t.fv = v,
+        }
+        Ok(())
+    }
+
+    /// `rclreg` — push a TVM register.
+    fn tvm_recall(&mut self, r: TvmReg) -> Result<(), CalcError> {
+        let t = self.tvm_mut();
+        let v = match r {
+            TvmReg::N => t.n.clone(),
+            TvmReg::I => t.i.clone(),
+            TvmReg::Pv => t.pv.clone(),
+            TvmReg::Pmt => t.pmt.clone(),
+            TvmReg::Fv => t.fv.clone(),
+        };
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    /// g-12÷ / g-12× — X converted (annual↔monthly) and stored into i / n.
+    fn tvm_by12(&mut self, mul: bool) -> Result<(), CalcError> {
+        self.need(1)?;
+        let prec = self.prec;
+        let x = self.pop_x().to_real(prec);
+        let twelve = Float::from_i64(prec, 12);
+        let v = if mul { x * twelve } else { x / twelve };
+        let t = self.tvm_mut();
+        if mul {
+            t.n = v.clone();
+        } else {
+            t.i = v.clone();
+        }
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    /// The TVM balance f(p) at periodic rate p (fraction, not percent),
+    /// and the compounding factor c = (1+p)^n.
+    fn tvm_balance(t: &Tvm, prec: u32, p: &Float) -> Float {
+        let one = Float::from_i64(prec, 1);
+        let c = (one.clone() + p.clone()).pow(t.n.clone());
+        let k = if t.begin { one + p.clone() } else { Float::from_i64(prec, 1) };
+        let ann = t.pmt.clone() * k * (c.clone() - Float::from_i64(prec, 1)) / p.clone();
+        t.pv.clone() * c + ann + t.fv.clone()
+    }
+
+    /// Solve one TVM register from the other four; the result is pushed AND
+    /// stored back into the register (12C behavior). Errors are
+    /// non-destructive (registers and stack untouched).
+    fn tvm_solve(&mut self, r: TvmReg) -> Result<(), CalcError> {
+        let prec = self.prec;
+        if self.tvm.is_none() {
+            self.tvm = Some(Tvm::new(prec));
+        }
+        let t = self.tvm.as_ref().expect("just ensured");
+        let one = Float::from_i64(prec, 1);
+        let hundred = Float::from_i64(prec, 100);
+        let p = t.i.clone() / hundred.clone();
+        let p_zero = p.is_zero();
+        let k = if t.begin { one.clone() + p.clone() } else { Float::from_i64(prec, 1) };
+
+        let v = match r {
+            TvmReg::Fv => {
+                if p_zero {
+                    -(t.pv.clone() + t.pmt.clone() * t.n.clone())
+                } else {
+                    let c = (one.clone() + p.clone()).pow(t.n.clone());
+                    -(t.pv.clone() * c.clone()
+                        + t.pmt.clone() * k * (c - one) / p)
+                }
+            }
+            TvmReg::Pv => {
+                if p_zero {
+                    -(t.fv.clone() + t.pmt.clone() * t.n.clone())
+                } else {
+                    let c = (one.clone() + p.clone()).pow(t.n.clone());
+                    -(t.fv.clone() + t.pmt.clone() * k * (c.clone() - one) / p) / c
+                }
+            }
+            TvmReg::Pmt => {
+                if p_zero {
+                    if t.n.is_zero() {
+                        return Err(CalcError::TypeError("pmt needs n != 0"));
+                    }
+                    -(t.pv.clone() + t.fv.clone()) / t.n.clone()
+                } else {
+                    let c = (one.clone() + p.clone()).pow(t.n.clone());
+                    let ann = k * (c.clone() - one) / p;
+                    if ann.is_zero() {
+                        return Err(CalcError::TypeError("pmt is undetermined (n = 0)"));
+                    }
+                    -(t.fv.clone() + t.pv.clone() * c) / ann
+                }
+            }
+            TvmReg::N => {
+                if p_zero {
+                    if t.pmt.is_zero() {
+                        return Err(CalcError::TypeError("n is undetermined (i = 0, pmt = 0)"));
+                    }
+                    -(t.pv.clone() + t.fv.clone()) / t.pmt.clone()
+                } else {
+                    // c·(pv + pmt·k/p) = pmt·k/p − fv  →  n = ln c / ln(1+p)
+                    let a = t.pmt.clone() * k / p.clone();
+                    let den = t.pv.clone() + a.clone();
+                    if den.is_zero() {
+                        return Err(CalcError::TypeError("n has no solution for these values"));
+                    }
+                    let c = (a - t.fv.clone()) / den;
+                    if c.is_nan() || c.is_sign_negative() || c.is_zero() {
+                        return Err(CalcError::TypeError("n has no solution for these values"));
+                    }
+                    c.ln() / (one + p).ln()
+                }
+            }
+            TvmReg::I => self.tvm_solve_i()? * hundred,
+        };
+        if v.is_nan() || v.is_inf() {
+            return Err(CalcError::TypeError("no TVM solution for these values"));
+        }
+        let t = self.tvm_mut();
+        match r {
+            TvmReg::N => t.n = v.clone(),
+            TvmReg::I => t.i = v.clone(),
+            TvmReg::Pv => t.pv = v.clone(),
+            TvmReg::Pmt => t.pmt = v.clone(),
+            TvmReg::Fv => t.fv = v.clone(),
+        }
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    /// Solve the periodic rate p by bracketed bisection over a fixed
+    /// candidate grid (p > −1), then halve to working precision. The first
+    /// sign-change bracket wins — like the 12C, multi-root cash flows are the
+    /// user's responsibility. Errors when no bracket exists.
+    fn tvm_solve_i(&self) -> Result<Float, CalcError> {
+        let prec = self.prec;
+        let t = self.tvm.as_ref().expect("caller ensured");
+        let f = |p: &Float| Self::tvm_balance(t, prec, p);
+        const GRID: [&str; 14] = [
+            "-0.999999", "-0.9", "-0.5", "-0.1", "-0.01", "-0.0001", "0.0000001",
+            "0.001", "0.01", "0.05", "0.2", "1", "10", "1000",
+        ];
+        let mut lo: Option<(Float, bool)> = None;
+        let mut bracket = None;
+        for s in GRID {
+            let p = Float::from_str(prec, s).expect("grid literal");
+            let y = f(&p);
+            if y.is_nan() || y.is_inf() {
+                lo = None;
+                continue;
+            }
+            if y.is_zero() {
+                return Ok(p);
+            }
+            let neg = y.is_sign_negative();
+            if let Some((pl, nl)) = lo.take() {
+                if nl != neg {
+                    bracket = Some((pl, p.clone()));
+                    break;
+                }
+            }
+            lo = Some((p, neg));
+        }
+        let (mut a, mut b) = bracket.ok_or(CalcError::TypeError("no i solution found"))?;
+        let fa_neg = f(&a).is_sign_negative();
+        let two = Float::from_i64(prec, 2);
+        for _ in 0..(prec + 48) {
+            let m = (a.clone() + b.clone()) / two.clone();
+            let ym = f(&m);
+            if ym.is_zero() {
+                return Ok(m);
+            }
+            if ym.is_sign_negative() == fa_neg {
+                a = m;
+            } else {
+                b = m;
+            }
+        }
+        Ok(a)
+    }
+
+    // ---- percent family (12C) -------------------------------------------------
+    /// Δ% (`true`) or %T (`false`) — X becomes the result, Y is preserved.
+    fn pct_of(&mut self, change: bool) -> Result<(), CalcError> {
+        self.need(2)?;
+        if matches!(&self.stack[self.stack.len() - 2], Value::Real(f) if f.is_zero()) {
+            return Err(CalcError::DivZero);
+        }
+        if matches!(&self.stack[self.stack.len() - 2], Value::Int(i) if i.is_zero()) {
+            return Err(CalcError::DivZero);
+        }
+        let prec = self.prec;
+        let x = self.pop_x().to_real(prec);
+        let y = self.stack.last().expect("validated").clone().to_real(prec);
+        let hundred = Float::from_i64(prec, 100);
+        let v = if change {
+            (x - y.clone()) / y * hundred
+        } else {
+            x / y * hundred
+        };
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    /// x̄w — weighted mean Σxy/Σy over the Σ registers (x = values, y = weights).
+    fn weighted_mean(&mut self) -> Result<(), CalcError> {
+        let v = {
+            let s = self.stats_ref(1)?;
+            if s.sy.is_zero() {
+                return Err(CalcError::TypeError("weighted mean needs nonzero weights"));
+            }
+            s.sxy.clone() / s.sy.clone()
+        };
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
     /// STO i — copy X into register i (X stays, LASTx untouched).
     fn sto(&mut self, i: usize) -> Result<(), CalcError> {
         self.need(1)?;
@@ -1965,6 +2266,11 @@ fn is_command(t: &str) -> bool {
             | "sf" | "cf" | "ftest" | "clreg" | "suffix" | "stack4" | "stackfree"
             | "s+" | "s-" | "mean" | "sdev" | "lr" | "yhat" | "corr" | "clstat"
             | "ncr" | "npr" | "ran" | "seed"
+            | ">n" | ">i" | ">pv" | ">pmt" | ">fv"
+            | "n?" | "i?" | "pv?" | "pmt?" | "fv?"
+            | "rcln" | "rcli" | "rclpv" | "rclpmt" | "rclfv"
+            | "beg" | "end" | "clfin" | "12/" | "12*"
+            | "pctchg" | "pctt" | "wmean"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

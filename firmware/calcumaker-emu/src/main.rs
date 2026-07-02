@@ -330,6 +330,7 @@ fn main() -> io::Result<()> {
     let mut prec = 256u32;
     let mut script: Option<String> = None;
     let mut style = Style::Block;
+    let mut no_suffix = false;
 
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -344,8 +345,11 @@ fn main() -> io::Result<()> {
                 script = Some(args.next().unwrap_or_else(|| usage("--press needs a key string")))
             }
             "--ascii" => style = Style::Ascii,
+            "--no-suffix" => no_suffix = true,
             "--help" | "-h" => {
-                println!("calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii]\n\n{HELP}");
+                println!(
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix]\n\n{HELP}"
+                );
                 return Ok(());
             }
             other => usage(&format!("unknown argument {other}")),
@@ -353,6 +357,9 @@ fn main() -> io::Result<()> {
     }
 
     let mut app = App::new(prec);
+    if no_suffix {
+        app.calc_mut().set_radix_suffix(false);
+    }
     if let Some(s) = script {
         for ch in s.replace("\\n", "\n").chars() {
             feed(&mut app, ch);

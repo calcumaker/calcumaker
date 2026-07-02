@@ -130,6 +130,7 @@ pub struct Calc {
     float_fmt: FloatFmt,
     angle_mode: AngleMode,
     leading_zeros: bool,
+    radix_suffix: bool,
     user_flags: [bool; 3],
     carry: bool,
     overflow: bool,
@@ -237,6 +238,7 @@ impl Calc {
             float_fmt: FloatFmt::Auto,
             angle_mode: AngleMode::Rad,
             leading_zeros: false,
+            radix_suffix: true,
             user_flags: [false; 3],
             carry: false,
             overflow: false,
@@ -300,6 +302,14 @@ impl Calc {
     /// User flag 0–2 (16C flags; 3/4/5 are lz/carry/overflow — see `sf`/`cf`).
     pub fn user_flag(&self, i: usize) -> bool {
         self.user_flags.get(i).copied().unwrap_or(false)
+    }
+    /// Display tunable: 16C-style base letter (`h o b`) after a non-decimal
+    /// integer X on the glass. On by default; `suffix` toggles.
+    pub fn radix_suffix(&self) -> bool {
+        self.radix_suffix
+    }
+    pub fn set_radix_suffix(&mut self, on: bool) {
+        self.radix_suffix = on;
     }
     /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
     pub fn carry(&self) -> bool {
@@ -535,6 +545,10 @@ impl Calc {
             }
             "lz" => {
                 self.leading_zeros = !self.leading_zeros;
+                Ok(())
+            }
+            "suffix" => {
+                self.radix_suffix = !self.radix_suffix;
                 Ok(())
             }
             "sf" => self.set_flag(true),
@@ -1614,7 +1628,7 @@ fn is_command(t: &str) -> bool {
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
             | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
-            | "sf" | "cf" | "ftest" | "clreg"
+            | "sf" | "cf" | "ftest" | "clreg" | "suffix"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

@@ -1,6 +1,8 @@
 # Calcumaker 16 — Design Document
 
 > Repo: `calcumaker` · Product: **Calcumaker 16** (see `NAMING.md`).
+> Future personalities / HP-variant modes are **planned** (not implemented)
+> in [`DESIGN-MODES.md`](DESIGN-MODES.md).
 
 ## Overview
 
@@ -516,10 +518,12 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    level-shifter channel.) **(b)** ✅ **f-STATUS momentary view** in the App
    (f-CLx): `bASE 16 2S rAd` / `P256 b8` / `AUtO 010000` (fmt + flags 543210)
    as 7-seg text until the next key — emulator shows it on the glass.
-   **(c)** errors + SHOW already render as transient text. Remaining:
-   radix as a 16C-style `h d o b` suffix letter in the X row (firmware,
-   optional); wire the LED GPIOs at eeschema time; LOWBAT needs the battery
-   ADC (PSU).
+   **(c)** errors + SHOW already render as transient text. **(d)** ✅ radix
+   as a 16C-style suffix letter on the X row — `h`/`o`/`b` for non-decimal
+   integers, decimal unmarked (deviation from the 16C's `d`; absence =
+   decimal) — a **display tunable** (`suffix` token toggles; on by default;
+   emulator `--no-suffix`). Remaining: wire the LED GPIOs at eeschema time;
+   LOWBAT needs the battery ADC (PSU).
 4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
    internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
    subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols

@@ -165,6 +165,18 @@ fn radix_suffix_skipped_when_it_cannot_fit() {
     assert!(!x_row(&app).ends_with('b'));
 }
 
+/// The suffix is a display tunable (`suffix` toggles; on by default).
+#[test]
+fn radix_suffix_is_tunable() {
+    let mut app = App::new(128);
+    press_all(&mut app, &[Key::Hex, Key::Digit(15), Key::Enter]);
+    assert_eq!(x_row(&app), "F h");
+    app.calc_mut().set_radix_suffix(false);
+    assert_eq!(x_row(&app), "F");
+    app.calc_mut().set_radix_suffix(true);
+    assert_eq!(x_row(&app), "F h");
+}
+
 #[test]
 fn radix_suffix_not_on_reals() {
     let mut app = App::new(128);

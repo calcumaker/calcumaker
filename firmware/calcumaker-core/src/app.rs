@@ -58,6 +58,11 @@ impl App {
     pub fn calc(&self) -> &Calc {
         &self.calc
     }
+    /// Mutable engine access for configuration tunables (frontends: CLI
+    /// flags, saved settings). Key-driven changes go through `press`.
+    pub fn calc_mut(&mut self) -> &mut Calc {
+        &mut self.calc
+    }
     /// Pending shift for the annunciator: `Some('f')` / `Some('g')`.
     pub fn shift(&self) -> Option<char> {
         match self.shift {
@@ -364,7 +369,8 @@ impl App {
         // get " h"/" o"/" b"; a bare number is decimal (deviation from the
         // 16C, which also marks `d`). Skipped when the value alone already
         // fills the row (the window annunciator + STATUS carry the base).
-        if self.entry.is_none() {
+        // A display tunable — `suffix` toggles it (Calc::radix_suffix).
+        if self.entry.is_none() && self.calc.radix_suffix() {
             let letter = match self.calc.radix() {
                 Radix::Hex => Some('h'),
                 Radix::Oct => Some('o'),

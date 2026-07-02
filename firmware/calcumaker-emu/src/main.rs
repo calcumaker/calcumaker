@@ -140,57 +140,25 @@ fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
     l
 }
 
-const HELP: &str = "\
-Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
-
-  S sin    C cos    T tan    L ln     Q sqrt   P y^x    I 1/x    E EEX    Bksp back  X CLx
-  a..f hex digits A-F                          7 8 9    / divide
-  & AND    | OR     ^ XOR    ~ NOT    < SHL    > SHR    4 5 6    * multiply
-  H HEX    D DEC    O OCT    B BIN    W wsize  x swap   1 2 3    - subtract
-  F f      G g      m STO    r RCL    v roll-dn  Enter ENTER  0  . dot  n CHS  + add
-
-  Shifted (press F or G first, like the device):
-    F then S/C/T = asin/acos/atan     F then L = e^x     F then Q = x^2
-    F then I = prec (X bits)          F then E = pi      F then Bksp = LASTx
-    F then a-f = bit-set/clr/test, maskL/maskR, popcount (index/width from X)
-    F then &/|/^  = rotate-l/rotate-r/asr   F then ~ = rmd (Y mod X)
-    F then </> = RLC/RRC (rotate through carry)   F then 7 = LJ (left justify)
-    F then 4/5/6 = DBLx/DBL-div/DBLR (double-word: product splits into Y:X,
-                   dividend Z:Y over X)
-    F then H/D/O/B = SHOW x in hex/dec/oct/bin (transient, in the status line)
-    F then x = FLOAT (int X -> real)        F then W = sign mode (2's/1's/unsgn)
-    F then 8/9 = SF/CF, F then / = F? (flag 0-5 from X; 3=LZ 4=C 5=G)
-    F then m = CLR-REG (wipe all registers) F then v = roll-up
-    F then X (CLx cell) = STATUS: the glass shows base/sign/angle, prec/word,
-                          format + flags until the next key
-    G then S/C/T = sinh/cosh/tanh     G then L = log10   G then Q = 10^x
-    G then 4/5/6 = x! / % / round (real X -> int)
-    G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)
-    G then W = angle mode (RAD -> DEG -> GRAD)
-    G then & = leading zeros toggle (pad hex/oct/bin to the word width)
-    G then </> = scroll the display window over values wider than 16 digits
-    G then X (CLx cell) = SETUP menu: R-dn/R-up (v / F,v) moves, ENTER changes
-                          the value, CLx exits (suffix, leading zeros, angle,
-                          sign mode; numeric settings stay RPN: 256 prec etc.)
-
-  STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
-
-  SCI personality (--personality sci, or SETUP > PErS): digits/ENTER/shifts/
-  arithmetic keep their positions; S/C/T row unchanged; a-f row = asin/acos/
-  atan/log10/e^x/10^x; &/|/^/~ row = Sigma+/Sigma-/mean/sdev, </> = x!/%;
-  H/D/O/B/W row = FIX/SCI/ENG/auto/angle-mode. F layer: sinh/cosh/tanh, L.R./
-  yhat/corr/CLstat. G layer: nCr nPr RAN# seed (over &/|/^/~). Defaults on
-  switch: DEG, FIX 4, decimal.
-
-  FIN personality (--personality fin, or SETUP > PErS): a-e cells = the 12C
-  TVM row n i PV PMT FV — a keyed number STORES, a bare press SOLVES; f = %;
-  &/|/^/~/</> row = CF0 CFj Nj NPV IRR d%; H/D/O/B/W row = FIX/SCI/ENG/auto/
-  %T. F layer: 12x 12div (over n/i), SL/SOYD/DB (over 7/8/9), dDYS DATE+ DOW
-  x-bar-w (over the CF row), CLFIN (over RCL). G layer: BEG/END (over
-  PMT/FV), CLCF (over CF0). Defaults on switch: FIX 2, decimal.
-
-  Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
-  G (overflow) in word mode. Esc cancels a pending shift. ? = help. Ctrl-C quits.";
+/// Help = the ACTIVE personality's key grid, rendered live from the same
+/// tables the device uses (`keydoc`), plus the fixed host-key legend. The
+/// grid follows PErS switches automatically and can never drift.
+fn help_text(app: &App) -> String {
+    let mut out = calcumaker_core::keydoc::render(app.keymap());
+    out.push_str(
+        "\nHost keys, row by row (matching the grid above):\n\
+  S    C    T    L    Q    P    I    E    Bksp X\n\
+  a    b    c    d    e    f    7    8    9    /\n\
+  &    |    ^    ~    <    >    4    5    6    *\n\
+  H    D    O    B    W    x    1    2    3    -\n\
+  F    G    m    r    v    Entr 0    .    n    +\n\
+\n\
+F/G = gold/blue shifts. STO/RCL: m or r, then 0-f = register.\n\
+G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
+--personality 16C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n",
+    );
+    out
+}
 
 /// Render one full frame: 7-seg rows, annunciators, the untruncated X, footer.
 fn frame(app: &App, help: bool, style: Style) -> String {
@@ -281,7 +249,7 @@ fn frame(app: &App, help: bool, style: Style) -> String {
 
     if help {
         out.push('\n');
-        out.push_str(HELP);
+        out.push_str(&help_text(app));
         out.push('\n');
     } else {
         out.push_str(" [?] keys   [Ctrl-C] quit\n");
@@ -382,8 +350,10 @@ fn main() -> io::Result<()> {
             }
             "--help" | "-h" => {
                 println!(
-                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]\n\n{HELP}"
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--personality 16C|SCI|FIN]\n"
                 );
+                let app = App::new(256);
+                println!("{}", help_text(&app));
                 return Ok(());
             }
             other => usage(&format!("unknown argument {other}")),

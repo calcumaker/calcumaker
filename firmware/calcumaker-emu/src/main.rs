@@ -74,7 +74,7 @@ enum Style {
 impl Style {
     fn digit_cols(self) -> usize {
         match self {
-            Style::Block => 5,
+            Style::Block => 6,
             Style::Ascii => 4,
         }
     }
@@ -84,11 +84,13 @@ impl Style {
 ///
 /// Block style, per digit: the top bar spans the full digit width so it meets
 /// the corner posts, and the bottom bar falls back into the corner columns
-/// when e/c are unlit — segments connect like real glass ('9' below):
+/// when e/c are unlit — segments connect like real glass ('9.' below). The dp
+/// is a lower-right quadrant in its own column (half a cell of air on its
+/// left) followed by a gap column, so it never merges into a digit:
 /// ```text
-/// ▄▄▄▄   <- a
-/// █▄▄█   <- f g b
-/// ▄▄▄█▖  <- (d corner) d c dp
+/// ▄▄▄▄     <- a
+/// █▄▄█     <- f g b
+/// ▄▄▄█ ▗   <- (d corner) d c, dp
 /// ```
 fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
     let mut l: [String; 3] = Default::default();
@@ -107,15 +109,16 @@ fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
                         ' '
                     }
                 };
-                l[0].push_str(if on(SEG_A) { "▄▄▄▄ " } else { "     " });
+                l[0].push_str(if on(SEG_A) { "▄▄▄▄  " } else { "      " });
                 l[1].push(if on(SEG_F) { '█' } else { ' ' });
                 l[1].push_str(bar(SEG_G));
                 l[1].push(if on(SEG_B) { '█' } else { ' ' });
-                l[1].push(' ');
+                l[1].push_str("  ");
                 l[2].push(corner(SEG_E, SEG_D));
                 l[2].push_str(bar(SEG_D));
                 l[2].push(corner(SEG_C, SEG_D));
-                l[2].push(if on(SEG_DP) { '▖' } else { ' ' });
+                l[2].push(if on(SEG_DP) { '▗' } else { ' ' });
+                l[2].push(' ');
             }
             Style::Ascii => {
                 let seg = |m: u8, ch: char| if on(m) { ch } else { ' ' };

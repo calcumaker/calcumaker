@@ -270,7 +270,8 @@ Both frontends are thin I/O bindings around `App::press(row, col)` +
 `App::seg_rows()`: the firmware contributes the matrix scan and the TM1640
 bus; the emulator maps host keys to matrix cells and renders **the same
 segment bytes** as LED-style 7-seg art — Unicode block elements by default
-(`▄`/`█`, ~84 columns), `--ascii` for a plain `_`/`|` fallback — plus
+(`▄`/`█`, dp = `▗` in its own column + an inter-digit gap, ~100 columns),
+`--ascii` for a plain `_`/`|` fallback — plus
 annunciators and the untruncated X, where the arbitrary precision is visible.
 If it works in the emulator, the only difference on the device is GPIO.
 

@@ -453,6 +453,102 @@ fn rotate_left_wraps_msb_to_lsb() {
     assert!(c.carry());
 }
 
+/// RLC: (n+1)-bit rotate through carry — MSB → C, old C → LSB.
+#[test]
+fn rlc_rotates_through_carry() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "unsgn", "80", "rlc"] {
+        c.input(t).unwrap();
+    }
+    // C was clear: 1000_0000 ⟳ → C=1, word 0000_0000
+    assert_eq!(c.display(), "0");
+    assert!(c.carry());
+    c.input("rlc").unwrap();
+    // C was set: 0000_0000 ⟳ pulls C into bit0 → 01, C=0
+    assert_eq!(c.display(), "1");
+    assert!(!c.carry());
+}
+
+#[test]
+fn rrc_pulls_carry_into_msb() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "unsgn", "1", "rrc"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0"); // bit0 → C
+    assert!(c.carry());
+    c.input("rrc").unwrap();
+    assert_eq!(c.display(), "80"); // C → MSB
+    assert!(!c.carry());
+}
+
+/// A full n+1 rotations through carry restores word AND flag.
+#[test]
+fn rlc_full_cycle_is_identity() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "unsgn", "a5"] {
+        c.input(t).unwrap();
+    }
+    for _ in 0..9 {
+        c.input("rlc").unwrap();
+    }
+    assert_eq!(c.display(), "A5");
+    assert!(!c.carry());
+}
+
+#[test]
+fn rlcn_rotates_by_x() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    // 9-bit register: rotating by 9 = identity; by 1 matches rlc
+    for t in ["8", "wsize", "unsgn", "80", "1", "rlcn"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0");
+    assert!(c.carry());
+}
+
+#[test]
+fn lj_left_justifies_with_count_in_x() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "unsgn", "5", "lj"] {
+        c.input(t).unwrap();
+    }
+    // 0000_0101 → justified A0 (Y), 5 shifts (X)
+    assert_eq!(c.display(), "5");
+    assert_eq!(c.stack().len(), 2);
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "A0");
+}
+
+#[test]
+fn lj_zero_and_full() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "unsgn", "0", "lj"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0"); // count
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "0"); // value
+    for t in ["clear", "255", "lj"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0"); // already justified
+}
+
+#[test]
+fn rlc_and_lj_need_word_size() {
+    let mut c = Calc::new(64);
+    c.input("5").unwrap();
+    assert!(c.input("rlc").is_err());
+    assert!(c.input("lj").is_err());
+    assert_eq!(c.stack().len(), 1); // untouched
+}
+
 #[test]
 fn rotate_needs_word_size() {
     let mut c = Calc::new(64);

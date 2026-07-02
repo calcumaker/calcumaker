@@ -24,7 +24,7 @@ pub enum Key {
     // base / word modes (programmer)
     Hex, Dec, Oct, Bin, WordSize, SignMode, Float,
     // bitwise / shift / rotate (programmer)
-    And, Or, Xor, Not, Shl, Shr, Asr, Rotl, Rotr,
+    And, Or, Xor, Not, Shl, Shr, Asr, Rotl, Rotr, Rlc, Rrc, Lj,
     BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Rmd,
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
@@ -56,8 +56,8 @@ pub const BASE: [[Key; COLS]; ROWS] = [
 /// f (gold) layer — inverse / advanced / set. (Nop = unassigned, refine later.)
 pub const LAYER_F: [[Key; COLS]; ROWS] = [
     [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Nop],
-    [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Nop, Nop, Nop, Nop],
-    [Rotl,   Rotr,   Asr,  Rmd,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Nop, Nop, Nop],
+    [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  Nop,    Nop,  Nop,   Nop],
     [Float,  Float,  Float,Float,SignMode, RollUp, Nop,  Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  RollUp,   Nop,  Off,    Nop,  Eex,   Nop],
 ];

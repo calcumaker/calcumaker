@@ -454,11 +454,16 @@ impl Calc {
             "asr" => self.shift_rot(ShiftKind::ArithR, false),
             "rl" => self.shift_rot(ShiftKind::RotLeft, false),
             "rr" => self.shift_rot(ShiftKind::RotRight, false),
+            "rlc" => self.rot_carry(true, false),
+            "rrc" => self.rot_carry(false, false),
             "shl" | "sln" => self.shift_rot(ShiftKind::Left, true),
             "shr" | "srn" => self.shift_rot(ShiftKind::Right, true),
             "asrn" => self.shift_rot(ShiftKind::ArithR, true),
             "rln" => self.shift_rot(ShiftKind::RotLeft, true),
             "rrn" => self.shift_rot(ShiftKind::RotRight, true),
+            "rlcn" => self.rot_carry(true, true),
+            "rrcn" => self.rot_carry(false, true),
+            "lj" => self.left_justify(),
             "bset" => self.bit_op(BitOp::Set),
             "bclr" => self.bit_op(BitOp::Clear),
             "btest" => self.bit_op(BitOp::Test),
@@ -779,6 +784,69 @@ impl Calc {
             },
         };
         self.stack.push(Value::Int(v));
+        Ok(())
+    }
+
+    /// RLC/RRC — rotate through carry: an (n+1)-bit rotation of the word plus
+    /// the C flag (bit n). By one bit, or by X bits (`count_from_x`). Word
+    /// mode only.
+    fn rot_carry(&mut self, left: bool, count_from_x: bool) -> Result<(), CalcError> {
+        let Some(n) = self.word_bits else {
+            return Err(CalcError::TypeError("rotate needs a word size (wsize)"));
+        };
+        let (k, val_depth) = if count_from_x {
+            self.need(2)?;
+            (self.peek_u32("rotate count out of range")?, 1)
+        } else {
+            self.need(1)?;
+            (1, 0)
+        };
+        self.peek_int(val_depth, "rotate needs an integer")?;
+
+        // Committed — pop.
+        let x = if count_from_x {
+            let _ = self.pop_x();
+            let Value::Int(v) = self.stack.pop().expect("validated") else { unreachable!() };
+            v
+        } else {
+            let Value::Int(v) = self.pop_x() else { unreachable!() };
+            v
+        };
+
+        // Build the (n+1)-bit register: carry in bit n, the word below.
+        let w = n + 1;
+        let k = k % w;
+        let mut t = encode_bits(&x, self.sign_mode, n);
+        if self.carry {
+            t = t | (one() << n);
+        }
+        let full = pow2(w) - one();
+        let t = if left {
+            ((t.clone() << k) | (t >> (w - k).min(w))) & full
+        } else {
+            ((t.clone() >> k) | (t << (w - k.min(w)))) & full
+        };
+        self.carry = !((t.clone() >> n) & one()).is_zero();
+        self.overflow = false;
+        let bits = t & (pow2(n) - one());
+        self.stack.push(Value::Int(decode_bits(bits, self.sign_mode, n)));
+        Ok(())
+    }
+
+    /// LJ — left-justify X in the word: Y gets the justified value, X the
+    /// shift count (HP-16C). Word mode only.
+    fn left_justify(&mut self) -> Result<(), CalcError> {
+        let Some(n) = self.word_bits else {
+            return Err(CalcError::TypeError("lj needs a word size (wsize)"));
+        };
+        self.need(1)?;
+        self.peek_int(0, "lj needs an integer")?;
+        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        let bits = encode_bits(&x, self.sign_mode, n);
+        let shifts = if bits.is_zero() { 0 } else { n as usize - bits.bit_len() };
+        let justified = decode_bits(bits << shifts as u32, self.sign_mode, n);
+        self.stack.push(Value::Int(justified));
+        self.stack.push(Value::Int(Integer::from_i64(shifts as i64)));
         Ok(())
     }
 
@@ -1400,8 +1468,9 @@ fn is_command(t: &str) -> bool {
             | "cos" | "tan" | "asin" | "acos" | "atan" | "sinh" | "cosh" | "tanh"
             | "ln" | "log" | "exp" | "exp10" | "inv" | "sq" | "abs" | "pow"
             | "mod" | "pct" | "e" | "pi" | "and" | "or" | "xor" | "not"
-            | "sl" | "sr" | "asr" | "rl" | "rr"
+            | "sl" | "sr" | "asr" | "rl" | "rr" | "rlc" | "rrc"
             | "shl" | "shr" | "sln" | "srn" | "asrn" | "rln" | "rrn"
+            | "rlcn" | "rrcn" | "lj"
             | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"

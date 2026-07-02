@@ -208,6 +208,9 @@ pub struct Calc {
     angle_mode: AngleMode,
     leading_zeros: bool,
     radix_suffix: bool,
+    /// Decimal entry parses as a Real even without a point — the float-machine
+    /// model (SCI/FIN personalities default this on; 16C stays exact-integer).
+    real_entry: bool,
     user_flags: [bool; 3],
     carry: bool,
     overflow: bool,
@@ -330,6 +333,7 @@ impl Calc {
             angle_mode: AngleMode::Rad,
             leading_zeros: false,
             radix_suffix: true,
+            real_entry: false,
             user_flags: [false; 3],
             carry: false,
             overflow: false,
@@ -405,6 +409,13 @@ impl Calc {
     }
     pub fn set_radix_suffix(&mut self, on: bool) {
         self.radix_suffix = on;
+    }
+    /// Float-machine entry: decimal digits parse as Reals without a point.
+    pub fn real_entry(&self) -> bool {
+        self.real_entry
+    }
+    pub fn set_real_entry(&mut self, on: bool) {
+        self.real_entry = on;
     }
     pub fn stack_model(&self) -> StackModel {
         self.stack_model
@@ -578,7 +589,9 @@ impl Calc {
     }
 
     fn try_parse_number(&self, t: &str) -> Option<Value> {
-        if self.radix == Radix::Dec && (t.contains('.') || t.contains('e') || t.contains('E')) {
+        if self.radix == Radix::Dec
+            && (self.real_entry || t.contains('.') || t.contains('e') || t.contains('E'))
+        {
             return Float::from_str(self.prec, t).map(Value::Real);
         }
         let v = Integer::from_str_radix(t, self.radix.base())?;
@@ -627,6 +640,7 @@ impl Calc {
             "abs" => self.abs_op(),
             "pow" => self.pow_op(),
             "mod" => self.mod_op(),
+            "idiv" => self.idiv(),
             "pct" => self.pct(),
             "e" => {
                 self.push_e();
@@ -720,6 +734,14 @@ impl Calc {
             }
             "suffix" => {
                 self.radix_suffix = !self.radix_suffix;
+                Ok(())
+            }
+            "floatentry" => {
+                self.real_entry = true;
+                Ok(())
+            }
+            "intentry" => {
+                self.real_entry = false;
                 Ok(())
             }
             "stack4" => {
@@ -846,9 +868,25 @@ impl Calc {
         }
     }
 
-    /// X as a small non-negative count, validated in place.
+    /// Operand at `depth` as an exact Integer — accepts genuine integers AND
+    /// integral reals (a float-machine `5` is still a valid count/index).
+    fn peek_integral(&self, depth: usize, what: &'static str) -> Result<Integer, CalcError> {
+        match &self.stack[self.stack.len() - 1 - depth] {
+            Value::Int(i) => Ok(i.clone()),
+            Value::Real(f) => {
+                if !f.is_nan() && !f.is_inf() && f.clone().frac().is_zero() {
+                    Ok(f.round_to_int())
+                } else {
+                    Err(CalcError::TypeError(what))
+                }
+            }
+        }
+    }
+
+    /// X as a small non-negative count, validated in place (integral reals
+    /// accepted — see [`Self::peek_integral`]).
     fn peek_u32(&self, what: &'static str) -> Result<u32, CalcError> {
-        self.peek_int(0, what)?.to_u32().ok_or(CalcError::TypeError(what))
+        self.peek_integral(0, what)?.to_u32().ok_or(CalcError::TypeError(what))
     }
 
     /// Pop X, recording it as LASTx. Call only after validation succeeded.
@@ -920,6 +958,18 @@ impl Calc {
                 };
             }
 
+            // Division never truncates silently: an inexact integer quotient
+            // PROMOTES to a real in unbounded mode. Truncation happens only
+            // where it's expected and visible — under a word size (the 16C
+            // programmer context, with its annunciators) or via `idiv`.
+            if op == '/' && self.word_bits.is_none() {
+                let r = a.clone() % b.clone();
+                if !r.is_zero() {
+                    let q = Float::from_integer(self.prec, &a) / Float::from_integer(self.prec, &b);
+                    self.stack.push(Value::Real(q));
+                    return Ok(());
+                }
+            }
             let exact = match op {
                 '+' => a + b,
                 '-' => a - b,
@@ -1292,7 +1342,6 @@ impl Calc {
 
     fn fact(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
-        self.peek_int(0, "factorial needs an integer")?;
         let n = self.peek_u32("factorial needs a small non-negative integer")?;
         let _ = self.pop_x();
         let v = self.canon_flagged(Integer::factorial(n));
@@ -1635,6 +1684,22 @@ impl Calc {
         self.unary_real(|x| x.exp10())
     }
 
+    /// Y idiv X — EXPLICIT truncating integer division (the old silent `/`
+    /// behavior, now opt-in outside word mode).
+    fn idiv(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let d = self.peek_int(0, "idiv needs integers")?;
+        if d.is_zero() {
+            return Err(CalcError::DivZero);
+        }
+        self.peek_int(1, "idiv needs integers")?;
+        let Value::Int(b) = self.pop_x() else { unreachable!() };
+        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let v = self.canon_flagged(a / b);
+        self.stack.push(Value::Int(v));
+        Ok(())
+    }
+
     /// Y mod X (integers only; truncating remainder).
     fn mod_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
@@ -1894,9 +1959,8 @@ impl Calc {
     fn comb_perm(&mut self, perm: bool) -> Result<(), CalcError> {
         self.need(2)?;
         let r = self.peek_u32("ncr/npr need small non-negative integers")?;
-        self.peek_int(1, "ncr/npr need integers")?;
-        let len = self.stack.len();
-        let Value::Int(n) = &self.stack[len - 2] else { unreachable!() };
+        let n = self.peek_integral(1, "ncr/npr need integers")?;
+        let n = &n;
         if n.is_negative() {
             return Err(CalcError::TypeError("ncr/npr need non-negative n"));
         }
@@ -2244,17 +2308,15 @@ impl Calc {
     fn date_add(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
         let prec = self.prec;
-        let days = match &self.stack[self.stack.len() - 1] {
-            Value::Int(i) => {
-                let mag =
-                    i.clone().abs().to_u32().ok_or(CalcError::TypeError("day count out of range"))? as i64;
-                if i.is_negative() {
-                    -mag
-                } else {
-                    mag
-                }
+        let days = {
+            let i = self.peek_integral(0, "day count must be a whole number")?;
+            let mag =
+                i.clone().abs().to_u32().ok_or(CalcError::TypeError("day count out of range"))? as i64;
+            if i.is_negative() {
+                -mag
+            } else {
+                mag
             }
-            Value::Real(_) => return Err(CalcError::TypeError("day count must be an integer")),
         };
         let d = self.decode_date(&self.stack[self.stack.len() - 2].clone().to_real(prec))?;
         let z = days_from_civil(d.0, d.1, d.2) + days;
@@ -2576,6 +2638,7 @@ fn is_command(t: &str) -> bool {
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
             | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
             | "sf" | "cf" | "ftest" | "clreg" | "suffix" | "stack4" | "stackfree"
+            | "idiv" | "floatentry" | "intentry"
             | "s+" | "s-" | "mean" | "sdev" | "lr" | "yhat" | "corr" | "clstat"
             | "ncr" | "npr" | "ran" | "seed"
             | ">n" | ">i" | ">pv" | ">pmt" | ">fv"

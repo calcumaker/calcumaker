@@ -530,6 +530,27 @@ fn sci_keymap_positions() {
     assert_eq!(x_row(&app), "10"); // C(5,2)
 }
 
+/// SCI/FIN are float machines: 3 ÷ 2 is 1.5 there, never 1 (the SETUP EntrY
+/// tunable controls it everywhere).
+#[test]
+fn sci_division_is_real() {
+    let mut app = App::new(128);
+    app.set_keymap(&calcumaker_core::keys::SCI);
+    press_all(&mut app, &[Key::Digit(3), Key::Enter, Key::Digit(2), Key::Div]);
+    assert_eq!(x_row(&app), "1.5000"); // FIX 4 default
+    // EntrY item exists in SETUP (index 7)
+    app.set_keymap(&calcumaker_core::keys::HP16C);
+    app.press_key(Key::Setup);
+    for _ in 0..6 {
+        app.press_key(Key::RollDn);
+    }
+    assert_eq!(app.text_rows()[1].trim_end(), "7 EntrY");
+    assert_eq!(app.text_rows()[2].trim_end(), "Int");
+    app.press_key(Key::Enter);
+    assert_eq!(app.text_rows()[2].trim_end(), "rEAL");
+    app.press_key(Key::ClrX);
+}
+
 /// FIN TVM keys: a keyed number stores, a bare press solves (12C).
 #[test]
 fn fin_tvm_keys_store_then_solve() {

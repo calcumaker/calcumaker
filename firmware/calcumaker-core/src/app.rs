@@ -40,15 +40,17 @@ enum SetupItem {
     Sign,
     Stack,
     Pers,
+    Entry,
 }
 
-const SETUP_ITEMS: [SetupItem; 6] = [
+const SETUP_ITEMS: [SetupItem; 7] = [
     SetupItem::Suffix,
     SetupItem::LeadZeros,
     SetupItem::Angle,
     SetupItem::Sign,
     SetupItem::Stack,
     SetupItem::Pers,
+    SetupItem::Entry,
 ];
 
 impl SetupItem {
@@ -60,6 +62,7 @@ impl SetupItem {
             SetupItem::Sign => "SIGn",
             SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
             SetupItem::Pers => "PErS",     // personality (keymap) selector
+            SetupItem::Entry => "EntrY",   // Int (exact) / rEAL (float machine)
         }
     }
 
@@ -83,6 +86,13 @@ impl SetupItem {
                 StackModel::Classic4 => "HP4",
             },
             SetupItem::Pers => "", // rendered from the App's keymap, not Calc
+            SetupItem::Entry => {
+                if c.real_entry() {
+                    "rEAL"
+                } else {
+                    "Int"
+                }
+            }
         }
     }
 
@@ -105,6 +115,7 @@ impl SetupItem {
                 StackModel::Classic4 => StackModel::Unbounded,
             }),
             SetupItem::Pers => {} // handled by the App (keymap lives there)
+            SetupItem::Entry => c.set_real_entry(!c.real_entry()),
         }
     }
 }
@@ -499,7 +510,12 @@ impl App {
         .collect();
         let mut rows = [
             alloc::format!("bASE {} {sign} {angle}", c.radix().base()),
-            alloc::format!("P{} b{}", c.prec(), c.word_bits().unwrap_or(0)),
+            alloc::format!(
+                "P{} b{}{}",
+                c.prec(),
+                c.word_bits().unwrap_or(0),
+                if c.real_entry() { " r" } else { "" }
+            ),
             alloc::format!("{fmt} {bits}"),
         ];
         for r in &mut rows {

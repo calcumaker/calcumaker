@@ -110,13 +110,15 @@ pub struct Keymap {
 fn defaults_16c(c: &mut crate::calc::Calc) {
     c.set_angle_mode(crate::calc::AngleMode::Rad);
     c.set_float_fmt(crate::calc::FloatFmt::Auto);
+    c.set_real_entry(false); // exact-integer entry: the programmer identity
 }
 
 fn defaults_sci(c: &mut crate::calc::Calc) {
-    // 15C conventions: degrees, FIX 4, decimal.
+    // 15C conventions: degrees, FIX 4, decimal — and it's a FLOAT machine.
     c.set_angle_mode(crate::calc::AngleMode::Deg);
     c.set_float_fmt(crate::calc::FloatFmt::Fix(4));
     c.set_radix(crate::calc::Radix::Dec);
+    c.set_real_entry(true);
 }
 
 /// The default personality — the tables above.
@@ -197,9 +199,10 @@ pub const FIN_LAYER_G: [[Key; COLS]; ROWS] = [
 ];
 
 fn defaults_fin(c: &mut crate::calc::Calc) {
-    // 12C conventions: FIX 2, decimal (angle irrelevant, left alone).
+    // 12C conventions: FIX 2, decimal, float machine (angle left alone).
     c.set_float_fmt(crate::calc::FloatFmt::Fix(2));
     c.set_radix(crate::calc::Radix::Dec);
+    c.set_real_entry(true);
 }
 
 /// The financial personality (12C-flavored; bonds deferred — see

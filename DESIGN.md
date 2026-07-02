@@ -444,7 +444,15 @@ the authored TM1640.
   between the kinds explicitly.
 - **Exactness contract:** when the mathematical result of integer operands is
   an integer, it stays an exact GMP integer — `pow` (non-negative exponent,
-  mpz_pow_ui, ~1 Mbit result cap, 0/±1 bases uncapped), `sq`, `exp10`, `fact`.
+  mpz_pow_ui, ~1 Mbit result cap, 0/±1 bases uncapped), `sq`, `exp10`, `fact`,
+  and **division when it divides evenly** (`6 2 /` = exact 3). An inexact
+  quotient **promotes to a real** (`3 2 /` = 1.5) — division never truncates
+  silently; truncation lives only where it's expected and visible: under a
+  word size (16C programmer division, annunciators lit) or the explicit
+  `idiv`. **Entry mode** (`EntrY` in SETUP; `floatentry`/`intentry`): the
+  float-machine model parses plain decimal digits as reals — SCI/FIN default
+  it on (they're float machines), 16C stays exact-integer; counts/indexes
+  accept integral reals everywhere.
   `sqrt` on an integer is the 16C-style **integer root** (⌊√x⌋, carry = the
   root was inexact; negative errors) — enter `2.0` or `float` for the real
   root. Negative exponents (fractional results) promote to MPFR.

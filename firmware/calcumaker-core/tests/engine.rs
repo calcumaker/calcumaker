@@ -15,9 +15,82 @@ fn int_add() {
     assert_eq!(run(128, &["2", "3", "+"]), "5");
 }
 
+/// Division NEVER truncates silently: an inexact integer quotient promotes
+/// to a real ("3 2 / = 1" was an elementary desk-calculator trap).
 #[test]
-fn int_division_truncates() {
-    assert_eq!(run(128, &["7", "2", "/"]), "3"); // integer (programmer) division
+fn inexact_int_division_promotes() {
+    assert_eq!(run(128, &["3", "2", "/"]), "1.5");
+    assert_eq!(run(128, &["7", "2", "/"]), "3.5");
+}
+
+/// …but an exact quotient stays an exact integer (the exactness contract).
+#[test]
+fn exact_int_division_stays_int() {
+    let mut c = Calc::new(128);
+    for t in ["6", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Int(_)));
+}
+
+/// Truncation lives where it's expected and visible: word mode, or `idiv`.
+#[test]
+fn truncating_division_is_word_mode_or_idiv() {
+    let mut c = Calc::new(128);
+    for t in ["8", "wsize", "7", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3"); // 16C programmer division under a word size
+    let mut c = Calc::new(128);
+    for t in ["7", "2", "idiv"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3"); // explicit
+    c.input("0").unwrap();
+    assert!(c.input("idiv").is_err()); // div-zero, non-destructive
+    assert_eq!(c.stack().len(), 2);
+}
+
+/// Float-machine entry: plain digits parse as reals (SCI/FIN default).
+#[test]
+fn real_entry_mode() {
+    let mut c = Calc::new(128);
+    for t in ["floatentry", "3", "2", "/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1.5");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Real(_)));
+    // counts/indexes still work as integral reals
+    for t in ["clear", "5", "fact"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "120");
+    for t in ["clear", "8", "wsize"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.word_bits(), Some(8));
+    for t in ["0", "wsize", "clear", "5", "3", "ncr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "10");
+    // and back
+    let mut c = Calc::new(128);
+    for t in ["floatentry", "intentry", "2", "100", "pow"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1267650600228229401496703205376"); // exactness kept
+}
+
+/// Non-integral reals are still rejected where counts are required.
+#[test]
+fn fractional_counts_still_error() {
+    let mut c = Calc::new(128);
+    for t in ["2.5"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("fact").is_err());
+    assert_eq!(c.display(), "2.5");
 }
 
 #[test]

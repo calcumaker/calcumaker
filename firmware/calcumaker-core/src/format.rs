@@ -22,9 +22,22 @@ pub fn format(v: &Value, c: &Calc) -> String {
         Value::Int(i) => {
             let s = match (c.word_bits(), c.radix()) {
                 // Word mode: hex/oct/bin show the n-bit pattern (-15 @16b 2's
-                // comp is FFF1); decimal shows the signed value.
+                // comp is FFF1); decimal shows the signed value. With leading
+                // zeros on (16C flag 3), pad to the word width.
                 (Some(n), r) if r != Radix::Dec => {
-                    encode_bits(i, c.sign_mode(), n).to_string_radix(r.base())
+                    let mut s = encode_bits(i, c.sign_mode(), n).to_string_radix(r.base());
+                    if c.leading_zeros() {
+                        let width = match r {
+                            Radix::Bin => n as usize,
+                            Radix::Oct => (n as usize).div_ceil(3),
+                            Radix::Hex => (n as usize).div_ceil(4),
+                            Radix::Dec => unreachable!(),
+                        };
+                        while s.len() < width {
+                            s.insert(0, '0');
+                        }
+                    }
+                    s
                 }
                 (_, r) => i.to_string_radix(r.base()),
             };

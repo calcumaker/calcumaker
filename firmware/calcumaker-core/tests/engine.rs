@@ -643,6 +643,63 @@ fn sqrt_of_negative_real_is_nan() {
     assert_eq!(run(64, &["-1.0", "sqrt"]), "nan");
 }
 
+// ---- leading zeros (16C flag 3) ----------------------------------------------
+
+#[test]
+fn lz_pads_to_word_width() {
+    let mut c = Calc::new(64);
+    // NB: word sizes are entered in Dec — in hex radix "16" would be 0x16!
+    for t in ["8", "wsize", "lz", "15"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "0F");
+    c.set_radix(Radix::Dec);
+    for t in ["16", "wsize"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "000F");
+    c.set_radix(Radix::Dec);
+    for t in ["8", "wsize"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Bin);
+    assert_eq!(c.display(), "00001111");
+    c.set_radix(Radix::Oct);
+    assert_eq!(c.display(), "017"); // ceil(8/3) = 3 digits
+}
+
+#[test]
+fn lz_toggles_off_and_ignores_dec_and_unbounded() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    for t in ["8", "wsize", "lz", "f"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0F");
+    c.input("lz").unwrap(); // toggle off
+    assert_eq!(c.display(), "F");
+    c.input("lz").unwrap(); // on again
+    c.set_radix(Radix::Dec);
+    assert_eq!(c.display(), "15"); // decimal never pads
+    c.set_radix(Radix::Hex);
+    for t in ["0", "wsize"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "F"); // no word width to pad to
+}
+
+#[test]
+fn lz_negative_pattern_already_full_width() {
+    let mut c = Calc::new(64);
+    for t in ["16", "wsize", "lz", "15", "chs"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "FFF1"); // pattern fills the word, no padding needed
+}
+
 // ---- angle modes (RAD default; DEG/GRAD reduce exactly + hit exact angles) ---
 
 #[test]

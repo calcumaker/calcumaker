@@ -160,6 +160,7 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     G then 4/5/6 = x! / % / round (real X -> int)
     G then H/D/O/B = FIX/SCI/ENG/auto (digit count from X)
     G then W = angle mode (RAD -> DEG -> GRAD)
+    G then & = leading zeros toggle (pad hex/oct/bin to the word width)
 
   STO/RCL: press m (STO) or r (RCL), then a digit 0-f = the register.
   Modes: bits then W = wsize (0 = unbounded); annunciators show C (carry) and
@@ -205,9 +206,10 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         None => "word unbounded".into(),
     };
     let flags = format!(
-        "{}{}",
+        "{}{}{}",
         if c.carry() { "  C" } else { "" },
-        if c.overflow() { "  G" } else { "" }
+        if c.overflow() { "  G" } else { "" },
+        if c.leading_zeros() { "  LZ" } else { "" }
     );
     let fmt = match c.float_fmt() {
         calcumaker_core::FloatFmt::Auto => String::new(),

@@ -129,6 +129,7 @@ pub struct Calc {
     sign_mode: SignMode,
     float_fmt: FloatFmt,
     angle_mode: AngleMode,
+    leading_zeros: bool,
     carry: bool,
     overflow: bool,
     last_x: Option<Value>,
@@ -234,6 +235,7 @@ impl Calc {
             sign_mode: SignMode::Twos,
             float_fmt: FloatFmt::Auto,
             angle_mode: AngleMode::Rad,
+            leading_zeros: false,
             carry: false,
             overflow: false,
             last_x: None,
@@ -285,6 +287,13 @@ impl Calc {
     }
     pub fn set_angle_mode(&mut self, m: AngleMode) {
         self.angle_mode = m;
+    }
+    /// 16C flag 3: pad hex/oct/bin display with leading zeros to the word width.
+    pub fn leading_zeros(&self) -> bool {
+        self.leading_zeros
+    }
+    pub fn set_leading_zeros(&mut self, on: bool) {
+        self.leading_zeros = on;
     }
     /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
     pub fn carry(&self) -> bool {
@@ -499,6 +508,10 @@ impl Calc {
             }
             "grad" => {
                 self.angle_mode = AngleMode::Grad;
+                Ok(())
+            }
+            "lz" => {
+                self.leading_zeros = !self.leading_zeros;
                 Ok(())
             }
             "anglemode" => {
@@ -1392,7 +1405,7 @@ fn is_command(t: &str) -> bool {
             | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
-            | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode"
+            | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

@@ -67,7 +67,8 @@ Tokens:
   registers `sto0`–`stof` / `rcl0`–`rclf`
 - modes (RPN postfix, pop X): `<bits> prec` · `<bits> wsize` (`0` = unbounded)
   with sign modes `2s 1s unsgn` (or `signmode` to cycle) · real formats
-  `<d> fix / sci / eng`, `std` = auto
+  `<d> fix / sci / eng`, `std` = auto · `lz` = leading zeros to the word width
+  (16C flag 3) · angle `rad deg grad` / `anglemode`
 - word-mode flags: `carry()` (C) and `overflow()` (G) — add/sub carry-borrow,
   shifted/rotated-out bits, wrapped results
 - REPL meta: `stack`, `quit`

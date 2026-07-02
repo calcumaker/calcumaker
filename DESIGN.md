@@ -441,7 +441,9 @@ the authored TM1640.
     entry a signed value. Mode / word-size changes reinterpret the stack
     **bit-pattern-preserving** (16C behaviour). 1's complement folds −0 onto 0.
   - **Flags:** **C** carry (add carry-out, subtract borrow, the bit shifted or
-    rotated out) and **G** out-of-range (result wrapped). Word mode only.
+    rotated out, an inexact integer √) and **G** out-of-range (result wrapped).
+  - **Leading zeros** (`lz`, 16C flag 3): pad hex/oct/bin display to the word
+    width (`0F` @8 bits, `000F` @16).
   - `sl sr asr rl rr` act on X by one bit (the panel keys); `shl shr rln rrn`
     shift/rotate Y by X bits. `bset bclr btest maskl maskr popcnt` cover the
     bit ops (`btest` leaves the value in Y and pushes 0/1).

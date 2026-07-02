@@ -856,11 +856,16 @@ impl Calc {
     /// DBL× — the full 2n-bit product of Y × X, split into words:
     /// high word → Y, low word → X (both decoded per the sign mode, so
     /// enc(Y)·2ⁿ + enc(X) reconstructs the product pattern). Never overflows
-    /// by construction. Word mode only.
+    /// by construction. Word mode only; **not in 1's complement** — the −0
+    /// fold makes an all-ones half ambiguous, so the double word can't round-
+    /// trip through canonical values (the 16C stores raw bits; we don't).
     fn dbl_mul(&mut self) -> Result<(), CalcError> {
         let Some(n) = self.word_bits else {
             return Err(CalcError::TypeError("dbl* needs a word size (wsize)"));
         };
+        if self.sign_mode == SignMode::Ones {
+            return Err(CalcError::TypeError("dbl ops need 2's complement or unsigned mode"));
+        }
         self.need(2)?;
         self.peek_int(0, "dbl* needs integers")?;
         self.peek_int(1, "dbl* needs integers")?;
@@ -883,6 +888,9 @@ impl Calc {
         let Some(n) = self.word_bits else {
             return Err(CalcError::TypeError("dbl/ needs a word size (wsize)"));
         };
+        if self.sign_mode == SignMode::Ones {
+            return Err(CalcError::TypeError("dbl ops need 2's complement or unsigned mode"));
+        }
         self.need(3)?;
         let d = self.peek_int(0, "dbl/ needs integers")?;
         if d.is_zero() {

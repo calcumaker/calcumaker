@@ -667,6 +667,21 @@ fn dbldiv_overflowing_quotient_errors_non_destructively() {
     assert_eq!(c.display(), "0");
 }
 
+/// 1's complement is refused: the −0 fold makes the double word ambiguous
+/// (found by stage validation — dbl* and dbl/ disagreed there).
+#[test]
+fn dbl_ops_refuse_ones_complement() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "1s", "1", "chs", "1"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("dbl*").is_err());
+    assert_eq!(c.stack().len(), 2); // untouched
+    c.input("2s").unwrap();
+    c.input("dbl*").unwrap(); // fine in 2's complement
+    assert_eq!(c.stack().len(), 2);
+}
+
 #[test]
 fn dbl_ops_need_word_size() {
     let mut c = Calc::new(64);

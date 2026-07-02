@@ -1731,11 +1731,16 @@ impl Calc {
     }
 
     /// Linear-regression coefficients `(slope, intercept)` for y = a·x + b.
+    /// Degenerate data (all x equal → zero variance) errors like the 15C
+    /// rather than yielding a silent NaN.
     fn lr_coeffs(&self) -> Result<(Float, Float), CalcError> {
         let prec = self.prec;
         let s = self.stats_ref(2)?;
         let n = Float::from_i64(prec, s.n as i64);
         let den = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
+        if den.is_zero() {
+            return Err(CalcError::TypeError("regression needs varying x data"));
+        }
         let slope = (n.clone() * s.sxy.clone() - s.sx.clone() * s.sy.clone()) / den;
         let intercept = (s.sy.clone() - slope.clone() * s.sx.clone()) / n;
         Ok((slope, intercept))
@@ -1786,6 +1791,9 @@ impl Calc {
             let n = Float::from_i64(prec, s.n as i64);
             let cx = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
             let cy = n.clone() * s.syy.clone() - s.sy.clone() * s.sy.clone();
+            if cx.is_zero() || cy.is_zero() {
+                return Err(CalcError::TypeError("correlation needs varying data"));
+            }
             let cov = n * s.sxy.clone() - s.sx.clone() * s.sy.clone();
             cov / (cx * cy).sqrt()
         };

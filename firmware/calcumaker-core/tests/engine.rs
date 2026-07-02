@@ -1104,6 +1104,19 @@ fn sigma_minus_removes_a_point() {
     assert_eq!(c.display(), "1.5");
 }
 
+/// Degenerate regression data errors (15C style), never a silent NaN.
+#[test]
+fn lr_degenerate_data_errors() {
+    let mut c = Calc::new(128);
+    // two points with identical x
+    for t in ["1", "5", "s+", "drop", "drop", "2", "5", "s+", "drop", "drop"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("lr").is_err());
+    assert!(c.input("corr").is_err());
+    assert!(c.stack().is_empty()); // non-destructive
+}
+
 #[test]
 fn stats_need_data() {
     let mut c = Calc::new(128);

@@ -30,18 +30,21 @@ fn main() {
     loop {
         let word = match calc.word_bits() {
             Some(n) => format!(
-                " w{n}{}{}{}",
+                " w{n}{}",
                 match calc.sign_mode() {
                     calcumaker_core::SignMode::Unsigned => "u",
                     calcumaker_core::SignMode::Ones => "·1s",
                     calcumaker_core::SignMode::Twos => "·2s",
                 },
-                if calc.carry() { " C" } else { "" },
-                if calc.overflow() { " G" } else { "" },
             ),
             None => String::new(),
         };
-        print!("[{:?} {}b{word}] {} > ", calc.radix(), calc.prec(), calc.display());
+        let flags = format!(
+            "{}{}",
+            if calc.carry() { " C" } else { "" },
+            if calc.overflow() { " G" } else { "" },
+        );
+        print!("[{:?} {}b{word}{flags}] {} > ", calc.radix(), calc.prec(), calc.display());
         io::stdout().flush().ok();
 
         let mut line = String::new();

@@ -38,11 +38,17 @@ cargo run --example repl
 ```
 
 ```
-[Dec 256b]  > 2 sqrt
+[Dec 256b]  > 2.0 sqrt
 [Dec 256b] 1.4142135623730950488016887242096980785696718753769480731766797... > 64 prec
 [Dec 64b] ... > hex  ff 0f and          # -> F
 [Hex 64b] F > dec  20 fact              # -> 2432902008176640000
+[Dec 64b] ... > 2 100 pow               # -> exact 1267650600228229401496703205376
 ```
+
+**Integers stay exact** (the point of GMP): `pow`/`sq`/`exp10` on integers give
+every digit, and `sqrt` on an integer is the 16C-style *integer* root
+(`17 sqrt` → `4`, carry flag set when inexact) — enter `2.0` or use `float`
+for the real root.
 
 Or the full device UI — keymap, shifts, entry editing, 7-seg display — in the
 emulator: `../calcumaker-emu` (`cargo run`).

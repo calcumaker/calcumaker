@@ -65,11 +65,70 @@ fn not_in_8bit_word() {
 
 #[test]
 fn sqrt2_mpfr() {
-    let s = run(200, &["2", "sqrt"]);
+    // real sqrt needs a real X (16C model: integer X gets the integer root)
+    let s = run(200, &["2.0", "sqrt"]);
     assert!(
         s.starts_with("1.4142135623730950488016887242"),
         "sqrt(2) wrong: {s}"
     );
+}
+
+// ---- integer square root (16C: ⌊√x⌋, carry = inexact) -----------------------
+
+#[test]
+fn isqrt_floor_with_carry_when_inexact() {
+    let mut c = Calc::new(64);
+    for t in ["17", "sqrt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "4");
+    assert!(c.carry(), "17 is not a perfect square");
+    assert!(matches!(c.stack()[0], calcumaker_core::Value::Int(_)));
+}
+
+#[test]
+fn isqrt_exact_clears_carry() {
+    let mut c = Calc::new(64);
+    for t in ["1024", "sq", "sqrt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1024");
+    assert!(!c.carry());
+}
+
+#[test]
+fn isqrt_huge_is_exact() {
+    // √(10^40) = 10^20, digit-exact far beyond f64
+    let mut c = Calc::new(64);
+    for t in ["40", "exp10", "sqrt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "100000000000000000000");
+    assert!(!c.carry());
+}
+
+#[test]
+fn isqrt_zero() {
+    let mut c = Calc::new(64);
+    for t in ["0", "sqrt"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0");
+    assert!(!c.carry());
+}
+
+#[test]
+fn sqrt_negative_int_errors_and_preserves_stack() {
+    let mut c = Calc::new(64);
+    c.input("-9").unwrap();
+    assert!(c.input("sqrt").is_err());
+    assert_eq!(c.display(), "-9"); // untouched
+}
+
+#[test]
+fn float_then_sqrt_gives_the_real_root() {
+    let s = run(200, &["2", "float", "sqrt"]);
+    assert!(s.starts_with("1.41421356237309504880"), "got {s}");
 }
 
 #[test]
@@ -580,8 +639,8 @@ fn real_div_zero_is_inf() {
 }
 
 #[test]
-fn sqrt_of_negative_is_nan() {
-    assert_eq!(run(64, &["-1", "sqrt"]), "nan");
+fn sqrt_of_negative_real_is_nan() {
+    assert_eq!(run(64, &["-1.0", "sqrt"]), "nan");
 }
 
 // ---- errors never consume operands ---------------------------------------------

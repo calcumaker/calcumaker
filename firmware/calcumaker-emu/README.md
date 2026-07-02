@@ -54,7 +54,9 @@ ENTER:
 
 ```sh
 cargo run -- --press "2;3+"          # 2 ENTER 3 +      -> 5
-cargo run -- --press "2Q"            # sqrt(2) to 77 digits at prec 256
+cargo run -- --press "2.0Q"          # sqrt(2.0) to 77 digits at prec 256
+cargo run -- --press "17Q"           # integer sqrt: 4, C annunciator (inexact)
+cargo run -- --press "2;100P"        # exact 2^100 (integers stay integers)
 cargo run -- --press "8W;H0f~"       # 8 wsize, hex, NOT 0F -> F0
 cargo run -- --press "16W;15nH"      # -15 @16b 2's comp -> FFF1
 cargo run -- --press "8W;100;100+"   # wraps to -56, G annunciator

@@ -194,15 +194,15 @@ fn frame(app: &App, help: bool, style: Style) -> String {
                 calcumaker_core::SignMode::Ones => "1's",
                 calcumaker_core::SignMode::Twos => "2's",
             };
-            let flags = format!(
-                "{}{}",
-                if c.carry() { "  C" } else { "" },
-                if c.overflow() { "  G" } else { "" }
-            );
-            format!("word {b} {mode}{flags}")
+            format!("word {b} {mode}")
         }
         None => "word unbounded".into(),
     };
+    let flags = format!(
+        "{}{}",
+        if c.carry() { "  C" } else { "" },
+        if c.overflow() { "  G" } else { "" }
+    );
     let fmt = match c.float_fmt() {
         calcumaker_core::FloatFmt::Auto => String::new(),
         calcumaker_core::FloatFmt::Fix(d) => format!("  FIX{d}"),
@@ -221,7 +221,7 @@ fn frame(app: &App, help: bool, style: Style) -> String {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {radix}  prec {}  {word}{fmt}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(" {radix}  prec {}  {word}{flags}{fmt}{shift}{reg}{msg}\n", c.prec()));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.

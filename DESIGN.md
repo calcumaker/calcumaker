@@ -427,6 +427,12 @@ the authored TM1640.
   `+ - * /` and the bitwise/shift ops; the scientific functions promote to MPFR
   reals. `float` / `round` / `trunc` / `floor` / `ceil` / `frac` convert
   between the kinds explicitly.
+- **Exactness contract:** when the mathematical result of integer operands is
+  an integer, it stays an exact GMP integer — `pow` (non-negative exponent,
+  mpz_pow_ui, ~1 Mbit result cap, 0/±1 bases uncapped), `sq`, `exp10`, `fact`.
+  `sqrt` on an integer is the 16C-style **integer root** (⌊√x⌋, carry = the
+  root was inexact; negative errors) — enter `2.0` or `float` for the real
+  root. Negative exponents (fractional results) promote to MPFR.
 - **HP-16C programmer model** under a word size (`<bits> wsize`; 0 = unbounded):
   - **Sign modes** `2s` / `1s` / `unsgn` (2's default). Values are stored as
     canonical signed integers; bitwise/shift/rotate ops act on the n-bit

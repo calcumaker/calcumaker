@@ -356,7 +356,7 @@ impl Calc {
             "swap" => self.swap(),
             "drop" => self.pop_unchecked().map(|_| ()),
             "dup" => self.dup(),
-            "sqrt" => self.unary_real(|x| x.sqrt()),
+            "sqrt" => self.sqrt_op(),
             "sin" => self.unary_real(|x| x.sin()),
             "cos" => self.unary_real(|x| x.cos()),
             "tan" => self.unary_real(|x| x.tan()),
@@ -882,6 +882,23 @@ impl Calc {
                 Ok(())
             }
         }
+    }
+
+    /// √X — 16C integer model: an integer gets the exact **integer** square
+    /// root (⌊√x⌋) with the carry flag set when inexact; use `float` (or enter
+    /// with a decimal point) for the real root. Reals stay MPFR.
+    fn sqrt_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        if !matches!(self.stack.last(), Some(Value::Int(_))) {
+            return self.unary_real(|x| x.sqrt());
+        }
+        if matches!(self.stack.last(), Some(Value::Int(x)) if x.is_negative()) {
+            return Err(CalcError::TypeError("sqrt of a negative integer (float it for nan)"));
+        }
+        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        self.carry = !x.is_perfect_square(); // 16C: C = the root was inexact
+        self.stack.push(Value::Int(x.isqrt()));
+        Ok(())
     }
 
     /// x² — exact for integers, real otherwise.

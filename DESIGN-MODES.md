@@ -102,24 +102,25 @@ pub static HP16C: Keymap = Keymap { /* today's three tables */ };
 and grows as personalities need (e.g. `SigmaPlus`, `Tvm(N|I|Pv|Pmt|Fv)`).
 Firmware cost: keymaps are `const` tables in flash — negligible.
 
-### 5.2 Classic 4-level stack as a `Calc` interaction mode
+### 5.2 Classic 4-level stack as a `Calc` interaction mode (✅ implemented)
 ```rust
 pub enum StackModel { Unbounded, Classic4 }
 ```
-Semantics to implement for `Classic4` (the part that needs care):
-- Fixed X/Y/Z/T; **T replicates** on every two-operand op (`T→Z→Y`, T kept).
-- **Stack lift discipline**: entry after ENTER *overwrites* X (lift
-  disabled); entry after an operation *lifts*. CLx disables lift. This is
-  the real HP entry model our simplified flush-based entry currently skips —
-  implementing it properly means App entry and Calc coordinate on a lift
-  flag.
-- R↓/R↑ become 4-element rotations; `over` disappears (not an HP key).
-- **Switching semantics**: Unbounded → Classic4 keeps the top 4, warns via
-  message if depth > 4 (the rest is *dropped* — destructive, so the switch
-  itself should confirm or be documented loudly); Classic4 → Unbounded is
-  lossless.
-- Engine tests to write: T-replication chains (the "constant in T" idiom),
-  lift-flag transitions for every op class, CLx behavior.
+Implemented semantics for `Classic4` (SETUP item `StAC`, tokens
+`stack4`/`stackfree`):
+- Fixed X/Y/Z/T; **T replicates** on every consuming op via a post-op
+  normalization (shortfall refills from the bottom, growth drops T) — the
+  "constant in T" idiom works (`5 ENTER ENTER ENTER 2 * * *` → 250).
+- **Stack lift discipline**: `Calc` carries a lift flag — entry after
+  ENTER/CLx/CLEAR *overwrites* X, entry after anything else lifts; STO
+  re-enables lift. In classic mode the App's keyed-number-then-ENTER also
+  duplicates (`3 ENTER +` doubles), matching the real HP entry model; the
+  unbounded model keeps the simpler push-once behavior.
+- CLx (`drop`) zeroes X in place, keeping Y/Z/T; R↓/R↑ rotate exactly 4;
+  `over` still works (treated as a lift-push — documented non-HP extra).
+- **Switching**: Unbounded → Classic4 keeps the top 4 (zero-padded beneath)
+  with a "top 4 kept" warning from the SETUP menu when values are dropped;
+  Classic4 → Unbounded is lossless.
 
 ### 5.3 Personality selection & persistence
 - `App::set_personality(&'static Keymap)` + a `Calc` defaults bundle per
@@ -161,15 +162,17 @@ follow:
 - Names and values must be **7-seg renderable** (enforced by test).
 - The menu mutates `Calc` through the same setters the tokens use — no
   parallel state.
-- Planned additions land here rather than growing new keys: `PErS`
-  (personality, P1), `StAC` (stack model, P2), MPFR rounding mode if added.
+- `StAC` (stack model, ✅) and `PErS` (personality selector, ✅ — cycles the
+  `PERSONALITIES` registry; a single entry today, so it reports
+  "only 16C installed") are in. Future items (e.g. MPFR rounding mode) land
+  here rather than growing new keys.
 
 ## 6. Phasing
 
 | Phase | Scope | Risk |
 |-------|-------|------|
-| **P1** | `Keymap` struct + `HP16C` static + App plumbing + emulator `--personality` (only one personality exists; pure refactor, zero behavior change) | low |
-| **P2** | `StackModel::Classic4` in the engine + proper stack-lift entry discipline + tests | medium — touches the entry model |
+| **P1** ✅ | `Keymap` struct + `HP16C` static + `PERSONALITIES` registry + App plumbing + `PErS` menu entry (single personality; emulator `--personality` deferred until a second exists) | done |
+| **P2** ✅ | `StackModel::Classic4` in the engine + stack-lift entry discipline + `StAC` menu entry + tests | done |
 | **P3** | `SCI` personality: keymap + statistics/PRNG/comb-perm engine additions; DEG/FIX-4 defaults | medium |
 | **P4** | `FIN` personality: TVM/NPV/IRR/date engine pack | high effort; separate go/no-go |
 | — | Complex numbers via MPC (SCI v2) | own design round |

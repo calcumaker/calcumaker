@@ -17,8 +17,8 @@
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 
-use crate::calc::{Calc, CalcError, Radix};
-use crate::keys::{Key, Shift};
+use crate::calc::{Calc, CalcError, Radix, StackModel};
+use crate::keys::{Key, Keymap, Shift, HP16C, PERSONALITIES};
 use crate::seg7::{self, DIGITS_PER_ROW, DISPLAY_ROWS};
 
 /// A pending STO/RCL waiting for its register digit (0–F).
@@ -38,10 +38,18 @@ enum SetupItem {
     LeadZeros,
     Angle,
     Sign,
+    Stack,
+    Pers,
 }
 
-const SETUP_ITEMS: [SetupItem; 4] =
-    [SetupItem::Suffix, SetupItem::LeadZeros, SetupItem::Angle, SetupItem::Sign];
+const SETUP_ITEMS: [SetupItem; 6] = [
+    SetupItem::Suffix,
+    SetupItem::LeadZeros,
+    SetupItem::Angle,
+    SetupItem::Sign,
+    SetupItem::Stack,
+    SetupItem::Pers,
+];
 
 impl SetupItem {
     fn name(self) -> &'static str {
@@ -50,6 +58,8 @@ impl SetupItem {
             SetupItem::LeadZeros => "LEAd 0",
             SetupItem::Angle => "AnGLE",
             SetupItem::Sign => "SIGn",
+            SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
+            SetupItem::Pers => "PErS",     // personality (keymap) selector
         }
     }
 
@@ -68,6 +78,11 @@ impl SetupItem {
                 crate::calc::SignMode::Ones => "1S",
                 crate::calc::SignMode::Unsigned => "UnS",
             },
+            SetupItem::Stack => match c.stack_model() {
+                StackModel::Unbounded => "FrEE",
+                StackModel::Classic4 => "HP4",
+            },
+            SetupItem::Pers => "", // rendered from the App's keymap, not Calc
         }
     }
 
@@ -85,12 +100,19 @@ impl SetupItem {
                 crate::calc::SignMode::Ones => crate::calc::SignMode::Unsigned,
                 crate::calc::SignMode::Unsigned => crate::calc::SignMode::Twos,
             }),
+            SetupItem::Stack => c.set_stack_model(match c.stack_model() {
+                StackModel::Unbounded => StackModel::Classic4,
+                StackModel::Classic4 => StackModel::Unbounded,
+            }),
+            SetupItem::Pers => {} // handled by the App (keymap lives there)
         }
     }
 }
 
 pub struct App {
     calc: Calc,
+    /// Active personality (keymap) — `HP16C` default; `PErS` cycles.
+    keymap: &'static Keymap,
     shift: Shift,
     entry: Option<String>,
     pending_reg: Option<RegOp>,
@@ -108,6 +130,7 @@ impl App {
     pub fn new(prec: u32) -> Self {
         Self {
             calc: Calc::new(prec),
+            keymap: &HP16C,
             shift: Shift::None,
             entry: None,
             pending_reg: None,
@@ -126,6 +149,14 @@ impl App {
     /// flags, saved settings). Key-driven changes go through `press`.
     pub fn calc_mut(&mut self) -> &mut Calc {
         &mut self.calc
+    }
+    /// Active personality (keymap).
+    pub fn keymap(&self) -> &'static Keymap {
+        self.keymap
+    }
+    pub fn set_keymap(&mut self, km: &'static Keymap) {
+        self.keymap = km;
+        self.shift = Shift::None;
     }
     /// Pending shift for the annunciator: `Some('f')` / `Some('g')`.
     pub fn shift(&self) -> Option<char> {
@@ -151,7 +182,7 @@ impl App {
     /// A physical key press at matrix position `(row, col)`, resolved through
     /// the active shift layer.
     pub fn press(&mut self, row: usize, col: usize) {
-        if let Some(k) = self.shift.resolve(row, col) {
+        if let Some(k) = self.shift.resolve(self.keymap, row, col) {
             self.press_key(k);
         }
     }
@@ -165,7 +196,29 @@ impl App {
             match k {
                 Key::RollDn => self.setup = Some((i + 1) % SETUP_ITEMS.len()),
                 Key::RollUp => self.setup = Some((i + SETUP_ITEMS.len() - 1) % SETUP_ITEMS.len()),
-                Key::Enter => SETUP_ITEMS[i].cycle(&mut self.calc),
+                Key::Enter => match SETUP_ITEMS[i] {
+                    SetupItem::Pers => {
+                        // cycle the installed personalities
+                        let cur = PERSONALITIES
+                            .iter()
+                            .position(|km| core::ptr::eq(*km, self.keymap))
+                            .unwrap_or(0);
+                        if PERSONALITIES.len() > 1 {
+                            self.set_keymap(PERSONALITIES[(cur + 1) % PERSONALITIES.len()]);
+                        } else {
+                            self.msg = Some("only 16C installed".into());
+                        }
+                    }
+                    SetupItem::Stack => {
+                        let truncating = self.calc.stack_model() == StackModel::Unbounded
+                            && self.calc.stack().len() > 4;
+                        SETUP_ITEMS[i].cycle(&mut self.calc);
+                        if truncating {
+                            self.msg = Some("top 4 kept".into());
+                        }
+                    }
+                    item => item.cycle(&mut self.calc),
+                },
                 Key::Setup | Key::ClrX | Key::Back => self.setup = None,
                 Key::ShiftF | Key::ShiftG | Key::Nop => {}
                 _ => self.msg = Some("SEtUP: R-dn/up moves, ENTER changes, CLx exits".into()),
@@ -325,10 +378,16 @@ impl App {
         }
     }
 
-    /// ENTER: push a pending entry, else duplicate X.
+    /// ENTER: push a pending entry, else duplicate X. In the classic 4-level
+    /// stack, keyed-number-then-ENTER also duplicates and disables lift (the
+    /// real HP entry model — `3 ENTER +` doubles); the unbounded model keeps
+    /// our simpler push-once behavior.
     fn enter(&mut self) {
         if self.entry.is_some() {
             self.flush();
+            if self.calc.stack_model() == StackModel::Classic4 {
+                self.run("enter");
+            }
         } else {
             self.run("enter");
         }
@@ -439,10 +498,14 @@ impl App {
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
         if let Some(i) = self.setup {
             let item = SETUP_ITEMS[i];
+            let value = match item {
+                SetupItem::Pers => self.keymap.name,
+                other => other.value(&self.calc),
+            };
             let mut rows = [
                 "SEtUP".to_string(),
                 alloc::format!("{} {}", i + 1, item.name()),
-                item.value(&self.calc).to_string(),
+                value.to_string(),
             ];
             for r in &mut rows {
                 while r.len() < DIGITS_PER_ROW {

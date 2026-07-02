@@ -1054,6 +1054,100 @@ fn hyperbolics_ignore_angle_mode() {
     assert_eq!(rad, deg);
 }
 
+// ---- classic 4-level stack (HP X/Y/Z/T, T-replication, stack lift) -----------
+
+/// The signature HP idiom: park a constant in T, mash the operator.
+#[test]
+fn classic4_constant_in_t_idiom() {
+    let mut c = Calc::new(64);
+    c.input("stack4").unwrap();
+    for t in ["5", "enter", "enter", "enter", "2"] {
+        c.input(t).unwrap();
+    }
+    // ENTER disabled lift, so the 2 overwrote X: [5,5,5,2]
+    assert_eq!(c.stack().len(), 4);
+    c.input("*").unwrap();
+    assert_eq!(c.display(), "10"); // [5,5,5,10] — T replicated
+    c.input("*").unwrap();
+    assert_eq!(c.display(), "50");
+    c.input("*").unwrap();
+    assert_eq!(c.display(), "250");
+    assert_eq!(c.stack().len(), 4);
+}
+
+#[test]
+fn classic4_lift_discipline() {
+    let mut c = Calc::new(64);
+    c.input("stack4").unwrap();
+    for t in ["2", "enter", "3"] {
+        c.input(t).unwrap();
+    }
+    // 3 overwrote X after ENTER: [0,0,2,3]
+    c.input("+").unwrap();
+    assert_eq!(c.display(), "5");
+    // after an operation lift is enabled: a number PUSHES (5 stays in Y)
+    c.input("7").unwrap();
+    c.input("+").unwrap();
+    assert_eq!(c.display(), "12");
+}
+
+/// CLx zeroes X in place — Y/Z/T survive — and disables lift.
+#[test]
+fn classic4_clx_zeroes_x_keeps_y() {
+    let mut c = Calc::new(64);
+    c.input("stack4").unwrap();
+    for t in ["7", "8", "drop"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "0");
+    assert_eq!(c.stack().len(), 4);
+    c.input("9").unwrap(); // lift disabled: overwrites the 0
+    c.input("+").unwrap();
+    assert_eq!(c.display(), "16"); // 7 + 9
+}
+
+#[test]
+fn classic4_switch_keeps_top_four_and_back_lossless() {
+    let mut c = Calc::new(64);
+    for t in ["1", "2", "3", "4", "5", "6"] {
+        c.input(t).unwrap();
+    }
+    c.input("stack4").unwrap();
+    assert_eq!(c.stack().len(), 4);
+    assert_eq!(c.display(), "6"); // top kept: [3,4,5,6]
+    c.input("rolldn").unwrap();
+    assert_eq!(c.display(), "5"); // rotation of exactly 4
+    c.input("stackfree").unwrap();
+    assert_eq!(c.stack().len(), 4); // lossless back
+}
+
+#[test]
+fn classic4_pads_zeros_beneath() {
+    let mut c = Calc::new(64);
+    c.input("5").unwrap();
+    c.input("stack4").unwrap();
+    assert_eq!(c.stack().len(), 4); // [0,0,0,5]
+    c.input("rollup").unwrap();
+    assert_eq!(c.display(), "0"); // a padded zero rose to X
+    for t in ["rolldn"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "5");
+}
+
+/// Consuming meta-ops replicate T too (wsize pops X).
+#[test]
+fn classic4_wsize_replicates() {
+    let mut c = Calc::new(64);
+    c.input("stack4").unwrap();
+    for t in ["9", "enter", "enter", "enter", "8", "wsize"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.word_bits(), Some(8));
+    assert_eq!(c.stack().len(), 4);
+    assert_eq!(c.display(), "9"); // stack dropped, T=9 replicated
+}
+
 // ---- errors never consume operands ---------------------------------------------
 
 #[test]

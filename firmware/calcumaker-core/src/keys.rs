@@ -84,6 +84,23 @@ pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
 ];
 
+/// A **personality**: a named set of the three shift layers (see
+/// `DESIGN-MODES.md`). The engine is personality-agnostic — a personality
+/// only selects which superset functions the keys reach. `HP16C` is the
+/// default (and today the only) entry; future: `SCI`, `FIN`.
+pub struct Keymap {
+    pub name: &'static str,
+    pub base: [[Key; COLS]; ROWS],
+    pub f: [[Key; COLS]; ROWS],
+    pub g: [[Key; COLS]; ROWS],
+}
+
+/// The default personality — the tables above.
+pub static HP16C: Keymap = Keymap { name: "16C", base: BASE, f: LAYER_F, g: LAYER_G };
+
+/// Installed personalities, in `PErS`-menu cycle order.
+pub static PERSONALITIES: &[&Keymap] = &[&HP16C];
+
 /// Pending shift modifier (f = gold, g = blue). Press toggles; any resolved key
 /// clears it (HP-Voyager behaviour).
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
@@ -95,13 +112,14 @@ pub enum Shift {
 }
 
 impl Shift {
-    /// Resolve a physical `(row, col)` press through the active layer, updating
-    /// the pending shift. `None` for shift keys themselves and unassigned cells.
-    pub fn resolve(&mut self, row: usize, col: usize) -> Option<Key> {
+    /// Resolve a physical `(row, col)` press through the active layer of the
+    /// given keymap, updating the pending shift. `None` for shift keys
+    /// themselves and unassigned cells.
+    pub fn resolve(&mut self, km: &Keymap, row: usize, col: usize) -> Option<Key> {
         let k = match *self {
-            Shift::None => BASE[row][col],
-            Shift::F => LAYER_F[row][col],
-            Shift::G => LAYER_G[row][col],
+            Shift::None => km.base[row][col],
+            Shift::F => km.f[row][col],
+            Shift::G => km.g[row][col],
         };
         match k {
             ShiftF => { *self = if *self == Shift::F { Shift::None } else { Shift::F }; None }

@@ -423,6 +423,45 @@ fn setup_menu_navigates_and_cycles_angle() {
     }
 }
 
+/// SETUP items 5/6: the stack model and the personality selector.
+#[test]
+fn setup_stack_and_pers_items() {
+    let mut app = App::new(128);
+    // deep stack so the truncation warning fires
+    for d in 1..=5 {
+        press_all(&mut app, &[Key::Digit(d), Key::Enter]);
+    }
+    app.press_key(Key::Setup);
+    for _ in 0..4 {
+        app.press_key(Key::RollDn);
+    }
+    assert_eq!(app.text_rows()[1].trim_end(), "5 StAC");
+    assert_eq!(app.text_rows()[2].trim_end(), "FrEE");
+    app.press_key(Key::Enter);
+    assert_eq!(app.text_rows()[2].trim_end(), "HP4");
+    assert_eq!(app.message(), Some("top 4 kept"));
+    assert_eq!(app.calc().stack().len(), 4);
+
+    app.press_key(Key::RollDn);
+    assert_eq!(app.text_rows()[1].trim_end(), "6 PErS");
+    assert_eq!(app.text_rows()[2].trim_end(), "16C");
+    app.press_key(Key::Enter); // only one personality installed
+    assert_eq!(app.message(), Some("only 16C installed"));
+    assert_eq!(app.keymap().name, "16C");
+    app.press_key(Key::ClrX);
+    assert_eq!(x_row(&app), "5"); // classic stack view, X intact
+}
+
+/// In HP4 mode, keyed-number + ENTER duplicates (the real HP model):
+/// `3 ENTER +` doubles.
+#[test]
+fn classic4_app_enter_duplicates() {
+    let mut app = App::new(128);
+    app.calc_mut().set_stack_model(calcumaker_core::StackModel::Classic4);
+    press_all(&mut app, &[Key::Digit(3), Key::Enter, Key::Add]);
+    assert_eq!(x_row(&app), "6");
+}
+
 #[test]
 fn setup_swallows_other_keys() {
     let mut app = App::new(128);

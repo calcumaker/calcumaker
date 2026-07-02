@@ -41,6 +41,19 @@ impl Radix {
     }
 }
 
+/// Stack discipline. `Unbounded` (default) is our modern model: the stack
+/// grows without limit and entry always pushes. `Classic4` is the faithful
+/// HP four-level stack: fixed X/Y/Z/T, **T replicates** into Z on every
+/// consuming operation (the "constant in T" idiom), **stack lift** discipline
+/// (entry after ENTER/CLx overwrites X instead of pushing), and CLx zeroes X
+/// in place. Switching to `Classic4` keeps the top four values (zero-padded
+/// beneath); switching back is lossless.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum StackModel {
+    Unbounded,
+    Classic4,
+}
+
 /// Integer sign interpretation under a word size (HP-16C UNSGN / 1's / 2's).
 /// Only meaningful with `wsize` set; 2's complement is the default.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -123,6 +136,10 @@ const MAX_POW_BITS: u64 = 1 << 20;
 
 pub struct Calc {
     stack: Vec<Value>,
+    stack_model: StackModel,
+    /// Classic4 stack-lift flag: entry pushes when set, overwrites X when
+    /// clear (cleared by ENTER / CLx / CLEAR, set by everything else).
+    lift: bool,
     prec: u32,
     radix: Radix,
     word_bits: Option<u32>,
@@ -142,6 +159,10 @@ pub struct Calc {
 
 fn one() -> Integer {
     Integer::from_i64(1)
+}
+
+fn zero_value() -> Value {
+    Value::Int(Integer::new())
 }
 
 fn pow2(n: u32) -> Integer {
@@ -231,6 +252,8 @@ impl Calc {
     pub fn new(prec: u32) -> Self {
         Self {
             stack: Vec::new(),
+            stack_model: StackModel::Unbounded,
+            lift: true,
             prec: prec.max(2),
             radix: Radix::Dec,
             word_bits: None,
@@ -310,6 +333,26 @@ impl Calc {
     }
     pub fn set_radix_suffix(&mut self, on: bool) {
         self.radix_suffix = on;
+    }
+    pub fn stack_model(&self) -> StackModel {
+        self.stack_model
+    }
+    /// Switch the stack discipline. → Classic4 keeps the **top four** values
+    /// (padding with zeros beneath); → Unbounded is lossless.
+    pub fn set_stack_model(&mut self, m: StackModel) {
+        if m == self.stack_model {
+            return;
+        }
+        self.stack_model = m;
+        if m == StackModel::Classic4 {
+            while self.stack.len() > 4 {
+                self.stack.remove(0);
+            }
+            while self.stack.len() < 4 {
+                self.stack.insert(0, zero_value());
+            }
+            self.lift = true;
+        }
     }
     /// Carry flag (C) — set by word-mode add/sub/shift/rotate.
     pub fn carry(&self) -> bool {
@@ -391,19 +434,75 @@ impl Calc {
         }
         let lower = t.to_ascii_lowercase();
         if let Some(i) = reg_index(&lower, "sto") {
-            return self.sto(i);
+            self.sto(i)?;
+            if self.stack_model == StackModel::Classic4 {
+                self.lift = true; // HP: STO re-enables stack lift
+            }
+            return Ok(());
         }
         if let Some(i) = reg_index(&lower, "rcl") {
-            return self.rcl(i);
+            self.rcl(i)?;
+            self.post_op_classic4("rcl");
+            return Ok(());
         }
         if is_command(&lower) {
-            return self.command(&lower);
+            self.command(&lower)?;
+            self.post_op_classic4(&lower);
+            return Ok(());
         }
         if let Some(v) = self.try_parse_number(t) {
-            self.stack.push(v);
+            self.push_entry(v);
             return Ok(());
         }
         Err(CalcError::Parse(t.to_string()))
+    }
+
+    /// Push an entered number, honoring the Classic4 stack-lift discipline.
+    fn push_entry(&mut self, v: Value) {
+        if self.stack_model == StackModel::Classic4 {
+            if self.lift {
+                self.stack.push(v);
+                self.replicate4();
+            } else {
+                let n = self.stack.len();
+                self.stack[n - 1] = v; // ENTER/CLx disabled lift: overwrite X
+            }
+            self.lift = true;
+        } else {
+            self.stack.push(v);
+        }
+    }
+
+    /// After a successful command in Classic4: restore the fixed four levels
+    /// (dropping T on growth, **replicating T** on consumption — the HP
+    /// behavior that keeps a constant in T) and update the lift flag. CLx
+    /// (`drop`) and CLEAR get their HP shapes instead.
+    fn post_op_classic4(&mut self, cmd: &str) {
+        if self.stack_model != StackModel::Classic4 {
+            return;
+        }
+        match cmd {
+            "clear" => {
+                for _ in 0..4 {
+                    self.stack.push(zero_value());
+                }
+            }
+            "drop" => self.stack.push(zero_value()), // CLx: X := 0, Y/Z/T kept
+            _ => self.replicate4(),
+        }
+        self.lift = !matches!(cmd, "enter" | "drop" | "clear");
+    }
+
+    /// Trim/refill to exactly four levels: excess falls off the top (T lost —
+    /// a lift), shortfall re-fills from the bottom (T replicates).
+    fn replicate4(&mut self) {
+        while self.stack.len() > 4 {
+            self.stack.remove(0);
+        }
+        while self.stack.len() < 4 {
+            let b = self.stack.first().cloned().unwrap_or_else(zero_value);
+            self.stack.insert(0, b);
+        }
     }
 
     fn try_parse_number(&self, t: &str) -> Option<Value> {
@@ -549,6 +648,14 @@ impl Calc {
             }
             "suffix" => {
                 self.radix_suffix = !self.radix_suffix;
+                Ok(())
+            }
+            "stack4" => {
+                self.set_stack_model(StackModel::Classic4);
+                Ok(())
+            }
+            "stackfree" => {
+                self.set_stack_model(StackModel::Unbounded);
                 Ok(())
             }
             "sf" => self.set_flag(true),
@@ -1628,7 +1735,7 @@ fn is_command(t: &str) -> bool {
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
             | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
-            | "sf" | "cf" | "ftest" | "clreg" | "suffix"
+            | "sf" | "cf" | "ftest" | "clreg" | "suffix" | "stack4" | "stackfree"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

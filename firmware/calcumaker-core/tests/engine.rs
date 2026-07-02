@@ -1200,6 +1200,101 @@ fn weighted_mean_from_sigma() {
     assert_eq!(c.display(), "16");
 }
 
+// ---- FIN pack: cash flows + dates ----------------------------------------------
+
+#[test]
+fn npv_discounts_grouped_flows() {
+    let mut c = Calc::new(256);
+    // −1000 now, +500 for 3 periods at 10%: NPV = 243.43
+    for t in [
+        "2", "fix", "10", ">i", "1000", "chs", "cf0", "500", "cfj", "3", "nj", "npv",
+    ] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "243.43");
+}
+
+#[test]
+fn irr_finds_the_zero_rate_and_stores_i() {
+    let mut c = Calc::new(256);
+    // −100 now, +110 next period → exactly 10%
+    for t in ["2", "fix", "100", "chs", "cf0", "110", "cfj", "irr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "10.00");
+    for t in ["drop", "rcli"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "10.00"); // stored into i (12C)
+}
+
+#[test]
+fn irr_no_solution_errors_non_destructively() {
+    let mut c = Calc::new(256);
+    for t in ["100", "cf0", "100", "cfj"] {
+        c.input(t).unwrap();
+    }
+    let depth = c.stack().len();
+    assert!(c.input("irr").is_err()); // all-positive flows never balance
+    assert_eq!(c.stack().len(), depth);
+}
+
+#[test]
+fn cash_flow_bookkeeping_errors() {
+    let mut c = Calc::new(256);
+    c.input("5").unwrap();
+    assert!(c.input("cfj").is_err()); // cf0 first
+    assert!(c.input("nj").is_err());
+    assert!(c.input("npv").is_err());
+    assert_eq!(c.display(), "5"); // untouched
+}
+
+/// ΔDYS: Jun 3 2004 → Oct 14 2005 = 498 actual days, 491 on 30/360
+/// (the HP-12C handbook example).
+#[test]
+fn ddays_actual_and_360() {
+    let mut c = Calc::new(256);
+    for t in ["6.032004", "10.142005", "ddays"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "498");
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "491");
+}
+
+#[test]
+fn dateadd_and_day_of_week() {
+    // dates are M.DYYYY floats — view in FIX 6 like a 12C
+    let mut c = Calc::new(256);
+    for t in ["6", "fix", "6.032004", "498", "dateadd"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "10.142005");
+    c.input("dow").unwrap();
+    assert_eq!(c.display(), "5"); // 2005-10-14 was a Friday
+    // leap handling: Feb 28 2024 + 1 = Feb 29
+    let mut c = Calc::new(256);
+    for t in ["6", "fix", "2.282024", "1", "dateadd"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2.292024");
+}
+
+#[test]
+fn invalid_dates_error_non_destructively() {
+    let mut c = Calc::new(256);
+    for t in ["2.302026", "1"] {
+        c.input(t).unwrap(); // Feb 30 does not exist
+    }
+    assert!(c.input("dateadd").is_err());
+    assert_eq!(c.stack().len(), 2);
+
+    let mut c = Calc::new(256);
+    c.input("13.012026").unwrap(); // month 13
+    assert!(c.input("dow").is_err());
+    assert_eq!(c.stack().len(), 1);
+}
+
 // ---- SCI pack: statistics, combinatorics, RAN# --------------------------------
 
 #[test]

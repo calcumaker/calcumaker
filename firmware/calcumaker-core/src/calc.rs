@@ -208,6 +208,9 @@ pub struct Calc {
     regs: Vec<Option<Value>>,
     stats: Option<Stats>,
     tvm: Option<Tvm>,
+    /// Grouped cash flows for NPV/IRR: (amount, repeat count); index 0 is
+    /// the time-0 flow (CF₀).
+    cfs: Vec<(Float, u32)>,
     /// xorshift64 PRNG state for `ran` (deterministic; `seed` re-seeds —
     /// firmware seeds from hardware entropy at boot). Never zero.
     rng: u64,
@@ -327,6 +330,7 @@ impl Calc {
             regs: vec![None; REGISTERS],
             stats: None,
             tvm: None,
+            cfs: Vec::new(),
             rng: 0x9E37_79B9_7F4A_7C15,
         }
     }
@@ -764,6 +768,18 @@ impl Calc {
             "pctchg" => self.pct_of(true),
             "pctt" => self.pct_of(false),
             "wmean" => self.weighted_mean(),
+            "cf0" => self.cash_flow(true),
+            "cfj" => self.cash_flow(false),
+            "nj" => self.cash_count(),
+            "clcf" => {
+                self.cfs.clear();
+                Ok(())
+            }
+            "npv" => self.npv_cmd(),
+            "irr" => self.irr_cmd(),
+            "ddays" => self.ddays(),
+            "dateadd" => self.date_add(),
+            "dow" => self.day_of_week(),
             "ran" => {
                 let f = self.next_ran();
                 self.stack.push(Value::Real(f));
@@ -2075,55 +2091,184 @@ impl Calc {
         Ok(())
     }
 
-    /// Solve the periodic rate p by bracketed bisection over a fixed
-    /// candidate grid (p > −1), then halve to working precision. The first
-    /// sign-change bracket wins — like the 12C, multi-root cash flows are the
-    /// user's responsibility. Errors when no bracket exists.
+    /// Solve the periodic TVM rate p (fraction) via [`bisect_rate`].
     fn tvm_solve_i(&self) -> Result<Float, CalcError> {
         let prec = self.prec;
         let t = self.tvm.as_ref().expect("caller ensured");
-        let f = |p: &Float| Self::tvm_balance(t, prec, p);
-        const GRID: [&str; 14] = [
-            "-0.999999", "-0.9", "-0.5", "-0.1", "-0.01", "-0.0001", "0.0000001",
-            "0.001", "0.01", "0.05", "0.2", "1", "10", "1000",
-        ];
-        let mut lo: Option<(Float, bool)> = None;
-        let mut bracket = None;
-        for s in GRID {
-            let p = Float::from_str(prec, s).expect("grid literal");
-            let y = f(&p);
-            if y.is_nan() || y.is_inf() {
-                lo = None;
-                continue;
-            }
-            if y.is_zero() {
-                return Ok(p);
-            }
-            let neg = y.is_sign_negative();
-            if let Some((pl, nl)) = lo.take() {
-                if nl != neg {
-                    bracket = Some((pl, p.clone()));
-                    break;
+        bisect_rate(prec, |p| Self::tvm_balance(t, prec, p))
+            .ok_or(CalcError::TypeError("no i solution found"))
+    }
+
+    // ---- cash flows: NPV / IRR (12C) -------------------------------------------
+    /// CF₀ (`initial` — resets the list) / CFⱼ (appends) — X stays displayed.
+    fn cash_flow(&mut self, initial: bool) -> Result<(), CalcError> {
+        self.need(1)?;
+        let prec = self.prec;
+        let v = self.stack.last().expect("validated").clone().to_real(prec);
+        if initial {
+            self.cfs.clear();
+        } else if self.cfs.is_empty() {
+            return Err(CalcError::TypeError("enter cf0 first"));
+        }
+        self.cfs.push((v, 1));
+        Ok(())
+    }
+
+    /// Nⱼ — repeat count for the most recent flow (1–9999).
+    fn cash_count(&mut self) -> Result<(), CalcError> {
+        if self.cfs.is_empty() {
+            return Err(CalcError::TypeError("no cash flow to count (cfj first)"));
+        }
+        self.need(1)?;
+        let n = self.peek_u32("nj must be 1-9999")?;
+        if n == 0 || n > 9999 {
+            return Err(CalcError::TypeError("nj must be 1-9999"));
+        }
+        let _ = self.pop_x();
+        self.cfs.last_mut().expect("checked").1 = n;
+        Ok(())
+    }
+
+    /// NPV of the flow list at rate p (fraction): grouped geometric sums —
+    /// amt·vᵗ·(1−vⁿ)/(1−v) per group (plain sum when p = 0).
+    fn npv_at(&self, p: &Float) -> Float {
+        let prec = self.prec;
+        let one = Float::from_i64(prec, 1);
+        let v = one.clone() / (one.clone() + p.clone());
+        let mut total = Float::from_i64(prec, 0);
+        let mut vt = one.clone(); // v^t at the current group's first period
+        for (amt, cnt) in &self.cfs {
+            let cnt_f = Float::from_i64(prec, *cnt as i64);
+            let group = if p.is_zero() {
+                amt.clone() * cnt_f.clone()
+            } else {
+                amt.clone() * vt.clone() * (one.clone() - v.clone().pow(cnt_f.clone()))
+                    / (one.clone() - v.clone())
+            };
+            total = total + group;
+            vt = vt * v.clone().pow(cnt_f); // advance past this group
+        }
+        total
+    }
+
+    /// NPV — discounts the flow list at the TVM `i` register; pushes.
+    fn npv_cmd(&mut self) -> Result<(), CalcError> {
+        if self.cfs.is_empty() {
+            return Err(CalcError::TypeError("no cash flows (cf0/cfj)"));
+        }
+        let prec = self.prec;
+        let p = match &self.tvm {
+            Some(t) => t.i.clone() / Float::from_i64(prec, 100),
+            None => Float::from_i64(prec, 0),
+        };
+        let v = self.npv_at(&p);
+        self.stack.push(Value::Real(v));
+        Ok(())
+    }
+
+    /// IRR — the rate that zeroes NPV; pushed AND stored into `i` (12C).
+    fn irr_cmd(&mut self) -> Result<(), CalcError> {
+        if self.cfs.len() < 2 {
+            return Err(CalcError::TypeError("irr needs cf0 and at least one cfj"));
+        }
+        let prec = self.prec;
+        let p = bisect_rate(prec, |p| self.npv_at(p))
+            .ok_or(CalcError::TypeError("no irr solution found"))?;
+        let i = p * Float::from_i64(prec, 100);
+        self.tvm_mut().i = i.clone();
+        self.stack.push(Value::Real(i));
+        Ok(())
+    }
+
+    // ---- dates (12C M.DY encoding: 3.152026 = March 15 2026) --------------------
+    /// Decode an M.DYYYY date float; errors on invalid dates (Gregorian,
+    /// years 1583–9999).
+    fn decode_date(&self, f: &Float) -> Result<(i64, i64, i64), CalcError> {
+        const BAD: CalcError = CalcError::TypeError("invalid date (use M.DYYYY)");
+        if f.is_nan() || f.is_inf() || f.is_sign_negative() {
+            return Err(BAD);
+        }
+        let prec = self.prec;
+        let v = (f.clone() * Float::from_i64(prec, 1_000_000)).round_to_int();
+        let v = v.to_u32().ok_or(BAD)? as i64;
+        let m = v / 1_000_000;
+        let d = (v % 1_000_000) / 10_000;
+        let y = v % 10_000;
+        if !(1..=12).contains(&m) || !(1583..=9999).contains(&y) || d < 1 || d > days_in_month(y, m) {
+            return Err(BAD);
+        }
+        Ok((y, m, d))
+    }
+
+    fn encode_date(&self, y: i64, m: i64, d: i64) -> Float {
+        let prec = self.prec;
+        Float::from_i64(prec, m * 1_000_000 + d * 10_000 + y) / Float::from_i64(prec, 1_000_000)
+    }
+
+    /// ΔDYS — days from the date in Y to the date in X: actual → X,
+    /// 30/360 (US) → Y.
+    fn ddays(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let prec = self.prec;
+        let d2 = self.decode_date(&self.stack[self.stack.len() - 1].clone().to_real(prec))?;
+        let d1 = self.decode_date(&self.stack[self.stack.len() - 2].clone().to_real(prec))?;
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        let actual = days_from_civil(d2.0, d2.1, d2.2) - days_from_civil(d1.0, d1.1, d1.2);
+        // 30/360 US: day-31 adjustments
+        let mut dd1 = d1.2;
+        let mut dd2 = d2.2;
+        if dd1 == 31 {
+            dd1 = 30;
+        }
+        if dd2 == 31 && dd1 >= 30 {
+            dd2 = 30;
+        }
+        let d360 = 360 * (d2.0 - d1.0) + 30 * (d2.1 - d1.1) + (dd2 - dd1);
+        self.stack.push(Value::Int(Integer::from_i64(d360)));
+        self.stack.push(Value::Int(Integer::from_i64(actual)));
+        Ok(())
+    }
+
+    /// DATE — the date in Y advanced by X days (may be negative).
+    fn date_add(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let prec = self.prec;
+        let days = match &self.stack[self.stack.len() - 1] {
+            Value::Int(i) => {
+                let mag =
+                    i.clone().abs().to_u32().ok_or(CalcError::TypeError("day count out of range"))? as i64;
+                if i.is_negative() {
+                    -mag
+                } else {
+                    mag
                 }
             }
-            lo = Some((p, neg));
+            Value::Real(_) => return Err(CalcError::TypeError("day count must be an integer")),
+        };
+        let d = self.decode_date(&self.stack[self.stack.len() - 2].clone().to_real(prec))?;
+        let z = days_from_civil(d.0, d.1, d.2) + days;
+        let (y, m, dd) = civil_from_days(z);
+        if !(1583..=9999).contains(&y) {
+            return Err(CalcError::TypeError("date out of range"));
         }
-        let (mut a, mut b) = bracket.ok_or(CalcError::TypeError("no i solution found"))?;
-        let fa_neg = f(&a).is_sign_negative();
-        let two = Float::from_i64(prec, 2);
-        for _ in 0..(prec + 48) {
-            let m = (a.clone() + b.clone()) / two.clone();
-            let ym = f(&m);
-            if ym.is_zero() {
-                return Ok(m);
-            }
-            if ym.is_sign_negative() == fa_neg {
-                a = m;
-            } else {
-                b = m;
-            }
-        }
-        Ok(a)
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        let f = self.encode_date(y, m, dd);
+        self.stack.push(Value::Real(f));
+        Ok(())
+    }
+
+    /// Day of week for the date in X: 1 = Monday … 7 = Sunday (ISO).
+    fn day_of_week(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let prec = self.prec;
+        let d = self.decode_date(&self.stack[self.stack.len() - 1].clone().to_real(prec))?;
+        let _ = self.pop_x();
+        let z = days_from_civil(d.0, d.1, d.2);
+        let dow = (z + 3).rem_euclid(7) + 1;
+        self.stack.push(Value::Int(Integer::from_i64(dow)));
+        Ok(())
     }
 
     // ---- percent family (12C) -------------------------------------------------
@@ -2240,6 +2385,95 @@ fn decode_bits_back(bits: Integer, mode: SignMode, n: u32) -> Integer {
     }
 }
 
+/// Bracketed bisection for a rate p > −1: scan a fixed candidate grid for a
+/// sign change, then halve to working precision. The first bracket wins —
+/// like the 12C, multi-root problems (sign-changing cash flows) are the
+/// user's responsibility. `None` when no bracket exists.
+fn bisect_rate(prec: u32, f: impl Fn(&Float) -> Float) -> Option<Float> {
+    const GRID: [&str; 14] = [
+        "-0.999999", "-0.9", "-0.5", "-0.1", "-0.01", "-0.0001", "0.0000001",
+        "0.001", "0.01", "0.05", "0.2", "1", "10", "1000",
+    ];
+    let mut lo: Option<(Float, bool)> = None;
+    let mut bracket = None;
+    for s in GRID {
+        let p = Float::from_str(prec, s).expect("grid literal");
+        let y = f(&p);
+        if y.is_nan() || y.is_inf() {
+            lo = None;
+            continue;
+        }
+        if y.is_zero() {
+            return Some(p);
+        }
+        let neg = y.is_sign_negative();
+        if let Some((pl, nl)) = lo.take() {
+            if nl != neg {
+                bracket = Some((pl, p.clone()));
+                break;
+            }
+        }
+        lo = Some((p, neg));
+    }
+    let (mut a, mut b) = bracket?;
+    let fa_neg = f(&a).is_sign_negative();
+    let two = Float::from_i64(prec, 2);
+    for _ in 0..(prec + 48) {
+        let m = (a.clone() + b.clone()) / two.clone();
+        let ym = f(&m);
+        if ym.is_zero() {
+            return Some(m);
+        }
+        if ym.is_sign_negative() == fa_neg {
+            a = m;
+        } else {
+            b = m;
+        }
+    }
+    Some(a)
+}
+
+// ---- civil-calendar helpers (Gregorian; Hinnant's algorithms) ----------------
+
+/// Days since 1970-01-01 for a civil date.
+fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = if y >= 0 { y } else { y - 399 } / 400;
+    let yoe = y - era * 400;
+    let mp = (m + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146097 + doe - 719468
+}
+
+/// Civil date from days since 1970-01-01.
+fn civil_from_days(z: i64) -> (i64, i64, i64) {
+    let z = z + 719468;
+    let era = if z >= 0 { z } else { z - 146096 } / 146097;
+    let doe = z - era * 146097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = (mp + 2) % 12 + 1;
+    (if m <= 2 { y + 1 } else { y }, m, d)
+}
+
+fn days_in_month(y: i64, m: i64) -> i64 {
+    match m {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        _ => {
+            if (y % 4 == 0 && y % 100 != 0) || y % 400 == 0 {
+                29
+            } else {
+                28
+            }
+        }
+    }
+}
+
 /// `sto<h>` / `rcl<h>` → register index.
 fn reg_index(t: &str, prefix: &str) -> Option<usize> {
     let rest = t.strip_prefix(prefix)?;
@@ -2271,6 +2505,8 @@ fn is_command(t: &str) -> bool {
             | "rcln" | "rcli" | "rclpv" | "rclpmt" | "rclfv"
             | "beg" | "end" | "clfin" | "12/" | "12*"
             | "pctchg" | "pctt" | "wmean"
+            | "cf0" | "cfj" | "nj" | "clcf" | "npv" | "irr"
+            | "ddays" | "dateadd" | "dow"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

@@ -464,6 +464,9 @@ impl Calc {
             "rlcn" => self.rot_carry(true, true),
             "rrcn" => self.rot_carry(false, true),
             "lj" => self.left_justify(),
+            "dbl*" => self.dbl_mul(),
+            "dbl/" => self.dbl_div(true),
+            "dblr" => self.dbl_div(false),
             "bset" => self.bit_op(BitOp::Set),
             "bclr" => self.bit_op(BitOp::Clear),
             "btest" => self.bit_op(BitOp::Test),
@@ -847,6 +850,76 @@ impl Calc {
         let justified = decode_bits(bits << shifts as u32, self.sign_mode, n);
         self.stack.push(Value::Int(justified));
         self.stack.push(Value::Int(Integer::from_i64(shifts as i64)));
+        Ok(())
+    }
+
+    /// DBL× — the full 2n-bit product of Y × X, split into words:
+    /// high word → Y, low word → X (both decoded per the sign mode, so
+    /// enc(Y)·2ⁿ + enc(X) reconstructs the product pattern). Never overflows
+    /// by construction. Word mode only.
+    fn dbl_mul(&mut self) -> Result<(), CalcError> {
+        let Some(n) = self.word_bits else {
+            return Err(CalcError::TypeError("dbl* needs a word size (wsize)"));
+        };
+        self.need(2)?;
+        self.peek_int(0, "dbl* needs integers")?;
+        self.peek_int(1, "dbl* needs integers")?;
+        let Value::Int(b) = self.pop_x() else { unreachable!() };
+        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let pattern = euclid_mod(a * b, &pow2(2 * n));
+        let high = pattern.clone() >> n;
+        let low = pattern & (pow2(n) - one());
+        self.stack.push(Value::Int(decode_bits(high, self.sign_mode, n)));
+        self.stack.push(Value::Int(decode_bits(low, self.sign_mode, n)));
+        self.carry = false;
+        self.overflow = false;
+        Ok(())
+    }
+
+    /// DBL÷ / DBLR — the double-word dividend Z (high) : Y (low) divided by X;
+    /// quotient (or remainder) → X. A quotient that doesn't fit the word
+    /// errors without consuming anything (16C raises Error 0). Word mode only.
+    fn dbl_div(&mut self, want_quotient: bool) -> Result<(), CalcError> {
+        let Some(n) = self.word_bits else {
+            return Err(CalcError::TypeError("dbl/ needs a word size (wsize)"));
+        };
+        self.need(3)?;
+        let d = self.peek_int(0, "dbl/ needs integers")?;
+        if d.is_zero() {
+            return Err(CalcError::DivZero);
+        }
+        self.peek_int(1, "dbl/ needs integers")?;
+        self.peek_int(2, "dbl/ needs integers")?;
+
+        // Assemble the dividend from peeks — the fit check must not consume.
+        let len = self.stack.len();
+        let (Value::Int(x), Value::Int(y_low), Value::Int(z_high)) =
+            (&self.stack[len - 1], &self.stack[len - 2], &self.stack[len - 3])
+        else {
+            unreachable!()
+        };
+        let pattern = (encode_bits(z_high, self.sign_mode, n) << n)
+            | encode_bits(y_low, self.sign_mode, n);
+        let dividend = decode_bits(pattern, self.sign_mode, 2 * n);
+        let q = dividend.clone() / x.clone();
+        let r = dividend % x.clone();
+        let result = if want_quotient {
+            let (w, ovf) = wrap(q.clone(), self.sign_mode, n);
+            if ovf {
+                let _ = w;
+                return Err(CalcError::TypeError("double quotient exceeds the word size"));
+            }
+            q
+        } else {
+            r // |r| < |x| always fits the word
+        };
+
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        let _ = self.stack.pop();
+        self.carry = false;
+        self.overflow = false;
+        self.stack.push(Value::Int(result));
         Ok(())
     }
 
@@ -1470,7 +1543,7 @@ fn is_command(t: &str) -> bool {
             | "mod" | "pct" | "e" | "pi" | "and" | "or" | "xor" | "not"
             | "sl" | "sr" | "asr" | "rl" | "rr" | "rlc" | "rrc"
             | "shl" | "shr" | "sln" | "srn" | "asrn" | "rln" | "rrn"
-            | "rlcn" | "rrcn" | "lj"
+            | "rlcn" | "rrcn" | "lj" | "dbl*" | "dbl/" | "dblr"
             | "bset" | "bclr" | "btest" | "maskl" | "maskr" | "popcnt"
             | "fact" | "!" | "float" | "round" | "trunc" | "floor" | "ceil" | "frac"
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"

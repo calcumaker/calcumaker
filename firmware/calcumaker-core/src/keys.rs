@@ -26,6 +26,7 @@ pub enum Key {
     // bitwise / shift / rotate (programmer)
     And, Or, Xor, Not, Shl, Shr, Asr, Rotl, Rotr, Rlc, Rrc, Lj,
     BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Rmd,
+    DblMul, DblDiv, DblRem,
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
@@ -57,7 +58,7 @@ pub const BASE: [[Key; COLS]; ROWS] = [
 pub const LAYER_F: [[Key; COLS]; ROWS] = [
     [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Nop],
     [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Nop, Nop, Nop],
-    [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  Nop,    Nop,  Nop,   Nop],
+    [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  DblMul, DblDiv, DblRem, Nop],
     [Float,  Float,  Float,Float,SignMode, RollUp, Nop,  Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  RollUp,   Nop,  Off,    Nop,  Eex,   Nop],
 ];

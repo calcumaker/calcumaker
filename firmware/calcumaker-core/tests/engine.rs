@@ -587,6 +587,96 @@ fn bset_bclr_btest() {
     assert_eq!(c.display(), "0");
 }
 
+// ---- double-word ops (DBL× / DBL÷ / DBLR) ------------------------------------
+
+#[test]
+fn dblmul_splits_the_full_product() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "unsgn", "100", "100", "dbl*"] {
+        c.input(t).unwrap();
+    }
+    // 10000 = 0x2710: Y = 0x27, X = 0x10
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "10");
+    assert_eq!(c.stack().len(), 2);
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "27");
+}
+
+/// Signed split reconstructs: enc(Y)·2ⁿ + enc(X) = the 2n-bit product pattern.
+#[test]
+fn dblmul_signed_product() {
+    let mut c = Calc::new(64);
+    for t in ["8", "wsize", "1", "chs", "1", "dbl*"] {
+        c.input(t).unwrap();
+    }
+    // -1 × 1 = -1 → pattern FFFF → high FF (-1), low FF (-1)
+    assert_eq!(c.display(), "-1");
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "FF");
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "FF");
+}
+
+#[test]
+fn dbldiv_divides_the_double_dividend() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    // Z:Y = 27:10 = 10000, X = 0x64 = 100 → 100
+    for t in ["8", "wsize", "unsgn", "27", "10", "64", "dbl/"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "64");
+    assert_eq!(c.stack().len(), 1);
+}
+
+#[test]
+fn dblr_gives_the_remainder() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    // Z:Y = 27:11 = 10001, X = 100 → r = 1
+    for t in ["8", "wsize", "unsgn", "27", "11", "64", "dblr"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "1");
+}
+
+#[test]
+fn dbldiv_signed() {
+    let mut c = Calc::new(64);
+    c.set_radix(Radix::Hex);
+    // -300 @16 bits = FED4 → Z = FE (-2), Y = D4; ÷ 7 → -42 (trunc), r = -6
+    for t in ["8", "wsize", "fe", "d4", "7", "dbl/"] {
+        c.input(t).unwrap();
+    }
+    c.set_radix(Radix::Dec);
+    assert_eq!(c.display(), "-42");
+}
+
+#[test]
+fn dbldiv_overflowing_quotient_errors_non_destructively() {
+    let mut c = Calc::new(64);
+    // Z:Y = 1:0 = 256, ÷ 1 → q = 256 > 8-bit unsigned max
+    for t in ["8", "wsize", "unsgn", "1", "0", "1"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("dbl/").is_err());
+    assert_eq!(c.stack().len(), 3); // untouched
+    // …but the remainder of the same division fits
+    c.input("dblr").unwrap();
+    assert_eq!(c.display(), "0");
+}
+
+#[test]
+fn dbl_ops_need_word_size() {
+    let mut c = Calc::new(64);
+    for t in ["2", "3"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("dbl*").is_err());
+    assert_eq!(c.stack().len(), 2);
+}
+
 #[test]
 fn maskl_maskr() {
     let mut c = Calc::new(64);

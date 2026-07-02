@@ -155,6 +155,8 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
     F then a-f = bit-set/clr/test, maskL/maskR, popcount (index/width from X)
     F then &/|/^  = rotate-l/rotate-r/asr   F then ~ = rmd (Y mod X)
     F then </> = RLC/RRC (rotate through carry)   F then 7 = LJ (left justify)
+    F then 4/5/6 = DBLx/DBL-div/DBLR (double-word: product splits into Y:X,
+                   dividend Z:Y over X)
     F then H/D/O/B = FLOAT (int X -> real)  F then W = sign mode (2's/1's/unsgn)
     F then v = roll-up
     G then S/C/T = sinh/cosh/tanh     G then L = log10   G then Q = 10^x

@@ -62,24 +62,69 @@ const SEG_F: u8 = 0x20;
 const SEG_G: u8 = 0x40;
 const SEG_DP: u8 = 0x80;
 
-/// One display row of segment bytes as three lines of ASCII art (4 columns per
-/// digit: the 7 segments + the dp position).
-fn seg_art(row: &[u8; DIGITS_PER_ROW]) -> [String; 3] {
+/// Rendering style for the 7-seg glass.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Style {
+    /// Unicode block elements — LED-like (default). 5 columns per digit.
+    Block,
+    /// Plain `_` / `|` — any terminal. 4 columns per digit.
+    Ascii,
+}
+
+impl Style {
+    fn digit_cols(self) -> usize {
+        match self {
+            Style::Block => 5,
+            Style::Ascii => 4,
+        }
+    }
+}
+
+/// One display row of segment bytes as three lines of terminal art.
+///
+/// Block style, per digit (left col = f/e, two middle cols = a/g/d as
+/// bottom-half bars so they hug the digit body, right col = b/c, 5th col = dp):
+/// ```text
+///  ▄▄    <- a
+/// █▄▄█   <- f g b
+/// █▄▄█▖  <- e d c dp
+/// ```
+fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
     let mut l: [String; 3] = Default::default();
     for &b in row {
-        let seg = |m: u8, on: char| if b & m != 0 { on } else { ' ' };
-        l[0].push(' ');
-        l[0].push(seg(SEG_A, '_'));
-        l[0].push(' ');
-        l[0].push(' ');
-        l[1].push(seg(SEG_F, '|'));
-        l[1].push(seg(SEG_G, '_'));
-        l[1].push(seg(SEG_B, '|'));
-        l[1].push(' ');
-        l[2].push(seg(SEG_E, '|'));
-        l[2].push(seg(SEG_D, '_'));
-        l[2].push(seg(SEG_C, '|'));
-        l[2].push(seg(SEG_DP, '.'));
+        let on = |m: u8| b & m != 0;
+        match style {
+            Style::Block => {
+                let bar = |m: u8| if on(m) { "▄▄" } else { "  " };
+                let post = |m: u8| if on(m) { '█' } else { ' ' };
+                l[0].push(' ');
+                l[0].push_str(bar(SEG_A));
+                l[0].push_str("  ");
+                l[1].push(post(SEG_F));
+                l[1].push_str(bar(SEG_G));
+                l[1].push(post(SEG_B));
+                l[1].push(' ');
+                l[2].push(post(SEG_E));
+                l[2].push_str(bar(SEG_D));
+                l[2].push(post(SEG_C));
+                l[2].push(if on(SEG_DP) { '▖' } else { ' ' });
+            }
+            Style::Ascii => {
+                let seg = |m: u8, ch: char| if on(m) { ch } else { ' ' };
+                l[0].push(' ');
+                l[0].push(seg(SEG_A, '_'));
+                l[0].push(' ');
+                l[0].push(' ');
+                l[1].push(seg(SEG_F, '|'));
+                l[1].push(seg(SEG_G, '_'));
+                l[1].push(seg(SEG_B, '|'));
+                l[1].push(' ');
+                l[2].push(seg(SEG_E, '|'));
+                l[2].push(seg(SEG_D, '_'));
+                l[2].push(seg(SEG_C, '|'));
+                l[2].push(seg(SEG_DP, '.'));
+            }
+        }
     }
     l
 }
@@ -109,18 +154,25 @@ Host keyboard -> Calcumaker 16 keys (f = gold shift, g = blue shift):
   G (overflow) in word mode. Esc cancels a pending shift. ? = help. Ctrl-C quits.";
 
 /// Render one full frame: 7-seg rows, annunciators, the untruncated X, footer.
-fn frame(app: &App, help: bool) -> String {
+fn frame(app: &App, help: bool, style: Style) -> String {
     let mut out = String::new();
-    let width = DIGITS_PER_ROW * 4;
+    let width = DIGITS_PER_ROW * style.digit_cols();
+    let (tl, tr, bl, br, h, v) = match style {
+        Style::Block => ('┌', '┐', '└', '┘', '─', '│'),
+        Style::Ascii => ('+', '+', '+', '+', '-', '|'),
+    };
     out.push_str("Calcumaker 16 - emulator\n");
-    out.push_str(&format!("+{}+\n", "-".repeat(width + 2)));
-    for row in &app.seg_rows() {
-        for line in seg_art(row) {
-            out.push_str(&format!("| {line} |\n"));
+    out.push_str(&format!("{tl}{}{tr}\n", h.to_string().repeat(width + 2)));
+    let rows = app.seg_rows();
+    for (i, row) in rows.iter().enumerate() {
+        for line in seg_art(row, style) {
+            out.push_str(&format!("{v} {line} {v}\n"));
         }
-        out.push_str(&format!("|{}|\n", " ".repeat(width + 2)));
+        if i + 1 < rows.len() {
+            out.push_str(&format!("{v}{}{v}\n", " ".repeat(width + 2)));
+        }
     }
-    out.push_str(&format!("+{}+\n", "-".repeat(width + 2)));
+    out.push_str(&format!("{bl}{}{br}\n", h.to_string().repeat(width + 2)));
 
     let c = app.calc();
     let radix = format!("{:?}", c.radix()).to_uppercase();
@@ -175,26 +227,26 @@ fn frame(app: &App, help: bool) -> String {
     out
 }
 
-fn draw(stdout: &mut impl Write, app: &App, help: bool) -> io::Result<()> {
+fn draw(stdout: &mut impl Write, app: &App, help: bool, style: Style) -> io::Result<()> {
     execute!(
         stdout,
         terminal::Clear(terminal::ClearType::All),
         cursor::MoveTo(0, 0)
     )?;
-    for line in frame(app, help).lines() {
+    for line in frame(app, help, style).lines() {
         write!(stdout, "{line}\r\n")?;
     }
     stdout.flush()
 }
 
-fn interactive(mut app: App) -> io::Result<()> {
+fn interactive(mut app: App, style: Style) -> io::Result<()> {
     let mut stdout = io::stdout();
     terminal::enable_raw_mode()?;
     execute!(stdout, terminal::EnterAlternateScreen, cursor::Hide)?;
     let mut help = false;
 
     let result = (|| -> io::Result<()> {
-        draw(&mut stdout, &app, help)?;
+        draw(&mut stdout, &app, help, style)?;
         loop {
             let Event::Key(KeyEvent { code, modifiers, kind, .. }) = event::read()? else {
                 continue;
@@ -220,7 +272,7 @@ fn interactive(mut app: App) -> io::Result<()> {
                 KeyCode::Char(c) => feed(&mut app, c),
                 _ => {}
             }
-            draw(&mut stdout, &app, help)?;
+            draw(&mut stdout, &app, help, style)?;
         }
     })();
 
@@ -238,6 +290,7 @@ fn feed(app: &mut App, ch: char) {
 fn main() -> io::Result<()> {
     let mut prec = 256u32;
     let mut script: Option<String> = None;
+    let mut style = Style::Block;
 
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -251,8 +304,9 @@ fn main() -> io::Result<()> {
             "--press" => {
                 script = Some(args.next().unwrap_or_else(|| usage("--press needs a key string")))
             }
+            "--ascii" => style = Style::Ascii,
             "--help" | "-h" => {
-                println!("calcumaker-emu [--prec <bits>] [--press <keys>]\n\n{HELP}");
+                println!("calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii]\n\n{HELP}");
                 return Ok(());
             }
             other => usage(&format!("unknown argument {other}")),
@@ -264,13 +318,13 @@ fn main() -> io::Result<()> {
         for ch in s.replace("\\n", "\n").chars() {
             feed(&mut app, ch);
         }
-        print!("{}", frame(&app, false));
+        print!("{}", frame(&app, false, style));
         return Ok(());
     }
-    interactive(app)
+    interactive(app, style)
 }
 
 fn usage(msg: &str) -> ! {
-    eprintln!("calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>]");
+    eprintln!("calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii]");
     std::process::exit(2);
 }

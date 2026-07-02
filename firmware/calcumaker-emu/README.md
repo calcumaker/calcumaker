@@ -5,15 +5,16 @@ The **Calcumaker 16 emulator** — the real calculator on a host terminal.
 This is not a look-alike: it hosts the same `calcumaker_core::App` the firmware
 runs. Host keys map to the physical **50-key matrix**, presses resolve through
 the **f/g shift layers**, and the display is drawn from the **same TM1640
-segment bytes** the hardware receives, rendered as ASCII 7-segment art. If it
-works here, the only difference on the device is GPIO.
+segment bytes** the hardware receives, rendered as LED-style 7-segment art
+(Unicode block elements; `--ascii` falls back to plain `_`/`|` for dumb
+terminals). If it works here, the only difference on the device is GPIO.
 
 ```
-+------------------------------------------------------------------+
-|                  _       _   _   _   _   _   _   _   _   _   _   |
-|   | |_|   | |_|  _|   |  _| |_  |_   _|  _|   |  _| | | |_|   |  |
-|   |.  |   |   | |_    |  _|  _| |_| |_   _|   |  _| |_|  _|  _|  |
-+------------------------------------------------------------------+
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                      ▄▄        ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   ▄▄   │
+│    █ █▄▄█    █ █▄▄█  ▄▄█    █  ▄▄█ █▄▄  █▄▄   ▄▄█  ▄▄█    █  ▄▄█ █  █ █▄▄█    █  │
+│    █▖   █    █    █ █▄▄     █  ▄▄█  ▄▄█ █▄▄█ █▄▄   ▄▄█    █  ▄▄█ █▄▄█  ▄▄█  ▄▄█  │
+└──────────────────────────────────────────────────────────────────────────────────┘
  DEC  prec 256  word unbounded
  X: 1.4142135623730950488016887242096980785696718753769480731766797379907324784621
 ```

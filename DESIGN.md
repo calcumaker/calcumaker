@@ -269,9 +269,10 @@ is not a mock: the whole device-independent calculator lives in
 Both frontends are thin I/O bindings around `App::press(row, col)` +
 `App::seg_rows()`: the firmware contributes the matrix scan and the TM1640
 bus; the emulator maps host keys to matrix cells and renders **the same
-segment bytes** as ASCII 7-seg art (plus annunciators and the untruncated X,
-where the arbitrary precision is visible). If it works in the emulator, the
-only difference on the device is GPIO.
+segment bytes** as LED-style 7-seg art — Unicode block elements by default
+(`▄`/`█`, ~84 columns), `--ascii` for a plain `_`/`|` fallback — plus
+annunciators and the untruncated X, where the arbitrary precision is visible.
+If it works in the emulator, the only difference on the device is GPIO.
 
 ```sh
 cd firmware/calcumaker-emu

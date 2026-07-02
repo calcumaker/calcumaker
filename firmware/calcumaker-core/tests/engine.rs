@@ -1054,6 +1054,106 @@ fn hyperbolics_ignore_angle_mode() {
     assert_eq!(rad, deg);
 }
 
+// ---- SCI pack: statistics, combinatorics, RAN# --------------------------------
+
+#[test]
+fn stats_mean_and_sdev() {
+    let mut c = Calc::new(128);
+    for t in ["1", "s+", "drop", "2", "s+", "drop", "3", "s+"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "3"); // Σ+ leaves n in X
+    c.input("mean").unwrap();
+    assert_eq!(c.display(), "2"); // x̄
+    c.input("drop").unwrap();
+    c.input("drop").unwrap();
+    c.input("sdev").unwrap();
+    assert_eq!(c.display(), "1"); // s of {1,2,3}
+}
+
+/// Pairs (x from X, y from Y) fit y = 2x − 1 exactly.
+#[test]
+fn stats_linear_regression_and_estimate() {
+    let mut c = Calc::new(128);
+    for (y, x) in [("1", "1"), ("3", "2"), ("5", "3")] {
+        for t in [y, x, "s+", "drop", "drop"] {
+            c.input(t).unwrap();
+        }
+    }
+    c.input("lr").unwrap();
+    assert_eq!(c.display(), "-1"); // intercept in X
+    c.input("drop").unwrap();
+    assert_eq!(c.display(), "2"); // slope in Y
+    for t in ["drop", "4", "yhat"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "7"); // ŷ(4) = 2·4 − 1
+    c.input("drop").unwrap();
+    c.input("corr").unwrap();
+    assert_eq!(c.display(), "1"); // perfectly linear
+}
+
+#[test]
+fn sigma_minus_removes_a_point() {
+    let mut c = Calc::new(128);
+    for t in ["1", "s+", "drop", "2", "s+", "drop", "9", "s+", "drop", "9", "s-"] {
+        c.input(t).unwrap();
+    }
+    assert_eq!(c.display(), "2"); // n back to 2
+    c.input("mean").unwrap();
+    assert_eq!(c.display(), "1.5");
+}
+
+#[test]
+fn stats_need_data() {
+    let mut c = Calc::new(128);
+    assert!(c.input("mean").is_err());
+    c.input("1").unwrap();
+    c.input("s+").unwrap();
+    assert!(c.input("sdev").is_err()); // needs 2+
+    c.input("clstat").unwrap();
+    assert!(c.input("mean").is_err()); // cleared
+}
+
+#[test]
+fn ncr_npr_exact() {
+    assert_eq!(run(64, &["10", "3", "ncr"]), "120");
+    assert_eq!(run(64, &["10", "3", "npr"]), "720");
+    // exact far beyond f64: C(100, 50)
+    assert_eq!(
+        run(64, &["100", "50", "ncr"]),
+        "100891344545564193334812497256"
+    );
+    assert_eq!(run(64, &["3", "10", "ncr"]), "0"); // r > n
+}
+
+#[test]
+fn ncr_guard_and_errors_preserve_stack() {
+    let mut c = Calc::new(64);
+    for t in ["2.5", "3"] {
+        c.input(t).unwrap();
+    }
+    assert!(c.input("ncr").is_err()); // n must be an integer
+    assert_eq!(c.stack().len(), 2);
+}
+
+#[test]
+fn ran_is_deterministic_and_in_range() {
+    let mut a = Calc::new(128);
+    let mut b = Calc::new(128);
+    a.input("ran").unwrap();
+    b.input("ran").unwrap();
+    assert_eq!(a.display(), b.display()); // same default seed
+    a.input("floor").unwrap();
+    assert_eq!(a.display(), "0"); // 0 ≤ ran < 1
+    // re-seeding changes the stream
+    let mut c = Calc::new(128);
+    for t in ["42", "seed", "ran"] {
+        c.input(t).unwrap();
+    }
+    assert_ne!(c.display(), b.display());
+}
+
 // ---- classic 4-level stack (HP X/Y/Z/T, T-replication, stack lift) -----------
 
 /// The signature HP idiom: park a constant in T, mash the operator.

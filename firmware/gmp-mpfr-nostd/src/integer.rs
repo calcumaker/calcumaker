@@ -77,6 +77,13 @@ impl Integer {
         x
     }
 
+    /// Binomial coefficient `C(self, k)`, exact.
+    pub fn binomial(&self, k: u32) -> Self {
+        let mut x = Self::new();
+        unsafe { ffi::__gmpz_bin_ui(&mut x.raw, &self.raw, k as c_ulong) };
+        x
+    }
+
     /// Absolute value.
     pub fn abs(self) -> Self {
         let mut r = Self::new();

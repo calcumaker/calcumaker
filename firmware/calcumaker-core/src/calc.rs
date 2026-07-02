@@ -111,6 +111,13 @@ enum InvCirc {
     Atan,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum StatFn {
+    Mean,
+    Sdev,
+    Lr,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum CalcError {
     /// Token was neither a number (in the active radix) nor a known command.
@@ -134,6 +141,24 @@ const MAX_FMT_DIGITS: u32 = 32;
 /// like `2 1e9 pow` errors instead of exhausting memory. Generous for real use.
 const MAX_POW_BITS: u64 = 1 << 20;
 
+/// Statistics accumulation registers (HP-15C style): Σ+ pairs `(x, y)` from
+/// X/Y feed n, Σx, Σx², Σy, Σy², Σxy at the working precision.
+struct Stats {
+    n: u64,
+    sx: Float,
+    sxx: Float,
+    sy: Float,
+    syy: Float,
+    sxy: Float,
+}
+
+impl Stats {
+    fn new(prec: u32) -> Self {
+        let z = || Float::from_i64(prec, 0);
+        Stats { n: 0, sx: z(), sxx: z(), sy: z(), syy: z(), sxy: z() }
+    }
+}
+
 pub struct Calc {
     stack: Vec<Value>,
     stack_model: StackModel,
@@ -153,6 +178,10 @@ pub struct Calc {
     overflow: bool,
     last_x: Option<Value>,
     regs: Vec<Option<Value>>,
+    stats: Option<Stats>,
+    /// xorshift64 PRNG state for `ran` (deterministic; `seed` re-seeds —
+    /// firmware seeds from hardware entropy at boot). Never zero.
+    rng: u64,
 }
 
 // ---- word-size helpers (shared with the formatter) --------------------------
@@ -267,6 +296,8 @@ impl Calc {
             overflow: false,
             last_x: None,
             regs: vec![None; REGISTERS],
+            stats: None,
+            rng: 0x9E37_79B9_7F4A_7C15,
         }
     }
 
@@ -658,6 +689,25 @@ impl Calc {
                 self.set_stack_model(StackModel::Unbounded);
                 Ok(())
             }
+            "s+" => self.sigma(true),
+            "s-" => self.sigma(false),
+            "mean" => self.stat_pair(StatFn::Mean),
+            "sdev" => self.stat_pair(StatFn::Sdev),
+            "lr" => self.stat_pair(StatFn::Lr),
+            "yhat" => self.yhat(),
+            "corr" => self.corr(),
+            "clstat" => {
+                self.stats = None;
+                Ok(())
+            }
+            "ncr" => self.comb_perm(false),
+            "npr" => self.comb_perm(true),
+            "ran" => {
+                let f = self.next_ran();
+                self.stack.push(Value::Real(f));
+                Ok(())
+            }
+            "seed" => self.seed_cmd(),
             "sf" => self.set_flag(true),
             "cf" => self.set_flag(false),
             "ftest" => self.flag_test(),
@@ -1634,6 +1684,175 @@ impl Calc {
         Ok(())
     }
 
+    // ---- statistics (Σ registers, 15C style) ---------------------------------
+    /// Σ+ / Σ− — accumulate (x = X, y = Y; y is 0 with a one-deep stack) into
+    /// the Σ registers; X is replaced by n (15C behavior), the consumed x
+    /// goes to LASTx, the stack depth is unchanged.
+    fn sigma(&mut self, add: bool) -> Result<(), CalcError> {
+        self.need(1)?;
+        if !add && self.stats.as_ref().map_or(true, |s| s.n == 0) {
+            return Err(CalcError::TypeError("no data accumulated"));
+        }
+        let prec = self.prec;
+        let x = self.stack.last().expect("validated").clone().to_real(prec);
+        let y = if self.stack.len() >= 2 {
+            self.stack[self.stack.len() - 2].clone().to_real(prec)
+        } else {
+            Float::from_i64(prec, 0)
+        };
+        let st = self.stats.get_or_insert_with(|| Stats::new(prec));
+        if add {
+            st.n += 1;
+            st.sx = st.sx.clone() + x.clone();
+            st.sxx = st.sxx.clone() + x.clone() * x.clone();
+            st.sy = st.sy.clone() + y.clone();
+            st.syy = st.syy.clone() + y.clone() * y.clone();
+            st.sxy = st.sxy.clone() + x * y;
+        } else {
+            st.n -= 1;
+            st.sx = st.sx.clone() - x.clone();
+            st.sxx = st.sxx.clone() - x.clone() * x.clone();
+            st.sy = st.sy.clone() - y.clone();
+            st.syy = st.syy.clone() - y.clone() * y.clone();
+            st.sxy = st.sxy.clone() - x * y;
+        }
+        self.last_x = Some(self.stack.last().expect("validated").clone());
+        let n = st.n as i64;
+        let l = self.stack.len();
+        self.stack[l - 1] = Value::Int(Integer::from_i64(n));
+        Ok(())
+    }
+
+    fn stats_ref(&self, min_n: u64) -> Result<&Stats, CalcError> {
+        match &self.stats {
+            Some(s) if s.n >= min_n => Ok(s),
+            _ => Err(CalcError::TypeError("need more data points (s+)")),
+        }
+    }
+
+    /// Linear-regression coefficients `(slope, intercept)` for y = a·x + b.
+    fn lr_coeffs(&self) -> Result<(Float, Float), CalcError> {
+        let prec = self.prec;
+        let s = self.stats_ref(2)?;
+        let n = Float::from_i64(prec, s.n as i64);
+        let den = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
+        let slope = (n.clone() * s.sxy.clone() - s.sx.clone() * s.sy.clone()) / den;
+        let intercept = (s.sy.clone() - slope.clone() * s.sx.clone()) / n;
+        Ok((slope, intercept))
+    }
+
+    /// mean / sdev / L.R. — pushes the pair: X gets x̄ / sₓ / the intercept,
+    /// Y gets ȳ / s_y / the slope (15C-style pairing).
+    fn stat_pair(&mut self, f: StatFn) -> Result<(), CalcError> {
+        let prec = self.prec;
+        let (xv, yv) = match f {
+            StatFn::Mean => {
+                let s = self.stats_ref(1)?;
+                let n = Float::from_i64(prec, s.n as i64);
+                (s.sx.clone() / n.clone(), s.sy.clone() / n)
+            }
+            StatFn::Sdev => {
+                let s = self.stats_ref(2)?;
+                let n = Float::from_i64(prec, s.n as i64);
+                let n1 = Float::from_i64(prec, s.n as i64 - 1);
+                let vx = (s.sxx.clone() - s.sx.clone() * s.sx.clone() / n.clone()) / n1.clone();
+                let vy = (s.syy.clone() - s.sy.clone() * s.sy.clone() / n) / n1;
+                (vx.sqrt(), vy.sqrt())
+            }
+            StatFn::Lr => {
+                let (slope, intercept) = self.lr_coeffs()?;
+                (intercept, slope)
+            }
+        };
+        self.stack.push(Value::Real(yv));
+        self.stack.push(Value::Real(xv));
+        Ok(())
+    }
+
+    /// ŷ — pop x, push the regression estimate a·x + b.
+    fn yhat(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let (slope, intercept) = self.lr_coeffs()?;
+        let x = self.pop_x().to_real(self.prec);
+        self.stack.push(Value::Real(intercept + slope * x));
+        Ok(())
+    }
+
+    /// r — the correlation coefficient.
+    fn corr(&mut self) -> Result<(), CalcError> {
+        let prec = self.prec;
+        let r = {
+            let s = self.stats_ref(2)?;
+            let n = Float::from_i64(prec, s.n as i64);
+            let cx = n.clone() * s.sxx.clone() - s.sx.clone() * s.sx.clone();
+            let cy = n.clone() * s.syy.clone() - s.sy.clone() * s.sy.clone();
+            let cov = n * s.sxy.clone() - s.sx.clone() * s.sy.clone();
+            cov / (cx * cy).sqrt()
+        };
+        self.stack.push(Value::Real(r));
+        Ok(())
+    }
+
+    // ---- combinatorics + PRNG ------------------------------------------------
+    /// nCr / nPr — Y = n, X = r; **exact** GMP (mpz binomial; nPr = C(n,r)·r!).
+    fn comb_perm(&mut self, perm: bool) -> Result<(), CalcError> {
+        self.need(2)?;
+        let r = self.peek_u32("ncr/npr need small non-negative integers")?;
+        self.peek_int(1, "ncr/npr need integers")?;
+        let len = self.stack.len();
+        let Value::Int(n) = &self.stack[len - 2] else { unreachable!() };
+        if n.is_negative() {
+            return Err(CalcError::TypeError("ncr/npr need non-negative n"));
+        }
+        let v = if Integer::from_i64(r as i64) > n.clone() {
+            Integer::new() // r > n → 0 (and skip a pointless huge r!)
+        } else {
+            if n.bit_len() as u64 * r as u64 > MAX_POW_BITS {
+                return Err(CalcError::TypeError("result too large"));
+            }
+            let b = n.binomial(r);
+            if perm {
+                b * Integer::factorial(r)
+            } else {
+                b
+            }
+        };
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        let v = self.canon_flagged(v);
+        self.stack.push(Value::Int(v));
+        Ok(())
+    }
+
+    /// RAN# — uniform in [0, 1) at the working precision (xorshift64,
+    /// deterministic until `seed`ed; the firmware seeds from hardware).
+    fn next_ran(&mut self) -> Float {
+        let mut x = self.rng;
+        x ^= x << 13;
+        x ^= x >> 7;
+        x ^= x << 17;
+        self.rng = x;
+        let hi = Integer::from_i64((x >> 32) as i64) << 32;
+        let lo = Integer::from_i64((x & 0xFFFF_FFFF) as i64);
+        let k = hi | lo;
+        let num = Float::from_integer(self.prec, &k);
+        let den = Float::from_integer(self.prec, &(Integer::from_i64(1) << 64));
+        num / den
+    }
+
+    /// Pop X as the PRNG seed (splitmix64-expanded so nearby seeds diverge).
+    fn seed_cmd(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let s = self.peek_u32("seed must be a small non-negative integer")?;
+        let _ = self.pop_x();
+        let mut z = (s as u64).wrapping_add(0x9E37_79B9_7F4A_7C15);
+        z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+        z ^= z >> 31;
+        self.rng = if z == 0 { 1 } else { z };
+        Ok(())
+    }
+
     /// STO i — copy X into register i (X stays, LASTx untouched).
     fn sto(&mut self, i: usize) -> Result<(), CalcError> {
         self.need(1)?;
@@ -1736,6 +1955,8 @@ fn is_command(t: &str) -> bool {
             | "hex" | "dec" | "oct" | "bin" | "wsize" | "prec"
             | "unsgn" | "1s" | "2s" | "signmode" | "rad" | "deg" | "grad" | "anglemode" | "lz"
             | "sf" | "cf" | "ftest" | "clreg" | "suffix" | "stack4" | "stackfree"
+            | "s+" | "s-" | "mean" | "sdev" | "lr" | "yhat" | "corr" | "clstat"
+            | "ncr" | "npr" | "ran" | "seed"
             | "fix" | "sci" | "eng" | "std" | "clear"
             | "lastx" | "enter" | "over" | "rolldn" | "roll" | "rollup"
     )

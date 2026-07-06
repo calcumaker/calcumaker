@@ -84,7 +84,9 @@ def _read(path):
 
 def extract(path, name):
     txt = _read(path)
-    m = re.search(r'\n\t\(symbol "' + re.escape(name) + r'"', txt)
+    # Top-level symbols are indented with a tab (KiCad stdlib) or spaces in
+    # some project libraries; accept either form.
+    m = re.search(r'\n[ \t]*\(symbol "' + re.escape(name) + r'"', txt)
     if not m:
         raise SystemExit(f"kschgen: symbol {name!r} not found in {path}")
     i = m.start() + 1                       # at the '(' before 'symbol'
@@ -109,20 +111,36 @@ def _extends_of(blk):
     return m.group(1) if m else None
 
 
+def _flattened_block(path, name):
+    """Return symbol NAME's block as a self-contained symbol. If it (extends ...)
+    a parent, re-base the parent's full block (graphics + pins) onto NAME and drop
+    the extends, so the symbol renders standalone. KiCad/eeschema resolves extends
+    at load time, but kicad-cli's exporters do NOT — an unresolved derived symbol
+    renders blank. Flattening here makes generated sheets render everywhere.
+    Recurses through extends chains."""
+    blk = extract(path, name)
+    parent = _extends_of(blk)
+    if not parent:
+        return blk
+    pblk = _flattened_block(path, parent)
+    # rename the parent's graphic sub-symbols (PARENT_x_y -> NAME_x_y) then its
+    # top symbol (PARENT -> NAME); property values (cosmetic) keep parent text —
+    # the placed instance carries the real Reference/Value/Footprint/LCSC/MPN.
+    g = pblk.replace('(symbol "' + parent + '_', '(symbol "' + name + '_')
+    g = re.sub(r'^(\s*)\(symbol "' + re.escape(parent) + '"',
+               r'\1(symbol "' + name + '"', g, count=1)
+    return g
+
+
 def cache_entries(lib_id, acc=None):
-    """Cache blocks for lib_id, with any (extends ...) parents emitted first so
-    KiCad can resolve inheritance. Returns ordered list of (lib_id, block)."""
+    """Cache the flattened block for lib_id (extends resolved/inlined so each
+    symbol renders standalone). Returns ordered list of (lib_id, block)."""
     if acc is None:
         acc = []
     if lib_id in [e[0] for e in acc]:
         return acc
     path, name = SRC[lib_id]
-    blk = extract(path, name)
-    parent = _extends_of(blk)
-    if parent:
-        plid = f"{lib_id.split(':')[0]}:{parent}"
-        SRC.setdefault(plid, (path, parent))
-        cache_entries(plid, acc)
+    blk = _flattened_block(path, name)
     entry = re.sub(r'^(\s*)\(symbol "' + re.escape(name) + '"',
                    r'\1(symbol "' + lib_id + '"', blk, count=1)
     acc.append((lib_id, entry))
@@ -157,6 +175,23 @@ def esc(s):
     return s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 
+def _env_truthy(name):
+    return os.environ.get(name, "").lower() in ("1", "true", "yes", "on")
+
+
+def _force_regen(force=False):
+    return force or _env_truthy("KSCHGEN_FORCE")
+
+
+def _schematic_uuid(path):
+    """Return an existing .kicad_sch file UUID, if the sheet already exists."""
+    if not os.path.exists(path):
+        return None
+    txt = open(path, encoding="utf-8").read()
+    m = re.search(r'\(kicad_sch\b.*?\(uuid "([^"]+)"\)', txt, re.S)
+    return m.group(1) if m else None
+
+
 def _prop(name, val, x, y, hide=False, justify="left"):
     h = " (hide yes)" if hide else ""
     j = f" (justify {justify})" if justify else ""
@@ -167,8 +202,7 @@ def _prop(name, val, x, y, hide=False, justify="left"):
 
 # Schematic notes are rendered in a MONOSPACE font so wiring tables/columns line
 # up. "Courier New" is broadly available (macOS/Windows; Linux substitutes a mono
-# face); KiCad falls back to its stroke font if absent — content still reads, just
-# unaligned. Author notes as fixed-width blocks (see note_block()).
+# face); KiCad falls back to its stroke font if absent -- content still reads.
 NOTE_FONT = "Courier New"
 
 
@@ -186,14 +220,16 @@ def note_block(*lines):
 
 
 def pin_table(pairs, header=("PIN", "SIGNAL"), cols=2, indent="  "):
-    """Format [(pin, signal), ...] as an aligned monospace table (1 or 2 columns).
-    Renders correctly only in a monospace note font (see NOTE_FONT)."""
+    """Format [(pin, signal), ...] as an aligned monospace table."""
     pairs = [(str(p), str(s)) for p, s in pairs]
     n = len(pairs)
     per = (n + cols - 1) // cols if cols > 1 else n
     pw = max([len(p) for p, _ in pairs] + [len(header[0])])
     sw = max([len(s) for _, s in pairs] + [len(header[1])])
-    cell = lambda p, s: f"{p:>{pw}}  {s:<{sw}}"
+
+    def cell(p, s):
+        return f"{p:>{pw}}  {s:<{sw}}"
+
     rows = [indent + "    ".join([cell(*header)] * min(cols, (n + per - 1) // per))]
     for i in range(per):
         line = [cell(*pairs[i])]
@@ -247,6 +283,12 @@ def _layout(sh):
     for k, c in enumerate(sh.get("small", [])):
         c["x"] = 12 * G + (k % cols) * dx
         c["y"] = y0 + (k // cols) * dy
+    # Park the wiring note BELOW every component so long generated tables do
+    # not overlap the automatically placed symbol grid.
+    n = len(sh.get("small", []))
+    small_bottom = y0 + ((n - 1) // cols) * dy if n else 0
+    big_bottom = 22 * G + 45 if sh.get("big") else 0
+    sh["_note_y"] = max(small_bottom, big_bottom) + 16
 
 
 # ----------------------------------------------------------------------------
@@ -267,7 +309,11 @@ def _title_block(title):
     return s
 
 
-def _write_child(sh, project, root_uuid, title, paper):
+def _write_child(sh, project, root_uuid, title, paper, force=False):
+    path = os.path.join(sh["_dir"], sh["file"])
+    if os.path.exists(path) and not _force_regen(force):
+        print(f"  {sh['file']:22s} kept existing ({sh['uuid']})")
+        return
     comps = sh.get("big", []) + sh.get("small", [])
     cache = []
     for c in comps:
@@ -287,10 +333,10 @@ def _write_child(sh, project, root_uuid, title, paper):
         out += _comp(c, project, root_uuid, sh["uuid"])
     if sh.get("note"):
         nx, ny, ntxt = sh["note"]
-        out += text_note(ntxt, nx, ny)
+        out += text_note(ntxt, nx, sh.get("_note_y", ny))
     out += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "'
             + sh["page"] + '")\n\t\t)\n\t)\n\t(embedded_fonts no)\n)\n')
-    open(os.path.join(sh["_dir"], sh["file"]), "w", encoding="utf-8").write(out)
+    open(path, "w", encoding="utf-8").write(out)
     print(f"  {sh['file']:22s} {len(comps):3d} symbols, {len(cache)} lib_symbols"
           + ("  +note" if sh.get("note") else ""))
 
@@ -481,7 +527,7 @@ def _sch_open(uuid, title, paper):
     return out
 
 
-def write_wired_child(sh, project, root_uuid, title, paper):
+def write_wired_child(sh, project, root_uuid, title, paper, force=False):
     """Write a child sheet that carries pre-computed instance paths + wiring.
 
     sh keys:
@@ -490,6 +536,11 @@ def write_wired_child(sh, project, root_uuid, title, paper):
       wiring     : pre-emitted s-expr string (built with w_wire/net_pin/...)
       notes      : [(x, y, text), ...]  (optional)
     """
+    path = os.path.join(sh["_dir"], sh["file"])
+    sh["uuid"] = _schematic_uuid(path) or sh.get("uuid") or U()
+    if os.path.exists(path) and not _force_regen(force):
+        print(f"  {sh['file']:24s} kept existing ({sh['uuid']})")
+        return
     ctitle = dict(title=f'{title.get("title","")} — {sh["title"]}',
                   date=title.get("date"), rev=title.get("rev"),
                   company=title.get("company"))
@@ -508,68 +559,85 @@ def write_wired_child(sh, project, root_uuid, title, paper):
         out += text_note(ntxt, nx, ny)
     out += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "'
             + sh["page"] + '")\n\t\t)\n\t)\n\t(embedded_fonts no)\n)\n')
-    open(os.path.join(sh["_dir"], sh["file"]), "w", encoding="utf-8").write(out)
+    open(path, "w", encoding="utf-8").write(out)
     n = len(sh["comps"])
     print(f"  {sh['file']:24s} {n:3d} symbols x{len(sh['comps'][0][1]) if n else 0}"
           f"  {len(cache)} lib_symbols  +wired")
 
 
 def write_root(project, proj_dir, root_uuid, title, sheet_symbols, wiring,
-               pro_sheets, paper="A3"):
+               pro_sheets, paper="A3", force=False):
     """Write the root schematic from pre-built sheet-symbol + wiring strings."""
-    root = _sch_open(root_uuid, dict(title), paper)
-    root += "\t(lib_symbols)\n"
-    root += sheet_symbols
-    root += wiring
-    root += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "1")\n\t\t)\n\t)\n'
-             "\t(embedded_fonts no)\n)\n")
-    open(os.path.join(proj_dir, f"{project}.kicad_sch"), "w",
-         encoding="utf-8").write(root)
-    print(f"root: {project}.kicad_sch")
+    rpath = os.path.join(proj_dir, f"{project}.kicad_sch")
+    root_uuid = _schematic_uuid(rpath) or root_uuid
+    if os.path.exists(rpath) and not _force_regen(force):
+        print(f"root: {project}.kicad_sch  kept existing ({root_uuid})")
+    else:
+        root = _sch_open(root_uuid, dict(title), paper)
+        root += "\t(lib_symbols)\n"
+        root += sheet_symbols
+        root += wiring
+        root += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "1")\n\t\t)\n\t)\n'
+                 "\t(embedded_fonts no)\n)\n")
+        open(rpath, "w", encoding="utf-8").write(root)
+        print(f"root: {project}.kicad_sch")
     pro = os.path.join(proj_dir, f"{project}.kicad_pro")
     if os.path.exists(pro):
         pj = json.load(open(pro))
-        pj["sheets"] = [[root_uuid, project]] + pro_sheets
-        json.dump(pj, open(pro, "w"), indent=2)
-        print(f"updated {project}.kicad_pro sheets array")
+        sheets_array = [[root_uuid, project]] + pro_sheets
+        if pj.get("sheets") != sheets_array:
+            pj["sheets"] = sheets_array
+            json.dump(pj, open(pro, "w"), indent=2)
+            print(f"updated {project}.kicad_pro sheets array")
 
 
-def build(project, proj_dir, root_uuid, title, sheets, paper="A3"):
-    """Generate child sheets + root + update <project>.kicad_pro.
+def build(project, proj_dir, root_uuid, title, sheets, paper="A3", force=False):
+    """Create missing child sheets + root + update <project>.kicad_pro.
 
     sheets: list of dicts {name, file, title, page, big[], small[], note?, uuid?}
+    Existing .kicad_sch files are kept intact by default. Set force=True or
+    KSCHGEN_FORCE=1 to rebuild them, reusing their existing sheet UUIDs.
     """
+    force = _force_regen(force)
+    rpath = os.path.join(proj_dir, f"{project}.kicad_sch")
+    root_uuid = _schematic_uuid(rpath) or root_uuid
+
     for sh in sheets:
-        sh.setdefault("uuid", U())
         sh["_dir"] = proj_dir
+        child_path = os.path.join(proj_dir, sh["file"])
+        sh["uuid"] = _schematic_uuid(child_path) or sh.get("uuid") or U()
         _layout(sh)
 
     print("child sheets:")
     for sh in sheets:
-        _write_child(sh, project, root_uuid, title, paper)
+        _write_child(sh, project, root_uuid, title, paper, force=force)
 
     # root
-    rtitle = dict(title)
-    root = ("(kicad_sch\n\t(version 20260306)\n\t(generator \"eeschema\")\n"
-            "\t(generator_version \"10.0\")\n"
-            f'\t(uuid "{root_uuid}")\n\t(paper "{paper}")\n')
-    root += _title_block(rtitle)
-    root += "\t(lib_symbols)\n"
-    x = 16 * G
-    for sh in sheets:
-        root += _sheet_block(sh, x, 16 * G)
-        x += 22 * G
-    root += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "1")\n\t\t)\n\t)\n'
-             "\t(embedded_fonts no)\n)\n")
-    rpath = os.path.join(proj_dir, f"{project}.kicad_sch")
-    open(rpath, "w", encoding="utf-8").write(root)
-    print(f"root: {project}.kicad_sch  ({len(sheets)} sheet symbols)")
+    if os.path.exists(rpath) and not force:
+        print(f"root: {project}.kicad_sch  kept existing ({root_uuid})")
+    else:
+        rtitle = dict(title)
+        root = ("(kicad_sch\n\t(version 20260306)\n\t(generator \"eeschema\")\n"
+                "\t(generator_version \"10.0\")\n"
+                f'\t(uuid "{root_uuid}")\n\t(paper "{paper}")\n')
+        root += _title_block(rtitle)
+        root += "\t(lib_symbols)\n"
+        x = 16 * G
+        for sh in sheets:
+            root += _sheet_block(sh, x, 16 * G)
+            x += 22 * G
+        root += ('\t(sheet_instances\n\t\t(path "/"\n\t\t\t(page "1")\n\t\t)\n\t)\n'
+                 "\t(embedded_fonts no)\n)\n")
+        open(rpath, "w", encoding="utf-8").write(root)
+        print(f"root: {project}.kicad_sch  ({len(sheets)} sheet symbols)")
 
     # .kicad_pro sheets array
     pro = os.path.join(proj_dir, f"{project}.kicad_pro")
     if os.path.exists(pro):
         pj = json.load(open(pro))
-        pj["sheets"] = ([[root_uuid, project]]
+        sheets_array = ([[root_uuid, project]]
                         + [[sh["uuid"], sh["name"]] for sh in sheets])
-        json.dump(pj, open(pro, "w"), indent=2)
-        print(f"updated {project}.kicad_pro sheets array")
+        if pj.get("sheets") != sheets_array:
+            pj["sheets"] = sheets_array
+            json.dump(pj, open(pro, "w"), indent=2)
+            print(f"updated {project}.kicad_pro sheets array")

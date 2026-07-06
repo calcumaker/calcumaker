@@ -32,10 +32,10 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | RTC xtal | Epson 32.768 kHz | C32346 | SMD 3215 2-pin | ✅ LSE (Clock sheet) + 2× 12pF load caps |
 | Display interconnect (J3) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ FFC to display; +5V/GND doubled for LED current (0.5mm ≈ 0.4A/cond). **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM; length TBD).** |
 | I2C pull-ups | 4.7k 0402 ×2 (R14/R15) | C25900 | 0402 | ✅ DNP — populate with the aux OLED |
-| **Keyboard mezzanine receptacle (J5)** | **Hirose DF40C-10DS-0.4V** 2×5 0.4mm B2B | **C424636** | `Connector_Hirose_DF40:…DF40B-10DS-0.4V_2x05` | ✅ **low-profile 1.5mm stack** (3D-modelled); I²C+UART+KB_IRQ+power to the keyboard G0 (matrix does NOT cross); mates DF40C-10DP |
+| **Keyboard mezzanine receptacle (J5)** | **Hirose DF40B-12DS-0.4V** 2×6 0.4mm B2B | **C3641147** | `Connector_Hirose_DF40:…DF40B-12DS-0.4V_2x06` | ✅ ~1.5mm stack (3D-modelled); I²C+UART+KB_IRQ+**VSYS**+power to the keyboard G0 (matrix does NOT cross); mates DF40C-12DP. DF40C-12DS unstocked → DF40B (same 1.5mm stack; DF40 height = the suffix, not the B/C letter) |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
 
-## calcumaker-keyboard (Cherry MX matrix + STM32G0 scanner + annunciators + MCU mezzanine)
+## calcumaker-keyboard (Cherry MX matrix + STM32G0 scanner + annunciators + per-key RGB + MCU mezzanine)
 
 *Top of the stack; the front-panel board the user types on. Mezzanine-stacks
 above the MCU board. Its own STM32G0 scans the matrix + drives the annunciators
@@ -53,7 +53,10 @@ and talks to the U575 over I²C/UART (keyscanning is off the MCU board).*
 | Annunciator LEDs C / G / low-batt | KT-0603R (red) ×3 | C2286 | **0603** | ✅ D53–D55, top edge under the display bezel |
 | Annunciator resistors ×5 | 470 Ω | C25117 | 0402 | ✅ R1–R5 (~1.3–2.8 mA @3V3; tune per color at bring-up) |
 | G0 programming (J2) | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (bare land) — or reflash via the UART/DFU bootloader over J1 |
-| **MCU mezzanine header (J1)** | **Hirose DF40C-10DP-0.4V** 2×5 0.4mm B2B | **C424635** | `Connector_Hirose_DF40:…DF40C-10DP-0.4V_2x05` | ✅ mates the MCU receptacle (J5, DF40C-10DS); low-profile 1.5mm stack; pinout MUST match |
+| **Per-key RGB ×50 (D56–D105)** | **SK6805-EC15** 1.5×1.5mm single-wire addressable RGB | **C2890035** | `LED_SMD:LED_SK6812_EC15_1.5x1.5mm` | ✅ ~$0.06; smallest serial RGB w/ KiCad fp + stock; one beside each key (hint lighting); daisy-chained off the G0 |
+| RGB level shifter (U2) | **SN74LVC1G125** single buffer (3V3→VLED data) | **C23654** | SOT-23-5 | ✅ powered from the gated LED rail; /OE→GND; lifts data to LED V_IH |
+| RGB load switch (Q1/Q2) | **AO3401A** P-FET + **2N7002** N-FET + R7–R10/C6/C7 | **C15127** / **C8545** | SOT-23 | ✅ high-side gate on VSYS→VLED; G0 `LED_EN` cuts LEDs in sleep (near-zero leakage) |
+| **MCU mezzanine header (J1)** | **Hirose DF40C-12DP-0.4V** 2×6 0.4mm B2B | **C6224952** | `Connector_Hirose_DF40:…DF40C-12DP-0.4V_2x06` | ✅ mates the MCU receptacle (J5, DF40B-12DS); ~1.5mm stack; carries +VSYS+GND for the RGB; pinout MUST match |
 
 ## calcumaker-display (7-seg stack + drivers + interconnect)
 

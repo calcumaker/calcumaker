@@ -6,12 +6,12 @@
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Keyboard — Keyboard scanner MCU (STM32G031K8U6)")
-		(date "2026-07-05")
-		(rev "0.2")
+		(date "2026-07-06")
+		(rev "0.3")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "MCU_ST_STM32G0:STM32G031K_4-6-8_Ux"
+	(symbol "MCU_ST_STM32G0:STM32G031K8Ux"
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
@@ -95,7 +95,7 @@
 				)
 			)
 		)
-		(symbol "STM32G031K_4-6-8_Ux_0_1"
+		(symbol "STM32G031K8Ux_0_1"
 			(rectangle
 				(start -15.24 -22.86)
 				(end 15.24 25.4)
@@ -108,7 +108,7 @@
 				)
 			)
 		)
-		(symbol "STM32G031K_4-6-8_Ux_1_1"
+		(symbol "STM32G031K8Ux_1_1"
 			(pin bidirectional line
 				(at -17.78 -17.78 0)
 				(length 2.54)
@@ -896,88 +896,6 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "MCU_ST_STM32G0:STM32G031K8Ux"
-		(extends "STM32G031K_4-6-8_Ux")
-		(property "Reference" "U"
-			(at -15.24 26.67 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "STM32G031K8Ux"
-			(at 2.54 26.67 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_DFN_QFN:QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm"
-			(at -15.24 -22.86 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Datasheet" "https://www.st.com/resource/en/datasheet/stm32g031k8.pdf"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "STMicroelectronics Arm Cortex-M0+ MCU, 64KB flash, 8KB RAM, 64 MHz, 1.7-3.6V, 30 GPIO, UFQFPN32"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "Arm Cortex-M0+ STM32G0 STM32G0x1"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "QFN*1EP*5x5mm*P0.5mm*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
 	(symbol "Device:C"
 		(pin_numbers
 			(hide yes)
@@ -1273,7 +1191,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030"
+	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030-NL"
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
@@ -1354,7 +1272,7 @@
 				)
 			)
 		)
-		(symbol "Conn_ARM_SWD_TagConnect_TC2030_0_0"
+		(symbol "Conn_ARM_SWD_TagConnect_TC2030-NL_0_0"
 			(pin power_in line
 				(at -2.54 10.16 270)
 				(length 2.54)
@@ -1467,7 +1385,7 @@
 				(alternate "TDO" input line)
 			)
 		)
-		(symbol "Conn_ARM_SWD_TagConnect_TC2030_0_1"
+		(symbol "Conn_ARM_SWD_TagConnect_TC2030-NL_0_1"
 			(rectangle
 				(start -5.08 7.62)
 				(end 5.08 -7.62)
@@ -1482,85 +1400,6 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030-NL"
-		(extends "Conn_ARM_SWD_TagConnect_TC2030")
-		(property "Reference" "J"
-			(at 2.54 11.43 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_ARM_SWD_TagConnect_TC2030-NL"
-			(at 2.54 8.89 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
-			(at 0 -17.78 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://www.tag-connect.com/wp-content/uploads/bsk-pdf-manager/TC2030-CTX_1.pdf"
-			(at 0 -15.24 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Tag-Connect ARM Cortex SWD JTAG connector, 6 pin, no legs"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "Cortex Debug Connector ARM SWD JTAG"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "*TC2030*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
 	)
 	(symbol
 		(lib_id "MCU_ST_STM32G0:STM32G031K8Ux")
@@ -1570,7 +1409,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2bc5fa1d-af27-43c9-93c7-2e7f14bf4bb6")
+		(uuid "da2553b1-7a59-4e93-9cfd-6760a841fbc7")
 		(property "Reference" "U1"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1599,39 +1438,39 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "85c7d33c-cabe-4f92-b93a-e174f4ced79e"))
-		(pin "2" (uuid "0b4fbc04-f6ca-4aa8-8523-6114963066a0"))
-		(pin "3" (uuid "3806bfef-b31a-4b51-b29f-3fc9d8334d12"))
-		(pin "4" (uuid "3489d21d-5b56-46fc-a73c-1325fdbb018a"))
-		(pin "5" (uuid "e43b74e6-0ab8-4ba4-9de4-cfdb126f59ec"))
-		(pin "6" (uuid "e1a73004-7450-4743-beb8-177c575dea46"))
-		(pin "7" (uuid "2241ba7b-cbc1-4750-8a45-3908ad859ffb"))
-		(pin "8" (uuid "cc0b8ef4-e039-4e36-9e81-06fb79679538"))
-		(pin "9" (uuid "bfc4e3f0-4b8c-4e0e-8321-94f7a219f70f"))
-		(pin "10" (uuid "f80593c9-1602-458c-be6b-e473cf79ff28"))
-		(pin "11" (uuid "afcc6e34-891e-4dbb-8212-1f3d3fa26bc6"))
-		(pin "12" (uuid "c45247ff-c3a2-4a52-9bc2-b5988c3b1531"))
-		(pin "13" (uuid "ccdf7b1c-2cc9-4d0e-9790-eee938608a52"))
-		(pin "14" (uuid "bf5fbe63-c17c-458e-866f-18382c3fd895"))
-		(pin "15" (uuid "c3245a20-6de9-4dee-b691-6cf3fd85b888"))
-		(pin "16" (uuid "7a96e415-550f-45dc-a18f-36afda2c4e6b"))
-		(pin "17" (uuid "1cae498c-b4c2-4650-82dc-c0bc57d4e821"))
-		(pin "18" (uuid "c13424f5-1ad8-4950-8139-cd49a21bc894"))
-		(pin "19" (uuid "e6f9bcfe-e306-4428-a734-a66411ab2b0a"))
-		(pin "20" (uuid "52adfabd-dd84-4807-820f-b097c6c93c6a"))
-		(pin "21" (uuid "b5972c1c-c8f8-4d6d-bd74-09ab6ee94c6e"))
-		(pin "22" (uuid "7b0125f1-ce9d-43d7-98f9-047f17d587cd"))
-		(pin "23" (uuid "cb10b6c5-d58c-4fbe-a48f-d4ce8ac59dd5"))
-		(pin "24" (uuid "eda54eb2-c86a-47f5-b906-8713b2648310"))
-		(pin "25" (uuid "4443a7c5-5370-4bed-8f50-bf0a41ebb304"))
-		(pin "26" (uuid "63c01bb4-4924-46c1-85e7-20faa0ec2e5b"))
-		(pin "27" (uuid "d3cb4717-ea72-4166-aa7a-0bc9c783bb84"))
-		(pin "28" (uuid "77acaa57-074d-4903-adc5-6a3610e1a15f"))
-		(pin "29" (uuid "7abf8c7d-b157-413f-985d-512edaf89ec6"))
-		(pin "30" (uuid "0f676f25-364d-4cfd-b359-1a3e5c7618b6"))
-		(pin "31" (uuid "82503512-0c59-4c66-9186-f55968d314e1"))
-		(pin "32" (uuid "183a18c5-ccfe-4722-8807-d9dc51cc9a7f"))
-		(pin "33" (uuid "a444c973-75d6-4979-ab3b-81b829c488c7"))
+		(pin "1" (uuid "eda7ecd1-9dd5-463a-90bf-bba1ca1210d4"))
+		(pin "2" (uuid "ffdcee37-2e4c-443b-b18a-6dc7c1b3285f"))
+		(pin "3" (uuid "f206e135-aa50-43b9-a492-d18e79a43b3e"))
+		(pin "4" (uuid "90a03104-f2f8-4dfa-b287-7df36e29a8fb"))
+		(pin "5" (uuid "c0e94c5f-1a76-40d9-8985-8eacd041bce6"))
+		(pin "6" (uuid "4f5f7853-a22d-4b86-8f1a-70c1d2113792"))
+		(pin "7" (uuid "ce7ed9e7-acae-4261-a676-20c53ba7ab9a"))
+		(pin "8" (uuid "3aa05cf5-f8fa-40ca-8b06-1d8be756b731"))
+		(pin "9" (uuid "f518af3b-30a0-4eaa-9224-51879a4e7ad7"))
+		(pin "10" (uuid "c20ed7a4-017b-4f1a-923b-17ea7c17acdb"))
+		(pin "11" (uuid "3626fd3c-e83f-4436-abbf-c5b76125437e"))
+		(pin "12" (uuid "f5d43ecf-1c8d-4424-a66a-7a1ccc55d339"))
+		(pin "13" (uuid "452a49fd-9f98-4947-9515-bee8b4cb521d"))
+		(pin "14" (uuid "019bd83f-2ea3-4723-bc8b-c7dacf6860bc"))
+		(pin "15" (uuid "e838afd1-b37a-40e0-a65b-b5c81cf5d4f7"))
+		(pin "16" (uuid "28eb01bd-79cd-4bbe-99db-f0b80c615f3c"))
+		(pin "17" (uuid "56544b3d-a047-4654-9953-1025d953e026"))
+		(pin "18" (uuid "5deb9ab7-5df0-474a-b022-9b12933e638e"))
+		(pin "19" (uuid "4e605848-77b8-47ad-9cee-79e5426a6e81"))
+		(pin "20" (uuid "2c399a9a-9927-4ad4-8283-3e5667735c5a"))
+		(pin "21" (uuid "e491de53-30cd-458e-ac36-5ebc30553c65"))
+		(pin "22" (uuid "2dca2108-4baa-46e2-99e0-34d16689eead"))
+		(pin "23" (uuid "6cd09e12-0680-4280-8487-2a5c2b76db8b"))
+		(pin "24" (uuid "58e06972-51fc-47b1-a66d-2d93ff29b50c"))
+		(pin "25" (uuid "689b91e3-92b5-462e-b91c-0f544547cfcd"))
+		(pin "26" (uuid "b006c4f8-cbec-4e18-9a22-8e365e388ec5"))
+		(pin "27" (uuid "f1dc8568-bf8d-4392-a949-283468320c4a"))
+		(pin "28" (uuid "47801c66-24e8-4f5e-808d-d3cb035bfce5"))
+		(pin "29" (uuid "56eef7e8-b944-4291-a77b-7decfe8825f5"))
+		(pin "30" (uuid "141b3b7e-f09f-4e98-8431-f0104152afa4"))
+		(pin "31" (uuid "7512f271-81b2-4d93-a1f5-1fa50992dfaf"))
+		(pin "32" (uuid "8044500f-cba4-43e7-81fa-474e71f88f37"))
+		(pin "33" (uuid "d58ed340-37fb-46e5-9edc-d04370896eb3"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1649,7 +1488,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ff785223-4969-467e-98c6-1b9bfefd33dc")
+		(uuid "01e93c28-60d8-421e-938d-51070d64aab9")
 		(property "Reference" "C1"
 			(at 34.2900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1670,8 +1509,8 @@
 			(at 30.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "864bbed5-5912-4f19-81bf-12eecce6c702"))
-		(pin "2" (uuid "ef615c7b-79c4-48a5-a30e-a8acf72abb6f"))
+		(pin "1" (uuid "b0aaf922-0f53-4415-bf79-708f2b003e68"))
+		(pin "2" (uuid "46921ebf-9fc5-4943-8165-fafc6f8cc32b"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1689,7 +1528,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4a37a791-c0c6-4969-921a-3795af1753f5")
+		(uuid "62543d5d-41ec-40e8-b6a7-c68086555d99")
 		(property "Reference" "C2"
 			(at 72.3900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1710,8 +1549,8 @@
 			(at 68.5800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "294c2480-da6c-42fa-98b1-7d2b066cfcb3"))
-		(pin "2" (uuid "6aa59f98-d252-402f-8c90-7ff7fffeb56e"))
+		(pin "1" (uuid "f080dc25-0d16-44ae-9b79-f62f84a97ec0"))
+		(pin "2" (uuid "5ce5a22d-8bf8-4869-83e1-a349d1d99f49"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1729,7 +1568,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d2bc8a7c-6b85-4c75-8e64-aeeac941c9ea")
+		(uuid "12f13207-480f-4b09-9ba9-c8bea74c81a6")
 		(property "Reference" "C3"
 			(at 110.4900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1750,8 +1589,8 @@
 			(at 106.6800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "390168e2-65cb-4ec9-b97e-fe8280d41d77"))
-		(pin "2" (uuid "4e8efe31-4e18-42e0-8896-67fe9e17af3f"))
+		(pin "1" (uuid "b58e5f22-1558-46fc-a097-8bb37aa9fe29"))
+		(pin "2" (uuid "43f24a2e-9767-4b59-b888-c3c834726e58"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1769,7 +1608,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8369d7ee-dde2-47aa-8705-d7fb0760ac22")
+		(uuid "4e4f8d71-68f0-47e0-88c5-a24d47d850d6")
 		(property "Reference" "C4"
 			(at 148.5900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1786,8 +1625,8 @@
 			(at 144.7800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e110c2fd-c282-400e-9c43-afc645b51600"))
-		(pin "2" (uuid "783b52ba-12bc-41e1-a4e9-afbac08e2337"))
+		(pin "1" (uuid "957edfc6-ba1f-4850-a11d-19371263de4e"))
+		(pin "2" (uuid "807584b9-747f-4186-9177-afb9e2a77eca"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1805,7 +1644,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "31d2857c-4283-4a13-ba97-75a53064d754")
+		(uuid "3c134f02-a613-44d3-a255-b1e54c6dcb7c")
 		(property "Reference" "C5"
 			(at 186.6900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1826,8 +1665,8 @@
 			(at 182.8800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "fd74a1c2-dde7-4ad6-9cf1-05f03c9f9c3e"))
-		(pin "2" (uuid "2533e78d-46a9-442d-8e05-64b867b125c1"))
+		(pin "1" (uuid "063fd808-3ffc-4a8a-a77f-e6780c4ec20e"))
+		(pin "2" (uuid "8abf5902-ad5e-437c-bbfb-37bdfa1ea31b"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1845,7 +1684,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5fdf4965-197c-4958-8741-92ed10688e4c")
+		(uuid "a0b2ed51-9a03-4f2e-aed4-b2ea78745faa")
 		(property "Reference" "R6"
 			(at 224.7900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1866,8 +1705,8 @@
 			(at 220.9800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "96c9cf98-fa09-48dc-a0d2-a85188ce9c02"))
-		(pin "2" (uuid "3cef29ef-f777-43ea-9091-2eb9169c8e68"))
+		(pin "1" (uuid "9e58f6a1-eeb8-40b7-958c-142b8cf3486e"))
+		(pin "2" (uuid "f9561245-0cdd-4ead-b756-caa5ccd8405f"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1885,7 +1724,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2af6bf3d-7169-4718-9899-fce34098e0b8")
+		(uuid "120e5cb4-3301-42ec-b0e5-10cde4dd3643")
 		(property "Reference" "J2"
 			(at 262.8900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1902,12 +1741,12 @@
 			(at 259.0800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "3a3ea893-b781-4e49-b79a-1f6840cc48da"))
-		(pin "2" (uuid "b1d6d8b0-0ba3-4cd7-bdeb-8bfe6d5e7630"))
-		(pin "3" (uuid "52b7de04-efe2-4c3e-b0a0-b60e597bde1b"))
-		(pin "4" (uuid "61823a5a-6c87-42f6-8ff4-c4fe4122da1e"))
-		(pin "5" (uuid "f4322d17-d769-4889-883d-2f7bedf68254"))
-		(pin "6" (uuid "fa8e82e1-2d6a-4b96-975a-e52524922dba"))
+		(pin "1" (uuid "9f118f3b-116a-4aa3-98b5-7a2a81b0ff97"))
+		(pin "2" (uuid "a2d71ecd-e9aa-4f83-8be4-fdc13e2b4c79"))
+		(pin "3" (uuid "0328e3fb-5a59-4077-849b-4ac7179f555b"))
+		(pin "4" (uuid "c67d8966-6019-464b-8b47-8513ab31d615"))
+		(pin "5" (uuid "d830fd64-94a6-4684-8525-cd0b828b066f"))
+		(pin "6" (uuid "d85821ae-6f57-45f4-be3b-75f7b82483b0"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/4dd7cdeb-aa77-4ab0-b654-f9a7d07f70a8"
@@ -1919,9 +1758,9 @@
 	)
 	(text "SCANNER MCU  -  U1  STM32G031K8U6  (LCSC C432207, UFQFPN-32)\nPLACED, not wired.\n\nPOWER\n  VDD  -> +3V3   C1/C2 100nF + C4 4.7uF bulk\n  VDDA -> C3 100nF          VSS/EP -> GND\nRESET / BOOT\n  NRST  -> C5 100nF  (also -> KB_NRST on J1: U575 can reset it)\n  BOOT0 -> R6 10k to GND (also -> KB_BOOT0 on J1: ROM UART/DFU reflash)\nCLOCK   internal HSI, no crystal.\n\nMATRIX  5 ROW (out) + 10 COL (in, int. pull-ups) -> Keypad sheet;\n        hold ROWs low + COL EXTI for wake-from-Stop.\nANNUN   5 GPIO -> the LED resistors (Annunciators sheet).\nLINK (via J1 mezzanine to the U575)\n  I2C1  SDA/SCL  reports keys, receives annunciator state\n  USART TX/RX    alt/expansion + bootloader\n  KB_IRQ (out)   wakes the U575\nPROG    J2 SWD Tag-Connect (bare pads) or UART/DFU over J1.\nSee DESIGN.md Low-power & wake."
 		(exclude_from_sim no)
-		(at 15.00 150.00 0)
+		(at 15.00 137.92 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "cc2dd789-9ecc-4dc6-b558-c0364d4090d2")
+		(uuid "52d77f81-01ac-423c-a994-715325e38f97")
 	)
 	(sheet_instances
 		(path "/"

@@ -5,13 +5,13 @@
 	(uuid "32aa4625-0e65-45ea-b771-87030b782539")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — MCU — Keyboard mezzanine (I2C + UART link to the stacked keyboard)")
+		(title "Calcumaker 16 — MCU — Keyboard mezzanine (I2C + UART + VSYS to the stacked keyboard)")
 		(date "2026-07-06")
 		(rev "0.3")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "Connector_Generic:Conn_02x05_Odd_Even"
+	(symbol "Connector_Generic:Conn_02x06_Odd_Even"
 		(pin_names
 			(offset 1.016)
 			(hide yes)
@@ -31,8 +31,8 @@
 				)
 			)
 		)
-		(property "Value" "Conn_02x05_Odd_Even"
-			(at 1.27 -7.62 0)
+		(property "Value" "Conn_02x06_Odd_Even"
+			(at 1.27 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63,7 +63,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, double row, 02x05, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, double row, 02x06, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -96,10 +96,10 @@
 				)
 			)
 		)
-		(symbol "Conn_02x05_Odd_Even_1_1"
+		(symbol "Conn_02x06_Odd_Even_1_1"
 			(rectangle
 				(start -1.27 6.35)
-				(end 3.81 -6.35)
+				(end 3.81 -8.89)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -164,6 +164,17 @@
 				)
 			)
 			(rectangle
+				(start -1.27 -7.493)
+				(end 0 -7.747)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(rectangle
 				(start 3.81 5.207)
 				(end 2.54 4.953)
 				(stroke
@@ -210,6 +221,17 @@
 			(rectangle
 				(start 3.81 -4.953)
 				(end 2.54 -5.207)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(rectangle
+				(start 3.81 -7.493)
+				(end 2.54 -7.747)
 				(stroke
 					(width 0.1524)
 					(type default)
@@ -398,19 +420,55 @@
 					)
 				)
 			)
+			(pin passive line
+				(at -5.08 -7.62 0)
+				(length 3.81)
+				(name "Pin_11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 7.62 -7.62 180)
+				(length 3.81)
+				(name "Pin_12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
 		)
 		(embedded_fonts no)
 	)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_02x05_Odd_Even")
+		(lib_id "Connector_Generic:Conn_02x06_Odd_Even")
 		(at 45.7200 55.8800 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "863608e6-5b67-4db9-9a10-0c7914812966")
+		(uuid "6b6af873-722d-487c-a842-14fd24a223da")
 		(property "Reference" "J5"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -419,7 +477,7 @@
 			(at 49.5300 58.4200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Connector_Hirose_DF40:Hirose_DF40B-10DS-0.4V_2x05-1MP_P0.4mm"
+		(property "Footprint" "Connector_Hirose_DF40:Hirose_DF40B-12DS-0.4V_2x06-1MP_P0.4mm"
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -427,11 +485,11 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C424636"
+		(property "LCSC" "C3641147"
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "DF40C-10DS-0.4V(51)"
+		(property "MPN" "DF40B-12DS-0.4V(58)"
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -439,16 +497,18 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "29ec924f-ee26-4c40-8b90-51d80f32c430"))
-		(pin "2" (uuid "d3f36706-997a-4205-af98-aca0219b99cb"))
-		(pin "3" (uuid "2e5a06cc-ab8d-40c3-8e74-fdc83d50482c"))
-		(pin "4" (uuid "4338b091-599f-47f8-aaf8-bbdd3e7e56f6"))
-		(pin "5" (uuid "2759ab45-2080-48d4-b4c8-490bf95006ba"))
-		(pin "6" (uuid "656d5be2-9419-4389-b1fb-3be111c91900"))
-		(pin "7" (uuid "ee56a33b-4cc1-461f-b0c2-d33894bc638f"))
-		(pin "8" (uuid "afb9d68f-05ae-4e7b-b91c-8519220f6383"))
-		(pin "9" (uuid "976e6f83-bd79-49d2-8bc9-8a79aea1ec94"))
-		(pin "10" (uuid "de7c4b15-b684-4913-b367-0efb4eeba6ad"))
+		(pin "1" (uuid "fb9a929d-f8ad-4ddb-b760-fb48fd56166c"))
+		(pin "2" (uuid "e9c66508-b6a1-43d2-815a-4995af8a0fe3"))
+		(pin "3" (uuid "c4d722c9-c07a-45e8-95a1-b62f0ef472ab"))
+		(pin "4" (uuid "18e87304-8bee-4222-8451-272700db1661"))
+		(pin "5" (uuid "8ac5a367-5d20-42d4-b168-ab4bcd700c32"))
+		(pin "6" (uuid "114ed179-ac37-4240-b0fe-dc978902f8b4"))
+		(pin "7" (uuid "6dd0c182-1855-419a-aa87-0b82a8268262"))
+		(pin "8" (uuid "a91fbd27-41f5-44b8-81bd-0e84b3245b65"))
+		(pin "9" (uuid "82afc37c-78b8-40ec-ac4a-f38d632d42da"))
+		(pin "10" (uuid "9e775921-491b-4bcc-84ee-a7737d491ba1"))
+		(pin "11" (uuid "55510c1a-82f1-48db-a378-8b135c9837b0"))
+		(pin "12" (uuid "9e2a3074-6ec4-45e2-afa0-08b85f5db235"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/32aa4625-0e65-45ea-b771-87030b782539"
@@ -458,11 +518,11 @@
 			)
 		)
 	)
-	(text "KEYBOARD MEZZANINE  -  J5  DF40C-10DS-0.4V  (LCSC C424636)\nHirose DF40 2x5 0.4mm RECEPTACLE; low-profile 1.5mm stack.\nMates the keyboard-board header (kbd J1 DF40C-10DP, C424635).\nKeyscanning is on the keyboard G0 -> only a serial link + power cross.\nPLACED, not wired.  Both halves MUST agree on this pinout:\n\n  PIN  SIGNAL        PIN  SIGNAL    \n    1  +3V3            6  KB_UART_RX\n    2  GND             7  KB_IRQ    \n    3  I2C_SDA         8  KB_NRST   \n    4  I2C_SCL         9  KB_BOOT0  \n    5  KB_UART_TX     10  GND\n\nI2C     G0 reports (row,col) events + gets annunciator state.\nKB_IRQ  G0 -> a MCU WKUP pin: wakes the U575 on a keypress.\nUART    alt/expansion + the G0 ROM/DFU bootloader.\nNRST/BOOT0  let the MCU reflash the G0.\n\nMECH: 1.5mm stack < MX pin protrusion (~2-3mm) -> keep the MCU board\nunder a keyless region (or trim pins); USB-C/battery at the board EDGE.\nVerify DF40C-10DS land vs the KiCad DF40 2x5 fp + 3D stack at layout."
+	(text "KEYBOARD MEZZANINE  -  J5  DF40B-12DS-0.4V  (LCSC C3641147)\nHirose DF40 2x6 0.4mm RECEPTACLE; ~1.5mm stack.\nMates the keyboard-board header (kbd J1 DF40C-12DP, C6224952).\nKeyscanning is on the keyboard G0 -> only a serial link + power cross.\nPLACED, not wired.  Both halves MUST agree on this pinout:\n\n  PIN  SIGNAL            PIN  SIGNAL        \n    1  +3V3                7  KB_IRQ        \n    2  GND                 8  KB_NRST       \n    3  I2C_SDA             9  KB_BOOT0      \n    4  I2C_SCL            10  GND           \n    5  KB_UART_TX         11  VSYS (LED pwr)\n    6  KB_UART_RX         12  GND (LED rtn)\n\nI2C     G0 reports (row,col) events + gets annunciator state.\nKB_IRQ  G0 -> a MCU WKUP pin: wakes the U575 on a keypress.\nUART    alt/expansion + the G0 ROM/DFU bootloader.\nNRST/BOOT0  let the MCU reflash the G0.\nVSYS(11) = the load-shared batt/USB rail (PSU sheet, ~3.7-4.7V) -> the\n  keyboard's per-key RGB (gated on the keyboard by Q1). GND(12) = LED rtn.\n  Off-sheet: tie J5.11 to VSYS on the PSU sheet.\n\nMECH: 1.5mm stack < MX pin protrusion (~2-3mm) -> keep the MCU board\nunder a keyless region (or trim pins); USB-C/battery at the board EDGE.\nSTACK = 1.5mm (DF40B-12DS x common DF40C-12DP plug; B/C = a pin-count\nvariant, not height -- the suffix e.g. (2.0) sets height). Verify the\nDF40 2x6 land + 3D clearance at layout."
 		(exclude_from_sim no)
-		(at 15.00 105.00 0)
+		(at 15.00 116.88 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "7770f1d5-61f5-4e20-a456-de04641422ea")
+		(uuid "06e16902-9311-4665-b75a-b8d0a83fa229")
 	)
 	(sheet_instances
 		(path "/"

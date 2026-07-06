@@ -21,13 +21,11 @@ panic-halt = "1.0"
 embedded-alloc = { version = "0.6", default-features = false, features = ["tlsf"] }
 
 # --- Calculator engine -------------------------------------------------------
-# The RPN + arbitrary-precision engine lives in `calcumaker-core` (GMP + MPFR,
-# single path — see ../calcumaker-core). That crate is host-tested through our
-# own `gmp-mpfr-nostd` FFI; the embedded build links the same API against
-# GMP/MPFR cross-compiled for thumbv8m. Wiring that is the open task
-# (../../DESIGN.md):
-#   calcumaker-core = { path = "../calcumaker-core", default-features = false }
-# (pending final allocator/newlib/HAL bring-up in this board crate).
+# The RPN + arbitrary-precision engine (GMP + MPFR, single path). The embedded
+# build links the same API against GMP/MPFR cross-built for thumbv8m (set
+# GMP_MPFR_LIBDIR — see build.rs). GMP/MPFR's C allocator (malloc/free/realloc/
+# calloc) is shimmed onto the Rust global heap in main.rs.
+calcumaker-core = { path = "../calcumaker-core", default-features = false }
 
 # --- MCU HAL: STM32U575ZGT6 (selected — see ../../DESIGN.md) ------------------
 # Move to embassy-stm32 with the U575 chip feature (verify exact feature name):

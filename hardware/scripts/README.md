@@ -43,10 +43,11 @@ Notes render in a fixed-width font; use `K.note_block()` and `K.pin_table()` in
 manifests when writing pin maps or wiring tables that need alignment.
 
 > **Status:** the manifests remain guarded drafts until the open layout/part
-> checks are resolved. The display manifest generates the fully wired
-> multi-channel row design; the MCU and keyboard manifests generate the sheet
-> structure and on-canvas wiring notes. They refuse to run unless
-> `CALCUMAKER_SCHGEN_DRAFT_OK=1` is set.
+> checks are resolved. The display manifest and the keyboard **matrix + per-key
+> RGB** are fully wired **multi-channel** designs (a reusable row instantiated
+> N×); the rest of the MCU/keyboard sheets generate placed-not-wired structure +
+> on-canvas wiring notes. They refuse to run unless `CALCUMAKER_SCHGEN_DRAFT_OK=1`
+> is set; regenerating placed-not-wired boards also needs `KSCHGEN_FORCE=1`.
 
 ## Notes
 

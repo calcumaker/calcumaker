@@ -556,16 +556,17 @@ Rough count ~26 signal GPIO — comfortably inside LQFP-64 (~50 I/O); verify
 
 ## Schematic Sheet Plan
 
-Two boards, each generated from its own manifest
-(`hardware/scripts/calcumaker-{main,display}.schgen.py`), then placed-not-wired,
-then wired in eeschema.
+Three boards, each generated from its own manifest
+(`hardware/scripts/calcumaker-{mcu,keyboard,display}.schgen.py`); the display and
+the keyboard matrix are **multi-channel** (reusable row instantiated N×, fully
+wired), the remaining sheets are placed-not-wired (wired in eeschema).
 
 **`calcumaker-mcu`:**
 
 | Sheet | File | Contents |
 |-------|------|----------|
 | Root | `calcumaker-mcu.kicad_sch` | sheet symbols + title block |
-| MCU | `mcu.kicad_sch` | STM32U575ZGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 |
+| MCU | `mcu.kicad_sch` | STM32U575RGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 |
 | Clock | `clock.kicad_sch` | LSE 32.768 kHz crystal (Y1) + load caps (RTC) |
 | Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
@@ -577,16 +578,18 @@ then wired in eeschema.
 
 | Sheet | File | Contents |
 |-------|------|----------|
-| Root | `calcumaker-keyboard.kicad_sch` | sheet symbols + title block |
-| Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (SW1–50 + diodes D1–50) → the on-board G0 |
+| Root | `calcumaker-keyboard.kicad_sch` | 5× `key_row` instances + 4 one-off sheets; per-row `ROW`→`KB_ROWn` + the RGB DIN→DOUT chain wired here |
+| **key_row ×5** | `key_row.kicad_sch` | **Reusable 10-key row (MULTI-CHANNEL, fully wired): each key = MX switch + 1N4148W diode + SK6805 RGB.** Instantiated ×5: Row1–5 → SW1–50 / D1–50 (matrix) / D56–105 (RGB). Shared COL1–10/VLED/GND global; ROW + RGB DIN/DOUT hierarchical |
 | Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
 | KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
-| KeyLighting | `keylight.kicad_sch` | **50× SK6805-EC15 per-key RGB (D56–D105)** + level shifter (U2) + gated load switch (Q1/Q2) — hint lighting off VSYS |
+| RGBPower | `rgb_power.kicad_sch` | RGB **level shifter (U2)** + **gated high-side load switch (Q1/Q2 + R7–10/C6–7)** — drives + sleep-gates the per-key chain off VSYS |
 | MainIF | `main_if.kicad_sch` | Hirose DF40 **2×6 (12-pin)** 0.4 mm mezzanine header (J1, DF40C-12DP, ~1.5 mm stack) → down to the MCU board (+VSYS +GND for the RGB) |
 
 All three boards **generate from their manifests and pass the structure check**:
-`calcumaker-mcu` = 55 components, `calcumaker-keyboard` = 178 components (both
-placed-not-wired), `calcumaker-display` = 60 components (fully wired, multi-channel).
+`calcumaker-mcu` = 55 components (placed-not-wired), `calcumaker-keyboard` = 178
+components (**5×10 matrix + per-key RGB wired multi-channel** as `key_row` ×5; the
+G0/annunciator/RGB-power/mezzanine sheets placed-not-wired), `calcumaker-display`
+= 60 components (fully wired, multi-channel).
 Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`.
 
 **`calcumaker-display`:**
@@ -718,8 +721,9 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
 5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
    f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
    annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
-   (Keypad / Annunciators / KbdMCU / KeyLighting / MainIF, 178 comp — incl. 50
-   per-key RGB), which mezzanine-stacks (I²C+UART+VSYS) above **`calcumaker-mcu`**
+   (**key_row ×5 multi-channel** / Annunciators / KbdMCU / RGBPower / MainIF, 178
+   comp — matrix + 50 per-key RGB wired as one reusable 10-key row), which
+   mezzanine-stacks (I²C+UART+VSYS) above **`calcumaker-mcu`**
    (MCU / Clock / Programming / PSU / DisplayIF / KeyboardIF / QSPIFlash, 55 comp). All symbols stock except the authored
    TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
    refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the

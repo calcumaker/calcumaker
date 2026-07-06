@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "4e94bd18-e5fe-49a6-ae02-b46fd6d77075")
+	(uuid "ca1c0000-0000-4000-8000-00000000eb20")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Keyboard — Annunciator LEDs (f g C G low-batt)")
 		(date "2026-07-06")
-		(rev "0.3")
+		(rev "0.4")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -355,46 +355,46 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 30.4800 40.6400 0)
+		(at 20.3200 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2d201ed2-e394-4493-a72c-ec4fe21bb846")
+		(uuid "729a29fc-528b-407a-8f74-332959e48d65")
 		(property "Reference" "D51"
-			(at 34.2900 38.1000 0)
+			(at 24.1300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "f (yellow)"
-			(at 34.2900 43.1800 0)
+			(at 24.1300 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 30.4800 40.6400 0)
+			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 30.4800 40.6400 0)
+			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C72038"
-			(at 30.4800 40.6400 0)
+			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "19-213/Y2C-CQ2R2L/3T(CY)"
-			(at 30.4800 40.6400 0)
+			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "Everlight"
-			(at 30.4800 40.6400 0)
+			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1e090143-9748-499d-b9c5-9719888b486e"))
-		(pin "2" (uuid "fefb01af-13ee-4636-ac9b-43c5a121816e"))
+		(pin "1" (uuid "75964180-1930-4fb7-a3e7-ccbad1e6d94f"))
+		(pin "2" (uuid "65e84a11-54b8-4f7b-b9a3-267c53db8e60"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "D51")
 					(unit 1)
 				)
@@ -403,46 +403,46 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 68.5800 40.6400 0)
+		(at 60.9600 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "988b82e9-4990-41cc-b315-2f8bf69a4653")
+		(uuid "537eaa04-8f8b-4f7c-a7d8-e34ab3e9f071")
 		(property "Reference" "D52"
-			(at 72.3900 38.1000 0)
+			(at 64.7700 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "g (blue)"
-			(at 72.3900 43.1800 0)
+			(at 64.7700 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 68.5800 40.6400 0)
+			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 68.5800 40.6400 0)
+			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C965807"
-			(at 68.5800 40.6400 0)
+			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "XL-1608UBC-04"
-			(at 68.5800 40.6400 0)
+			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "XINGLIGHT"
-			(at 68.5800 40.6400 0)
+			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "dd625a3a-6246-426a-9e00-7dd6aa98e8f2"))
-		(pin "2" (uuid "1cc8027d-a3d4-4f48-9034-66c54a022305"))
+		(pin "1" (uuid "5e9226a0-3897-416b-9fe5-13a224779d73"))
+		(pin "2" (uuid "9999fde8-c54d-4bb1-b434-1a5d81884873"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "D52")
 					(unit 1)
 				)
@@ -451,46 +451,46 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 106.6800 40.6400 0)
+		(at 101.6000 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fdbf9302-f09f-4fdb-9d1c-b72aab33b00b")
+		(uuid "2392d59e-78d1-42f7-a145-9e7107a25228")
 		(property "Reference" "D53"
-			(at 110.4900 38.1000 0)
+			(at 105.4100 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "C (red)"
-			(at 110.4900 43.1800 0)
+			(at 105.4100 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 106.6800 40.6400 0)
+			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 106.6800 40.6400 0)
+			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C2286"
-			(at 106.6800 40.6400 0)
+			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "KT-0603R"
-			(at 106.6800 40.6400 0)
+			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "KENTO"
-			(at 106.6800 40.6400 0)
+			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "50b8b55d-98c4-46af-93c8-2dcf693bf862"))
-		(pin "2" (uuid "9cb32969-9e87-4f62-8cef-9fc24883c4d3"))
+		(pin "1" (uuid "18e4125d-da05-45c6-9119-8e838388482d"))
+		(pin "2" (uuid "b288fc04-6e84-4356-9f09-8667ad92998c"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "D53")
 					(unit 1)
 				)
@@ -499,46 +499,46 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 144.7800 40.6400 0)
+		(at 142.2400 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fd586b3b-83b4-466f-9175-719c6dd98d1f")
+		(uuid "a1c19660-90e6-402d-a708-4409b0ed8e8f")
 		(property "Reference" "D54"
-			(at 148.5900 38.1000 0)
+			(at 146.0500 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "G (red)"
-			(at 148.5900 43.1800 0)
+			(at 146.0500 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 144.7800 40.6400 0)
+			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 144.7800 40.6400 0)
+			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C2286"
-			(at 144.7800 40.6400 0)
+			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "KT-0603R"
-			(at 144.7800 40.6400 0)
+			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "KENTO"
-			(at 144.7800 40.6400 0)
+			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e613e854-2ab6-4719-9677-339451778a35"))
-		(pin "2" (uuid "8a95389c-688e-45b4-a204-069592c65e91"))
+		(pin "1" (uuid "e95821af-8595-4eb9-9166-bade43653dd1"))
+		(pin "2" (uuid "27d3cb36-8005-4a57-b669-09de714c336b"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "D54")
 					(unit 1)
 				)
@@ -547,46 +547,46 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 182.8800 40.6400 0)
+		(at 182.8800 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "42fc636c-288e-4d48-a6a9-5dc9da0965b7")
+		(uuid "20d0b3e1-2884-4705-a555-17008541792b")
 		(property "Reference" "D55"
-			(at 186.6900 38.1000 0)
+			(at 186.6900 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "LOWBAT (red)"
-			(at 186.6900 43.1800 0)
+			(at 186.6900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 182.8800 40.6400 0)
+			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 182.8800 40.6400 0)
+			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C2286"
-			(at 182.8800 40.6400 0)
+			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "KT-0603R"
-			(at 182.8800 40.6400 0)
+			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "KENTO"
-			(at 182.8800 40.6400 0)
+			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "a18ff684-9c0d-44ac-8788-4bd84a699b7b"))
-		(pin "2" (uuid "690137ef-3db2-42fd-97e5-bdc26c24c7b4"))
+		(pin "1" (uuid "ef2d54ed-0c58-4b74-8518-a7488db0c446"))
+		(pin "2" (uuid "53ce226b-ab5b-4d5b-925e-6d3cf8d74394"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "D55")
 					(unit 1)
 				)
@@ -595,38 +595,38 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 220.9800 40.6400 0)
+		(at 223.5200 35.5600 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "be9459ec-3fba-42ae-899f-664d41a9e489")
+		(uuid "34354e29-8897-4cee-bff2-aae9f1c4f288")
 		(property "Reference" "R1"
-			(at 224.7900 38.1000 0)
+			(at 227.3300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "470"
-			(at 224.7900 43.1800 0)
+			(at 227.3300 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 220.9800 40.6400 0)
+			(at 223.5200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 220.9800 40.6400 0)
+			(at 223.5200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C25117"
-			(at 220.9800 40.6400 0)
+			(at 223.5200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "7a7f3845-5919-4347-91d4-d6b02a5beb90"))
-		(pin "2" (uuid "2f703ffc-5197-47dd-9148-779234cd4cac"))
+		(pin "1" (uuid "eea38cc6-060d-4914-8f7e-0e675bc651e3"))
+		(pin "2" (uuid "593e8566-da02-4555-b0c8-27a330944219"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "R1")
 					(unit 1)
 				)
@@ -635,38 +635,38 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 259.0800 40.6400 0)
+		(at 20.3200 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "117b9c3c-f639-4135-818a-ed9897548fb1")
+		(uuid "6939afaf-e126-4ce3-8e6a-eaa5a41f51e5")
 		(property "Reference" "R2"
-			(at 262.8900 38.1000 0)
+			(at 24.1300 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "470"
-			(at 262.8900 43.1800 0)
+			(at 24.1300 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 259.0800 40.6400 0)
+			(at 20.3200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 259.0800 40.6400 0)
+			(at 20.3200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C25117"
-			(at 259.0800 40.6400 0)
+			(at 20.3200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "f08a7173-6eb0-4e9d-94e8-ebc0140ce51d"))
-		(pin "2" (uuid "f4aa8a1a-c6fd-49b2-9c9a-3414412cc3d7"))
+		(pin "1" (uuid "3c24f7d3-00f9-4305-bc27-8af394c20071"))
+		(pin "2" (uuid "d9c3fd8d-0b9b-47a6-a6a4-bc94b1f45bfa"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "R2")
 					(unit 1)
 				)
@@ -675,38 +675,38 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 297.1800 40.6400 0)
+		(at 60.9600 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "50f62eca-ad18-46c3-94c7-db4f5ae5b91f")
+		(uuid "1e2ff7a3-319d-43c4-96ec-0402a172fdc1")
 		(property "Reference" "R3"
-			(at 300.9900 38.1000 0)
+			(at 64.7700 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "470"
-			(at 300.9900 43.1800 0)
+			(at 64.7700 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 297.1800 40.6400 0)
+			(at 60.9600 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 297.1800 40.6400 0)
+			(at 60.9600 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C25117"
-			(at 297.1800 40.6400 0)
+			(at 60.9600 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "af83d627-9b77-4002-b02f-6782bc12d827"))
-		(pin "2" (uuid "7419138c-54bd-4cbf-bc8e-b5397a88ab27"))
+		(pin "1" (uuid "dd2daacc-2d8c-4242-b1f7-b08393e56be3"))
+		(pin "2" (uuid "3dfe78a9-99b4-4176-80a3-93c311584968"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "R3")
 					(unit 1)
 				)
@@ -715,38 +715,38 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 335.2800 40.6400 0)
+		(at 101.6000 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2980f207-8b1a-4e89-8db1-3c9212d0ae16")
+		(uuid "51e21948-d98f-4a1e-9d4b-df2f29c3e64e")
 		(property "Reference" "R4"
-			(at 339.0900 38.1000 0)
+			(at 105.4100 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "470"
-			(at 339.0900 43.1800 0)
+			(at 105.4100 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 335.2800 40.6400 0)
+			(at 101.6000 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 335.2800 40.6400 0)
+			(at 101.6000 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C25117"
-			(at 335.2800 40.6400 0)
+			(at 101.6000 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "749f0e55-e7a4-4e14-bb2d-9ee0c0706da0"))
-		(pin "2" (uuid "8d8f6773-f397-4176-93fa-52fa664b14ed"))
+		(pin "1" (uuid "1732a5c4-836b-4f1f-a85e-6646788af383"))
+		(pin "2" (uuid "63f9ebdf-ac2b-4af5-8870-82db394efffc"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "R4")
 					(unit 1)
 				)
@@ -755,49 +755,49 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 373.3800 40.6400 0)
+		(at 142.2400 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "76842bf3-f978-45dc-9e0e-bd019c6dd471")
+		(uuid "effd3a1f-e429-48e6-9404-95dac6c30c98")
 		(property "Reference" "R5"
-			(at 377.1900 38.1000 0)
+			(at 146.0500 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "470"
-			(at 377.1900 43.1800 0)
+			(at 146.0500 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 373.3800 40.6400 0)
+			(at 142.2400 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 373.3800 40.6400 0)
+			(at 142.2400 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C25117"
-			(at 373.3800 40.6400 0)
+			(at 142.2400 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "5e6bfb5c-676d-4d31-a685-e830a686bd12"))
-		(pin "2" (uuid "b72e906a-8fda-4d77-b2ed-dc4264bd83f3"))
+		(pin "1" (uuid "131d6919-a08d-409f-abd5-0a2a4d8201c2"))
+		(pin "2" (uuid "14389994-fadc-4e10-9355-555d1e93b3f8"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
 					(reference "R5")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)\nPLACED, not wired.  5 drive lines from the on-board STM32G0 (active high),\neach -> Rn 470R -> LED -> GND.  +3V3 feeds the resistors; GND returns.\n\n  D51  f  yellow    beside the f key\n  D52  g  blue      beside the g key\n  D53  C  red       carry     ] top edge, under\n  D54  G  red       overflow  ] the display bezel\n  D55  LOWBAT red   low-battery\n\n470R = ~1.3-2.8mA (adjust per color at bring-up).\nFW: the U575 App drives f/g from keys::Shift, C/G from Calc carry/overflow,\nLOWBAT from the battery ADC, pushing the 5-bit state to the G0 over I2C.\nRadix / STATUS / errors render in the 7-seg digits."
+	(text "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)  -  PLACED, not wired\n5 drive lines from the on-board STM32G0 (active high), each -> Rn 470R\n-> LED -> GND.  +3V3 feeds the resistors; GND returns.\n\n  D51 f  yellow  beside f key       D53 C red  carry    ] top edge,\n  D52 g  blue    beside g key       D54 G red  overflow ] under the\n                                    D55 LOWBAT red        display bezel\n\n470R = ~1.3-2.8mA (tune per color). FW: U575 App drives f/g from\nkeys::Shift, C/G from Calc carry/overflow, LOWBAT from the batt ADC,\npushing the 5-bit state to the G0 over I2C."
 		(exclude_from_sim no)
-		(at 15.00 56.64 0)
+		(at 15.00 100.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "661dd9b2-4963-48e5-81e0-ec684c575053")
+		(uuid "00be792f-f9ea-49be-9716-5feb75dc7d34")
 	)
 	(sheet_instances
 		(path "/"

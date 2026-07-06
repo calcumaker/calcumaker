@@ -40,8 +40,8 @@ being Rust.
 | 4 | Keypad | **Wide HP-16C-style layout** for programming / technical / engineering use; full-size Cherry MX. |
 | 5 | Firmware language | **Rust, `no_std`** main loop (async via embassy once MCU is pinned). |
 | 6 | Firmware license | **AGPL-3.0** (repo LICENSE) — compatible with LGPLv3 GMP/MPFR. |
-| 7 | MCU | **STM32U575ZGT6** (Cortex-M33, 2 MB / 786 KB, LQFP-144, ULP). Chosen on LCSC/JLCPCB availability: the L4R5 is ~unstocked (5 pcs), U575ZGT6 is in stock (230 pcs, ~$4.90, JLCPCB Extended) and keeps GMP/MPFR open. Target `thumbv8m.main-none-eabihf`. |
-| 8 | Board partition | **Three boards: `calcumaker-mcu` + `calcumaker-keyboard` (DF40 mezzanine-stacked above it) + `calcumaker-display` (angled, 0.5 mm FFC).** Keeps a dense LQFP-144 off the 50-key through-hole matrix. The keyboard has its **own STM32G0 scanner**, so only an **I²C+UART link + power** cross the mezzanine (not the raw matrix); the display bus + power cross the FFC. |
+| 7 | MCU | **STM32U575RGT6** (Cortex-M33, **1 MB** / 768 KB, **LQFP-64**, ULP) + **4 MB quad-SPI NOR on OCTOSPI1**. Firmware measured ~323 KB → 1 MB is ample; the matrix scans off-board so LQFP-64 has enough GPIO (smaller/cheaper). Same U575 die (USB FS, OCTOSPI, GMP/MPFR-capable). LCSC C5270980. Target `thumbv8m.main-none-eabihf`. |
+| 8 | Board partition | **Three boards: `calcumaker-mcu` + `calcumaker-keyboard` (DF40 mezzanine-stacked above it) + `calcumaker-display` (angled, 0.5 mm FFC).** Keeps a dense LQFP-64 off the 50-key through-hole matrix. The keyboard has its **own STM32G0 scanner**, so only an **I²C+UART link + power** cross the mezzanine (not the raw matrix); the display bus + power cross the FFC. |
 | 9 | Hardware license | **CERN-OHL-S v2** (`hardware/LICENSE`) — strongly reciprocal, matches the AGPL copyleft posture. |
 | 10 | Product name | **Calcumaker 16** (see `NAMING.md`). |
 
@@ -64,28 +64,33 @@ Low power and a USB FS device (console / provisioning) round out the list.
 > top-end U5 (U5G9) is far more part than this needs and is expensive; it has
 > been dropped as the headline pick.
 
-**SELECTED: STM32U575ZGT6 (Cortex-M33, 2 MB flash / 786 KB SRAM, LQFP-144, ULP).**
-Decided on **LCSC / JLCPCB availability** — the deciding factor. Live jlcsearch
-data shows the L4R5 is effectively unavailable (~5 pcs, ~$8.98, and *no other
-L4R5 package is stocked at all*), whereas the **U575ZGT6
-([C5271004](https://www.lcsc.com/product-detail/C5271004.html)) is in stock
-(~230 pcs, ~$4.90, JLCPCB "Extended" = assemblable)** — and it has *more* SRAM
-than the L4R5. It keeps the GMP/MPFR FFI path fully open (2 MB flash), has an
-FPU + USB FS + OCTOSPI, and is on ST's current ULP line (TrustZone). Target
-`thumbv8m.main-none-eabihf`; HAL `embassy-stm32` (`stm32u575zg`). The LQFP-144
-gives ample GPIO for the key matrix.
+**SELECTED: STM32U575RGT6 (Cortex-M33, 1 MB flash / 768 KB SRAM, LQFP-64, ULP),
+plus a 4 MB quad-SPI NOR on OCTOSPI1.** Same U575 die (FPU + USB FS + OCTOSPI +
+TrustZone, ST's current ULP line), chosen on **availability + fit**: the L4R5 is
+effectively unavailable (~5 pcs), while the U575 family is well stocked and
+GMP/MPFR-capable. The **firmware links at ~323 KB** (full engine + GMP + MPFR,
+*measured* — see Numeric core), so **1 MB flash is ample (~3× headroom)** — no
+need for the pricier/scarcer 2 MB `I` parts. With the **key matrix scanned
+off-board** (the keyboard G0), the MCU needs far fewer GPIO, so the smaller
+**LQFP-64 (10×10 mm)** fits — cheaper and suited to the low-profile stack. A
+**4 MB (32 Mbit) quad-SPI NOR** (W25Q32JVSSIQ, LCSC C179173) on **OCTOSPI1** adds
+memory-mapped (XIP) storage for constant tables + state persistence / future
+keystroke programs. Target `thumbv8m.main-none-eabihf`; HAL `embassy-stm32`
+(`stm32u575rg`).
 
-> Bonus: at ~$4.90 the GMP-capable U575 costs about the **same** as the 1 MB
-> pure-Rust fallback parts — so keeping GMP open is essentially free here.
+> **Flash-code gotcha:** the STM32 `G` size code = **1 MB** (the `I` parts are
+> 2 MB). Earlier notes mislabeled the ZGT6 as "2 MB"; the ZGT6/VGT6/RGT6 are all
+> **1 MB** — which the measured 323 KB firmware fits with room to spare.
 
 **Availability ladder (live LCSC/JLCPCB via jlcsearch; all JLCPCB "Extended"):**
 
-| Part | LCSC# | Flash / RAM | Core | Stock | ~Unit $ | Fit |
-|------|-------|-------------|------|-------|---------|-----|
-| **STM32U575ZGT6** | C5271004 | 2 MB / 786 KB | M33 | **230** | ~$4.90 | ✅ selected — buyable + GMP-capable |
-| STM32L4R5ZIT6 | C1339786 | 2 MB / 640 KB | M4F | 5 | ~$8.98 | GMP-capable but ~unstocked → no-go |
-| STM32L496RGT6 | C124720 | 1 MB / 320 KB | M4F | 95 | ~$4.72 | pure-Rust (GMP tight in 1 MB) |
-| STM32L476RGT6 | C74797 | 1 MB / 128 KB | M4F | 1408 | ~$4.88 | cheapest/best-stocked pure-Rust pick |
+| Part | LCSC# | Pkg | Flash / RAM | Stock | Fit |
+|------|-------|-----|-------------|-------|-----|
+| **STM32U575RGT6** | C5270980 | LQFP-64 (10×10) | 1 MB / 768 KB | 345 | ✅ selected — smaller pkg, matrix off-board |
+| STM32U575VGT6 | C5270988 | LQFP-100 (14×14) | 1 MB / 768 KB | 17k | best-stocked U575 — drop-in if more GPIO wanted |
+| STM32U575ZGT6 | C5271004 | LQFP-144 (20×20) | 1 MB / 768 KB | 230 | prior pick (oversized once the matrix left) |
+| STM32L4R5ZIT6 | C1339786 | LQFP-144 | 2 MB / 640 KB | 5 | GMP-capable but ~unstocked → no-go |
+| STM32U575RIT6 | C5270992 | LQFP-64 | 2 MB / 768 KB | 26 | the `I`/2 MB variant if ever needed — thin stock |
 
 > Other L4R5 packages (LQFP-100 VIT6, UFBGA QIY6) returned **no LCSC listing**.
 > Stock/price are point-in-time (fetched during scaffolding); re-check at order.
@@ -93,8 +98,9 @@ gives ample GPIO for the key matrix.
 Considerations once pinned:
 - **SRAM may be banked** (esp. on U5). For a single contiguous heap, use the
   largest contiguous span or place the heap section explicitly.
-- **External memory:** likely unnecessary — internal RAM is ample for calculator
-  precisions. (L4+/U5 do offer OCTOSPI for PSRAM/flash if ever needed.)
+- **External memory:** internal RAM is ample, but a **4 MB quad-SPI NOR is now
+  fitted on OCTOSPI1** (U7, `QSPIFlash` sheet) for memory-mapped constants +
+  state/program storage (not for RAM).
 - **USB FS** for a CDC console / provisioning + firmware update.
 
 ### Board partition: three boards (MCU + keyboard stacked, display cabled)
@@ -104,7 +110,7 @@ MCU board):
 
 - **`calcumaker-mcu`** — the brain/PSU board: MCU (U575), PSU, clock, SWD, the
   display 5 V rail + level shifter + interconnect, and a **keyboard mezzanine**
-  (J5). This is the dense fine-pitch SMT board (LQFP-144). *Bottom of the stack.*
+  (J5). This is the dense fine-pitch SMT board (LQFP-64). *Bottom of the stack.*
 - **`calcumaker-keyboard`** — the front-panel board: the 50-key Cherry MX matrix
   + per-key diodes + the annunciator LEDs + the mating **mezzanine header** (J1).
   A simple 2-layer through-hole board. *Stacks directly above the MCU board.*
@@ -112,7 +118,7 @@ MCU board):
   interconnect back to the MCU board. It **mounts at an upward angle** for
   readability, cabled (not stacked).
 
-**Why split the keyboard off the MCU board:** laying a dense LQFP-144 (0.5 mm
+**Why split the keyboard off the MCU board:** laying a dense LQFP-64 (0.5 mm
 pitch, needs careful fan-out / multiple layers) into the same board as 50
 full-size through-hole keyswitches is a routing and mechanical fight. Splitting
 gives each PCB an easy job — the MCU board is a compact SMT brain, the keyboard
@@ -501,21 +507,24 @@ USB-C ──VBUS──┬── ESD (USBLC6) ──► D+/D- ──► STM32 USB
 
 ## Pin Budget
 
-MCU is **STM32U575ZGT6** (LQFP-144). Fill a pin table (package pin → function →
-AF) here once the panel layout fixes the matrix dimensions. Expected peripheral
-use (all on the MCU board):
+MCU is **STM32U575RGT6** (LQFP-64). Fill a pin table (package pin → function →
+AF) here once the layout is fixed. Expected peripheral use (all on the MCU board
+— the key matrix + annunciators moved to the keyboard board):
 
 - **Display bus** → 4 GPIOs: TM1640 2-wire (shared CLK + DIN1/DIN2/DIN3),
-  bit-banged at 3V3 → 74HCT125 → 5V → interconnect. Plus **DISP_PWR_EN** GPIO →
-  5V-boost EN (display off in sleep).
-- **GPIO matrix** → Cherry MX rows × cols (+ EXTI wake on a column for
-  wake-from-Stop on keypress).
+  bit-banged at 3V3 → 74HCT125 → 5V → FFC. Plus **DISP_PWR_EN** GPIO → 5V-boost
+  EN (display off in sleep).
+- **Keyboard link** (mezzanine to the keyboard G0) → **I²C** (SDA/SCL) + **UART**
+  (TX/RX) + **KB_IRQ** (on a WKUP pin — keypress wake from Stop) + KB_NRST +
+  KB_BOOT0.
+- **OCTOSPI1** → 6 GPIOs: CLK, NCS, IO0–IO3 → the 4 MB quad-SPI NOR (U7).
 - **USB FS** (PA11/PA12) → CDC console / provisioning.
 - **SWD** (PA13/PA14) → Tag-Connect programming header.
 - **LSE 32.768 kHz** crystal → RTC (sleep timing).
 - **ADC** → battery voltage sense.
-- **Annunciator LEDs** → 5 GPIOs (active high): f, g, C, G, low-batt
-  (Annunciators sheet, D61–D65 + R9–R13).
+
+Rough count ~26 signal GPIO — comfortably inside LQFP-64 (~50 I/O); verify
+**OCTOSPI1 has a valid pin mapping on LQFP-64** at layout.
 
 ---
 
@@ -536,6 +545,7 @@ then wired in eeschema.
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + **J3 (0.5 mm FFC)** → display |
 | KeyboardIF | `keyboard_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine receptacle (J5, DF40C-10DS, 1.5 mm stack) — I²C+UART link to the keyboard board |
+| QSPIFlash | `qspi_flash.kicad_sch` | 4 MB quad-SPI NOR (U7, W25Q32JVSSIQ) on OCTOSPI1 + CS# pull-up (R9) + decoupling (C26) |
 
 **`calcumaker-keyboard`:**
 
@@ -548,7 +558,7 @@ then wired in eeschema.
 | MainIF | `main_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine header (J1, DF40C-10DP, 1.5 mm stack) → down to the MCU board |
 
 All three boards **generate from their manifests and pass the structure check**:
-`calcumaker-mcu` = 52 components, `calcumaker-keyboard` = 119 components (both
+`calcumaker-mcu` = 55 components, `calcumaker-keyboard` = 119 components (both
 placed-not-wired), `calcumaker-display` = 60 components (fully wired, multi-channel).
 Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`.
 
@@ -701,7 +711,8 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 
 | Block | Part | Status |
 |-------|------|--------|
-| MCU (mcu) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
+| MCU (mcu) | **STM32U575RGT6** (1MB/768KB, M33, LQFP-64) | ✅ selected — LCSC C5270980, JLCPCB Extended |
+| QSPI flash (mcu) | **W25Q32JVSSIQ** 4MB (32Mbit) quad-SPI NOR (SOIC-8) on OCTOSPI1 | ✅ LCSC C179173, ~$0.30 — XIP constants + state/program storage |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×48 | **FJ5161AH** 0.56" **single-digit** CC (**THT**) | ✅ LCSC C8093, ~$0.10 — **16/row** (one digit each) |
 | Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |

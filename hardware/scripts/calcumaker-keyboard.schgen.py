@@ -11,7 +11,7 @@ carries everything front-panel: the **50-key Cherry MX matrix** (5x10 + per-key
 diode), its **own STM32G031K8U6 scanner** (U1, UFQFPN-32), the **annunciator
 LEDs** (f/g beside the shift keys, C/G/low-batt along the top edge), and the
 mating **mezzanine header** (J1) back down to the MCU board. Splitting it off the
-MCU board keeps a dense LQFP-144 away from 50 through-hole keyswitches — each PCB
+MCU board keeps a dense LQFP-64 away from 50 through-hole keyswitches — each PCB
 gets an easy layout.
 
 Keyscanning lives HERE (on the G0), not on the main board: only an **I2C + UART
@@ -83,17 +83,20 @@ KEY_D = [dict(ref="D%d" % i, lib_id="Device:D", value="1N4148W", fp=SOD123,
 KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
     title="Cherry MX key matrix (5x10, 50 keys)", page="2",
     big=KEY_SW, small=KEY_D,
-    note=(15, 130, "Calcumaker 16 keyboard — Keypad: 50 Cherry MX keys in a 5x10 "
-          "scanned matrix (wide HP-16C layout + f/g shifts; keymap in DESIGN.md). "
-          "PLACED, not wired. WIRING: ROW1..ROW5 + COL1..COL10 go to the on-board "
-          "STM32G0 (U1, KbdMCU sheet) — ROWs = G0 GPIO outputs; COLs = G0 GPIO "
-          "inputs with INTERNAL pull-ups (no external R, kept in Stop). Each key "
-          "SWn in series with Dn (anode at switch, cathode to its COL) for n-key "
-          "rollover. Key (row r, col c): SW#=(r-1)*10+c, D#=(r-1)*10+c. Scan: the "
-          "G0 drives one ROW low, reads COLs; reports (row,col) to the U575 over "
-          "I2C. WAKE: the G0 holds all ROWs low + EXTI on the COLs -> any keypress "
-          "wakes the G0 from Stop, which then asserts KB_IRQ to wake the U575 (see "
-          "DESIGN.md Low-power & wake). Optional Kailh hot-swap sockets."))
+    note=(15, 130, K.note_block(
+        "KEYPAD  -  50 Cherry MX keys in a 5x10 scanned matrix",
+        "Wide HP-16C layout + f/g shifts (keymap in DESIGN.md).  PLACED, not wired.",
+        "",
+        "WIRING",
+        "  ROW1..ROW5   -> G0 GPIO outputs  (U1, KbdMCU sheet)",
+        "  COL1..COL10  -> G0 GPIO inputs, INTERNAL pull-ups (no ext R, kept in Stop)",
+        "  each key SWn + series Dn (anode@switch, cathode->COL) for n-key rollover",
+        "  key (row r, col c):  SW# = D# = (r-1)*10 + c",
+        "",
+        "SCAN  G0 drives one ROW low, reads COLs; reports (row,col) to U575 via I2C.",
+        "WAKE  G0 holds all ROWs low + EXTI on COLs -> any keypress wakes the G0",
+        "      from Stop, which asserts KB_IRQ to wake the U575.",
+        "Optional Kailh hot-swap sockets.  See DESIGN.md Low-power & wake.")))
 
 # ======================= Annunciator LEDs sheet ==============================
 # Front-panel status lamps (DESIGN.md Open Q6): f (gold) + g (blue) BESIDE the
@@ -119,16 +122,21 @@ ANNUNC = dict(name="Annunciators", file="annunc.kicad_sch",
         R("R1", "470"), R("R2", "470"), R("R3", "470"),
         R("R4", "470"), R("R5", "470"),
     ],
-    note=(15, 105, "Calcumaker 16 keyboard — Annunciator LEDs (DESIGN.md "
-          "status-line mapping). PLACED, not wired. Five drive lines from the "
-          "ON-BOARD STM32G0 (U1, active high), each -> Rn 470R -> LED -> GND: D51 "
-          "'f' yellow + D52 'g' blue mounted BESIDE the f/g keys; D53 'C' carry, "
-          "D54 'G' overflow, D55 low-battery along the top edge under the display "
-          "bezel. +3V3 feeds the resistors; GND is the return. 470R = ~1.3-2.8mA; "
-          "adjust per color at bring-up. Firmware: the U575's calcumaker-core App "
-          "drives f/g from keys::Shift, C/G from Calc::carry()/overflow(), LOWBAT "
-          "from the battery ADC, and pushes the 5-bit state to the G0 over I2C; the "
-          "G0 sets the pins. Radix/STATUS/errors render in the 7-seg digits."))
+    note=(15, 105, K.note_block(
+        "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)",
+        "PLACED, not wired.  5 drive lines from the on-board STM32G0 (active high),",
+        "each -> Rn 470R -> LED -> GND.  +3V3 feeds the resistors; GND returns.",
+        "",
+        "  D51  f  yellow    beside the f key",
+        "  D52  g  blue      beside the g key",
+        "  D53  C  red       carry     ] top edge, under",
+        "  D54  G  red       overflow  ] the display bezel",
+        "  D55  LOWBAT red   low-battery",
+        "",
+        "470R = ~1.3-2.8mA (adjust per color at bring-up).",
+        "FW: the U575 App drives f/g from keys::Shift, C/G from Calc carry/overflow,",
+        "LOWBAT from the battery ADC, pushing the 5-bit state to the G0 over I2C.",
+        "Radix / STATUS / errors render in the 7-seg digits.")))
 
 # ======================= Keyboard scanner MCU sheet ==========================
 # STM32G031K8U6 (LCSC C432207, UFQFPN-32) scans the 5x10 matrix, drives the 5
@@ -152,18 +160,27 @@ KBD_MCU = dict(name="KbdMCU", file="kbd_mcu.kicad_sch",
         dict(ref="J2", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
              value="SWD TC2030-NL", fp=SWD_FP),
     ],
-    note=(15, 150, "Calcumaker 16 keyboard — Scanner MCU U1 STM32G031K8U6 (LCSC "
-          "C432207, UFQFPN-32). PLACED, not wired. POWER: VDD -> +3V3 (C1/C2 100nF "
-          "+ C4 4.7uF bulk); VDDA -> C3 100nF; VSS/EP -> GND. RESET: NRST + C5 "
-          "100nF (also -> KB_NRST on J1 so the MCU can reset it). BOOT0 -> R6 10k "
-          "to GND (also -> KB_BOOT0 on J1 for ROM UART/DFU reflash). CLOCK: "
-          "internal HSI, no crystal. MATRIX: 5 ROW (out) + 10 COL (in, internal "
-          "pull-ups) -> Keypad sheet; hold ROWs low + COL EXTI for wake-from-Stop. "
-          "ANNUNCIATORS: 5 GPIO -> the LED resistors (Annunciators sheet). LINK to "
-          "the U575 (via J1 mezzanine): I2C1 SDA/SCL (reports keys, receives "
-          "annunciator state) + USART TX/RX (alt/expansion + bootloader) + KB_IRQ "
-          "out (wakes the U575). PROGRAMMING: J2 SWD Tag-Connect (bare pads) or the "
-          "UART/DFU bootloader over J1. See DESIGN.md Low-power & wake."))
+    note=(15, 150, K.note_block(
+        "SCANNER MCU  -  U1  STM32G031K8U6  (LCSC C432207, UFQFPN-32)",
+        "PLACED, not wired.",
+        "",
+        "POWER",
+        "  VDD  -> +3V3   C1/C2 100nF + C4 4.7uF bulk",
+        "  VDDA -> C3 100nF          VSS/EP -> GND",
+        "RESET / BOOT",
+        "  NRST  -> C5 100nF  (also -> KB_NRST on J1: U575 can reset it)",
+        "  BOOT0 -> R6 10k to GND (also -> KB_BOOT0 on J1: ROM UART/DFU reflash)",
+        "CLOCK   internal HSI, no crystal.",
+        "",
+        "MATRIX  5 ROW (out) + 10 COL (in, int. pull-ups) -> Keypad sheet;",
+        "        hold ROWs low + COL EXTI for wake-from-Stop.",
+        "ANNUN   5 GPIO -> the LED resistors (Annunciators sheet).",
+        "LINK (via J1 mezzanine to the U575)",
+        "  I2C1  SDA/SCL  reports keys, receives annunciator state",
+        "  USART TX/RX    alt/expansion + bootloader",
+        "  KB_IRQ (out)   wakes the U575",
+        "PROG    J2 SWD Tag-Connect (bare pads) or UART/DFU over J1.",
+        "See DESIGN.md Low-power & wake.")))
 
 # ===================== Main-board mezzanine sheet ============================
 # The mating half of the LOW-PROFILE board-to-board stack. J1 = Hirose DF40 2x5
@@ -179,18 +196,22 @@ MAIN_IF = dict(name="MainIF", file="main_if.kicad_sch",
              lcsc="C424635", mpn="DF40C-10DP-0.4V(51)", mfr="Hirose"),
     ],
     small=[],
-    note=(15, 105, "Calcumaker 16 keyboard — MCU mezzanine (J1 = Hirose DF40 2x5 "
-          "0.4mm HEADER DF40C-10DP-0.4V, LCSC C424635). Mates DOWN to the MCU "
-          "board's receptacle (calcumaker-mcu J5 DF40C-10DS-0.4V C424636); "
-          "LOW-PROFILE 1.5mm stack. PLACED, not wired. PINOUT (MUST match "
-          "calcumaker-mcu J5 exactly): 1=+3V3, 2=GND, 3=I2C_SDA, 4=I2C_SCL, "
-          "5=KB_UART_TX, 6=KB_UART_RX, 7=KB_IRQ, 8=KB_NRST, 9=KB_BOOT0, 10=GND. "
-          "SDA/SCL <-> the G0's I2C1; UART_TX/RX <-> the G0's USART; KB_IRQ = G0 -> "
-          "U575 wake (keypress); KB_NRST/KB_BOOT0 = U575 -> G0 (reset + bootloader "
-          "reflash). MECH: at 1.5mm stack keep the MX pins off the MCU-board area "
-          "(trim, or MCU board under a keyless region). Verify DF40C-10DP land vs "
-          "the KiCad DF40 2x5 footprint + the 3D stack at layout. See DESIGN.md "
-          "Board Partition + Low-power & wake."))
+    note=(15, 105, K.note_block(
+        "MCU MEZZANINE  -  J1  DF40C-10DP-0.4V  (LCSC C424635)",
+        "Hirose DF40 2x5 0.4mm HEADER; mates DOWN to the MCU-board receptacle",
+        "(mcu J5 DF40C-10DS, C424636).  Low-profile 1.5mm stack.  PLACED, not wired.",
+        "PINOUT MUST match mcu J5 exactly (mated pin N <-> N):",
+        "",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
+                     (5, "KB_UART_TX"), (6, "KB_UART_RX"), (7, "KB_IRQ"),
+                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND")]),
+        "",
+        "SDA/SCL <-> the G0 I2C1;  UART_TX/RX <-> the G0 USART.",
+        "KB_IRQ  = G0 -> U575 wake (keypress).",
+        "KB_NRST / KB_BOOT0 = U575 -> G0 (reset + bootloader reflash).",
+        "MECH: at 1.5mm stack keep MX pins off the MCU-board area (trim, or MCU",
+        "board under a keyless region).",
+        "Verify DF40C-10DP land vs the KiCad DF40 2x5 fp + 3D stack at layout.")))
 
 # ============================ generate =======================================
 K.build(

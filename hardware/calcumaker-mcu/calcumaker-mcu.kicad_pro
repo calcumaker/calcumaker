@@ -702,28 +702,32 @@
       "calcumaker-mcu"
     ],
     [
-      "23aa651c-01ea-4ee3-bb12-f879a30c281f",
+      "77d1e065-260c-4e9e-b78f-2ca7ebacff25",
       "MCU"
     ],
     [
-      "dc502c7f-271d-4dc5-a1c2-d18857eddfee",
+      "b734f1a0-165b-4dbe-8a4e-b7ae065fd64e",
       "Clock"
     ],
     [
-      "4bb53341-6b5a-4905-9015-f6916355f0f0",
+      "3f222ff3-c1f9-44c6-a6b5-77b65f093143",
       "Programming"
     ],
     [
-      "672f4fa7-1cc1-4703-8edf-f066cdb44902",
+      "eb68b384-3231-4c3a-becc-31213731c008",
       "PSU"
     ],
     [
-      "882301f2-c62c-4450-8afe-fd55e1916916",
+      "66273e88-92ab-499d-8908-57ce43e17319",
       "DisplayIF"
     ],
     [
-      "f3eb8744-2884-4df4-9891-07d87447427d",
+      "32aa4625-0e65-45ea-b771-87030b782539",
       "KeyboardIF"
+    ],
+    [
+      "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef",
+      "QSPIFlash"
     ]
   ],
   "text_variables": {},

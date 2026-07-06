@@ -37,8 +37,8 @@ keeps it alive between keystrokes.
 - **Full-size Cherry MX keyswitches:** a wide, tactile, technical-use keypad.
 - **Battery + USB-C:** 1S Li-ion with USB-C charging + buck-boost rail; aggressive
   sleep between keypresses for long runtime.
-- **Rust firmware:** `no_std` main loop on the **STM32U575ZGT6** (Cortex-M33,
-  2 MB / 786 KB, ULP — see `DESIGN.md`).
+- **Rust firmware:** `no_std` main loop on the **STM32U575RGT6** (Cortex-M33,
+  1 MB / 768 KB, ULP — see `DESIGN.md`).
 
 ## Hardware Stack
 
@@ -84,7 +84,7 @@ and [`DESIGN.md`](DESIGN.md) for the current hardware source of truth.
    ┌──────────────────────┴┴──────────────────────────┐
    │  EN-gated 5V boost ──► display │ 74HCT125 (3V3→5V)│
    │   ┌───────────────────────────────────────────┐   │  USB-C ── console /
-   │   │ STM32U575ZGT6 (Cortex-M33, 2MB/786KB, ULP) │   │          provisioning
+   │   │ STM32U575RGT6 (Cortex-M33, 1MB/768KB, ULP) │   │          provisioning
    │   │  Rust no_std main loop (embassy)           │   │
    │   │   calcumaker-core: RPN engine              │   │
    │   │        └ GMP + MPFR  (single path)         │   │
@@ -211,7 +211,7 @@ calcumaker/
 
 | Component | Part | Status |
 |-----------|------|--------|
-| MCU | STM32U575ZGT6 (2MB/786KB, M33, ULP, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
+| MCU | STM32U575RGT6 (1MB/768KB, M33, ULP, LQFP-64) | ✅ selected — LCSC C5270980, JLCPCB Extended |
 | Display | 3 rows × 16 digits: 3× TM1640 + 48× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
 | Keys | 5×10 full-size Cherry MX (wide HP-16C-style layout) + keyboard STM32G0 scanner | electrical/keymap decided; physical layout details still TBD |
 | Display interconnect | 12-position 0.5mm FFC: +5V/GND, CLK + DIN×3, 3V3/I²C aux lines | selected in `DESIGN.md`; verify cable length/orientation at layout |

@@ -1,7 +1,7 @@
 # calcumaker-fw
 
 Rust **`no_std`** board firmware for the Calcumaker 16 MCU board
-(`STM32U575ZGT6`, Cortex-M33).
+(`STM32U575RGT6`, Cortex-M33).
 
 This crate is not the calculator engine. The calculator lives in
 [`../calcumaker-core`](../calcumaker-core): RPN stack, GMP/MPFR math, keymap,

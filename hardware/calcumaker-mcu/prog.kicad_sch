@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "4bb53341-6b5a-4905-9015-f6916355f0f0")
+	(uuid "3f222ff3-c1f9-44c6-a6b5-77b65f093143")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — MCU — SWD programming")
-		(date "2026-07-05")
-		(rev "0.2")
+		(date "2026-07-06")
+		(rev "0.3")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -308,7 +308,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f08273b7-f731-4509-9348-f9ba8df913ee")
+		(uuid "bdd31e9c-2bf9-4781-91cc-fef88b440696")
 		(property "Reference" "J4"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -325,26 +325,26 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "926e560b-9e78-4666-835c-672e359af665"))
-		(pin "2" (uuid "b4c0bede-8d50-4672-acb1-d173519e0084"))
-		(pin "3" (uuid "2efa8fec-241a-4b13-a8d5-20ccb5460451"))
-		(pin "4" (uuid "542ad79a-248e-4b78-988e-92bb6672031a"))
-		(pin "5" (uuid "f3c2791a-d485-49c5-9806-608e0664d453"))
-		(pin "6" (uuid "ca576ab5-0060-428e-bac8-d696fa3579bc"))
+		(pin "1" (uuid "92e1c535-ee9d-4c1a-9c03-2a513a19e4b1"))
+		(pin "2" (uuid "fdd2f91b-36d7-434c-a8e3-bb73d5252095"))
+		(pin "3" (uuid "68a9ddb8-6eee-4eab-9ac7-276773bfdf53"))
+		(pin "4" (uuid "432a1935-8d60-4c50-902b-30205c23ce88"))
+		(pin "5" (uuid "fac89358-59ce-43cb-b4f5-6bd4708bf09e"))
+		(pin "6" (uuid "c8a595bc-ac5c-4e26-a97b-a2ff50d531e3"))
 		(instances
 			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/4bb53341-6b5a-4905-9015-f6916355f0f0"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/3f222ff3-c1f9-44c6-a6b5-77b65f093143"
 					(reference "J4")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. Bare land — no part mounted."
+	(text "SWD PROGRAMMING  -  J4  Tag-Connect TC2030-NL  (no-legs pogo pad)\nBare land, no part mounted.\n\n  PIN  SIGNAL        \n    1  +3V3 (VTref)  \n    2  SWDIO (PA13)  \n    3  NRST          \n    4  SWCLK (PA14)  \n    5  GND           \n    6  SWO (PB3, opt)"
 		(exclude_from_sim no)
 		(at 15.00 95.00 0)
-		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "03e07025-2636-4d06-b3cf-5acff1776daa")
+		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(uuid "66893cd0-01bb-4eb8-860b-adbbefb6b879")
 	)
 	(sheet_instances
 		(path "/"

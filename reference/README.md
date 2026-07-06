@@ -32,7 +32,7 @@ Populate as the layout moves toward fabrication. Current expected set:
 
 | Block | Part | Notes |
 |-------|------|-------|
-| MCU | STM32U575ZGT6 (LCSC C5271004) | flash/RAM, low-power modes, USB FS, FPU, AF map, SRAM banking |
+| MCU | STM32U575RGT6 (LCSC C5270980) | flash/RAM, low-power modes, USB FS, FPU, AF map, SRAM banking |
 | Keyboard scanner | STM32G031K8U6 (LCSC C432207) | GPIO, Stop/EXTI wake, I2C/UART, package |
 | Display driver | TM1640 (LCSC C5337152) | digit/segment drive, current set, 2-wire interface |
 | 7-seg display | FJ5161AH (LCSC C8093) | 0.56 in single-digit common-cathode THT, pinout |

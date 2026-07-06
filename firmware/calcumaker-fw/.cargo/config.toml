@@ -1,14 +1,14 @@
 # calcumaker-fw cargo config
 #
-# MCU: STM32U575ZGT6, Cortex-M33 + FPU (see ../../DESIGN.md).
+# MCU: STM32U575RGT6 (LQFP-64, 1 MB flash), Cortex-M33 + FPU (see ../../DESIGN.md).
 #   Cortex-M33 (STM32U5)  -> thumbv8m.main-none-eabihf
 #   (Cortex-M4F / STM32L4+ alternative would be thumbv7em-none-eabihf)
 [build]
-target = "thumbv8m.main-none-eabihf"   # STM32U575ZGT6 (M33 + FPU)
+target = "thumbv8m.main-none-eabihf"   # STM32U575RGT6 (M33 + FPU)
 
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
 # Flash + run + RTT log via probe-rs.
-runner = "probe-rs run --chip STM32U575ZGTx"
+runner = "probe-rs run --chip STM32U575RGTx"
 rustflags = [
   "-C", "link-arg=-Tlink.x",       # from cortex-m-rt (consumes memory.x)
   # "-C", "link-arg=-Tdefmt.x",    # if using defmt logging

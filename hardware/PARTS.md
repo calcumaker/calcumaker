@@ -9,13 +9,14 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 > at order time. All ICs/displays below are JLCPCB **Extended** (no Basic option
 > in these categories).
 
-## calcumaker-mcu (MCU / PSU / clock / SWD / display-IF / keyboard mezzanine)
+## calcumaker-mcu (MCU / PSU / clock / SWD / display-IF / keyboard mezzanine / QSPI flash)
 
 *Bottom of the stack; the dense fine-pitch SMT brain board.*
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
-| MCU | STM32U575ZGT6 | C5271004 | LQFP-144 | ✅ ~$4.90 |
+| MCU | **STM32U575RGT6** | **C5270980** | LQFP-64 | ✅ ~$4.90 — **1MB** flash (fw links ~323KB); smaller pkg now the matrix scans off-board |
+| **QSPI flash** | **W25Q32JVSSIQ** (4MB / 32Mbit quad-SPI NOR) | **C179173** | SOIC-8 (`SOIC-8_5.3x5.3mm`) | ✅ ~$0.30 (23k stock) — on OCTOSPI1; XIP constants + state/program storage; U7 + R9 CS-pullup + C26 |
 | USB-C | GCT USB4105 (USB2.0 16P) | C2927039 | TopMnt horizontal | ✅ (from ephemerkey PSU) |
 | ESD | USBLC6-2SC6 | C2687116 | SOT-23-6 | ✅ |
 | Charger | MCP73831T-2ACI/OT | C424093 | SOT-23-5 | ✅ (PROG sized to cell) |
@@ -112,8 +113,10 @@ single-digit displays — more parts).
 - **5V boost (TPS61022):** stock `Converter_DCDC:TPS61022` symbol +
   `Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm` footprint. ✅ No custom
   symbol.
-- **MCU (STM32U575ZGT6):** stock `MCU_ST_STM32U5:STM32U575ZGTx` symbol +
-  `Package_QFP:LQFP-144_20x20mm_P0.5mm`. ✅ No custom symbol.
+- **MCU (STM32U575RGT6):** stock `MCU_ST_STM32U5:STM32U575RGTx` symbol +
+  `Package_QFP:LQFP-64_10x10mm_P0.5mm`. ✅ No custom symbol.
+- **QSPI flash (W25Q32JVSSIQ):** stock `Memory_Flash:W25Q32JVSS` symbol +
+  `Package_SO:SOIC-8_5.3x5.3mm_P1.27mm`. ✅ No custom symbol.
 
 ## Passive size policy
 

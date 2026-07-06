@@ -3957,7 +3957,7 @@
 			)
 		)
 	)
-	(text "Calcumaker 16 main — Power (USB-C -> charge -> load-share -> buck-boost 3V3). PLACED, not wired. See DESIGN.md Power Tree.\nUSB-C J1: CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB. VBUS bulk C6.\nCHARGER U4 MCP73831: VDD<-VBUS; VBAT->BAT+; PROG R3 (size to cell); STAT->D2+R5. C1/C2 in/out.\nLOAD-SHARE: Q1 AO3401A src=BAT+, drn=VSYS, gate<-VBUS via R4; D1 B5819W VBUS->VSYS.\nBUCK-BOOST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5. CFG strap=3.3V. VOUT=+3V3 -> MCU ONLY (display is on its own EN-gated 5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."
+	(text "Calcumaker 16 MCU board — Power (USB-C -> charge -> load-share -> buck-boost 3V3). PLACED, not wired. See DESIGN.md Power Tree.\nUSB-C J1: CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB. VBUS bulk C6.\nCHARGER U4 MCP73831: VDD<-VBUS; VBAT->BAT+; PROG R3 (size to cell); STAT->D2+R5. C1/C2 in/out.\nLOAD-SHARE: Q1 AO3401A src=BAT+, drn=VSYS, gate<-VBUS via R4; D1 B5819W VBUS->VSYS.\nBUCK-BOOST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5. CFG strap=3.3V. VOUT=+3V3 -> MCU ONLY (display is on its own EN-gated 5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."
 		(exclude_from_sim no)
 		(at 15.00 165.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))

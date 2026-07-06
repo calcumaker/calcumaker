@@ -38,10 +38,11 @@ values, footprints and a per-sheet wiring note. Wiring is done afterwards in
 eeschema (the notes are the spec). Re-running `gen` reassigns internal UUIDs but
 keeps the root sheet UUID stable; do it before wiring, not after.
 
-> **Status:** both manifests are **DRAFT skeletons** behind a guard. The MCU/
-> keypad/interconnect (main) and the driver/digit parts (display) are pending the
-> open part/layout items (see `../../DESIGN.md` → Open Questions). They refuse to
-> run unless `CALCUMAKER_SCHGEN_DRAFT_OK=1` is set — fill the TODOs first.
+> **Status:** the manifests remain guarded drafts until the open layout/part
+> checks are resolved. The display manifest generates the fully wired
+> multi-channel row design; the MCU and keyboard manifests generate the sheet
+> structure and on-canvas wiring notes. They refuse to run unless
+> `CALCUMAKER_SCHGEN_DRAFT_OK=1` is set.
 
 ## Notes
 

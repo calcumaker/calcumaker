@@ -20,7 +20,7 @@ firmware/
 ├── calcumaker-emu/    # HOST EMULATOR — the same App on a terminal; ASCII 7-seg
 │   └── src/           #   rendered from the real TM1640 segment bytes.
 ├── calcumaker-fw/     # the embedded binary (Cortex-M33, no_std): board bring-up
-│   └── src/           #   main · keypad (matrix scan) · display (TM1640 bus)
+│   └── src/           #   main · keyboard event intake · display (TM1640 bus)
 ├── scripts/           # build-gmp-mpfr-arm.sh — cross-build GMP+MPFR for thumbv8m
 ├── vendor/            # cross-built libgmp.a/libmpfr.a land here (gitignored)
 ├── common/            # shared HAL / board glue (reserved)
@@ -54,21 +54,23 @@ The core is `#![no_std]`; the *same* crate also compiles for the MCU
 
 There is **one** numeric path — no `numeric-gmp`/`numeric-pure` feature split,
 no pure-Rust fallback — and **one** UI path: firmware and emulator are thin I/O
-bindings (matrix scan / host keys in, TM1640 bytes / ASCII art out) around the
-same `App`.
+bindings (keyboard events / host keys in, TM1640 bytes / ASCII art out) around
+the same `App`.
 
 ## The embedded crate
 
-`calcumaker-fw` is the board binary (heap, Cherry MX matrix scan → `(row,col)`,
-TM1640 display bus). It builds and links for `thumbv8m.main-none-eabihf` today
-(the default target in its `.cargo/config.toml`).
+`calcumaker-fw` is the U575 board binary: heap, power/display bring-up,
+keyboard event intake from the keyboard-board STM32G0, and the TM1640 display
+bus. It builds and links for `thumbv8m.main-none-eabihf` today (the default
+target in its `.cargo/config.toml`).
 
 GMP + MPFR are **cross-built + link-verified** for the target
 (`scripts/build-gmp-mpfr-arm.sh` → `vendor/gmp-mpfr-arm/`; `build.rs` links
 them when `GMP_MPFR_LIBDIR` is set). Remaining bring-up (tracked in
 `../DESIGN.md`): embassy clocks/GPIO, newlib libc/libm at the final link, and
-routing GMP's allocator to the firmware heap — then the main loop is exactly
-what the emulator runs: `app.press(row, col)` → `display.render(&app.seg_rows())`.
+routing GMP's allocator to the firmware heap, plus the keyboard-G0 firmware and
+link protocol. Then the main loop is exactly what the emulator runs:
+`app.press(row, col)` → `display.render(&app.seg_rows())`.
 
 ## License
 

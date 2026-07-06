@@ -22,11 +22,12 @@ embedded-alloc = { version = "0.6", default-features = false, features = ["tlsf"
 
 # --- Calculator engine -------------------------------------------------------
 # The RPN + arbitrary-precision engine lives in `calcumaker-core` (GMP + MPFR,
-# single path — see ../calcumaker-core). That crate is host-tested with `rug`;
-# the embedded build links the SAME GMP/MPFR cross-compiled for thumbv8m and
-# drives the engine over FFI. Wiring that is the open task (../../DESIGN.md):
+# single path — see ../calcumaker-core). That crate is host-tested through our
+# own `gmp-mpfr-nostd` FFI; the embedded build links the same API against
+# GMP/MPFR cross-compiled for thumbv8m. Wiring that is the open task
+# (../../DESIGN.md):
 #   calcumaker-core = { path = "../calcumaker-core", default-features = false }
-# (pending a no_std build of gmp-mpfr-sys against the cross-built libgmp/libmpfr).
+# (pending final allocator/newlib/HAL bring-up in this board crate).
 
 # --- MCU HAL: STM32U575ZGT6 (selected — see ../../DESIGN.md) ------------------
 # Move to embassy-stm32 with the U575 chip feature (verify exact feature name):

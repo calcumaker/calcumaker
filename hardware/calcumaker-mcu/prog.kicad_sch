@@ -340,7 +340,7 @@
 			)
 		)
 	)
-	(text "Calcumaker 16 main — SWD programming (J4 Tag-Connect TC2030-NL, no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. Bare land — no part mounted."
+	(text "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. Bare land — no part mounted."
 		(exclude_from_sim no)
 		(at 15.00 95.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))

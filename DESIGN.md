@@ -394,8 +394,8 @@ is not a mock: the whole device-independent calculator lives in
   marker in the last cell when a value exceeds 16 digits).
 
 Both frontends are thin I/O bindings around `App::press(row, col)` +
-`App::seg_rows()`: the firmware contributes the matrix scan and the TM1640
-bus; the emulator maps host keys to matrix cells and renders **the same
+`App::seg_rows()`: the firmware path contributes keyboard-board events and the
+TM1640 bus; the emulator maps host keys to matrix cells and renders **the same
 segment bytes** as LED-style 7-seg art — Unicode block elements by default
 (`▄`/`█`, dp = `▗` in its own column + an inter-digit gap, ~100 columns),
 `--ascii` for a plain `_`/`|` fallback — plus
@@ -638,7 +638,7 @@ is identical.
 
 Resolved: ✅ MCU (Q7) · ✅ board partition = split (Q8) · ✅ hardware license =
 CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+digits
-(TM1640 + FJ5161AH) · ✅ interconnect (1×10 2.54 mm header) · ✅ aux OLED
+(TM1640 + FJ5161AH) · ✅ interconnect (12-position 0.5 mm FFC) · ✅ aux OLED
 (DNP-optional, display board). Remaining:
 
 1. ✅ **KiCad symbols done** — the single-digit `FJ5161AH` and the `TM1640` are
@@ -662,23 +662,23 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    `<`/`>`) implemented. Remaining is firmware bring-up: route GMP's
    allocator to the heap + resolve newlib at final link (folded into the
    MCU/HAL work).
-6. ✅ **Annunciators (status line → hardware) — decided + implemented.**
+4. ✅ **Annunciators (status line → hardware) — decided + implemented.**
    16C precedent: lamps ONLY for what must be visible mid-keystroke; the rest
-   lives in the digits. **(a) Five main-board LEDs** (new `Annunciators`
-   sheet, D61–D65 + R9–R13 470R, MCU GPIO direct, zero interconnect impact):
-   f yellow C72038 + g blue C965807 beside the shift keys; C / G / low-batt
-   red C2286 along the top edge under the display bezel. (The display-board
-   alternative was rejected: it needs a 4th TM1640 + DIN4 *and* a 5th
-   level-shifter channel.) **(b)** ✅ **f-STATUS momentary view** in the App
+   lives in the digits. **(a) Five keyboard-board LEDs** (`Annunc` sheet,
+   D51–D55 + R1–R5 470R, driven by the keyboard G0): f yellow C72038 + g blue
+   C965807 beside the shift keys; C / G / low-batt red C2286 along the top edge
+   under the display bezel. (The display-board alternative was rejected: it
+   needs a 4th TM1640 + DIN4 *and* a 5th level-shifter channel.) **(b)** ✅
+   **f-STATUS momentary view** in the App
    (f-CLx): `bASE 16 2S rAd` / `P256 b8` / `AUtO 010000` (fmt + flags 543210)
    as 7-seg text until the next key — emulator shows it on the glass.
    **(c)** errors + SHOW already render as transient text. **(d)** ✅ radix
    as a 16C-style suffix letter on the X row — `h`/`o`/`b` for non-decimal
    integers, decimal unmarked (deviation from the 16C's `d`; absence =
    decimal) — a **display tunable** (`suffix` token toggles; on by default;
-   emulator `--no-suffix`). Remaining: wire the LED GPIOs at eeschema time;
-   LOWBAT needs the battery ADC (PSU).
-4. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
+   emulator `--no-suffix`). Remaining: wire the LED GPIOs on the keyboard board;
+   LOWBAT needs the battery ADC/status path.
+5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
    f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
    annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
    (Keypad / Annunciators / KbdMCU / MainIF, 119 comp), which mezzanine-stacks
@@ -686,10 +686,9 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    DisplayIF / KeyboardIF, 52 comp). All symbols stock except the authored
    TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
    refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the
-   STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); pick the final
-   mezzanine pair (stack height vs MX pin clearance); then **wire the boards in
-   eeschema**.
-5. **Battery cell + capacity.** Drives charger current (PROG resistor) and
+   STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); verify the DF40
+   stack height vs MX pin clearance; then **wire the boards in eeschema**.
+6. **Battery cell + capacity.** Drives charger current (PROG resistor) and
    runtime target.
 
 ---
@@ -705,7 +704,7 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | MCU (mcu) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×48 | **FJ5161AH** 0.56" **single-digit** CC (**THT**) | ✅ LCSC C8093, ~$0.10 — **16/row** (one digit each) |
-| Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (both boards, mcu J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
+| Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
 | Keyboard mezzanine ×2 | **Hirose DF40C-10** 0.4mm 2×5 low-profile (1.5mm stack): DF40C-10DS (mcu J5) + DF40C-10DP (keyboard J1) | ✅ LCSC C424636 / C424635; KiCad fp + 3D model; verify MX-pin clearance |

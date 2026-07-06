@@ -108,7 +108,7 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         R("R8", "10k"),                                    # BOOT0 pulldown
         C("C22", "2.2uF", C0603), C("C23", "2.2uF", C0603),  # VCORE/VCAP (LDO/SMPS) — verify per mode
     ],
-    note=(15, 150, "Calcumaker 16 main — MCU core (U1 STM32U575ZGTx, LQFP-144). "
+    note=(15, 150, "Calcumaker 16 MCU board — MCU core (U1 STM32U575ZGTx, LQFP-144). "
           "POWER: VDD pins -> +3V3 (5x 100nF C12-C16 + C17 10uF bulk); VDDA/VREF+ "
           "-> C18 1uF + C19 100nF; VDDUSB -> C20 100nF; EP/VSS -> GND. "
           "VCORE: choose LDO or internal SMPS — SMPS needs an inductor on VLXSMPS "
@@ -116,8 +116,8 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
           "RESET/BOOT: NRST + C21 100nF; BOOT0 -> R8 10k to GND. "
           "OFF-SHEET: USB PA11/PA12 -> PSU ESD; SWD PA13/PA14 + NRST -> Programming; "
           "LSE OSC32_IN/OUT -> Clock; display bus (CLK+DIN1/2/3) + DISP_PWR_EN -> "
-          "DisplayIF; 5 rows + 10 cols + 5 annunciator drives -> KeyboardIF "
-          "mezzanine J5 (one col -> EXTI wake)."))
+          "DisplayIF; keyboard-board link (I2C+UART+KB_IRQ/NRST/BOOT0) -> "
+          "KeyboardIF mezzanine J5."))
 
 # ============================ Clock sheet ====================================
 CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
@@ -127,7 +127,7 @@ CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
              lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
         C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
     ],
-    note=(15, 100, "Calcumaker 16 main — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
+    note=(15, 100, "Calcumaker 16 MCU board — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
           "OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via "
           "2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives "
           "the RTC for sleep timing."))
@@ -139,7 +139,7 @@ PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
         dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
              value="SWD TC2030-NL", fp=SWD_FP),
     ], small=[],
-    note=(15, 95, "Calcumaker 16 main — SWD programming (J4 Tag-Connect TC2030-NL, "
+    note=(15, 95, "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, "
           "no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. "
           "Bare land — no part mounted."))
 
@@ -181,7 +181,7 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
         dict(ref="D2", lib_id="Device:LED", value="CHG", fp=LED0402, lcsc="C130719"),
         R("R5", "1k"),
     ],
-    note=(15, 165, "Calcumaker 16 main — Power (USB-C -> charge -> load-share -> "
+    note=(15, 165, "Calcumaker 16 MCU board — Power (USB-C -> charge -> load-share -> "
           "buck-boost 3V3). PLACED, not wired. See DESIGN.md Power Tree.\n"
           "USB-C J1: CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB. "
           "VBUS bulk C6.\nCHARGER U4 MCP73831: VDD<-VBUS; VBAT->BAT+; PROG R3 "
@@ -234,15 +234,14 @@ KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
 #     Adjustable -> R6/R7 FB divider sets +5V. Symbol: stock Converter_DCDC:TPS61022.
 #   - U6: 74HCT125 quad buffer @5V = 3V3->5V level shift for CLK + DIN1/2/3
 #     (KiCad symbol 74AHCT125 is pin-compatible; value=74HCT125, LCSC C352957).
-#   - J3: 1x10 2.54mm header to the display board (pins 8-10 = +3V3 + I2C for the
-#     DNP-optional aux OLED on the display board).
+#   - J3: 12-position 0.5mm FFC to the display board (pins 9-11 = +3V3 + I2C
+#     for the DNP-optional aux OLED on the display board).
 # The 3V3 TPS63900 (PSU sheet) now feeds only the MCU, so it stays as-is.
 DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
     title="Display 5V rail (TPS61022) + 74HCT125 level shifter + interconnect",
     page="6",
     big=[
-        # 5V boost TPS61022 (adjustable). Symbol is TODO (author into
-        # calcumaker.kicad_sym like the MCU); footprint exists in KiCad.
+        # 5V boost TPS61022 (adjustable). Stock KiCad symbol + footprint.
         dict(ref="U5", lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR",
              fp="Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm",
              lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments"),
@@ -265,7 +264,7 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
         R("R6", "732k"), R("R7", "100k"),                 # FB divider: Vout=0.6*(1+R6/R7)=~5.0V
         R("R14", "4.7k"), R("R15", "4.7k"),               # I2C pull-ups for the aux OLED (DNP with it)
     ],
-    note=(15, 110, "Calcumaker 16 main — Display 5V rail + interface. "
+    note=(15, 110, "Calcumaker 16 MCU board — Display 5V rail + interface. "
           "5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 "
           "1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF; FB R6/R7 divider "
           "-> +5V (Vref 0.6V); EN<-MCU DISP_PWR_EN (low in sleep). LEVEL SHIFT "

@@ -11,8 +11,7 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 
 ## calcumaker-mcu (MCU / PSU / clock / SWD / display-IF / keyboard mezzanine)
 
-*Bottom of the stack; the dense fine-pitch SMT brain board. (Renamed from
-`calcumaker-main` 2026-07-05 when the keyboard split off.)*
+*Bottom of the stack; the dense fine-pitch SMT brain board.*
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
@@ -39,7 +38,7 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 
 *Top of the stack; the front-panel board the user types on. Mezzanine-stacks
 above the MCU board. Its own STM32G0 scans the matrix + drives the annunciators
-and talks to the U575 over I²C/UART (keyscanning is off the main board).*
+and talks to the U575 over I²C/UART (keyscanning is off the MCU board).*
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
@@ -86,9 +85,10 @@ driving **16× FJ5161AH** over a 2-wire bus (shared **CLK/DISP_CLK** + per-row
 No SMD multi-digit 7-segment displays are stocked on LCSC; the well-stocked
 parts are **through-hole**. So `calcumaker-display` needs **THT assembly**
 (JLCPCB through-hole add-on, or hand/wave solder) in addition to SMT for the
-TM1640s. The main board is all-SMT (plus the THT header + battery/USB connectors
-as applicable). If an all-SMT display is a hard requirement, revisit driver+digit
-selection (would likely mean discrete SMD single-digit displays — more parts).
+TM1640s. The MCU and keyboard boards are mostly SMT plus their connectors and
+through-hole switches as applicable. If an all-SMT display is a hard
+requirement, revisit driver+digit selection (would likely mean discrete SMD
+single-digit displays — more parts).
 
 ## KiCad symbols
 
@@ -109,12 +109,11 @@ selection (would likely mean discrete SMD single-digit displays — more parts).
 - **Level shifter (SN74HCT125):** use the **stock** `74xx:74AHCT125` symbol
   (pin-identical quad buffer; value = `74HCT125`) + `Package_SO:SOIC-14_3.9x8.7mm`.
   ✅ No custom symbol.
-- **5V boost (TPS61022):** footprint is stock
-  (`Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm`) but the **symbol is not**
-  — author it into `lib/symbols/calcumaker.kicad_sym` (TODO, batch with the MCU
-  symbol when the main board is generated).
-- **MCU (STM32U575ZGT6):** author/confirm its symbol when generating the main
-  board (TODO).
+- **5V boost (TPS61022):** stock `Converter_DCDC:TPS61022` symbol +
+  `Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm` footprint. ✅ No custom
+  symbol.
+- **MCU (STM32U575ZGT6):** stock `MCU_ST_STM32U5:STM32U575ZGTx` symbol +
+  `Package_QFP:LQFP-144_20x20mm_P0.5mm`. ✅ No custom symbol.
 
 ## Passive size policy
 

@@ -484,7 +484,7 @@
 			)
 		)
 	)
-	(text "Calcumaker 16 main — LSE 32.768kHz (Y1) -> MCU OSC32_IN/OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via 2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives the RTC for sleep timing."
+	(text "Calcumaker 16 MCU board — LSE 32.768kHz (Y1) -> MCU OSC32_IN/OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via 2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives the RTC for sleep timing."
 		(exclude_from_sim no)
 		(at 15.00 100.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))

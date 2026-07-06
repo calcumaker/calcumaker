@@ -2176,7 +2176,7 @@
 			)
 		)
 	)
-	(text "Calcumaker 16 main — Display 5V rail + interface. 5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF; FB R6/R7 divider -> +5V (Vref 0.6V); EN<-MCU DISP_PWR_EN (low in sleep). LEVEL SHIFT U6 74HCT125 @ +5V (VIH=2V accepts 3V3): IN<-MCU CLK,DIN1,DIN2,DIN3 (3V3); OUT-> J3 at 5V logic; C11 100nF; tie all 4 /OE low. J3 = 0.5mm 12P FFC to display (AFC01-S12FCA-00 C262661; cable = GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD). Pinout (MUST match calcumaker-display J1): 1=+5V, 2=+5V, 3=GND, 4=CLK, 5=DIN1, 6=DIN2, 7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V/GND DOUBLED for LED current (0.5mm FFC conductor ~0.4A). Pins 9-11 = the DNP aux OLED I2C. See DESIGN.md Power Tree / Board Partition."
+	(text "Calcumaker 16 MCU board — Display 5V rail + interface. 5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF; FB R6/R7 divider -> +5V (Vref 0.6V); EN<-MCU DISP_PWR_EN (low in sleep). LEVEL SHIFT U6 74HCT125 @ +5V (VIH=2V accepts 3V3): IN<-MCU CLK,DIN1,DIN2,DIN3 (3V3); OUT-> J3 at 5V logic; C11 100nF; tie all 4 /OE low. J3 = 0.5mm 12P FFC to display (AFC01-S12FCA-00 C262661; cable = GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD). Pinout (MUST match calcumaker-display J1): 1=+5V, 2=+5V, 3=GND, 4=CLK, 5=DIN1, 6=DIN2, 7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V/GND DOUBLED for LED current (0.5mm FFC conductor ~0.4A). Pins 9-11 = the DNP aux OLED I2C. See DESIGN.md Power Tree / Board Partition."
 		(exclude_from_sim no)
 		(at 15.00 110.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))

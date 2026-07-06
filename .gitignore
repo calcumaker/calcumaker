@@ -1,9 +1,11 @@
-# KiCad backup/autosave
+# KiCad backup/autosave/lock
 *.kicad_prl
 *-backups/
 _autosave-*
 *.bak
 *~
+*.lck
+~*.kicad_*
 
 # JLCPCB fab packages (regenerated via make jlc)
 hardware/*/jlcpcb/

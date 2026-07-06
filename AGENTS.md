@@ -1,4 +1,4 @@
-# Claude Code Assistant Guidelines — Calcumaker 16
+# Codex Assistant Guidelines — Calcumaker 16
 
 Repo `calcumaker`; product **Calcumaker 16** (see `NAMING.md`). A wide-format,
 full-size-Cherry-MX **programmer's / technical RPN calculator**. It follows the

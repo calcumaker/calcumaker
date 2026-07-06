@@ -24,11 +24,12 @@ every part resolving to a real library symbol + footprint, `extends`-derived
 symbols handled).
 
 Calcumaker 16 is a **split design** — one manifest per board:
-`calcumaker-main.schgen.py` and `calcumaker-display.schgen.py`.
+`calcumaker-mcu.schgen.py`, `calcumaker-keyboard.schgen.py`, and
+`calcumaker-display.schgen.py`.
 
 ```sh
-make gen-calcumaker-main       # rewrite the main-board sheets from its manifest
-make check-calcumaker-main     # verify it
+make gen-calcumaker-mcu        # rewrite the MCU-board sheets from its manifest
+make check-calcumaker-keyboard # verify a board
 make render-calcumaker-display # eyeball a board's sheets
 ```
 

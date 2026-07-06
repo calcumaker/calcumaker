@@ -2,16 +2,16 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "6885ee80-e191-4b5d-9a90-d31ab546f2b5")
+	(uuid "ca1c0000-0000-4000-8000-0000000d1520")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — Display — Main board interconnect")
-		(date "2026-06-21")
-		(rev "0.1")
+		(title "Calcumaker 16 — Display — MCU board interconnect (0.5mm FFC)")
+		(date "2026-07-04")
+		(rev "0.2")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "Connector_Generic:Conn_01x10"
+	(symbol "Connector_Generic:Conn_01x12"
 		(pin_names
 			(offset 1.016)
 			(hide yes)
@@ -22,7 +22,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "J"
-			(at 0 12.7 0)
+			(at 0 15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -31,8 +31,8 @@
 				)
 			)
 		)
-		(property "Value" "Conn_01x10"
-			(at 0 -15.24 0)
+		(property "Value" "Conn_01x12"
+			(at 0 -17.78 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63,7 +63,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x10, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Generic connector, single row, 01x12, script generated (kicad-library-utils/schlib/autogen/connector/)"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -96,16 +96,27 @@
 				)
 			)
 		)
-		(symbol "Conn_01x10_1_1"
+		(symbol "Conn_01x12_1_1"
 			(rectangle
-				(start -1.27 11.43)
-				(end 1.27 -13.97)
+				(start -1.27 13.97)
+				(end 1.27 -16.51)
 				(stroke
 					(width 0.254)
 					(type default)
 				)
 				(fill
 					(type background)
+				)
+			)
+			(rectangle
+				(start -1.27 12.827)
+				(end 0 12.573)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
 				)
 			)
 			(rectangle
@@ -218,8 +229,19 @@
 					(type none)
 				)
 			)
+			(rectangle
+				(start -1.27 -15.113)
+				(end 0 -15.367)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
 			(pin passive line
-				(at -5.08 10.16 0)
+				(at -5.08 12.7 0)
 				(length 3.81)
 				(name "Pin_1"
 					(effects
@@ -237,7 +259,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 7.62 0)
+				(at -5.08 10.16 0)
 				(length 3.81)
 				(name "Pin_2"
 					(effects
@@ -255,7 +277,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 5.08 0)
+				(at -5.08 7.62 0)
 				(length 3.81)
 				(name "Pin_3"
 					(effects
@@ -273,7 +295,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 2.54 0)
+				(at -5.08 5.08 0)
 				(length 3.81)
 				(name "Pin_4"
 					(effects
@@ -291,7 +313,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 0 0)
+				(at -5.08 2.54 0)
 				(length 3.81)
 				(name "Pin_5"
 					(effects
@@ -309,7 +331,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -2.54 0)
+				(at -5.08 0 0)
 				(length 3.81)
 				(name "Pin_6"
 					(effects
@@ -327,7 +349,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -5.08 0)
+				(at -5.08 -2.54 0)
 				(length 3.81)
 				(name "Pin_7"
 					(effects
@@ -345,7 +367,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -7.62 0)
+				(at -5.08 -5.08 0)
 				(length 3.81)
 				(name "Pin_8"
 					(effects
@@ -363,7 +385,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -10.16 0)
+				(at -5.08 -7.62 0)
 				(length 3.81)
 				(name "Pin_9"
 					(effects
@@ -381,7 +403,7 @@
 				)
 			)
 			(pin passive line
-				(at -5.08 -12.7 0)
+				(at -5.08 -10.16 0)
 				(length 3.81)
 				(name "Pin_10"
 					(effects
@@ -391,6 +413,42 @@
 					)
 				)
 				(number "10"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at -5.08 -12.7 0)
+				(length 3.81)
+				(name "Pin_11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at -5.08 -15.24 0)
+				(length 3.81)
+				(name "Pin_12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "12"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -558,55 +616,57 @@
 	)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x10")
-		(at 45.7200 55.8800 0)
+		(lib_id "Connector_Generic:Conn_01x12")
+		(at 71.1200 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "53febb50-d886-4ccd-8e7c-cc51a79dc999")
+		(uuid "45018fe6-15b5-4d23-80d8-c25d61248bc8")
 		(property "Reference" "J1"
-			(at 49.5300 53.3400 0)
+			(at 74.9300 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "TO MAIN"
-			(at 49.5300 58.4200 0)
+		(property "Value" "TO MCU (FFC)"
+			(at 74.9300 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"
-			(at 45.7200 55.8800 0)
+		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal"
+			(at 71.1200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 45.7200 55.8800 0)
+			(at 71.1200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C492409"
-			(at 45.7200 55.8800 0)
+		(property "LCSC" "C262661"
+			(at 71.1200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "PZ254V-11-10P"
-			(at 45.7200 55.8800 0)
+		(property "MPN" "AFC01-S12FCA-00"
+			(at 71.1200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "Manufacturer" "XKB"
-			(at 45.7200 55.8800 0)
+		(property "Manufacturer" "JUSHUO"
+			(at 71.1200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "4fd12690-a3b1-4b46-a7cb-ffdfd706c3c6"))
-		(pin "2" (uuid "9a8efcda-7015-46f6-a50e-11f49f678067"))
-		(pin "3" (uuid "d7d02c5a-8cfc-4385-9125-015db6540f46"))
-		(pin "4" (uuid "d421a6fe-7871-4fb3-94e4-4748cecabbb5"))
-		(pin "5" (uuid "19ab0310-b13c-4b7d-8385-75e3300f0b70"))
-		(pin "6" (uuid "a337de6f-667a-48e0-ba17-629d83e8ee6b"))
-		(pin "7" (uuid "5eb3fd79-a280-413a-b192-0bedf9ab284d"))
-		(pin "8" (uuid "9ce4ffae-8c29-48d0-8050-9721825a2728"))
-		(pin "9" (uuid "8c27f45a-9919-4a0c-8456-b39dc9c87595"))
-		(pin "10" (uuid "7e112dcf-904b-489c-865c-9d5a453da165"))
+		(pin "1" (uuid "fba146ce-0cbc-43ba-b427-c08b6903ce4d"))
+		(pin "2" (uuid "095f548c-e75c-4447-8329-c40aff4c1fa4"))
+		(pin "3" (uuid "c3531238-2174-44aa-8826-80d1fbf9f35e"))
+		(pin "4" (uuid "1b66b278-5a29-43fe-aa9a-d068a29621f2"))
+		(pin "5" (uuid "51daec02-6322-41ed-aee0-611a48e6551f"))
+		(pin "6" (uuid "d77edd5f-a6da-4723-b9fe-f30d325437c8"))
+		(pin "7" (uuid "6a1a369f-2c6e-4a5a-b17a-f2332d3c014e"))
+		(pin "8" (uuid "5b5edb3f-7aae-44e4-9c97-8cc120105db7"))
+		(pin "9" (uuid "b64f8f03-d760-498c-89bc-fae1bfa8d5e3"))
+		(pin "10" (uuid "f9a49e63-df0f-4e24-b289-de4a400ab884"))
+		(pin "11" (uuid "035ef4ce-076b-4857-a5b9-4312670c9ec5"))
+		(pin "12" (uuid "6a7aaa25-3b03-4707-a588-e4303f6a4fdd"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/6885ee80-e191-4b5d-9a90-d31ab546f2b5"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/ca1c0000-0000-4000-8000-0000000d1520"
 					(reference "J1")
 					(unit 1)
 				)
@@ -615,49 +675,207 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 30.4800 121.9200 0)
+		(at 121.9200 71.1200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2e6d2d62-4a36-4928-bde1-2f4d16c7b26e")
-		(property "Reference" "C5"
-			(at 34.2900 119.3800 0)
+		(uuid "bd34fa00-aa7c-4b24-8a9e-18150b279bfd")
+		(property "Reference" "C7"
+			(at 125.7300 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Value" "10uF"
-			(at 34.2900 124.4600 0)
+			(at 125.7300 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 30.4800 121.9200 0)
+			(at 121.9200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 30.4800 121.9200 0)
+			(at 121.9200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "503c8134-eebf-4f43-9be3-b7060df8c377"))
-		(pin "2" (uuid "43aa736b-1659-4ee3-bbbf-675ab4cc7d5b"))
+		(property "LCSC" "C15850"
+			(at 121.9200 71.1200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "03596702-d9d5-4e5e-8320-f8c085c4fc59"))
+		(pin "2" (uuid "c65cfa8c-bc17-43d8-9a3e-1e399e090ff5"))
 		(instances
 			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/6885ee80-e191-4b5d-9a90-d31ab546f2b5"
-					(reference "C5")
+				(path "/ca1c0000-0000-4000-8000-0000000d1501/ca1c0000-0000-4000-8000-0000000d1520"
+					(reference "C7")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 display — Interconnect to the main board. J1 pinout (MUST match calcumaker-main J3): 1=+5V, 2=GND, 3=CLK (shared), 4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=+3V3, 9=SDA, 10=SCL. Display runs at +5V (TM1640 VDD + LED); CLK/DIN are 5V-logic from the main-board 74HCT125. Pins 8-10 feed the OPTIONAL aux OLED (AuxDisplay sheet) at 3V3 I2C — unused when the OLED is not populated. Wide +5V/GND for LED current. 2.54mm 1x10 header (C492409); short cable to the angled display. See DESIGN.md Board Partition."
+	(wire (pts (xy 66.0400 58.4200) (xy 63.5000 58.4200))
+		(stroke (width 0) (type default))
+		(uuid "565f074e-cbd3-4644-8682-7c8fdfbcd72e")
+	)
+	(global_label "+5V"
+		(shape input)
+		(at 63.5000 58.4200 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "fcba5433-1ab2-4e8f-a3e7-f8a6781c5451")
+	)
+	(wire (pts (xy 66.0400 60.9600) (xy 63.5000 60.9600))
+		(stroke (width 0) (type default))
+		(uuid "438681c0-3b54-428c-b1e8-1086d6522f37")
+	)
+	(global_label "+5V"
+		(shape input)
+		(at 63.5000 60.9600 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "d3c31f2e-8031-4c32-8884-39bfd4d803bc")
+	)
+	(wire (pts (xy 66.0400 63.5000) (xy 63.5000 63.5000))
+		(stroke (width 0) (type default))
+		(uuid "58cfba19-4ca6-4959-9c12-6f72ee96eacd")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 63.5000 63.5000 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "ed386e2c-cae3-4b23-b3c0-dcd7307dbaa0")
+	)
+	(wire (pts (xy 66.0400 66.0400) (xy 63.5000 66.0400))
+		(stroke (width 0) (type default))
+		(uuid "4e2facad-6fb9-4646-bddf-34fd170b3064")
+	)
+	(global_label "DISP_CLK"
+		(shape input)
+		(at 63.5000 66.0400 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "d0341503-5649-4468-b853-38885f190e3d")
+	)
+	(wire (pts (xy 66.0400 68.5800) (xy 63.5000 68.5800))
+		(stroke (width 0) (type default))
+		(uuid "16bdc9b0-915a-45db-8939-4241bc11de31")
+	)
+	(global_label "DIN1"
+		(shape input)
+		(at 63.5000 68.5800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "863d4c5d-a925-4d91-88bc-b8d067e0e8f1")
+	)
+	(wire (pts (xy 66.0400 71.1200) (xy 63.5000 71.1200))
+		(stroke (width 0) (type default))
+		(uuid "66f0140e-a406-4c9a-8173-4931b670e844")
+	)
+	(global_label "DIN2"
+		(shape input)
+		(at 63.5000 71.1200 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "30a002a9-4949-44ed-8e45-837255065e37")
+	)
+	(wire (pts (xy 66.0400 73.6600) (xy 63.5000 73.6600))
+		(stroke (width 0) (type default))
+		(uuid "b6955d19-4212-422c-b545-102b0e3e7177")
+	)
+	(global_label "DIN3"
+		(shape input)
+		(at 63.5000 73.6600 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "956bcb39-2553-427b-9a4a-0794643dcbdb")
+	)
+	(wire (pts (xy 66.0400 76.2000) (xy 63.5000 76.2000))
+		(stroke (width 0) (type default))
+		(uuid "0924daf0-9fdc-4843-889c-eb9e6910abb4")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 63.5000 76.2000 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "9e68abd8-a813-4807-ae58-e31fc4c6f58e")
+	)
+	(wire (pts (xy 66.0400 78.7400) (xy 63.5000 78.7400))
+		(stroke (width 0) (type default))
+		(uuid "ff365c70-4cba-4b5c-83b3-b0918d5f11f1")
+	)
+	(global_label "+3V3"
+		(shape input)
+		(at 63.5000 78.7400 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "3238bd9e-271c-4050-85a7-1636c53589c4")
+	)
+	(wire (pts (xy 66.0400 81.2800) (xy 63.5000 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "026f6f56-671c-402e-8ef5-480c8c30facc")
+	)
+	(global_label "SDA"
+		(shape input)
+		(at 63.5000 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "c5b36cc8-2c15-4834-b6fc-5c734a807541")
+	)
+	(wire (pts (xy 66.0400 83.8200) (xy 63.5000 83.8200))
+		(stroke (width 0) (type default))
+		(uuid "65ed3f7a-3f85-4911-9361-88f914649f06")
+	)
+	(global_label "SCL"
+		(shape input)
+		(at 63.5000 83.8200 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "86d000e0-3d15-469b-a089-d326b26dfb64")
+	)
+	(wire (pts (xy 66.0400 86.3600) (xy 63.5000 86.3600))
+		(stroke (width 0) (type default))
+		(uuid "351c4b27-198f-4eb1-a75b-fb9ef9d8de30")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 63.5000 86.3600 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "89320851-2bde-4011-8795-7c5364ee1015")
+	)
+	(wire (pts (xy 121.9200 67.3100) (xy 121.9200 64.7700))
+		(stroke (width 0) (type default))
+		(uuid "04c272ee-ac2d-48c0-a844-7dcc366215be")
+	)
+	(global_label "+5V"
+		(shape input)
+		(at 121.9200 64.7700 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "8028e697-9b7c-440b-9018-d8bd7ddbd97e")
+	)
+	(wire (pts (xy 121.9200 74.9300) (xy 121.9200 77.4700))
+		(stroke (width 0) (type default))
+		(uuid "6e3d5898-b37c-46ff-b5ce-0ab9edb0e6d5")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 121.9200 77.4700 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "83ae4bbb-330c-4ff1-aab2-f3e69ed339cf")
+	)
+	(text "Calcumaker 16 display — Interconnect to the MCU board = 0.5mm 12P FFC (J1 AFC01-S12FCA-00, LCSC C262661; the flat-flex CABLE = GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD @ layout, NOT assembled). Pinout (MUST match calcumaker-mcu J3): 1=+5V, 2=+5V, 3=GND, 4=CLK (shared), 5=DIN1, 6=DIN2, 7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V + GND are DOUBLED/TRIPLED for the display LED current (a 0.5mm FFC conductor is ~0.4A; 3 TM1640s peak ~0.3-0.5A on +5V, less with brightness capping). CLK/DIN are 5V-logic from the MCU-board 74HCT125; DIN1/2/3 fan out to Row1/2/3; DISP_CLK is shared. Pins 9-11 feed the OPTIONAL aux OLED (AuxDisplay) at 3V3 I2C. Verify the FFC land + contact orientation (top/bottom, same/opposite end) vs the AFC01 datasheet at layout. See DESIGN.md."
 		(exclude_from_sim no)
-		(at 15.00 95.00 0)
+		(at 20.00 120.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "5410af15-5ef2-4810-923f-510197435521")
+		(uuid "32ceacc0-9778-4fd9-a110-253099045f87")
 	)
 	(sheet_instances
 		(path "/"
-			(page "3")
+			(page "6")
 		)
 	)
 	(embedded_fonts no)

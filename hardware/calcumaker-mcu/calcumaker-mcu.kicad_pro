@@ -506,7 +506,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "calcumaker-main.kicad_pro",
+    "filename": "calcumaker-mcu.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -690,7 +690,7 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "calcumaker-main.kicad_sch"
+        "filename": "calcumaker-mcu.kicad_sch"
       }
     ],
     "used_designators": "",
@@ -699,35 +699,31 @@
   "sheets": [
     [
       "ca1c0000-0000-4000-8000-00000000ma01",
-      "calcumaker-main"
+      "calcumaker-mcu"
     ],
     [
-      "da764cdd-8caf-4481-b72a-cf9dd25cafa9",
+      "23aa651c-01ea-4ee3-bb12-f879a30c281f",
       "MCU"
     ],
     [
-      "4dd16969-fa48-40a9-bf37-e7180cf6be85",
+      "dc502c7f-271d-4dc5-a1c2-d18857eddfee",
       "Clock"
     ],
     [
-      "da0f862c-ac78-45d0-9238-36e39d2db74c",
+      "4bb53341-6b5a-4905-9015-f6916355f0f0",
       "Programming"
     ],
     [
-      "b9ee67a8-aaed-4504-a49b-ae68f7f164a3",
+      "672f4fa7-1cc1-4703-8edf-f066cdb44902",
       "PSU"
     ],
     [
-      "65611b0d-545d-4fb9-857e-8b311a34bb2e",
-      "Keypad"
-    ],
-    [
-      "5a080947-7cc4-4e41-bc3c-27cf4b2ace01",
+      "882301f2-c62c-4450-8afe-fd55e1916916",
       "DisplayIF"
     ],
     [
-      "09ef021e-eba5-4a51-ac3b-4585f8d3f3ef",
-      "Annunciators"
+      "f3eb8744-2884-4df4-9891-07d87447427d",
+      "KeyboardIF"
     ]
   ],
   "text_variables": {},

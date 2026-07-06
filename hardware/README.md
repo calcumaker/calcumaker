@@ -1,14 +1,19 @@
 # Calcumaker 16 — hardware
 
 KiCad 10 design for the **Calcumaker 16** programmer's / technical RPN
-calculator. **Split design** — two PCBs:
+calculator. **Split design** — three PCBs (two stacked, one cabled):
 
-- **`calcumaker-main/`** — MCU (STM32U575ZGT6), PSU (USB-C charge + buck-boost),
-  the Cherry MX key matrix, and the interconnect to the display board.
+- **`calcumaker-mcu/`** — the brain/PSU board: MCU (STM32U575ZGT6), PSU (USB-C
+  charge + buck-boost), clock, SWD, the display 5V rail + level shifter +
+  interconnect, and a fine-pitch mezzanine up to the keyboard board. *Bottom of
+  the stack.* (Renamed from `calcumaker-main` when the keyboard split off.)
+- **`calcumaker-keyboard/`** — the front-panel board: the 50-key Cherry MX matrix
+  + per-key diodes + the annunciator LEDs + the mating mezzanine header.
+  *Mezzanine-stacks directly above the MCU board* (keeps a dense LQFP-144 off the
+  through-hole key matrix).
 - **`calcumaker-display/`** — the multi-row 7-segment RPN stack (2–3 rows) + its
-  driver IC(s) + the interconnect back to the main board. Mounts at an upward
-  angle; only +3V3, GND, and the display serial bus cross the connector (this is
-  what "simplifies wiring").
+  driver ICs + the interconnect back to the MCU board. Mounts at an upward angle,
+  cabled; only +5V, GND, and the display serial bus cross the connector.
 
 See `../DESIGN.md` for the full design and `scripts/README.md` for the
 schematic-generation flow. Build docs/BOMs/fab packages with the `Makefile`

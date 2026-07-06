@@ -20,9 +20,10 @@
 
 - The **repo** stays `calcumaker` (the brand/line).
 - The **product** is **Calcumaker 16**.
-- The **two PCBs** are `calcumaker-main` (MCU/PSU/keypad) and
+- The **three PCBs** are `calcumaker-mcu` (brain/PSU), `calcumaker-keyboard`
+  (Cherry MX matrix + annunciators, mezzanine-stacked above it) and
   `calcumaker-display` (the angled 7-seg stack board). Schematic title blocks
-  read "Calcumaker 16 — Main" / "Calcumaker 16 — Display".
+  read "Calcumaker 16 — MCU" / "Calcumaker 16 — Keyboard" / "Calcumaker 16 — Display".
 
 ## Trademark posture (informal — not legal clearance)
 

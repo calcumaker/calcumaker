@@ -27,9 +27,10 @@
 
 KICAD_CLI ?= kicad-cli
 
-# Add new PCB projects here. Calcumaker 16 is a split design: a main board
-# (MCU/PSU/keypad) + a separate angled display board.
-PROJECTS    := calcumaker-main calcumaker-display
+# Add new PCB projects here. Calcumaker 16 is a split design: a stacked pair —
+# the MCU board (brain: MCU/PSU) with the keyboard board (Cherry MX matrix +
+# annunciators) mezzanine-stacked above it — plus a separate angled display board.
+PROJECTS    := calcumaker-mcu calcumaker-keyboard calcumaker-display
 
 BOM_FIELDS  := $${ITEM_NUMBER},Reference,Value,Footprint,$${QUANTITY},LCSC,MPN,Manufacturer
 BOM_LABELS  := Item,Designator,Comment,Footprint,Qty,LCSC Part \#,MPN,Manufacturer

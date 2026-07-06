@@ -127,11 +127,16 @@ user types on while the MCU board hides underneath.
 
 **Stacking — the mezzanine:** because the keyboard has its **own STM32G0 scanner**
 (below), only a **serial link + power** cross the stack, not the raw matrix. A
-**low-profile fine-pitch mezzanine** — **Hirose DF40, 0.4 mm pitch, 2×5 (10-pin),
-1.5 mm stack height** — receptacle `J5` **DF40C-10DS-0.4V** (LCSC C424636) on the
-MCU board, header `J1` **DF40C-10DP-0.4V** (LCSC C424635) on the keyboard board.
-It carries 10 pins: `+3V3 · GND · I²C_SDA · I²C_SCL · UART_TX · UART_RX · KB_IRQ ·
-KB_NRST · KB_BOOT0 · GND`. Both an **I²C and a UART** bus are exposed (I²C is the
+**low-profile fine-pitch mezzanine** — **Hirose DF40, 0.4 mm pitch, 2×6 (12-pin),
+~1.5 mm stack height** — receptacle `J5` **DF40B-12DS-0.4V** (LCSC C3641147) on the
+MCU board, header `J1` **DF40C-12DP-0.4V** (LCSC C6224952) on the keyboard board.
+It carries 12 pins: `+3V3 · GND · I²C_SDA · I²C_SCL · UART_TX · UART_RX · KB_IRQ ·
+KB_NRST · KB_BOOT0 · GND · VSYS · GND` — the last pair is the always-on
+battery/USB rail (+ return) feeding the keyboard's per-key RGB lighting. (Grown
+from 10→12 pins for that; the DF40C-12DS receptacle isn't LCSC-stocked so the MCU
+side is DF40B-12DS — **still a 1.5 mm stack**: on DF40 the receptacle *suffix*
+sets the height (none = 1.5 mm, `(2.0)` = 2.0 mm), not the B/C letter, and the
+DF40C plug is the common header.) Both an **I²C and a UART** bus are exposed (I²C is the
 primary key/annunciator channel; UART is spare/expansion + the G0's ROM
 bootloader); `KB_IRQ` is the keypress wake line (see Low-power & wake). The two
 halves are pin-for-pin identical (mated pin N ↔ pin N). DF40 was chosen over a
@@ -146,8 +151,29 @@ or the pins get trimmed; and tall connectors (**USB-C ~3.2 mm, battery JST
 ~5 mm**) go at the **MCU board edge, overhanging beyond the keyboard footprint**.
 4 corner standoffs (matched to the 1.5 mm stack) take the load. All new footprints
 carry KiCad **3D (STEP) models** — verify the stack in the 3D viewer, and the
-DF40C land vs the KiCad DF40 2×5 footprint, at layout. (Taller DF40 variants —
+DF40 land vs the KiCad DF40 2×6 footprint, at layout. (Taller DF40 variants —
 DF40HC(2.0)/(2.5)/… — swap in on the same land if more clearance is wanted.)
+
+### Per-key RGB accent lighting (keyboard)
+
+Fifty **SK6805-EC15** (1.5×1.5 mm single-wire addressable RGB, LCSC C2890035) —
+one beside each key — **hint key positions / presses**. At 1.5 mm they can't sit
+under the MX switch, so each mounts just north of its switch. It's the smallest
+serial RGB with both a KiCad footprint and real LCSC stock. All 50 daisy-chain
+(DIN→DOUT) off **one G0 pin** (WS2812 protocol, ~800 kHz); refs `D56–D105`.
+
+**Power = gated VSYS.** The LEDs are ~5 V parts and the keyboard rail is only
+3.3 V, so they run off **VSYS** — the MCU board's load-shared battery/USB rail
+(~3.7–4.7 V, "more volts") — brought up the **widened 12-pin mezzanine**. A
+**high-side P-FET load switch** (Q1 AO3401A + Q2 2N7002) on the keyboard **gates
+the whole LED rail off in sleep** (G0 `LED_EN` low → LEDs + level shifter dead,
+near-zero leakage) to protect battery life. A **74LVC1G125** buffer powered from
+the *gated* rail level-shifts the 3.3 V data up to the LED V_IH (0.7·V_DD —
+marginal at VSYS ≈ 4.7 V on USB otherwise).
+
+**Current budget:** 50× full-white ≈ 0.75 A would exceed the DF40 contact + VSYS
+budget, so the firmware **must cap total brightness** — "hint" use lights a few
+keys at a time (pressed key + neighbours), an all-keys idle glow stays dim.
 
 Keeping the display driver *on the display board* means only **+5V, GND, and the
 display serial bus** (a handful of signals) cross that connector — instead of
@@ -544,7 +570,7 @@ then wired in eeschema.
 | Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + **J3 (0.5 mm FFC)** → display |
-| KeyboardIF | `keyboard_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine receptacle (J5, DF40C-10DS, 1.5 mm stack) — I²C+UART link to the keyboard board |
+| KeyboardIF | `keyboard_if.kicad_sch` | Hirose DF40 **2×6 (12-pin)** 0.4 mm mezzanine receptacle (J5, DF40B-12DS, ~1.5 mm stack) — I²C+UART + **VSYS** to the keyboard board |
 | QSPIFlash | `qspi_flash.kicad_sch` | 4 MB quad-SPI NOR (U7, W25Q32JVSSIQ) on OCTOSPI1 + CS# pull-up (R9) + decoupling (C26) |
 
 **`calcumaker-keyboard`:**
@@ -555,10 +581,11 @@ then wired in eeschema.
 | Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (SW1–50 + diodes D1–50) → the on-board G0 |
 | Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
 | KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
-| MainIF | `main_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine header (J1, DF40C-10DP, 1.5 mm stack) → down to the MCU board |
+| KeyLighting | `keylight.kicad_sch` | **50× SK6805-EC15 per-key RGB (D56–D105)** + level shifter (U2) + gated load switch (Q1/Q2) — hint lighting off VSYS |
+| MainIF | `main_if.kicad_sch` | Hirose DF40 **2×6 (12-pin)** 0.4 mm mezzanine header (J1, DF40C-12DP, ~1.5 mm stack) → down to the MCU board (+VSYS +GND for the RGB) |
 
 All three boards **generate from their manifests and pass the structure check**:
-`calcumaker-mcu` = 55 components, `calcumaker-keyboard` = 119 components (both
+`calcumaker-mcu` = 55 components, `calcumaker-keyboard` = 178 components (both
 placed-not-wired), `calcumaker-display` = 60 components (fully wired, multi-channel).
 Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`.
 
@@ -691,9 +718,9 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
 5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
    f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
    annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
-   (Keypad / Annunciators / KbdMCU / MainIF, 119 comp), which mezzanine-stacks
-   (I²C+UART) above **`calcumaker-mcu`** (MCU / Clock / Programming / PSU /
-   DisplayIF / KeyboardIF, 52 comp). All symbols stock except the authored
+   (Keypad / Annunciators / KbdMCU / KeyLighting / MainIF, 178 comp — incl. 50
+   per-key RGB), which mezzanine-stacks (I²C+UART+VSYS) above **`calcumaker-mcu`**
+   (MCU / Clock / Programming / PSU / DisplayIF / KeyboardIF / QSPIFlash, 55 comp). All symbols stock except the authored
    TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
    refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the
    STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); verify the DF40
@@ -718,10 +745,12 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
-| Keyboard mezzanine ×2 | **Hirose DF40C-10** 0.4mm 2×5 low-profile (1.5mm stack): DF40C-10DS (mcu J5) + DF40C-10DP (keyboard J1) | ✅ LCSC C424636 / C424635; KiCad fp + 3D model; verify MX-pin clearance |
+| Keyboard mezzanine ×2 | **Hirose DF40 0.4mm 2×6 (12-pin)** 1.5mm stack: DF40B-12DS (mcu J5) + DF40C-12DP (keyboard J1) | ✅ LCSC C3641147 / C6224952; +VSYS+GND for RGB; both 1.5mm (B/C = pin-count variant, not height); verify MX-pin clearance |
 | Keyswitches (keyboard) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
 | Key diodes (keyboard) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
 | Annunciator LEDs (keyboard) ×5 | f yellow (C72038), g blue (C965807), C·G·low-batt red (C2286) + 5× 470Ω | ✅ front-panel, beside the keys |
+| Per-key RGB (keyboard) ×50 | **SK6805-EC15** 1.5×1.5mm single-wire addressable RGB — one beside each key (hint lighting, D56–D105) | ✅ LCSC C2890035, ~$0.06; daisy-chained off the G0 |
+| RGB level shift + gate (keyboard) | **SN74LVC1G125** (3V3→VLED data) + **AO3401A**/**2N7002** high-side load switch | ✅ LCSC C23654 / C15127 / C8545 — LEDs on **gated VSYS**, off in sleep |
 | USB-C (mcu) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
 | Charger (mcu) | MCP73831 / BQ-class | sized to cell |
 | Buck-boost 3V3 (mcu) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load); L→0805 |

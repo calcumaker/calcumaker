@@ -6,11 +6,11 @@
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Keyboard")
-		(date "2026-07-05")
-		(rev "0.2")
+		(date "2026-07-06")
+		(rev "0.3")
 		(company "calcumaker authors")
 		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
-		(comment 2 "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + MCU mezzanine (DRAFT)")
+		(comment 2 "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + per-key RGB (gated) + MCU mezzanine (DRAFT)")
 	)
 	(lib_symbols)
 	(sheet
@@ -74,6 +74,22 @@
 		)
 		(property "Sheetfile" "main_if.kicad_sch"
 			(at 208.28 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 264.16 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "6c3c40e8-ca64-427e-984d-3797888084da")
+		(property "Sheetname" "KeyLighting"
+			(at 264.16 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "keylight.kicad_sch"
+			(at 264.16 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)

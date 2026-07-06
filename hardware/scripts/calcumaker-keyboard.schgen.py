@@ -43,9 +43,12 @@ ROOT_UUID = "ca1c0000-0000-4000-8000-00000000eb01"   # keep stable across regens
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C", "D", "LED")
 K.register_stdlib("Switch", "SW_Push")
-K.register_stdlib("Connector_Generic", "Conn_02x05_Odd_Even")   # DF40 mezzanine to MCU (J1)
+K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even")   # DF40 12-pin mezzanine to MCU (J1)
 K.register_stdlib("Connector", "Conn_ARM_SWD_TagConnect_TC2030-NL")   # G0 SWD (J2)
 K.register_stdlib("MCU_ST_STM32G0", "STM32G031K8Ux")   # keyboard scanner MCU (UFQFPN-32)
+K.register_stdlib("LED", "SK6805")                     # per-key addressable RGB (1.5x1.5mm)
+K.register_stdlib("74xGxx", "74LVC1G125")              # 3V3 -> VSYS data level shifter
+K.register_stdlib("Transistor_FET", "Q_PMOS_GSD", "Q_NMOS_GSD")   # LED-rail load switch
 
 # ---- footprint shorthands ---------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -53,15 +56,18 @@ C0402 = "Capacitor_SMD:C_0402_1005Metric"
 C0603 = "Capacitor_SMD:C_0603_1608Metric"
 SOD123 = "Diode_SMD:D_SOD-123"
 LED0603 = "LED_SMD:LED_0603_1608Metric"
+SK6805_FP = "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"   # 1.5x1.5mm addressable RGB
+SOT235 = "Package_TO_SOT_SMD:SOT-23-5"            # 74LVC1G125 level shifter
+SOT23 = "Package_TO_SOT_SMD:SOT-23"               # AO3401A / 2N7002 load switch
 MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap variant optional
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
-MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-10DP-0.4V_2x05-1MP_P0.4mm"
+MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-12DP-0.4V_2x06-1MP_P0.4mm"
 
 
 def R(ref, val):
     return dict(ref=ref, lib_id="Device:R", value=val, fp=R0402,
-                lcsc={"470": "C25117", "10k": "C25744"}.get(val, ""))
+                lcsc={"470": "C25117", "10k": "C25744", "100k": "C25741"}.get(val, ""))
 
 
 def C(ref, val, fp=C0402):
@@ -183,42 +189,105 @@ KBD_MCU = dict(name="KbdMCU", file="kbd_mcu.kicad_sch",
         "See DESIGN.md Low-power & wake.")))
 
 # ===================== Main-board mezzanine sheet ============================
-# The mating half of the LOW-PROFILE board-to-board stack. J1 = Hirose DF40 2x5
-# (10-pin) 0.4mm HEADER (DF40C-10DP, LCSC C424635); the MCU board carries the
-# receptacle (DF40C-10DS C424636). DF40C = 1.5mm stack height. Only a serial link
-# + power cross it (the matrix stays on this board's G0). Pin-for-pin identical
-# assignment to J5 (mated pin N <-> N).
+# The mating half of the LOW-PROFILE board-to-board stack. J1 = Hirose DF40 2x6
+# (12-pin) 0.4mm HEADER (DF40C-12DP, LCSC C6224952); the MCU board carries the
+# receptacle (DF40B-12DS C3641147). Grown from 10 -> 12 pins to carry VSYS + a
+# dedicated GND for the per-key RGB lighting (KeyLighting sheet). Only a serial
+# link + power cross it (the matrix stays on this board's G0). Pin-for-pin
+# identical assignment to J5 (mated pin N <-> N).
 MAIN_IF = dict(name="MainIF", file="main_if.kicad_sch",
-    title="MCU mezzanine (I2C + UART link down to the MCU board)", page="5",
+    title="MCU mezzanine (I2C + UART + VSYS down to the MCU board)", page="5",
     big=[
-        dict(ref="J1", lib_id="Connector_Generic:Conn_02x05_Odd_Even",
+        dict(ref="J1", lib_id="Connector_Generic:Conn_02x06_Odd_Even",
              value="TO MCU", fp=MEZZ_HEADER_FP,
-             lcsc="C424635", mpn="DF40C-10DP-0.4V(51)", mfr="Hirose"),
+             lcsc="C6224952", mpn="DF40C-12DP-0.4V(51)", mfr="Hirose"),
     ],
     small=[],
     note=(15, 105, K.note_block(
-        "MCU MEZZANINE  -  J1  DF40C-10DP-0.4V  (LCSC C424635)",
-        "Hirose DF40 2x5 0.4mm HEADER; mates DOWN to the MCU-board receptacle",
-        "(mcu J5 DF40C-10DS, C424636).  Low-profile 1.5mm stack.  PLACED, not wired.",
+        "MCU MEZZANINE  -  J1  DF40C-12DP-0.4V  (LCSC C6224952)",
+        "Hirose DF40 2x6 0.4mm HEADER; mates DOWN to the MCU-board receptacle",
+        "(mcu J5 DF40B-12DS, C3641147).  ~1.5mm stack.  PLACED, not wired.",
         "PINOUT MUST match mcu J5 exactly (mated pin N <-> N):",
         "",
         K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
                      (5, "KB_UART_TX"), (6, "KB_UART_RX"), (7, "KB_IRQ"),
-                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND")]),
+                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND"),
+                     (11, "VSYS (LED pwr)"), (12, "GND (LED rtn)")]),
         "",
         "SDA/SCL <-> the G0 I2C1;  UART_TX/RX <-> the G0 USART.",
         "KB_IRQ  = G0 -> U575 wake (keypress).",
         "KB_NRST / KB_BOOT0 = U575 -> G0 (reset + bootloader reflash).",
+        "VSYS (11) = the MCU-board load-shared batt/USB rail (~3.7-4.7V) -> the",
+        "  per-key RGB rail (gated locally by Q1, KeyLighting sheet). GND (12) is",
+        "  the dedicated LED-current return.",
         "MECH: at 1.5mm stack keep MX pins off the MCU-board area (trim, or MCU",
         "board under a keyless region).",
-        "Verify DF40C-10DP land vs the KiCad DF40 2x5 fp + 3D stack at layout.")))
+        "STACK = 1.5mm: DF40C-12DP plug x DF40B-12DS receptacle. Both B & C plain",
+        "receptacles are 1.5mm (height = the suffix e.g. (2.0), NOT the B/C letter;",
+        "the DF40C plug is the common header). Verify the DF40 2x6 land + 3D",
+        "clearance at layout.")))
+
+# ===================== Per-key RGB hint lighting sheet =======================
+# One SK6805-EC15 (1.5x1.5mm addressable RGB, LCSC C2890035) beside each of the
+# 50 keys to hint key positions / presses. It can't sit under the MX switch, so
+# it goes just north of each switch. Single-wire WS2812-protocol daisy chain off
+# ONE G0 pin. Powered from VSYS (mezzanine pin 11, ~3.7-4.7V -- "run off the
+# battery", more volts than 3V3) through a HIGH-SIDE LOAD SWITCH (Q1 P-FET) so
+# the whole rail -- LEDs + level shifter -- is gated OFF in sleep (G0 LED_EN low,
+# minimizing sleep power). U2 74LVC1G125 (powered from the gated rail) lifts the
+# 3.3V data to the LED VIH. Refs continue the board sequence: D1-50 = key diodes,
+# D51-55 = annunciators, so the RGB LEDs are D56-D105.
+RGB_LED = [dict(ref="D%d" % i, lib_id="LED:SK6805", value="SK6805-EC15",
+                fp=SK6805_FP, lcsc="C2890035", mpn="SK6805-EC15", mfr="OPSCO")
+           for i in range(56, 106)]   # D56..D105 -> one per key
+KEYLIGHT = dict(name="KeyLighting", file="keylight.kicad_sch",
+    title="Per-key RGB hint lighting (50x SK6805 on gated VSYS)", page="6",
+    big=[],
+    small=RGB_LED + [
+        # 3V3 -> VLED data level shifter (powered from the GATED LED rail).
+        dict(ref="U2", lib_id="74xGxx:74LVC1G125", value="74LVC1G125", fp=SOT235,
+             lcsc="C23654", mpn="SN74LVC1G125DBVR", mfr="Texas Instruments"),
+        # High-side load switch: Q1 P-FET passes VSYS->VLED; Q2 N-FET pulls Q1's
+        # gate low to turn on (G0 LED_EN high). Default OFF (R7 holds Q1 off).
+        dict(ref="Q1", lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A",
+             fp=SOT23, lcsc="C15127", mpn="AO3401A", mfr="AOS"),
+        dict(ref="Q2", lib_id="Transistor_FET:Q_NMOS_GSD", value="2N7002",
+             fp=SOT23, lcsc="C8545", mpn="2N7002", mfr="onsemi"),
+        R("R7", "100k"),    # Q1 gate pull-up to VSYS (P-FET OFF by default)
+        R("R8", "10k"),     # G0 LED_EN -> Q2 gate series
+        R("R10", "100k"),   # Q2 gate pulldown (LEDs OFF at boot / Hi-Z)
+        R("R9", "330"),     # data series into the first LED DIN
+        C("C6", "100nF"),               # U2 VCC decoupling
+        C("C7", "22uF", C0603),         # VLED bulk (LED chain)
+    ],
+    note=(15, 150, K.note_block(
+        "PER-KEY RGB HINT LIGHTING  -  50x SK6805-EC15 (LCSC C2890035, 1.5x1.5mm)",
+        "D56..D105, one beside each key (just north of the MX switch; can't go",
+        "under it).  Single-wire WS2812 protocol ~800kHz, daisy-chained.  PLACED,",
+        "not wired.  Placement 1:1 with SW1..SW50 (D56 by SW1 .. D105 by SW50).",
+        "",
+        "DATA CHAIN",
+        "  G0 LED_DATA -> U2.A;   U2.Y -> R9 330R -> D56 DIN",
+        "  D56 DOUT -> D57 DIN -> ... -> D105 DIN   (VLED + GND to every LED)",
+        "  add 100nF per LED (or per 2-4) local decoupling at layout",
+        "  U2 74LVC1G125: /OE -> GND (always on); VCC -> VLED (gated) so the data",
+        "  swings to the LED VIH (0.7*VDD) even at VSYS ~4.7V on USB",
+        "",
+        "POWER + SLEEP GATE",
+        "  VSYS (mezz pin 11, ~3.7-4.7V) -> Q1 AO3401A P-FET -> VLED (C7 22uF bulk)",
+        "  Q1 gate: R7 100k pull-up to VSYS = OFF by default; Q2 2N7002 pulls it low",
+        "  G0 LED_EN -> R8 10k -> Q2 gate  (R10 100k pulldown = OFF at boot / Hi-Z)",
+        "  -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)",
+        "",
+        "CURRENT  firmware MUST cap total brightness: 50x full-white ~0.75A would",
+        "  blow the DF40 contact + VSYS budget -- hint lighting lights a few keys.")))
 
 # ============================ generate =======================================
 K.build(
     project="calcumaker-keyboard", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
-    title=dict(title="Calcumaker 16 — Keyboard", date="2026-07-05", rev="0.2",
+    title=dict(title="Calcumaker 16 — Keyboard", date="2026-07-06", rev="0.3",
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
-                         "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + MCU mezzanine (DRAFT)"]),
-    sheets=[KEYPAD, ANNUNC, KBD_MCU, MAIN_IF],
+                         "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + per-key RGB (gated) + MCU mezzanine (DRAFT)"]),
+    sheets=[KEYPAD, ANNUNC, KBD_MCU, MAIN_IF, KEYLIGHT],
 )

@@ -11,7 +11,7 @@
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030"
+	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030-NL"
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
@@ -92,7 +92,7 @@
 				)
 			)
 		)
-		(symbol "Conn_ARM_SWD_TagConnect_TC2030_0_0"
+		(symbol "Conn_ARM_SWD_TagConnect_TC2030-NL_0_0"
 			(pin power_in line
 				(at -2.54 10.16 270)
 				(length 2.54)
@@ -205,7 +205,7 @@
 				(alternate "TDO" input line)
 			)
 		)
-		(symbol "Conn_ARM_SWD_TagConnect_TC2030_0_1"
+		(symbol "Conn_ARM_SWD_TagConnect_TC2030-NL_0_1"
 			(rectangle
 				(start -5.08 7.62)
 				(end 5.08 -7.62)
@@ -220,85 +220,6 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "Connector:Conn_ARM_SWD_TagConnect_TC2030-NL"
-		(extends "Conn_ARM_SWD_TagConnect_TC2030")
-		(property "Reference" "J"
-			(at 2.54 11.43 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_ARM_SWD_TagConnect_TC2030-NL"
-			(at 2.54 8.89 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
-			(at 0 -17.78 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://www.tag-connect.com/wp-content/uploads/bsk-pdf-manager/TC2030-CTX_1.pdf"
-			(at 0 -15.24 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Tag-Connect ARM Cortex SWD JTAG connector, 6 pin, no legs"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "Cortex Debug Connector ARM SWD JTAG"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "*TC2030*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
 	)
 	(symbol
 		(lib_id "Connector:Conn_ARM_SWD_TagConnect_TC2030-NL")
@@ -308,7 +229,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bdd31e9c-2bf9-4781-91cc-fef88b440696")
+		(uuid "ac50fe78-d8c0-4335-920f-05822e10066d")
 		(property "Reference" "J4"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -325,12 +246,12 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "92e1c535-ee9d-4c1a-9c03-2a513a19e4b1"))
-		(pin "2" (uuid "fdd2f91b-36d7-434c-a8e3-bb73d5252095"))
-		(pin "3" (uuid "68a9ddb8-6eee-4eab-9ac7-276773bfdf53"))
-		(pin "4" (uuid "432a1935-8d60-4c50-902b-30205c23ce88"))
-		(pin "5" (uuid "fac89358-59ce-43cb-b4f5-6bd4708bf09e"))
-		(pin "6" (uuid "c8a595bc-ac5c-4e26-a97b-a2ff50d531e3"))
+		(pin "1" (uuid "39d44d4f-3922-4f80-b4eb-f06ddcfdd4a4"))
+		(pin "2" (uuid "630cad0d-2160-499a-8106-7ba1acdf8d95"))
+		(pin "3" (uuid "62c9f593-2214-482e-a413-3611fefb0078"))
+		(pin "4" (uuid "4080e1fb-188b-43ec-9fae-013bee82d63b"))
+		(pin "5" (uuid "9d92690f-b130-48e2-b25d-110029a99118"))
+		(pin "6" (uuid "0c4a35e9-ddc3-4d07-8b17-0b34cde5f500"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/3f222ff3-c1f9-44c6-a6b5-77b65f093143"
@@ -342,9 +263,9 @@
 	)
 	(text "SWD PROGRAMMING  -  J4  Tag-Connect TC2030-NL  (no-legs pogo pad)\nBare land, no part mounted.\n\n  PIN  SIGNAL        \n    1  +3V3 (VTref)  \n    2  SWDIO (PA13)  \n    3  NRST          \n    4  SWCLK (PA14)  \n    5  GND           \n    6  SWO (PB3, opt)"
 		(exclude_from_sim no)
-		(at 15.00 95.00 0)
+		(at 15.00 116.88 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "66893cd0-01bb-4eb8-860b-adbbefb6b879")
+		(uuid "0cbac0f4-c3e8-43b6-8cb9-66b797ab87a6")
 	)
 	(sheet_instances
 		(path "/"

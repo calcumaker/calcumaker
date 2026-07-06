@@ -47,8 +47,8 @@ PROJECT = "calcumaker-display"
 PAPER_ROOT = "A3"
 PAPER_ROW = "A2"          # a full 16-digit row + its labels wants the bigger sheet
 
-# ---- stable UUIDs (only ROOT is truly load-bearing; the rest keep regen diffs
-#      readable). Component element UUIDs still churn per regen (uuid4).
+# ---- stable UUIDs. Existing sheets keep their on-disk UUIDs; these constants
+#      seed newly scaffolded sheets and keep forced-regeneration diffs readable.
 ROOT_UUID = "ca1c0000-0000-4000-8000-0000000d1501"
 ROW_FILE  = "ca1c0000-0000-4000-8000-0000000d1510"   # display_row.kicad_sch file id
 R1        = "ca1c0000-0000-4000-8000-0000000d1511"   # Row1 sheet symbol
@@ -273,6 +273,8 @@ K.write_root(PROJECT, PROJ_DIR, ROOT_UUID, TITLE, sym, wiring, pro_sheets,
 
 # remove the now-obsolete flat display.kicad_sch (replaced by display_row.kicad_sch)
 _old = os.path.join(PROJ_DIR, "display.kicad_sch")
-if os.path.exists(_old):
+if os.path.exists(_old) and os.environ.get("KSCHGEN_FORCE") == "1":
     os.remove(_old)
     print("removed obsolete display.kicad_sch (replaced by display_row.kicad_sch)")
+elif os.path.exists(_old):
+    print("kept obsolete display.kicad_sch (set KSCHGEN_FORCE=1 to remove)")

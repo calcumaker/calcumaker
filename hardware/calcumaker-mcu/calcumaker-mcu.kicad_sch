@@ -5,12 +5,12 @@
 	(uuid "ca1c0000-0000-4000-8000-00000000ma01")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — Main")
-		(date "2026-06-21")
-		(rev "0.1")
+		(title "Calcumaker 16 — MCU")
+		(date "2026-07-05")
+		(rev "0.2")
 		(company "calcumaker authors")
 		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
-		(comment 2 "Main board: MCU + PSU + keypad + display interconnect (DRAFT)")
+		(comment 2 "MCU board: MCU + PSU + clock + SWD + display-IF + keyboard mezzanine (DRAFT)")
 	)
 	(lib_symbols)
 	(sheet
@@ -19,7 +19,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "da764cdd-8caf-4481-b72a-cf9dd25cafa9")
+		(uuid "23aa651c-01ea-4ee3-bb12-f879a30c281f")
 		(property "Sheetname" "MCU"
 			(at 40.64 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -35,7 +35,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "4dd16969-fa48-40a9-bf37-e7180cf6be85")
+		(uuid "dc502c7f-271d-4dc5-a1c2-d18857eddfee")
 		(property "Sheetname" "Clock"
 			(at 96.52 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -51,7 +51,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "da0f862c-ac78-45d0-9238-36e39d2db74c")
+		(uuid "4bb53341-6b5a-4905-9015-f6916355f0f0")
 		(property "Sheetname" "Programming"
 			(at 152.40 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -67,7 +67,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "b9ee67a8-aaed-4504-a49b-ae68f7f164a3")
+		(uuid "672f4fa7-1cc1-4703-8edf-f066cdb44902")
 		(property "Sheetname" "PSU"
 			(at 208.28 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -83,12 +83,12 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "65611b0d-545d-4fb9-857e-8b311a34bb2e")
-		(property "Sheetname" "Keypad"
+		(uuid "882301f2-c62c-4450-8afe-fd55e1916916")
+		(property "Sheetname" "DisplayIF"
 			(at 264.16 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "keypad.kicad_sch"
+		(property "Sheetfile" "display_if.kicad_sch"
 			(at 264.16 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
@@ -99,29 +99,13 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "5a080947-7cc4-4e41-bc3c-27cf4b2ace01")
-		(property "Sheetname" "DisplayIF"
+		(uuid "f3eb8744-2884-4df4-9891-07d87447427d")
+		(property "Sheetname" "KeyboardIF"
 			(at 320.04 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "display_if.kicad_sch"
+		(property "Sheetfile" "keyboard_if.kicad_sch"
 			(at 320.04 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 375.92 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "09ef021e-eba5-4a51-ac3b-4585f8d3f3ef")
-		(property "Sheetname" "Annunciators"
-			(at 375.92 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "annunc.kicad_sch"
-			(at 375.92 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)

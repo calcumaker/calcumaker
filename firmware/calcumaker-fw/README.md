@@ -1,31 +1,51 @@
 # calcumaker-fw
 
-The calcumaker application crate — Rust **`no_std`**, Cortex-M.
+Rust **`no_std`** board firmware for the Calcumaker 16 MCU board
+(`STM32U575ZGT6`, Cortex-M33).
+
+This crate is not the calculator engine. The calculator lives in
+[`../calcumaker-core`](../calcumaker-core): RPN stack, GMP/MPFR math, keymap,
+entry editing, modes, errors, and TM1640 segment-byte generation. This crate is
+the hardware binding around that core: heap setup, MCU/HAL bring-up, keyboard
+event intake from the keyboard-board G0, and the display bus.
 
 ## Modules
 
 | Module | Role |
 |--------|------|
-| `main.rs` | Heap init, peripheral bring-up (TODO: embassy), the super-loop. |
-| `rpn.rs` | RPN stack + evaluation (programmer's model, HP-16C lineage). Host-testable. |
-| `keypad.rs` | Cherry MX matrix scan → decoded `Key` events. |
-| `display.rs` | Multi-row 7-segment driver — renders the X/Y/Z/T stack. |
-| `numeric/` | Arbitrary-precision core; `Number` over a swappable backend. |
+| `main.rs` | Heap init, placeholder board loop, eventual embassy bring-up. |
+| `keypad.rs` | Provisional keyboard-event intake. The real matrix scan/debounce/IRQ lives on the keyboard board's STM32G0 firmware; the U575 consumes `(row,col)` events. |
+| `display.rs` | TM1640 bus driver skeleton for the multi-row 7-segment display. |
 
-## Numeric backend (Cargo feature — pick one)
+## Calculator Core
 
-- `numeric-pure` *(default)* — pure-Rust (dashu / astro-float). Fully `no_std`,
-  always buildable.
-- `numeric-gmp` — **GNU MP + MPFR via FFI** (preferred). Requires a cross-built
-  `libgmp`/`libmpfr`; see `build.rs` and `../../DESIGN.md`.
+There is one numeric path: **GNU MP + MPFR** through the repo's
+`gmp-mpfr-nostd` crate. No `numeric-pure`/`numeric-gmp` feature split, no
+pure-Rust fallback, and no `std`/`rug` in the engine.
+
+On the host, `calcumaker-core` links system GMP/MPFR and is tested directly:
 
 ```bash
-cargo build --release                                                   # pure-Rust
-cargo build --release --no-default-features --features numeric-gmp      # GMP/MPFR
+cd ../calcumaker-core
+cargo test
+cargo run --example repl
 ```
 
-## Not buildable yet
+For the target, GMP/MPFR are cross-built out of tree and linked by this crate's
+`build.rs` when `GMP_MPFR_LIBDIR` points at the install prefix:
 
-The MCU/HAL is not pinned, so the target, `embassy-stm32` chip feature,
-`memory.x`, and the probe-rs chip name in `.cargo/config.toml` are placeholders.
-See `../README.md` and `../../DESIGN.md` for the wiring checklist.
+```bash
+cd ../..
+firmware/scripts/build-gmp-mpfr-arm.sh
+GMP_MPFR_LIBDIR=firmware/vendor/gmp-mpfr-arm \
+  cargo build --manifest-path firmware/calcumaker-fw/Cargo.toml --target thumbv8m.main-none-eabihf
+```
+
+## Bring-Up Status
+
+The MCU is pinned and the crate carries a provisional `memory.x`, heap, target,
+and GMP/MPFR linker hook. Remaining work is board bring-up: embassy clocks/GPIO,
+newlib/libm link cleanup for the C libraries, routing GMP allocations through
+`mp_set_memory_functions`, the keyboard-G0 firmware/link protocol, and the real
+TM1640 bit-bang driver. See [`../../DESIGN.md`](../../DESIGN.md) for the full
+firmware checklist.

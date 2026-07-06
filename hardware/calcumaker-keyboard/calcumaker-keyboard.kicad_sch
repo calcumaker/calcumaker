@@ -1,0 +1,86 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ca1c0000-0000-4000-8000-00000000eb01")
+	(paper "A3")
+	(title_block
+		(title "Calcumaker 16 — Keyboard")
+		(date "2026-07-05")
+		(rev "0.2")
+		(company "calcumaker authors")
+		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
+		(comment 2 "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + MCU mezzanine (DRAFT)")
+	)
+	(lib_symbols)
+	(sheet
+		(at 40.64 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "6dec2495-c104-486b-b56d-de8a37743aad")
+		(property "Sheetname" "Keypad"
+			(at 40.64 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "keypad.kicad_sch"
+			(at 40.64 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 96.52 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "e123962d-af1f-484c-976e-978d59e057ae")
+		(property "Sheetname" "Annunciators"
+			(at 96.52 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "annunc.kicad_sch"
+			(at 96.52 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 152.40 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "6aa00c6d-c4c7-4ac8-98e2-2764bb39a4cb")
+		(property "Sheetname" "KbdMCU"
+			(at 152.40 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "kbd_mcu.kicad_sch"
+			(at 152.40 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 208.28 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "35d144ad-c1bb-47ad-89df-34abbc593a21")
+		(property "Sheetname" "MainIF"
+			(at 208.28 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "main_if.kicad_sch"
+			(at 208.28 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Regenerate the Calcumaker 16 **main board** hierarchical schematic.
+"""Regenerate the Calcumaker 16 **MCU board** hierarchical schematic.
 
-    CALCUMAKER_SCHGEN_DRAFT_OK=1 python3 scripts/calcumaker-main.schgen.py
-    (or: CALCUMAKER_SCHGEN_DRAFT_OK=1 make gen-calcumaker-main)
+    CALCUMAKER_SCHGEN_DRAFT_OK=1 python3 scripts/calcumaker-mcu.schgen.py
+    (or: CALCUMAKER_SCHGEN_DRAFT_OK=1 make gen-calcumaker-mcu)
 
 *** DRAFT ***
-The main board carries the **MCU (STM32U575ZGT6)**, **PSU** (USB-C/charge/
-buck-boost), the **Cherry MX key matrix**, and the **interconnect** to the
-separate display board (split design — the display assembly angles up; only the
-serial bus + power cross the connector). The PSU sheet is concrete; the MCU,
-keypad counts, and connector pinout are PLACEHOLDERS pending the front-panel
-layout (see ../../DESIGN.md → Open Questions). A guard refuses to generate until
-you opt in. Fill the TODOs, then remove the guard.
+The MCU board is the **brain/PSU logic board** of a THREE-board split (see
+DESIGN.md → Board Partition): it carries the **MCU (STM32U575ZGT6)**, **PSU**
+(USB-C/charge/buck-boost), clock, SWD, the **display 5V rail + level shifter +
+interconnect** (0.5mm FFC) to the angled display board, and a **fine-pitch
+mezzanine** up to the **keyboard board** that stacks above it (the Cherry MX
+matrix + its own STM32G0 scanner + annunciator LEDs live there — a dense LQFP-144
+and 50 through-hole keys don't belong on one PCB). Keyscanning is off the main
+board: only an **I2C + UART link + KB_IRQ wake + power** cross the mezzanine (not
+the raw matrix). The PSU sheet is concrete; the MCU config and connector pinouts
+are PLACEHOLDERS pending front-panel layout. A guard refuses to generate first.
 
 This is DATA; the engine is scripts/kschgen.py. Components are PLACED, not wired
 — wire them in eeschema using the per-sheet notes as the spec (regenerate BEFORE
@@ -25,13 +28,13 @@ import kschgen as K
 # --- DRAFT guard -------------------------------------------------------------
 if not os.environ.get("CALCUMAKER_SCHGEN_DRAFT_OK"):
     sys.exit(
-        "calcumaker-main.schgen.py is a DRAFT: the MCU/keypad/interconnect are "
-        "placeholders (see DESIGN.md Open Questions). Set "
+        "calcumaker-mcu.schgen.py is a DRAFT: the MCU config + connector pinouts "
+        "are placeholders (see DESIGN.md Open Questions). Set "
         "CALCUMAKER_SCHGEN_DRAFT_OK=1 to generate anyway."
     )
 
 HW = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # hardware/
-PROJ_DIR = os.path.join(HW, "calcumaker-main")
+PROJ_DIR = os.path.join(HW, "calcumaker-mcu")
 ROOT_UUID = "ca1c0000-0000-4000-8000-00000000ma01"   # keep stable across regens
 
 # ---- symbol libraries -------------------------------------------------------
@@ -40,15 +43,13 @@ K.register_stdlib("Regulator_Switching", "TPS63900")
 K.register_stdlib("Battery_Management", "MCP73831-2-OT")
 K.register_stdlib("Power_Protection", "USBLC6-2SC6")
 K.register_stdlib("Transistor_FET", "Q_PMOS_GSD")
-K.register_stdlib("Switch", "SW_Push")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
-K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x08", "Conn_01x10")
+K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x12",
+                  "Conn_02x05_Odd_Even")   # 01x12 = display FFC (J3); 02x05 = keyboard DF40 mezzanine (J5)
 K.register_stdlib("74xx", "74AHCT125")  # level shifter symbol (use value "74HCT125"); 3V3->5V
 K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # LQFP-144 (stock)
 K.register_stdlib("Converter_DCDC", "TPS61022")        # 5V boost (stock)
-# Note: Cherry MX keys use Switch:SW_Push (placeholder symbol); the
-# keyswitch-kicad-library 'SW_Cherry_MX_*' is a nicer swap if installed.
 
 # ---- footprint shorthands ---------------------------------------------------
 # Size policy (user): 0402 for resistors + small/decoupling caps; bulk MLCCs
@@ -107,7 +108,7 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         R("R8", "10k"),                                    # BOOT0 pulldown
         C("C22", "2.2uF", C0603), C("C23", "2.2uF", C0603),  # VCORE/VCAP (LDO/SMPS) — verify per mode
     ],
-    note=(15, 150, "Calcumaker 16 main — MCU core (U1 STM32U575ZGTx, LQFP-144). "
+    note=(15, 150, "Calcumaker 16 MCU board — MCU core (U1 STM32U575ZGTx, LQFP-144). "
           "POWER: VDD pins -> +3V3 (5x 100nF C12-C16 + C17 10uF bulk); VDDA/VREF+ "
           "-> C18 1uF + C19 100nF; VDDUSB -> C20 100nF; EP/VSS -> GND. "
           "VCORE: choose LDO or internal SMPS — SMPS needs an inductor on VLXSMPS "
@@ -115,7 +116,8 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
           "RESET/BOOT: NRST + C21 100nF; BOOT0 -> R8 10k to GND. "
           "OFF-SHEET: USB PA11/PA12 -> PSU ESD; SWD PA13/PA14 + NRST -> Programming; "
           "LSE OSC32_IN/OUT -> Clock; display bus (CLK+DIN1/2/3) + DISP_PWR_EN -> "
-          "DisplayIF; 5 rows + 10 cols -> Keypad (one col -> EXTI wake)."))
+          "DisplayIF; keyboard-board link (I2C+UART+KB_IRQ/NRST/BOOT0) -> "
+          "KeyboardIF mezzanine J5."))
 
 # ============================ Clock sheet ====================================
 CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
@@ -125,7 +127,7 @@ CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
              lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
         C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
     ],
-    note=(15, 100, "Calcumaker 16 main — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
+    note=(15, 100, "Calcumaker 16 MCU board — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
           "OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via "
           "2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives "
           "the RTC for sleep timing."))
@@ -137,7 +139,7 @@ PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
         dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
              value="SWD TC2030-NL", fp=SWD_FP),
     ], small=[],
-    note=(15, 95, "Calcumaker 16 main — SWD programming (J4 Tag-Connect TC2030-NL, "
+    note=(15, 95, "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, "
           "no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. "
           "Bare land — no part mounted."))
 
@@ -179,7 +181,7 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
         dict(ref="D2", lib_id="Device:LED", value="CHG", fp=LED0402, lcsc="C130719"),
         R("R5", "1k"),
     ],
-    note=(15, 165, "Calcumaker 16 main — Power (USB-C -> charge -> load-share -> "
+    note=(15, 165, "Calcumaker 16 MCU board — Power (USB-C -> charge -> load-share -> "
           "buck-boost 3V3). PLACED, not wired. See DESIGN.md Power Tree.\n"
           "USB-C J1: CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB. "
           "VBUS bulk C6.\nCHARGER U4 MCP73831: VDD<-VBUS; VBAT->BAT+; PROG R3 "
@@ -190,29 +192,39 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
           "5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / "
           "low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."))
 
-# ============================ Keypad sheet ===================================
-# Wide HP-16C-style layout: 5 rows x 10 cols = 50 full-size Cherry MX keys, with
-# f/g shifts (3 functions per key). See DESIGN.md "Keypad" for the keymap.
-# Matrix: ROWr (GPIO out) -> SW -> 1N4148W (anode@SW, cathode@COLc) -> COLc
-# (GPIO in, internal pull-up). 50 keys => SW1..SW50 + D11..D60. Key index =
-# (r-1)*10 + c. (Diodes start at D11 to avoid the PSU's D1/D2.)
-MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap variant optional
-KEY_SW = [dict(ref="SW%d" % i, lib_id="Switch:SW_Push", value="MX", fp=MX_FP)
-          for i in range(1, 51)]
-KEY_D = [dict(ref="D%d" % (10 + i), lib_id="Device:D", value="1N4148W", fp=SOD123,
-              lcsc="C81598", mpn="1N4148W", mfr="onsemi") for i in range(1, 51)]
-KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
-    title="Cherry MX key matrix (5x10, 50 keys)", page="6",
-    big=KEY_SW, small=KEY_D,
-    note=(15, 130, "Calcumaker 16 main — Keypad: 50 Cherry MX keys in a 5x10 "
-          "scanned matrix (wide HP-16C layout + f/g shifts; keymap in DESIGN.md). "
-          "PLACED, not wired. WIRING: ROW1..ROW5 = GPIO outputs; COL1..COL10 = "
-          "GPIO inputs with INTERNAL pull-ups (no external R; STM32U5 keeps "
-          "pull-ups in Stop). Each key SWn in series with Dn (anode at switch, "
-          "cathode to its COL) for n-key rollover. Key (row r, col c): SW#=(r-1)*"
-          "10+c, D#=10+(r-1)*10+c. Scan: drive one ROW low, read COLs. WAKE: "
-          "drive all ROWs low + EXTI on one COL (or all) -> any keypress wakes "
-          "from Stop. Optional Kailh hot-swap sockets (same footprint family)."))
+# ===================== Keyboard mezzanine sheet ==============================
+# Fine-pitch board-to-board mezzanine UP to the keyboard board that stacks above.
+# The keyboard board now has its OWN scanner MCU (STM32G031K8U6) that scans the
+# matrix + drives the annunciators locally, so ONLY a serial link + power crosses
+# the mezzanine (NOT the raw matrix): a shared I2C bus + a UART, plus a KB_IRQ
+# wake line (keyboard -> MCU) and reset/boot for reflashing the keyboard MCU.
+# J5 = Hirose DF40 2x5 (10-pin) 0.4mm RECEPTACLE (DF40C-10DS, LCSC C424636); the
+# keyboard board carries the mating header (DF40C-10DP C424635). LOW-PROFILE:
+# DF40C = 1.5mm stack height (dedicated KiCad footprint + 3D model).
+MEZZ_SOCKET_FP = "Connector_Hirose_DF40:Hirose_DF40B-10DS-0.4V_2x05-1MP_P0.4mm"
+KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
+    title="Keyboard mezzanine (I2C + UART link to the stacked keyboard)", page="7",
+    big=[
+        dict(ref="J5", lib_id="Connector_Generic:Conn_02x05_Odd_Even",
+             value="TO KEYBOARD", fp=MEZZ_SOCKET_FP,
+             lcsc="C424636", mpn="DF40C-10DS-0.4V(51)", mfr="Hirose"),
+    ],
+    small=[],
+    note=(15, 105, "Calcumaker 16 MCU — Keyboard mezzanine (J5 = Hirose DF40 2x5 "
+          "0.4mm RECEPTACLE DF40C-10DS-0.4V, LCSC C424636). The keyboard board "
+          "stacks ABOVE on this LOW-PROFILE board-to-board pair (mating header = "
+          "calcumaker-keyboard J1 DF40C-10DP-0.4V C424635; 0.4mm pitch, **1.5mm "
+          "stack height**). Keyscanning lives on the KEYBOARD board's STM32G0, so "
+          "only a serial link + power cross here. PLACED, not wired. PINOUT (both "
+          "halves MUST agree): 1=+3V3, 2=GND, 3=I2C_SDA, 4=I2C_SCL, 5=KB_UART_TX, "
+          "6=KB_UART_RX, 7=KB_IRQ, 8=KB_NRST, 9=KB_BOOT0, 10=GND. I2C = the G0 "
+          "reports (row,col) events; KB_IRQ -> a MCU WKUP pin wakes the U575 on a "
+          "keypress; UART = alt/expansion + the G0's ROM/DFU bootloader; KB_NRST/"
+          "KB_BOOT0 let the MCU reflash the G0. MECH: at a 1.5mm stack the MX pins "
+          "under the keyboard (~2-3mm) can't sit over the MCU board — keep the MCU "
+          "board under a keyless region (or trim pins); keep USB-C/battery at the "
+          "board EDGE. Verify DF40C-10DS land vs the KiCad DF40 2x5 footprint + the "
+          "3D stack at layout. See DESIGN.md Board Partition + Low-power & wake."))
 
 # ===================== Display power + interface sheet =======================
 # The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).
@@ -222,23 +234,27 @@ KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
 #     Adjustable -> R6/R7 FB divider sets +5V. Symbol: stock Converter_DCDC:TPS61022.
 #   - U6: 74HCT125 quad buffer @5V = 3V3->5V level shift for CLK + DIN1/2/3
 #     (KiCad symbol 74AHCT125 is pin-compatible; value=74HCT125, LCSC C352957).
-#   - J3: 1x8 2.54mm header to the display board.
+#   - J3: 12-position 0.5mm FFC to the display board (pins 9-11 = +3V3 + I2C
+#     for the DNP-optional aux OLED on the display board).
 # The 3V3 TPS63900 (PSU sheet) now feeds only the MCU, so it stays as-is.
 DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
     title="Display 5V rail (TPS61022) + 74HCT125 level shifter + interconnect",
-    page="7",
+    page="6",
     big=[
-        # 5V boost TPS61022 (adjustable). Symbol is TODO (author into
-        # calcumaker.kicad_sym like the MCU); footprint exists in KiCad.
+        # 5V boost TPS61022 (adjustable). Stock KiCad symbol + footprint.
         dict(ref="U5", lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR",
              fp="Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm",
              lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments"),
         dict(ref="U6", lib_id="74xx:74AHCT125", value="74HCT125",
              fp="Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
              lcsc="C352957", mpn="SN74HCT125DR", mfr="Texas Instruments"),
-        dict(ref="J3", lib_id="Connector_Generic:Conn_01x10", value="TO DISPLAY",
-             fp="Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical",
-             lcsc="C492409", mpn="PZ254V-11-10P", mfr="XKB"),
+        # Display link = 0.5mm 12P FFC (flat flex to the angled display board; the
+        # CABLE = GCT FFC05-TIN 05-12-A-<length>-A-4-06-4-T, a DigiKey accessory,
+        # NOT assembled; length TBD at layout). +5V/GND doubled for
+        # the display LED current.
+        dict(ref="J3", lib_id="Connector_Generic:Conn_01x12", value="TO DISPLAY (FFC)",
+             fp="Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal",
+             lcsc="C262661", mpn="AFC01-S12FCA-00", mfr="JUSHUO"),
     ],
     small=[
         dict(ref="L2", lib_id="Device:L", value="1uH", fp=L2016,
@@ -248,57 +264,29 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
         R("R6", "732k"), R("R7", "100k"),                 # FB divider: Vout=0.6*(1+R6/R7)=~5.0V
         R("R14", "4.7k"), R("R15", "4.7k"),               # I2C pull-ups for the aux OLED (DNP with it)
     ],
-    note=(15, 110, "Calcumaker 16 main — Display 5V rail + interface. "
+    note=(15, 110, "Calcumaker 16 MCU board — Display 5V rail + interface. "
           "5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 "
           "1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF; FB R6/R7 divider "
           "-> +5V (Vref 0.6V); EN<-MCU DISP_PWR_EN (low in sleep). LEVEL SHIFT "
           "U6 74HCT125 @ +5V (VIH=2V accepts 3V3): IN<-MCU CLK,DIN1,DIN2,DIN3 "
-          "(3V3); OUT-> J3 at 5V logic; C11 100nF; tie all 4 /OE low. J3 to "
-          "display (MUST match calcumaker-display J1): 1=+5V, 2=GND, 3=CLK, "
-          "4=DIN1, 5=DIN2, 6=DIN3, 7=GND, 8=spare. Wide +5V/GND (LED current). "
-          "See DESIGN.md Power Tree / Board Partition."))
+          "(3V3); OUT-> J3 at 5V logic; C11 100nF; tie all 4 /OE low. J3 = 0.5mm "
+          "12P FFC to display (AFC01-S12FCA-00 C262661; cable = GCT FFC05-TIN "
+          "05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD). "
+          "Pinout (MUST match calcumaker-display J1): 1=+5V, 2=+5V, 3=GND, 4=CLK, "
+          "5=DIN1, 6=DIN2, 7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V/GND "
+          "DOUBLED for LED current (0.5mm FFC conductor ~0.4A). Pins 9-11 = the DNP "
+          "aux OLED I2C. See DESIGN.md Power Tree / Board Partition."))
 
-# ======================= Annunciator LEDs sheet ==============================
-# The emulator's status line, mapped to hardware (DESIGN.md Open Q6, decided):
-# lamps ONLY for what must be visible mid-keystroke — f (gold) and g (blue)
-# beside the shift keys, C (carry), G (overflow), and low-battery along the
-# board's top edge under the display bezel. MCU GPIO direct (5 pins, active
-# high), zero interconnect impact. Everything else (radix, STATUS view,
-# errors, SHOW) renders in the 7-seg digits (firmware, calcumaker-core::App).
-# 470R @3V3: ~1.3mA (blue, Vf~2.7) to ~2.8mA (red/yellow, Vf~2.0) — annunciator
-# brightness; tune per-color at bring-up if needed.
-def ALED(ref, val, lcsc, mpn, mfr):
-    return dict(ref=ref, lib_id="Device:LED", value=val, fp=LED0603,
-                lcsc=lcsc, mpn=mpn, mfr=mfr)
-
-
-ANNUNC = dict(name="Annunciators", file="annunc.kicad_sch",
-    title="Annunciator LEDs (f g C G low-batt)", page="8",
-    big=[],
-    small=[
-        ALED("D61", "f (yellow)", "C72038", "19-213/Y2C-CQ2R2L/3T(CY)", "Everlight"),
-        ALED("D62", "g (blue)", "C965807", "XL-1608UBC-04", "XINGLIGHT"),
-        ALED("D63", "C (red)", "C2286", "KT-0603R", "KENTO"),
-        ALED("D64", "G (red)", "C2286", "KT-0603R", "KENTO"),
-        ALED("D65", "LOWBAT (red)", "C2286", "KT-0603R", "KENTO"),
-        R("R9", "470"), R("R10", "470"), R("R11", "470"),
-        R("R12", "470"), R("R13", "470"),
-    ],
-    note=(15, 105, "Calcumaker 16 main — Annunciator LEDs (DESIGN.md status-line "
-          "mapping). PLACED, not wired. Five MCU GPIOs (active high), each -> "
-          "Rn 470R -> LED -> GND: D61 'f' yellow + D62 'g' blue mounted BESIDE "
-          "the f/g keys; D63 'C' carry, D64 'G' overflow, D65 low-battery along "
-          "the top edge under the display bezel. 470R @3V3 = ~1.3-2.8mA; adjust "
-          "per color at bring-up. Firmware: calcumaker-core App drives f/g from "
-          "keys::Shift, C/G from Calc::carry()/overflow(); LOWBAT from the "
-          "battery ADC (PSU). Radix/STATUS/errors render in the digits."))
+# NOTE: the Keypad (Cherry MX matrix) and Annunciator-LED sheets moved to the
+# separate, stacked **calcumaker-keyboard** board (2026-07-05 split). They reach
+# the MCU across the KeyboardIF mezzanine (J5) above.
 
 # ============================ generate =======================================
 K.build(
-    project="calcumaker-main", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
-    title=dict(title="Calcumaker 16 — Main", date="2026-06-21", rev="0.1",
+    project="calcumaker-mcu", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
+    title=dict(title="Calcumaker 16 — MCU", date="2026-07-05", rev="0.2",
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
-                         "Main board: MCU + PSU + keypad + display interconnect (DRAFT)"]),
-    sheets=[MCU, CLOCK, PROG, PSU, KEYPAD, DISPLAY_IF, ANNUNC],
+                         "MCU board: MCU + PSU + clock + SWD + display-IF + keyboard mezzanine (DRAFT)"]),
+    sheets=[MCU, CLOCK, PROG, PSU, DISPLAY_IF, KEYBOARD_IF],
 )

@@ -50,23 +50,7 @@
         "silk_text_thickness": 0.125,
         "silk_text_upright": false,
         "zones": {
-          "border_display_style": 2,
-          "border_hatch_pitch": 0.5,
-          "corner_radius": 0.0,
-          "corner_smoothing": 0,
-          "fill_mode": 0,
-          "hatch_gap": 1.5,
-          "hatch_orientation": 0.0,
-          "hatch_smoothing_level": 0,
-          "hatch_smoothing_value": 0.1,
-          "hatch_thickness": 1.0,
-          "min_clearance": 0.15,
-          "min_island_area": 10.0,
-          "min_thickness": 0.25,
-          "pad_connection": 1,
-          "remove_islands": 0,
-          "thermal_relief_gap": 0.5,
-          "thermal_relief_spoke_width": 0.5
+          "min_clearance": 0.15
         }
       },
       "diff_pair_dimensions": [
@@ -522,7 +506,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "calcumaker-display.kicad_pro",
+    "filename": "calcumaker-keyboard.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -706,9 +690,7 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "calcumaker-display.kicad_sch",
-        "name": "",
-        "uuid": "500fd649-6ac4-4c35-8c31-afee91bdf563"
+        "filename": "calcumaker-keyboard.kicad_sch"
       }
     ],
     "used_designators": "",
@@ -716,28 +698,24 @@
   },
   "sheets": [
     [
-      "ca1c0000-0000-4000-8000-0000000d1501",
-      "calcumaker-display"
+      "ca1c0000-0000-4000-8000-00000000eb01",
+      "calcumaker-keyboard"
     ],
     [
-      "ca1c0000-0000-4000-8000-0000000d1511",
-      "Row1"
+      "6dec2495-c104-486b-b56d-de8a37743aad",
+      "Keypad"
     ],
     [
-      "ca1c0000-0000-4000-8000-0000000d1512",
-      "Row2"
+      "e123962d-af1f-484c-976e-978d59e057ae",
+      "Annunciators"
     ],
     [
-      "ca1c0000-0000-4000-8000-0000000d1513",
-      "Row3"
+      "6aa00c6d-c4c7-4ac8-98e2-2764bb39a4cb",
+      "KbdMCU"
     ],
     [
-      "ca1c0000-0000-4000-8000-0000000d1520",
-      "Interconnect"
-    ],
-    [
-      "ca1c0000-0000-4000-8000-0000000d1530",
-      "AuxDisplay"
+      "35d144ad-c1bb-47ad-89df-34abbc593a21",
+      "MainIF"
     ]
   ],
   "text_variables": {},

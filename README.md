@@ -32,60 +32,157 @@ keeps it alive between keystrokes.
 - **Visible RPN stack:** multi-row 7-segment display (2–3 rows) shows the top of
   the stack at once.
 - **Split design:** the display lives on its **own PCB** that angles upward;
-  only +3V3, GND, and the display serial bus cross the interconnect to the main
-  board — which keeps wiring simple.
+  only power, the display serial bus, and optional aux-display I²C cross the FFC
+  to the MCU board — which keeps wiring simple.
 - **Full-size Cherry MX keyswitches:** a wide, tactile, technical-use keypad.
 - **Battery + USB-C:** 1S Li-ion with USB-C charging + buck-boost rail; aggressive
   sleep between keypresses for long runtime.
 - **Rust firmware:** `no_std` main loop on the **STM32U575ZGT6** (Cortex-M33,
   2 MB / 786 KB, ULP — see `DESIGN.md`).
 
+## Hardware Stack
+
+Calcumaker 16 is a three-board KiCad 10 design:
+
+- **`calcumaker-mcu`** is the bottom brain/PSU board: STM32U575, USB-C power and
+  charging, the 3V3 rail, the gated 5V display rail, SWD, clocking, the display
+  FFC connector, and the keyboard mezzanine.
+- **`calcumaker-keyboard`** is the top/front-panel board: 50 Cherry MX keys,
+  per-key diodes, annunciator LEDs, and a small STM32G0 keyboard scanner that
+  reports key events to the U575 instead of routing the raw matrix across the
+  stack.
+- **`calcumaker-display`** is the angled display board: three repeated 16-digit
+  7-segment rows driven by TM1640s, plus the display FFC and optional aux OLED
+  socket.
+
+The schematics are generated from per-board manifests under `hardware/scripts/`
+and then placed/wired in KiCad. The display board uses a fully wired
+multi-channel row sheet; the MCU and keyboard boards carry the generated sheet
+structure plus on-canvas wiring notes. See [`hardware/README.md`](hardware/README.md)
+and [`DESIGN.md`](DESIGN.md) for the current hardware source of truth.
+
 ## Architecture
 
 ```
-   DISPLAY BOARD (calcumaker-display) — angled                        
+   DISPLAY BOARD (calcumaker-display) — angled, cabled to the MCU board
    ┌──────────────────────────────────────────────────┐
    │  7-segment RPN stack: 3 rows × 16 digits (2–3 on) │
-   │      ▲ FJ5161AH 0.56" common-cathode (THT)        │
+   │   48× FJ5161AH 0.56" single-digit CC (THT)        │
    │   3× TM1640 driver (1 per row, 2-wire bus)        │
-   └───────────────────────▲──────────────────────────┘
-                           │  interconnect (1×8 2.54mm header):
-                           │  +5V, GND, CLK + DIN×3 (5V logic)  ("simplifies wiring")
-   MAIN BOARD (calcumaker-main)
-   ┌───────────────────────┴──────────────────────────┐
-   │  EN-gated 5V boost ──► display │ 74HCT125 (3V3→5V)│
+   └──────────────────────────────────────────────────┘
+       │ 12-position 0.5mm FFC: +5V, GND, CLK + DIN×3
+       │ (5V logic) + 3V3/I²C for the aux OLED — cables down to the MCU board
+       ╧
+   KEYBOARD BOARD (calcumaker-keyboard) — TOP of stack, keys face up
+   ┌──────────────────────────────────────────────────┐
    │  full-size Cherry MX key matrix (+ per-key diode) │
-   │      │ GPIO matrix scan                           │
-   │   ┌──┴───────────────────────────────────────┐   │  USB-C ── console /
-   │   │ STM32U575ZGT6 (Cortex-M33, 2MB/786KB, ULP)│   │          provisioning
-   │   │  Rust no_std main loop (embassy)          │   │
-   │   │   calcumaker-core: RPN engine          │   │
-   │   │        └ GMP + MPFR  (single path)      │   │
-   │   │   heap: embedded-alloc (TLSF)             │   │
-   │   └───────────────────────────────────────────┘   │
+   │  STM32G0 scanner + annunciator LEDs (f g C G lo-b)│
+   └──────────────────────┬┬──────────────────────────┘
+     low-profile Hirose DF40 mezzanine (0.4mm, 1.5mm stack) + standoffs
+        ││  I²C + UART + KB_IRQ (wake) + 3V3/GND  (matrix stays on the G0)
+   MCU BOARD (calcumaker-mcu) — BOTTOM of stack
+   ┌──────────────────────┴┴──────────────────────────┐
+   │  EN-gated 5V boost ──► display │ 74HCT125 (3V3→5V)│
+   │   ┌───────────────────────────────────────────┐   │  USB-C ── console /
+   │   │ STM32U575ZGT6 (Cortex-M33, 2MB/786KB, ULP) │   │          provisioning
+   │   │  Rust no_std main loop (embassy)           │   │
+   │   │   calcumaker-core: RPN engine              │   │
+   │   │        └ GMP + MPFR  (single path)         │   │
+   │   │   heap: embedded-alloc (TLSF)              │   │
+   │   └────────────────────────────────────────────┘   │
    └───────┬───────────────────────────────────────────┘
            │ VSYS
    1S Li-ion ── USB-C charger ── load-share ── VSYS ──┬── buck-boost → 3V3 (MCU, ULP)
                                                       └── 5V boost (EN-gated) → display
 ```
 
+## Firmware Stack
+
+The firmware is deliberately split so there is one calculator and multiple thin
+I/O bindings around it:
+
+```
+   host terminal                         STM32U575 firmware
+   ┌─────────────────────┐               ┌─────────────────────┐
+   │ calcumaker-emu      │               │ calcumaker-fw       │
+   │ crossterm UI        │               │ no_std / embassy    │
+   │ host keys + ASCII   │               │ keyboard link +     │
+   │ 7-seg rendering     │               │ TM1640 bus + heap   │
+   └──────────┬──────────┘               └──────────┬──────────┘
+              │                                     │
+              └──────────────┬──────────────────────┘
+                             │
+                    ┌────────▼────────┐
+                    │ calcumaker-core │
+                    │ Calc + App +    │
+                    │ keys + seg7     │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │ gmp-mpfr-nostd  │
+                    │ Integer + Float │
+                    └────────┬────────┘
+                             │
+          host system GMP/MPFR or target cross-built GMP/MPFR
+```
+
+- **`gmp-mpfr-nostd`** is the math FFI layer: `no_std` + `alloc` wrappers for
+  GMP integers and MPFR floats. On the host it links system/Homebrew GMP+MPFR;
+  on the MCU it links the cross-built static libraries.
+- **`calcumaker-core`** is the calculator: RPN stack, exact integer/programmer
+  operations, MPFR real math, modes, keymap and f/g shift layers, entry editing,
+  errors, and TM1640 7-segment byte generation. This crate is the single numeric
+  path: no `rug`, no `std`, no pure-Rust fallback.
+- **`calcumaker-emu`** runs the same `App` on a desktop terminal. It maps host
+  keys to the physical matrix and renders the real segment bytes as 7-segment
+  art, so scripted examples exercise the same key handling and display pipeline
+  the device uses.
+- **`calcumaker-fw`** is the U575 board binding: heap setup, power/display
+  bring-up, keyboard event intake, and the TM1640 bus. The keyboard board's G0
+  firmware owns matrix scan, debounce, wake/IRQ, and annunciator drive; the U575
+  consumes `(row,col)` key events and feeds them to `calcumaker_core::App`.
+
+Useful firmware entry points:
+
+```sh
+cd firmware/calcumaker-core
+cargo test
+cargo run --example repl
+
+cd ../calcumaker-emu
+cargo run
+cargo run -- --press "2;3+"
+
+cd ../..
+firmware/scripts/build-gmp-mpfr-arm.sh
+```
+
+Host engine tests, the token REPL, and the terminal emulator work today against
+the real GMP/MPFR libraries. The target GMP/MPFR build is cross-built and
+link-verified; remaining firmware work is MCU/HAL bring-up, newlib/libm link
+cleanup, heap routing for GMP allocations, and the keyboard-G0 firmware.
+
 ## Repository Structure
 
 ```
 calcumaker/
-├── hardware/                     # PCB design (KiCad 10) — split, two boards
+├── hardware/                     # PCB design (KiCad 10) — split, three boards
 │   ├── lib/                      # project-specific symbols/footprints/3D (shared)
 │   │   ├── symbols/ footprints.pretty/ 3dmodels/
-│   ├── calcumaker-main/          # main board: MCU + PSU + keypad + interconnect
-│   │   ├── calcumaker-main.kicad_pro
-│   │   ├── (root + mcu / psu / keypad / interconnect sub-sheets — generated)
+│   ├── calcumaker-mcu/           # MCU board (brain/PSU): MCU + PSU + clock + SWD + display-IF + keyboard mezzanine
+│   │   ├── calcumaker-mcu.kicad_pro
+│   │   ├── (root + mcu / clock / prog / psu / display_if / keyboard_if sub-sheets — generated)
 │   │   ├── sym-lib-table · fp-lib-table
-│   ├── calcumaker-display/       # display board: 7-seg stack + driver + interconnect
+│   ├── calcumaker-keyboard/      # keyboard board (stacks above MCU): Cherry MX matrix + annunciators + MCU mezzanine
+│   │   ├── calcumaker-keyboard.kicad_pro
+│   │   ├── (root + keypad / annunc / main_if sub-sheets — generated)
+│   │   ├── sym-lib-table · fp-lib-table
+│   ├── calcumaker-display/       # display board (angled, cabled): 7-seg stack + driver + interconnect
 │   │   ├── calcumaker-display.kicad_pro
-│   │   ├── (root + display / interconnect sub-sheets — generated)
+│   │   ├── (root + display_row ×3 / interconnect / aux sub-sheets — generated)
 │   │   ├── sym-lib-table · fp-lib-table
 │   ├── scripts/                  # schgen engine + per-board manifests, check/render, JLCPCB
-│   ├── Makefile                  # PROJECTS = calcumaker-main calcumaker-display
+│   ├── Makefile                  # PROJECTS = calcumaker-mcu calcumaker-keyboard calcumaker-display
 │   ├── LICENSE                   # CERN-OHL-S v2 (hardware)
 │   ├── README.md
 │   ├── sym-lib-table
@@ -100,7 +197,7 @@ calcumaker/
 │   ├── calcumaker-fw/            # Rust no_std board binary (STM32U575 / embassy)
 │   │   ├── Cargo.toml · .cargo/config.toml
 │   │   ├── memory.x · build.rs · rust-toolchain.toml
-│   │   └── src/                  #   main, keypad (scan), display (TM1640 bus)
+│   │   └── src/                  #   main, keyboard input/link, display (TM1640 bus)
 │   ├── scripts/                  # build-gmp-mpfr-arm.sh (cross-build for thumbv8m)
 │   ├── common/                   # shared HAL/utilities
 │   └── shared/                   # shared protocol/definitions
@@ -115,9 +212,9 @@ calcumaker/
 | Component | Part | Status |
 |-----------|------|--------|
 | MCU | STM32U575ZGT6 (2MB/786KB, M33, ULP, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
-| Display | 3 rows × 16 digits: 3× TM1640 + 12× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
-| Keys | full-size Cherry MX (wide HP-16C-style layout) | layout TBD |
-| Interconnect | 1×8 2.54mm header (PZ254V-11-08P), carries +5V | ✅ LCSC C492407 |
+| Display | 3 rows × 16 digits: 3× TM1640 + 48× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
+| Keys | 5×10 full-size Cherry MX (wide HP-16C-style layout) + keyboard STM32G0 scanner | electrical/keymap decided; physical layout details still TBD |
+| Display interconnect | 12-position 0.5mm FFC: +5V/GND, CLK + DIN×3, 3V3/I²C aux lines | selected in `DESIGN.md`; verify cable length/orientation at layout |
 | Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
 | Math | GNU MP + MPFR via `calcumaker-core` + own `gmp-mpfr-nostd` (single path) | ✅ no_std, host-tested + REPL + emulator; cross-built + link-verified for the target |
 
@@ -126,10 +223,13 @@ calcumaker/
 **The calculator works on the host today**: engine + keymap + display pipeline
 are host-tested, and `calcumaker-emu` runs the full device UI on a terminal.
 GMP/MPFR are cross-built + link-verified for the STM32 target. **MCU, keypad
-layout (5×10), software stack, display BOM, and power rails are decided** (see
-`DESIGN.md` / `hardware/PARTS.md`); both boards generate from their manifests
-and pass structure checks. Remaining: eeschema wiring, firmware MCU bring-up
-(embassy + newlib link + heap routing), battery sizing. Not yet fabricated.
+layout (5×10), software stack, display BOM, and power architecture are decided** (see
+`DESIGN.md` / `hardware/PARTS.md`). The three-board hardware split is in the
+repo; the display board is fully wired as a multi-channel KiCad design, while
+the MCU and keyboard boards generate from their manifests and still need
+eeschema wiring/layout work. Remaining firmware work: U575 MCU bring-up
+(embassy + newlib/libm link + heap routing) and the keyboard-G0 scanner
+firmware. Battery sizing and fabrication are still ahead.
 
 ## License
 

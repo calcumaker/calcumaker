@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "4dd16969-fa48-40a9-bf37-e7180cf6be85")
+	(uuid "dc502c7f-271d-4dc5-a1c2-d18857eddfee")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — Main — LSE 32.768 kHz (RTC)")
-		(date "2026-06-21")
-		(rev "0.1")
+		(title "Calcumaker 16 — MCU — LSE 32.768 kHz (RTC)")
+		(date "2026-07-05")
+		(rev "0.2")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -364,7 +364,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8b01bd72-69f9-46b5-bfdc-71021030db2c")
+		(uuid "ce42c4a8-3db7-4be4-8fe2-b5e239f5f289")
 		(property "Reference" "Y1"
 			(at 34.2900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -393,11 +393,11 @@
 			(at 30.4800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e4f30000-cfeb-4d16-b779-279468c190ec"))
-		(pin "2" (uuid "563353f0-3f98-4721-ade0-5c9c6affe1ae"))
+		(pin "1" (uuid "e1b18549-4744-4397-97ae-2bc874e1df3e"))
+		(pin "2" (uuid "6edc1073-8e13-47f1-860d-aec4074cef5e"))
 		(instances
-			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
+			(project "calcumaker-mcu"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/dc502c7f-271d-4dc5-a1c2-d18857eddfee"
 					(reference "Y1")
 					(unit 1)
 				)
@@ -412,7 +412,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8d4028ac-1396-416e-b333-3fc78c5819a6")
+		(uuid "1eda0afb-97cf-4706-933d-4c0b9f02f6b7")
 		(property "Reference" "C24"
 			(at 72.3900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -433,11 +433,11 @@
 			(at 68.5800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "7c5dfb3a-8d66-4b2b-a263-253f5ef91144"))
-		(pin "2" (uuid "33cbf168-ee0f-4240-8fc2-09299c49f0a9"))
+		(pin "1" (uuid "c6836cab-ce57-49c5-87e5-953d8e4254f8"))
+		(pin "2" (uuid "ec101a29-c4ba-4610-b180-718ffcb63282"))
 		(instances
-			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
+			(project "calcumaker-mcu"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/dc502c7f-271d-4dc5-a1c2-d18857eddfee"
 					(reference "C24")
 					(unit 1)
 				)
@@ -452,7 +452,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "20604f57-e7e8-4ed0-b5b3-a86d9f8a7ea8")
+		(uuid "95f97447-07b5-4bd5-9683-238d958242c7")
 		(property "Reference" "C25"
 			(at 110.4900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -473,22 +473,22 @@
 			(at 106.6800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "4a8f4b8c-a5d9-4d0c-97f8-cff66350fb2a"))
-		(pin "2" (uuid "66792e44-821a-48ef-9cd2-ca054db372e1"))
+		(pin "1" (uuid "c82005e3-2a39-4c2a-8cb9-bdd4f57acca1"))
+		(pin "2" (uuid "09ac6e81-2c75-4757-9884-3c37d94acf0a"))
 		(instances
-			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/4dd16969-fa48-40a9-bf37-e7180cf6be85"
+			(project "calcumaker-mcu"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/dc502c7f-271d-4dc5-a1c2-d18857eddfee"
 					(reference "C25")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 main — LSE 32.768kHz (Y1) -> MCU OSC32_IN/OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via 2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives the RTC for sleep timing."
+	(text "Calcumaker 16 MCU board — LSE 32.768kHz (Y1) -> MCU OSC32_IN/OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via 2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives the RTC for sleep timing."
 		(exclude_from_sim no)
 		(at 15.00 100.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "e38011c3-1037-4c11-ae77-d5db286819ac")
+		(uuid "b586e4c5-2147-4a8a-a5f7-8088f0085233")
 	)
 	(sheet_instances
 		(path "/"

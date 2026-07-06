@@ -7,8 +7,8 @@
 //! emulated on a terminal by `calcumaker-emu`): the RPN engine over GMP + MPFR,
 //! the keymap + f/g shift layers (`keys`), entry editing + dispatch (`App`),
 //! and the 7-seg segment encoding (`seg7`). This crate is only the board:
-//! clocks, the Cherry MX matrix scan → `(row, col)`, and the TM1640 bus that
-//! pushes `App::seg_rows()` bytes to the glass.
+//! clocks, keyboard-board events → `(row, col)`, and the TM1640 bus that pushes
+//! `App::seg_rows()` bytes to the glass.
 //!
 //! GMP/MPFR are cross-built for thumbv8m (firmware/scripts/, link-verified);
 //! remaining bring-up: embassy clocks/GPIO, newlib libc/libm at final link, and
@@ -57,7 +57,7 @@ fn main() -> ! {
         if let Some((_row, _col)) = keypad.scan() {
             display.render(&[[0; display::DIGITS_PER_ROW]; display::ROWS]);
         }
-        // TODO(mcu): enter low-power Stop mode, wake on a key-matrix interrupt.
+        // TODO(mcu): enter low-power Stop mode, wake on KB_IRQ from the G0.
         cortex_m::asm::wfi();
     }
 }

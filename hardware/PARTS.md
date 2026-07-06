@@ -9,7 +9,9 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 > at order time. All ICs/displays below are JLCPCB **Extended** (no Basic option
 > in these categories).
 
-## calcumaker-main (MCU / PSU / keypad / interconnect)
+## calcumaker-mcu (MCU / PSU / clock / SWD / display-IF / keyboard mezzanine)
+
+*Bottom of the stack; the dense fine-pitch SMT brain board.*
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
@@ -27,44 +29,78 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Level shifter | **SN74HCT125DR** (quad, VCC=5V, 3V3→5V) | **C352957** | SOIC-14 | ✅ ~$0.20; KiCad symbol = `74AHCT125` |
 | Battery conn | JST S2B-PH-K-S | C173752 | PH 2.0 | ✅ |
 | RTC xtal | Epson 32.768 kHz | C32346 | SMD 3215 2-pin | ✅ LSE (Clock sheet) + 2× 12pF load caps |
-| Keyswitches ×50 | Cherry MX (full size) | — | SW_Cherry_MX_1.00u_PCB | 5×10 matrix; Kailh hot-swap optional |
-| Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D11–D60 |
-| Interconnect | PZ254V-11-10P (1×10 2.54mm) | C492409 | header THT | ✅ (J3 → display; carries **+5V**, +3V3 + I2C for the aux OLED) |
+| Display interconnect (J3) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ FFC to display; +5V/GND doubled for LED current (0.5mm ≈ 0.4A/cond). **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM; length TBD).** |
 | I2C pull-ups | 4.7k 0402 ×2 (R14/R15) | C25900 | 0402 | ✅ DNP — populate with the aux OLED |
+| **Keyboard mezzanine receptacle (J5)** | **Hirose DF40C-10DS-0.4V** 2×5 0.4mm B2B | **C424636** | `Connector_Hirose_DF40:…DF40B-10DS-0.4V_2x05` | ✅ **low-profile 1.5mm stack** (3D-modelled); I²C+UART+KB_IRQ+power to the keyboard G0 (matrix does NOT cross); mates DF40C-10DP |
 | Programming | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (no part placed) |
-| Annunciator LED f (gold) | Everlight 19-213/Y2C (yellow) | C72038 | **0603** | ✅ D61, beside the f key |
-| Annunciator LED g (blue) | XL-1608UBC-04 | C965807 | **0603** | ✅ D62, beside the g key |
-| Annunciator LEDs C / G / low-batt | KT-0603R (red) ×3 | C2286 | **0603** | ✅ D63–D65, top edge under the display bezel |
-| Annunciator resistors ×5 | 470 Ω | C25117 | 0402 | ✅ R9–R13 (~1.3–2.8 mA @3V3; tune per color at bring-up) |
+
+## calcumaker-keyboard (Cherry MX matrix + STM32G0 scanner + annunciators + MCU mezzanine)
+
+*Top of the stack; the front-panel board the user types on. Mezzanine-stacks
+above the MCU board. Its own STM32G0 scans the matrix + drives the annunciators
+and talks to the U575 over I²C/UART (keyscanning is off the MCU board).*
+
+| Block | Part | LCSC | Pkg / footprint | Status |
+|-------|------|------|-----------------|--------|
+| **Scanner MCU (U1)** | **STM32G031K8U6** | **C432207** | UFQFPN-32 (`UFQFPN-32-1EP_5x5mm`) | ✅ ~$0.60; scans matrix + drives LEDs + I²C/UART to U575; QFN like tsumikoro's G0 |
+| G0 decoupling | 100nF ×3 + 4.7µF (C1–C4) | C1525 / — | 0402 / 0603 | VDD/VDDA + bulk |
+| G0 NRST / BOOT0 | 100nF (C5) + 10k (R6) | C1525 / C25744 | 0402 | reset cap + BOOT0 pulldown |
+| Keyswitches ×50 | Cherry MX (full size) | — | SW_Cherry_MX_1.00u_PCB | 5×10 matrix → the **G0** (local scan); Kailh hot-swap optional; SW1–50 |
+| Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D1–D50 |
+| Annunciator LED f (gold) | Everlight 19-213/Y2C (yellow) | C72038 | **0603** | ✅ D51, beside the f key (driven by the G0) |
+| Annunciator LED g (blue) | XL-1608UBC-04 | C965807 | **0603** | ✅ D52, beside the g key |
+| Annunciator LEDs C / G / low-batt | KT-0603R (red) ×3 | C2286 | **0603** | ✅ D53–D55, top edge under the display bezel |
+| Annunciator resistors ×5 | 470 Ω | C25117 | 0402 | ✅ R1–R5 (~1.3–2.8 mA @3V3; tune per color at bring-up) |
+| G0 programming (J2) | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (bare land) — or reflash via the UART/DFU bootloader over J1 |
+| **MCU mezzanine header (J1)** | **Hirose DF40C-10DP-0.4V** 2×5 0.4mm B2B | **C424635** | `Connector_Hirose_DF40:…DF40C-10DP-0.4V_2x05` | ✅ mates the MCU receptacle (J5, DF40C-10DS); low-profile 1.5mm stack; pinout MUST match |
 
 ## calcumaker-display (7-seg stack + drivers + interconnect)
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
 | Driver ×3 | TM1640 | C5337152 | SOP-28 | ✅ ~$0.12 — 1 chip = 1 row of 16 CC digits |
-| Digits ×12 | FJ5161AH (0.56" 4-digit, **common-cathode**) | C8093 | **THROUGH-HOLE** | ✅ ~$0.19 — 4 per row |
-| Interconnect | PZ254V-11-10P (1×10 2.54mm) | C492409 | header THT | ✅ (J1 ← main) |
+| Digits ×48 | FJ5161AH (0.56" **single-digit**, **common-cathode**) | C8093 | **THROUGH-HOLE** | ✅ ~$0.10 — **16 per row** (single digit, NOT a 4-up module) |
+| Interconnect (J1) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ FFC ← MCU board (mcu J3); +5V/GND doubled for LED current. **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM; length TBD).** |
 | Aux OLED socket | PZ254V-11-04P (1×4 2.54mm, J2) | C2691448 | header THT | ✅ DNP — receives a 0.91″ SSD1306 128×32 I2C module (sourced separately, not in the JLC library) |
 
-**Topology:** 3 rows × 16 digits. Each row = 1× TM1640 driving 4× FJ5161AH over
-a 2-wire bus (shared **CLK** + per-row **DIN1/2/3**). The **top row (U3 / DS9–12)
-is optional** → builds as a 2- or 3-row display.
+**Topology:** 3 rows × 16 digits = **48 single digits**. Each row = 1× TM1640
+driving **16× FJ5161AH** over a 2-wire bus (shared **CLK/DISP_CLK** + per-row
+**DIN1/2/3**); segments a–g,dp = the shared **SEG1–8** bus, each digit's cathode
+= one of **GRID1–16**. The **top row (U3 / DS33–48) is optional** → builds as a
+2- or 3-row display. This repeats identically per row, so the schematic is a
+**KiCad multi-channel** design: one reusable `display_row.kicad_sch` instantiated
+3× (Row1→U1/DS1–16, Row2→U2/DS17–32, Row3→U3/DS33–48).
+
+## Non-BOM accessories (ordered separately, not JLCPCB-assembled)
+
+| Item | Part | Source | Notes |
+|------|------|--------|-------|
+| Display FFC cable | **GCT FFC05-TIN** `05-12-A-<len>-A-4-06-4-T` | **DigiKey** (cheap) | 0.5mm, 12-cond; **length TBD at layout**; `A`=same-side / `D`=opposite-side contacts per the two connectors' mounting |
+| Aux OLED module | 0.91″ SSD1306 128×32 I2C | any | plugs into display J2 (DNP socket) |
+| Stacking standoffs ×4 | M2 (matched to the DF40 ~1.5mm stack) | any | set the MCU↔keyboard gap; take mechanical load |
+| Battery cell | 1S Li-ion + JST-PH lead | any | capacity TBD |
 
 ## Important assembly note — through-hole digits
 
 No SMD multi-digit 7-segment displays are stocked on LCSC; the well-stocked
 parts are **through-hole**. So `calcumaker-display` needs **THT assembly**
 (JLCPCB through-hole add-on, or hand/wave solder) in addition to SMT for the
-TM1640s. The main board is all-SMT (plus the THT header + battery/USB connectors
-as applicable). If an all-SMT display is a hard requirement, revisit driver+digit
-selection (would likely mean discrete SMD single-digit displays — more parts).
+TM1640s. The MCU and keyboard boards are mostly SMT plus their connectors and
+through-hole switches as applicable. If an all-SMT display is a hard
+requirement, revisit driver+digit selection (would likely mean discrete SMD
+single-digit displays — more parts).
 
 ## KiCad symbols
 
-- **Digits (FJ5161AH):** use the **stock** KiCad symbol
-  `Display_Character:CC56-12EWA` (generic 0.56" 4-digit **common-cathode**, the
-  same 12-pin topology) with footprint `Display_7Segment:CC56-12GWA`. ✅ No custom
-  symbol needed. *Verify the FJ5161AH pinout matches the CC56-12 land at layout.*
+- **Digits (FJ5161AH):** **single-digit** 0.56" common-cathode (LCSC C8093 —
+  confirmed a **1-digit** part, NOT a 4-up module). Symbol **authored** as
+  `calcumaker:FJ5161AH` in `lib/symbols/calcumaker.kicad_sym` (standard 5161
+  pinout: 1=E 2=D 3=COM 4=C 5=DP 6=B 7=A 8=COM 9=F 10=G) + the dimensionally-
+  matched 0.56" single-digit land `Display_7Segment:7SegmentLED_LTS6760_LTS6780`.
+  *Verify the FJ5161AH pad map vs the LTS6760 land at layout.*
+  ⚠ **The earlier `Display_Character:CC56-12EWA` / `CC56-12GWA` mapping was WRONG**
+  — that's a **4-digit** symbol/footprint/3D, which is where the phantom "clock
+  colon" came from. There is no colon on the real single-digit part.
 - **Driver (TM1640):** not in KiCad — **authored** from the datasheet pinout in
   `lib/symbols/calcumaker.kicad_sym` (28-pin SOP-28: GRID12–16=1–5, VSS=6, DIN=7,
   SCLK=8, SEG1–8=9–16, VDD=17, GRID1–11=18–28), registered via `register_lib` in
@@ -73,12 +109,11 @@ selection (would likely mean discrete SMD single-digit displays — more parts).
 - **Level shifter (SN74HCT125):** use the **stock** `74xx:74AHCT125` symbol
   (pin-identical quad buffer; value = `74HCT125`) + `Package_SO:SOIC-14_3.9x8.7mm`.
   ✅ No custom symbol.
-- **5V boost (TPS61022):** footprint is stock
-  (`Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm`) but the **symbol is not**
-  — author it into `lib/symbols/calcumaker.kicad_sym` (TODO, batch with the MCU
-  symbol when the main board is generated).
-- **MCU (STM32U575ZGT6):** author/confirm its symbol when generating the main
-  board (TODO).
+- **5V boost (TPS61022):** stock `Converter_DCDC:TPS61022` symbol +
+  `Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm` footprint. ✅ No custom
+  symbol.
+- **MCU (STM32U575ZGT6):** stock `MCU_ST_STM32U5:STM32U575ZGTx` symbol +
+  `Package_QFP:LQFP-144_20x20mm_P0.5mm`. ✅ No custom symbol.
 
 ## Passive size policy
 

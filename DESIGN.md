@@ -17,10 +17,11 @@ selectable word sizes — and extends it with **arbitrary-precision** math:
   functions (the scientific side), at user-selectable precision.
 
 The top of the RPN stack is shown on a **multi-row 7-segment** display (**2–3
-rows**) carried on its **own angled PCB** — a **split design** (main board +
-display board) where only power and the display serial bus cross the
-interconnect. The device is **battery + USB-C** powered, on the **low-power
-STM32U575**. The firmware main loop is **Rust (`no_std`)**.
+rows**) carried on its **own angled PCB** — part of a **three-board split**
+(MCU board + keyboard board stacked on a mezzanine, + the angled display board);
+only power and the display serial bus cross that interconnect. The device is
+**battery + USB-C** powered, on the **low-power STM32U575**. The firmware main
+loop is **Rust (`no_std`)**.
 
 This document is the source of truth for the hardware and firmware design. It
 follows the structure of the sibling BenchBits repos (ephemerkey / notchdeck /
@@ -40,7 +41,7 @@ being Rust.
 | 5 | Firmware language | **Rust, `no_std`** main loop (async via embassy once MCU is pinned). |
 | 6 | Firmware license | **AGPL-3.0** (repo LICENSE) — compatible with LGPLv3 GMP/MPFR. |
 | 7 | MCU | **STM32U575ZGT6** (Cortex-M33, 2 MB / 786 KB, LQFP-144, ULP). Chosen on LCSC/JLCPCB availability: the L4R5 is ~unstocked (5 pcs), U575ZGT6 is in stock (230 pcs, ~$4.90, JLCPCB Extended) and keeps GMP/MPFR open. Target `thumbv8m.main-none-eabihf`. |
-| 8 | Board partition | **Split: `calcumaker-main` + `calcumaker-display`.** The display board angles up; only +3V3/GND + the display serial bus cross the interconnect (simplifies wiring). |
+| 8 | Board partition | **Three boards: `calcumaker-mcu` + `calcumaker-keyboard` (DF40 mezzanine-stacked above it) + `calcumaker-display` (angled, 0.5 mm FFC).** Keeps a dense LQFP-144 off the 50-key through-hole matrix. The keyboard has its **own STM32G0 scanner**, so only an **I²C+UART link + power** cross the mezzanine (not the raw matrix); the display bus + power cross the FFC. |
 | 9 | Hardware license | **CERN-OHL-S v2** (`hardware/LICENSE`) — strongly reciprocal, matches the AGPL copyleft posture. |
 | 10 | Product name | **Calcumaker 16** (see `NAMING.md`). |
 
@@ -96,28 +97,69 @@ Considerations once pinned:
   precisions. (L4+/U5 do offer OCTOSPI for PSRAM/flash if ever needed.)
 - **USB FS** for a CDC console / provisioning + firmware update.
 
-### Board partition: split main + display boards
+### Board partition: three boards (MCU + keyboard stacked, display cabled)
 
-Calcumaker 16 is **two PCBs**:
+Calcumaker 16 is **three PCBs** (revised 2026-07-05 — the keyboard split off the
+MCU board):
 
-- **`calcumaker-main`** — MCU (U575), PSU, the Cherry MX key matrix, and the
-  interconnect to the display.
-- **`calcumaker-display`** — the multi-row 7-segment stack + its driver IC(s) +
-  the interconnect back to main. It **mounts at an upward angle** for readability.
+- **`calcumaker-mcu`** — the brain/PSU board: MCU (U575), PSU, clock, SWD, the
+  display 5 V rail + level shifter + interconnect, and a **keyboard mezzanine**
+  (J5). This is the dense fine-pitch SMT board (LQFP-144). *Bottom of the stack.*
+- **`calcumaker-keyboard`** — the front-panel board: the 50-key Cherry MX matrix
+  + per-key diodes + the annunciator LEDs + the mating **mezzanine header** (J1).
+  A simple 2-layer through-hole board. *Stacks directly above the MCU board.*
+- **`calcumaker-display`** — the multi-row 7-segment stack + its driver ICs + the
+  interconnect back to the MCU board. It **mounts at an upward angle** for
+  readability, cabled (not stacked).
 
-Putting the driver *on the display board* means only **+3V3, GND, and the
-display serial bus** (a handful of signals) cross the connector — instead of
-dozens of segment/digit lines — which is what **simplifies the wiring**.
+**Why split the keyboard off the MCU board:** laying a dense LQFP-144 (0.5 mm
+pitch, needs careful fan-out / multiple layers) into the same board as 50
+full-size through-hole keyswitches is a routing and mechanical fight. Splitting
+gives each PCB an easy job — the MCU board is a compact SMT brain, the keyboard
+is a plain switch matrix — and lets the keyboard be the physical top surface the
+user types on while the MCU board hides underneath.
 
-- **Interconnect:** a **2.54 mm 1×10 header** (PZ254V-11-10P, LCSC C492409 —
-  well-stocked, cheap, mechanically supports the angled board; FFC was rejected,
-  ~2 pcs LCSC stock). Pinout `1=+5V, 2=GND, 3=CLK(shared), 4=DIN1, 5=DIN2,
-  6=DIN3, 7=GND, 8=+3V3, 9=SDA, 10=SCL` — the TM1640 driver uses a **2-wire**
-  bus, so it's a shared clock + one data line per row driver (not SPI); pins
-  8–10 feed the **DNP-optional aux OLED** on the display board (3V3 I2C from
-  the MCU — unused when the OLED isn't populated). Keep +5V/GND wide for the
-  display LED current. `calcumaker-main:J3` ↔ `calcumaker-display:J1` pinouts
-  must match; join with a short ribbon/cable for the upward angle.
+**Stacking — the mezzanine:** because the keyboard has its **own STM32G0 scanner**
+(below), only a **serial link + power** cross the stack, not the raw matrix. A
+**low-profile fine-pitch mezzanine** — **Hirose DF40, 0.4 mm pitch, 2×5 (10-pin),
+1.5 mm stack height** — receptacle `J5` **DF40C-10DS-0.4V** (LCSC C424636) on the
+MCU board, header `J1` **DF40C-10DP-0.4V** (LCSC C424635) on the keyboard board.
+It carries 10 pins: `+3V3 · GND · I²C_SDA · I²C_SCL · UART_TX · UART_RX · KB_IRQ ·
+KB_NRST · KB_BOOT0 · GND`. Both an **I²C and a UART** bus are exposed (I²C is the
+primary key/annunciator channel; UART is spare/expansion + the G0's ROM
+bootloader); `KB_IRQ` is the keypress wake line (see Low-power & wake). The two
+halves are pin-for-pin identical (mated pin N ↔ pin N). DF40 was chosen over a
+generic 1.27 mm header/socket because it's a **documented Hirose mating pair with
+a dedicated KiCad footprint + 3D model and real LCSC stock** — the cheap generic
+ZX parts had no datasheet and unverifiable gender/land.
+
+*Mechanical:* the DF40C mates at only **1.5 mm** — genuinely low-profile, but too
+thin to clear the **MX switch pins (~2–3 mm)** protruding below the keyboard PCB.
+So the MCU board must sit under a **keyless region** (top / display-bezel area)
+or the pins get trimmed; and tall connectors (**USB-C ~3.2 mm, battery JST
+~5 mm**) go at the **MCU board edge, overhanging beyond the keyboard footprint**.
+4 corner standoffs (matched to the 1.5 mm stack) take the load. All new footprints
+carry KiCad **3D (STEP) models** — verify the stack in the 3D viewer, and the
+DF40C land vs the KiCad DF40 2×5 footprint, at layout. (Taller DF40 variants —
+DF40HC(2.0)/(2.5)/… — swap in on the same land if more clearance is wanted.)
+
+Keeping the display driver *on the display board* means only **+5V, GND, and the
+display serial bus** (a handful of signals) cross that connector — instead of
+dozens of segment/digit lines — which is what **simplifies the display wiring**.
+
+- **Display interconnect:** a **0.5 mm 12-conductor FFC** — connector
+  **AFC01-S12FCA-00** (LCSC C262661) on both `calcumaker-mcu:J3` and
+  `calcumaker-display:J1`; the flat-flex **cable is a non-assembled DigiKey
+  accessory** — **GCT FFC05-TIN `05-12-A-<length>-A-4-06-4-T`** (12-position,
+  0.5 mm; **length + contact orientation set at layout**). Pinout `1=+5V, 2=+5V,
+  3=GND, 4=CLK(shared), 5=DIN1, 6=DIN2,
+  7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND` — the TM1640 driver uses a
+  **2-wire** bus (shared clock + one data line per row driver, not SPI); pins
+  9–11 feed the **DNP-optional aux OLED** (3V3 I²C, unused when unpopulated).
+  **+5V and GND are doubled/tripled** because a 0.5 mm FFC conductor is only
+  ~0.4 A and the 3 multiplexed TM1640s peak ~0.3–0.5 A on +5V (less with
+  brightness capping). `calcumaker-mcu:J3` ↔ `calcumaker-display:J1` must match;
+  verify the FFC contact orientation (top/bottom, same/opposite-end) at layout.
 
 ### Aux display: optional 128×32 OLED (the "DNP-optional aux" pattern)
 
@@ -138,7 +180,7 @@ dozens of segment/digit lines — which is what **simplifies the wiring**.
    FLAG/oFF, default on), followed by the error text (`CalcError::text()`)
    or the **full-precision X** when idle (the windowing helper). I2C runs at
    3V3 straight from the MCU across interconnect pins 8–10; pull-ups R14/R15
-   (4.7 kΩ) sit on the main board, DNP with the OLED. Firmware sleeps the
+   (4.7 kΩ) sit on the MCU board, DNP with the OLED. Firmware sleeps the
    panel in idle (~10 µA).
 
 **The pattern** (reusable): optional capability = a cheap socket/footprint on
@@ -159,25 +201,42 @@ arbitrary-precision values that exceed the row width are **windowed / scrolled**
 - **Driver: TM1640** (LCSC C5337152, SOP-28, ~$0.12, deep stock). A 2-wire bus
   drives **16 common-cathode digits per chip = one full row**, so **3 chips**
   cover 3 rows (vs ~6 MAX7219 at ~20× the cost). Shared CLK + one DIN per chip.
-  Display-only (keys live on the main board). TM1638 (C19187) is the drop-in if
+  Display-only (keys live on the keyboard board). TM1638 (C19187) is the drop-in if
   on-chip key-scan is ever wanted.
-- **Digits: FJ5161AH** (LCSC C8093, 0.56" **4-digit common-cathode**, ~$0.19) —
-  4 per row → **12 modules**. Common-cathode matches the TM1640. 0.36" FJ3461AH
-  (C10708) is the option if board space is tight.
+- **Digits: FJ5161AH** (LCSC C8093, 0.56" **single-digit common-cathode**, ~$0.10)
+  — **16 per row → 48 digits** total. FJ5161AH is a *one-digit* part (confirmed on
+  LCSC), so a row is 16 discrete digits, not a 4-up module — which gives even,
+  continuous digit spacing across the 16-digit number. Common-cathode matches the
+  TM1640: segments a–g,dp tie to the shared **SEG1–8** bus; each digit's cathode
+  goes to one of **GRID1–16**.
 - **⚠ Through-hole digits.** No SMD multi-digit 7-segment displays are stocked on
   LCSC — the well-stocked parts are THT. So `calcumaker-display` needs **THT
   assembly** (JLCPCB through-hole add-on, or hand/wave solder); the TM1640s are
   SMT. See `hardware/PARTS.md`.
 - **Power note:** LED 7-segment is the dominant active current draw, *not* the
   MCU — and it's drawn from +3V3 **across the interconnect**, so it gates the
-  main board's buck-boost sizing (the TPS63900 placeholder likely needs
+  MCU board's buck-boost sizing (the TPS63900 placeholder likely needs
   upsizing). Use TM1640 brightness/dimming + blank-on-idle + display-off in
   sleep to honor the battery goal.
 
-KiCad symbols: digits use the **stock** `Display_Character:CC56-12EWA` (0.56"
-4-digit common-cathode); the **TM1640** symbol is authored from the datasheet in
-`hardware/lib/symbols/calcumaker.kicad_sym`. The display board **generates and
-passes the structure check** (placed, not wired). See `hardware/PARTS.md`.
+**Schematic = KiCad multi-channel.** Every row is electrically identical (1
+TM1640 + 16 digits over the shared SEG bus), so the row is authored **once** as a
+reusable, fully-wired child sheet (`display_row.kicad_sch`) and instantiated
+**three times** at the root (Row1/Row2/Row3), each annotating to its own refs
+(U1/DS1–16, U2/DS17–32, U3/DS33–48). The shared bus rides global nets
+(**+5V / GND / DISP_CLK**); each row's serial data **DIN** is a hierarchical pin
+fed by **DIN1/DIN2/DIN3** from the interconnect. This replaced the old flat sheet
+that drew all three rows redundantly and ran off the page.
+
+KiCad symbols: the **TM1640** and the **single-digit `FJ5161AH`** are both
+authored in `hardware/lib/symbols/calcumaker.kicad_sym` (registered in the display
+board's `sym-lib-table`); the digit land is the 0.56" single-digit
+`Display_7Segment:7SegmentLED_LTS6760_LTS6780`. ⚠ An earlier scaffold wrongly
+mapped FJ5161AH to the **4-digit** `Display_Character:CC56-12EWA` /
+`CC56-12GWA` — that 4-digit symbol/footprint/3D is where a phantom "clock colon"
+came from; the real single-digit part has none. The display board **generates,
+passes the structure check, and is fully wired** (ERC clean apart from the
+expected connector-fed `power_pin_not_driven` on +5V/GND). See `hardware/PARTS.md`.
 
 ### Keypad: full-size Cherry MX, wide HP-16C-style layout
 
@@ -221,13 +280,46 @@ keypress wakes the MCU from Stop, so no dedicated ON key is needed.
   per personality, freshness-enforced by a golden test so they can't drift.
   These are the reference for keycap-legend planning.
 
-**Electrical:** 5-row × 10-col scanned matrix. ROWr = GPIO outputs, COLc = GPIO
-inputs on **internal pull-ups** (no external resistors — lower idle current;
-STM32U5 retains pull-ups in Stop). **One 1N4148W per key** (anode at switch,
-cathode to its column) for n-key rollover. One column also drives an EXTI line:
-in Stop all rows are held low, so any keypress pulls a column → wake. 15 GPIO
-(5 rows + 10 cols). Refs: `SW1..SW50` (key `(r,c)` = `SW(r-1)*10+c`), diodes
-`D11..D60`. Optional **Kailh hot-swap sockets** (same footprint family).
+**Electrical:** 5-row × 10-col scanned matrix, scanned **on the keyboard board by
+its own STM32G031K8U6** (LCSC C432207, UFQFPN-32 — not the main MCU; see Board
+Partition). ROWr = G0 GPIO outputs, COLc = G0 GPIO inputs on **internal pull-ups**
+(no external resistors — lower idle current; the G0 retains pull-ups in Stop).
+**One 1N4148W per key** (anode at switch, cathode to its column) for n-key
+rollover. 15 GPIO (5 rows + 10 cols) on the G0. Refs: `SW1..SW50` (key `(r,c)` =
+`SW(r-1)*10+c`), diodes `D1..D50`. Optional **Kailh hot-swap sockets** (same
+footprint family). The G0 reports `(row,col)` events to the main MCU over the
+mezzanine I²C bus (see Low-power & wake).
+
+### Low-power & wake
+
+Splitting the scanner onto the keyboard G0 gives **two independently-sleeping
+domains**, both wake-capable; between keystrokes both sit in **Stop** at a few µA,
+so the aggressive-sleep battery goal is preserved (the display + active MPFR
+still dominate the budget).
+
+- **Idle:** the **U575** is in **Stop 2** (~1–3 µA); the keyboard **G0** is in
+  **Stop** (~1–5 µA), holding **all matrix rows low** with **columns on EXTI/wake
+  pins** (internal pull-ups) — the classic keypress-wake trick, now on the G0.
+  The G0 must Stop-and-wake, **never poll-scan continuously** (that would burn mA).
+- **Key-on-wake is a two-stage chain:** keypress → a column pulls low → **G0
+  wakes** (EXTI) → G0 scans + debounces → asserts **`KB_IRQ`** (mezzanine line)
+  into a U575 **WKUP/EXTI** pin → **U575 wakes from Stop** → U575 reads the
+  `(row,col)` event(s) from the G0 over **I²C**. Latency is sub-millisecond — the
+  mechanical key is still down when the G0 scans, so nothing is missed.
+- **Reverse direction is free:** the G0 also **wakes from Stop on I²C
+  address-match**, so the U575 can push annunciator-LED states to the G0 without a
+  dedicated wake line. During active typing both stay awake and I²C runs normally.
+- **Power switch:** a **slide switch** gates power; there is no dedicated ON key
+  (any keypress wakes via the chain above). *Optional robustness:* a wired-OR
+  "any-key-down" line straight to a U575 WKUP pin would let the U575 wake
+  independently of the G0 (one extra signal + a small diode-OR); `KB_IRQ` alone is
+  the default.
+- **Firmware split:** matrix scan + debounce + Stop/EXTI-wake + annunciator drive
+  live in a **new keyboard-G0 firmware** (`embassy-stm32`, `stm32g031`,
+  `thumbv6m`); the U575 firmware becomes an **I²C reader of `(row,col)` events**
+  instead of a direct scanner. **`calcumaker-core::App` is unchanged** — it
+  consumes `(row,col)` either way — so the engine, keymap, and emulator are
+  unaffected.
 
 ### Power: 1S Li-ion + USB-C charge + buck-boost
 
@@ -302,8 +394,8 @@ is not a mock: the whole device-independent calculator lives in
   marker in the last cell when a value exceeds 16 digits).
 
 Both frontends are thin I/O bindings around `App::press(row, col)` +
-`App::seg_rows()`: the firmware contributes the matrix scan and the TM1640
-bus; the emulator maps host keys to matrix cells and renders **the same
+`App::seg_rows()`: the firmware path contributes keyboard-board events and the
+TM1640 bus; the emulator maps host keys to matrix cells and renders **the same
 segment bytes** as LED-style 7-seg art — Unicode block elements by default
 (`▄`/`█`, dp = `▗` in its own column + an inter-digit gap, ~100 columns),
 `--ascii` for a plain `_`/`|` fallback — plus
@@ -411,7 +503,7 @@ USB-C ──VBUS──┬── ESD (USBLC6) ──► D+/D- ──► STM32 USB
 
 MCU is **STM32U575ZGT6** (LQFP-144). Fill a pin table (package pin → function →
 AF) here once the panel layout fixes the matrix dimensions. Expected peripheral
-use (all on the main board):
+use (all on the MCU board):
 
 - **Display bus** → 4 GPIOs: TM1640 2-wire (shared CLK + DIN1/DIN2/DIN3),
   bit-banged at 3V3 → 74HCT125 → 5V → interconnect. Plus **DISP_PWR_EN** GPIO →
@@ -433,31 +525,41 @@ Two boards, each generated from its own manifest
 (`hardware/scripts/calcumaker-{main,display}.schgen.py`), then placed-not-wired,
 then wired in eeschema.
 
-**`calcumaker-main`:**
+**`calcumaker-mcu`:**
 
 | Sheet | File | Contents |
 |-------|------|----------|
-| Root | `calcumaker-main.kicad_sch` | sheet symbols + title block |
+| Root | `calcumaker-mcu.kicad_sch` | sheet symbols + title block |
 | MCU | `mcu.kicad_sch` | STM32U575ZGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 |
 | Clock | `clock.kicad_sch` | LSE 32.768 kHz crystal (Y1) + load caps (RTC) |
 | Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
-| Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (50 SW + 50 diodes) + wake line |
-| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + J3 → display |
-| Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D61–D65 + R9–R13) ← MCU GPIO |
+| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + **J3 (0.5 mm FFC)** → display |
+| KeyboardIF | `keyboard_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine receptacle (J5, DF40C-10DS, 1.5 mm stack) — I²C+UART link to the keyboard board |
 
-Both boards **generate from their manifests and pass the structure check**
-(placed-not-wired): `calcumaker-main` = 159 components across the 7 subsheets
-above; `calcumaker-display` = 21 components. All symbols are stock KiCad except
-the authored TM1640.
+**`calcumaker-keyboard`:**
+
+| Sheet | File | Contents |
+|-------|------|----------|
+| Root | `calcumaker-keyboard.kicad_sch` | sheet symbols + title block |
+| Keypad | `keypad.kicad_sch` | 5×10 Cherry MX matrix (SW1–50 + diodes D1–50) → the on-board G0 |
+| Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
+| KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
+| MainIF | `main_if.kicad_sch` | Hirose DF40 2×5 0.4 mm mezzanine header (J1, DF40C-10DP, 1.5 mm stack) → down to the MCU board |
+
+All three boards **generate from their manifests and pass the structure check**:
+`calcumaker-mcu` = 52 components, `calcumaker-keyboard` = 119 components (both
+placed-not-wired), `calcumaker-display` = 60 components (fully wired, multi-channel).
+Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`.
 
 **`calcumaker-display`:**
 
 | Sheet | File | Contents |
 |-------|------|----------|
-| Root | `calcumaker-display.kicad_sch` | sheet symbols + title block |
-| Display | `display.kicad_sch` | 7-seg array (2–3 rows) + driver chain + brightness/blank |
-| Interconnect | `interconnect.kicad_sch` | J1 ← main board (pinout matches main J3) |
+| Root | `calcumaker-display.kicad_sch` | Row1/Row2/Row3 + Interconnect + Aux sheet symbols; per-row DIN1/2/3 routing |
+| Row1/2/3 | `display_row.kicad_sch` (reused ×3) | **multi-channel** — 1 TM1640 + 16 single-digit FJ5161AH, fully wired (shared SEG bus + GRID1–16) |
+| Interconnect | `interconnect.kicad_sch` | J1 ← MCU board (pinout matches mcu J3) |
+| AuxDisplay | `aux.kicad_sch` | DNP-optional SSD1306 OLED socket (J2) |
 
 ---
 
@@ -536,19 +638,22 @@ is identical.
 
 Resolved: ✅ MCU (Q7) · ✅ board partition = split (Q8) · ✅ hardware license =
 CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+digits
-(TM1640 + FJ5161AH) · ✅ interconnect (1×10 2.54 mm header) · ✅ aux OLED
+(TM1640 + FJ5161AH) · ✅ interconnect (12-position 0.5 mm FFC) · ✅ aux OLED
 (DNP-optional, display board). Remaining:
 
-1. ✅ **KiCad symbols done** — digits use stock `CC56-12EWA`; TM1640 authored
-   (`lib/symbols/calcumaker.kicad_sym`); display board generates + checks OK.
+1. ✅ **KiCad symbols done** — the single-digit `FJ5161AH` and the `TM1640` are
+   both authored in `lib/symbols/calcumaker.kicad_sym` (registered in the display
+   `sym-lib-table`); digit land = 0.56" `LTS6760`. Display board generates, checks
+   OK, and is a **fully-wired multi-channel** design (reusable `display_row` ×3).
    Remaining: confirm THT-assembly route (JLCPCB THT add-on vs hand-solder), and
-   verify the FJ5161AH pinout vs CC56-12 + the TM1640 SOP-28 footprint at layout.
+   verify FJ5161AH pad map vs the LTS6760 land + the TM1640 SOP-28 footprint at
+   layout.
 2. ✅ **Display rail = 5 V + level shifter** (decided + parts chosen). EN-gated
    **TPS61022** boost (C915088) + 1µH FTC201610 (C5832342) + 0603 caps; FB
    divider R6 732k/R7 100k → 5V. **SN74HCT125** level shifter (C352957, KiCad
    symbol `74AHCT125`). Remaining: verify boost Isat/FB and the downsized 3V3
    inductor Isat at layout. (TPS61022 + STM32U575 symbols turned out stock in
-   KiCad, so the main board generates with no custom authoring.)
+   KiCad, so the MCU board generates with no custom authoring.)
 3. ✅ **Numeric engine = single GMP/MPFR path** (`gmp-mpfr-nostd` + `calcumaker-core`),
    host-tested + REPL, compiles for `thumbv8m`. ✅ **GMP/MPFR cross-built +
    link-verified** for Cortex-M33 hard-float (build script + `build.rs` wired).
@@ -557,30 +662,33 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    `<`/`>`) implemented. Remaining is firmware bring-up: route GMP's
    allocator to the heap + resolve newlib at final link (folded into the
    MCU/HAL work).
-6. ✅ **Annunciators (status line → hardware) — decided + implemented.**
+4. ✅ **Annunciators (status line → hardware) — decided + implemented.**
    16C precedent: lamps ONLY for what must be visible mid-keystroke; the rest
-   lives in the digits. **(a) Five main-board LEDs** (new `Annunciators`
-   sheet, D61–D65 + R9–R13 470R, MCU GPIO direct, zero interconnect impact):
-   f yellow C72038 + g blue C965807 beside the shift keys; C / G / low-batt
-   red C2286 along the top edge under the display bezel. (The display-board
-   alternative was rejected: it needs a 4th TM1640 + DIN4 *and* a 5th
-   level-shifter channel.) **(b)** ✅ **f-STATUS momentary view** in the App
+   lives in the digits. **(a) Five keyboard-board LEDs** (`Annunc` sheet,
+   D51–D55 + R1–R5 470R, driven by the keyboard G0): f yellow C72038 + g blue
+   C965807 beside the shift keys; C / G / low-batt red C2286 along the top edge
+   under the display bezel. (The display-board alternative was rejected: it
+   needs a 4th TM1640 + DIN4 *and* a 5th level-shifter channel.) **(b)** ✅
+   **f-STATUS momentary view** in the App
    (f-CLx): `bASE 16 2S rAd` / `P256 b8` / `AUtO 010000` (fmt + flags 543210)
    as 7-seg text until the next key — emulator shows it on the glass.
    **(c)** errors + SHOW already render as transient text. **(d)** ✅ radix
    as a 16C-style suffix letter on the X row — `h`/`o`/`b` for non-decimal
    integers, decimal unmarked (deviation from the 16C's `d`; absence =
    decimal) — a **display tunable** (`suffix` token toggles; on by default;
-   emulator `--no-suffix`). Remaining: wire the LED GPIOs at eeschema time;
-   LOWBAT needs the battery ADC (PSU).
-4. ✅ **Keypad designed + main board generated.** 5×10 (50 keys), f/g scheme,
-   internal-pull-up matrix + EXTI wake. The main board is decomposed into 6
-   subsheets (MCU / Clock / Programming / PSU / Keypad / DisplayIF), all symbols
-   stock (TPS61022 + STM32U575 were both in KiCad), and it **generates + passes
-   the structure check** (149 comp). Remaining: refine `Nop` shift assignments;
-   confirm Cherry MX vs Kailh hot-swap; verify the STM32U5 VCORE LDO-vs-SMPS
-   choice (SMPS needs an inductor); then **wire both boards in eeschema**.
-5. **Battery cell + capacity.** Drives charger current (PROG resistor) and
+   emulator `--no-suffix`). Remaining: wire the LED GPIOs on the keyboard board;
+   LOWBAT needs the battery ADC/status path.
+5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
+   f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
+   annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
+   (Keypad / Annunciators / KbdMCU / MainIF, 119 comp), which mezzanine-stacks
+   (I²C+UART) above **`calcumaker-mcu`** (MCU / Clock / Programming / PSU /
+   DisplayIF / KeyboardIF, 52 comp). All symbols stock except the authored
+   TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
+   refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the
+   STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); verify the DF40
+   stack height vs MX pin clearance; then **wire the boards in eeschema**.
+6. **Battery cell + capacity.** Drives charger current (PROG resistor) and
    runtime target.
 
 ---
@@ -593,21 +701,24 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 
 | Block | Part | Status |
 |-------|------|--------|
-| MCU (main) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
+| MCU (mcu) | **STM32U575ZGT6** (2MB/786KB, M33, LQFP-144) | ✅ selected — LCSC C5271004, JLCPCB Extended |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
-| 7-seg digits (display) ×12 | **FJ5161AH** 0.56" 4-digit CC (**THT**) | ✅ LCSC C8093, ~$0.19 — 4/row |
-| Interconnect | **PZ254V-11-10P** 1×10 2.54mm header (carries +5V, +3V3, I2C) | ✅ LCSC C492409; main J3 ↔ display J1 |
+| 7-seg digits (display) ×48 | **FJ5161AH** 0.56" **single-digit** CC (**THT**) | ✅ LCSC C8093, ~$0.10 — **16/row** (one digit each) |
+| Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
-| Keyswitches (main) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
-| Key diodes (main) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
-| USB-C (main) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
-| Charger (main) | MCP73831 / BQ-class | sized to cell |
-| Buck-boost 3V3 (main) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load); L→0805 |
-| 5V boost (main) | **TPS61022RWUR** (EN-gated) + 1µH (FTC201610) + 0603 caps | ✅ LCSC C915088 / C5832342 |
-| Level shifter (main) | **SN74HCT125DR** quad buffer @5V (CLK+DIN×3) | ✅ LCSC C352957 (symbol `74AHCT125`) |
-| Battery (main) | 1S Li-ion (JST-PH) | capacity TBD |
-| RTC crystal (main) | 32.768 kHz | LSE |
-| Programming (main) | SWD Tag-Connect TC2030-NL | as sibling repos |
+| Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
+| Keyboard mezzanine ×2 | **Hirose DF40C-10** 0.4mm 2×5 low-profile (1.5mm stack): DF40C-10DS (mcu J5) + DF40C-10DP (keyboard J1) | ✅ LCSC C424636 / C424635; KiCad fp + 3D model; verify MX-pin clearance |
+| Keyswitches (keyboard) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
+| Key diodes (keyboard) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
+| Annunciator LEDs (keyboard) ×5 | f yellow (C72038), g blue (C965807), C·G·low-batt red (C2286) + 5× 470Ω | ✅ front-panel, beside the keys |
+| USB-C (mcu) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
+| Charger (mcu) | MCP73831 / BQ-class | sized to cell |
+| Buck-boost 3V3 (mcu) | TPS63900 (ULP, low-Iq) — **MCU only** | ✅ stays as-is (light load); L→0805 |
+| 5V boost (mcu) | **TPS61022RWUR** (EN-gated) + 1µH (FTC201610) + 0603 caps | ✅ LCSC C915088 / C5832342 |
+| Level shifter (mcu) | **SN74HCT125DR** quad buffer @5V (CLK+DIN×3) | ✅ LCSC C352957 (symbol `74AHCT125`) |
+| Battery (mcu) | 1S Li-ion (JST-PH) | capacity TBD |
+| RTC crystal (mcu) | 32.768 kHz | LSE |
+| Programming (mcu) | SWD Tag-Connect TC2030-NL | as sibling repos |
 
 ---
 

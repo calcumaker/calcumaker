@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "da0f862c-ac78-45d0-9238-36e39d2db74c")
+	(uuid "4bb53341-6b5a-4905-9015-f6916355f0f0")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — Main — SWD programming")
-		(date "2026-06-21")
-		(rev "0.1")
+		(title "Calcumaker 16 — MCU — SWD programming")
+		(date "2026-07-05")
+		(rev "0.2")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -308,7 +308,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "285ca7c8-c5fd-4c87-bca5-ea54b6cac229")
+		(uuid "f08273b7-f731-4509-9348-f9ba8df913ee")
 		(property "Reference" "J4"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -325,26 +325,26 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "ed98dfb6-618b-471d-88a0-339a7edc9e8b"))
-		(pin "2" (uuid "6abe9109-a40e-46ff-ac1b-baa41456f928"))
-		(pin "3" (uuid "8fd7b58b-31aa-43d8-869c-acd57976878f"))
-		(pin "4" (uuid "d91178f4-db0f-4a2f-bf51-c837a906a2b7"))
-		(pin "5" (uuid "a7800db8-5a54-4c2c-8476-7e48c6445cc1"))
-		(pin "6" (uuid "2b00574d-7d77-4db2-bce5-fe6e6dd5e8a8"))
+		(pin "1" (uuid "926e560b-9e78-4666-835c-672e359af665"))
+		(pin "2" (uuid "b4c0bede-8d50-4672-acb1-d173519e0084"))
+		(pin "3" (uuid "2efa8fec-241a-4b13-a8d5-20ccb5460451"))
+		(pin "4" (uuid "542ad79a-248e-4b78-988e-92bb6672031a"))
+		(pin "5" (uuid "f3c2791a-d485-49c5-9806-608e0664d453"))
+		(pin "6" (uuid "ca576ab5-0060-428e-bac8-d696fa3579bc"))
 		(instances
-			(project "calcumaker-main"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/da0f862c-ac78-45d0-9238-36e39d2db74c"
+			(project "calcumaker-mcu"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/4bb53341-6b5a-4905-9015-f6916355f0f0"
 					(reference "J4")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 main — SWD programming (J4 Tag-Connect TC2030-NL, no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. Bare land — no part mounted."
+	(text "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. Bare land — no part mounted."
 		(exclude_from_sim no)
 		(at 15.00 95.00 0)
 		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "a610b3b7-04e6-4888-a950-c77ad3b217ae")
+		(uuid "03e07025-2636-4d06-b3cf-5acff1776daa")
 	)
 	(sheet_instances
 		(path "/"

@@ -28,15 +28,18 @@ main loop is **Rust (no_std)**.
   **embedded-alloc** (heap for the bignum allocator), **probe-rs** (flash/debug).
 
 ## Datasheets (download into this folder via the `digikey`/`datasheets` skills)
-Populate once parts are finalized (DESIGN.md). Expected set:
+Populate as the layout moves toward fabrication. Current expected set:
 
 | Block | Part | Notes |
 |-------|------|-------|
 | MCU | STM32U575ZGT6 (LCSC C5271004) | flash/RAM, low-power modes, USB FS, FPU, AF map, SRAM banking |
-| Display driver | TBD (MAX7219 / HT16K33 / TLC59xx) | digit/segment drive, current set, interface |
-| 7-seg display | TBD | digit height, common-anode/cathode, pinout |
+| Keyboard scanner | STM32G031K8U6 (LCSC C432207) | GPIO, Stop/EXTI wake, I2C/UART, package |
+| Display driver | TM1640 (LCSC C5337152) | digit/segment drive, current set, 2-wire interface |
+| 7-seg display | FJ5161AH (LCSC C8093) | 0.56 in single-digit common-cathode THT, pinout |
+| Display FFC | AFC01-S12FCA-00 + GCT FFC05-TIN cable | 0.5 mm 12-position connector/cable orientation and current |
+| Keyboard mezzanine | Hirose DF40C-10DS/DP-0.4V | stack height, land pattern, 3D clearance |
 | Keyswitch | Cherry MX (full size) | mechanical/electrical, hot-swap socket option |
-| Power | USB-C charger + buck-boost (TBD) | charge current, Iq, input range |
+| Power | USB-C charger, TPS63900 3V3, TPS61022 5V boost, SN74HCT125 level shifter | charge current, Iq, input range, boost sizing, logic thresholds |
 | Battery | 1S Li-ion/LiPo | capacity, protection |
 
 > Use the `digikey`/`datasheets` skills to populate this folder, then the

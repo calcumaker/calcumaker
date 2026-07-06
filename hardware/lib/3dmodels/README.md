@@ -21,7 +21,8 @@ Likely candidates for this project (fill in once parts are finalized — see
 2. Add `${KIPRJMOD}/../lib/3dmodels/<file>.step`.
 3. Set offset/rotation if the vendor model isn't origin-centered.
 
-(`${KIPRJMOD}` is the board dir — `hardware/calcumaker-main/` or
-`hardware/calcumaker-display/` — so `../lib/3dmodels/` resolves here for both.)
+(`${KIPRJMOD}` is the board dir — `hardware/calcumaker-mcu/`,
+`hardware/calcumaker-keyboard/`, or `hardware/calcumaker-display/` — so
+`../lib/3dmodels/` resolves here for all three.)
 These sources need a **free login**, so the files can't be auto-fetched in CI —
 download once and commit them here (STEP only; ~tens of KB each).

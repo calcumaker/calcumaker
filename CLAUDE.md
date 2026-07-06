@@ -41,7 +41,10 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
 - Each board's schematic is **generated from its own data manifest**
   (`hardware/scripts/calcumaker-{mcu,keyboard,display}.schgen.py`), not
   hand-authored, then **placed, not wired** — wiring happens in eeschema using the
-  per-sheet notes (the display board is the exception: its row is fully wired).
+  per-sheet notes. Exceptions are **multi-channel** and fully wired: the display
+  (row ×3) and the **keyboard 5×10 matrix + per-key RGB** (reusable 10-key
+  `key_row` ×5). Regenerating placed-not-wired boards needs `KSCHGEN_FORCE=1`
+  (kschgen keeps existing `.kicad_sch` to protect manual wiring).
   - All manifests are **DRAFTs** with a guard (`CALCUMAKER_SCHGEN_DRAFT_OK=1`)
     pending the open part/layout items. Don't generate until those are resolved.
 - Custom parts (Cherry MX footprints, display modules, MCU package if unbundled)

@@ -1,0 +1,3262 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ca1c0000-0000-4000-8000-00000000eb10")
+	(paper "A2")
+	(title_block
+		(title "Calcumaker 16 — Keyboard — Reusable 10-key row (MX + diode + SK6805 RGB)")
+		(date "2026-07-06")
+		(rev "0.4")
+		(company "calcumaker authors")
+	)
+	(lib_symbols
+	(symbol "Switch:SW_Push"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 1.016)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "SW"
+			(at 1.27 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "SW_Push"
+			(at 0 -1.524 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Push button switch, generic, two pins"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "switch normally-open pushbutton push-button"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "SW_Push_0_1"
+			(circle
+				(center -2.032 0)
+				(radius 0.508)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 0 1.27) (xy 0 3.048)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(circle
+				(center 2.032 0)
+				(radius 0.508)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.54 1.27) (xy -2.54 1.27)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(pin passive line
+				(at -5.08 0 0)
+				(length 2.54)
+				(name "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 5.08 0 180)
+				(length 2.54)
+				(name "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "Device:D"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 1.016)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "D"
+			(at 0 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 0 -2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Diode"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "diode"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "D_0_1"
+			(polyline
+				(pts
+					(xy -1.27 1.27) (xy -1.27 -1.27)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+				)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 0) (xy -1.27 0)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "D_1_1"
+			(pin passive line
+				(at -3.81 0 0)
+				(length 2.54)
+				(name "K"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 3.81 0 180)
+				(length 2.54)
+				(name "A"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "LED:SK6805"
+		(pin_names
+			(offset 0.254)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "D"
+			(at 5.08 5.715 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right bottom)
+			)
+		)
+		(property "Value" "SK6805"
+			(at 1.27 -5.715 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Footprint" "LED_SMD:LED_SK6805_PLCC4_2.4x2.7mm_P1.3mm"
+			(at 1.27 -7.62 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/3484/3484_Datasheet.pdf"
+			(at 2.54 -9.525 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Description" "RGB LED with integrated controller"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "RGB LED NeoPixel Nano addressable"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "LED*SK6805*PLCC*2.4x2.7mm*P1.3mm*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "SK6805_0_0"
+			(text "RGB"
+				(at 2.286 -4.191 0)
+				(effects
+					(font
+						(size 0.762 0.762)
+					)
+				)
+			)
+		)
+		(symbol "SK6805_0_1"
+			(polyline
+				(pts
+					(xy 1.27 -2.54) (xy 1.778 -2.54)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 1.27 -3.556) (xy 1.778 -3.556)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.286 -1.524) (xy 1.27 -2.54) (xy 1.27 -2.032)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 2.286 -2.54) (xy 1.27 -3.556) (xy 1.27 -3.048)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 3.683 -1.016) (xy 3.683 -3.556) (xy 3.683 -4.064)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 4.699 -1.524) (xy 2.667 -1.524) (xy 3.683 -3.556) (xy 4.699 -1.524)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy 4.699 -3.556) (xy 2.667 -3.556)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(rectangle
+				(start 5.08 5.08)
+				(end -5.08 -5.08)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+		)
+		(symbol "SK6805_1_1"
+			(pin output line
+				(at 7.62 0 180)
+				(length 2.54)
+				(name "DOUT"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 0 -7.62 90)
+				(length 2.54)
+				(name "VSS"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -7.62 0 0)
+				(length 2.54)
+				(name "DIN"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 0 7.62 270)
+				(length 2.54)
+				(name "VDD"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 15.2400 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b54b4e3a-b665-4da4-b02d-d760fc31158a")
+		(property "Reference" "SW1"
+			(at 19.0500 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 19.0500 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 15.2400 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 15.2400 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "61dbc3f1-965d-4b86-8591-3ff58fba4b7c"))
+		(pin "2" (uuid "0666ff32-dd5b-4c19-8401-d58406ea20a6"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW1")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW11")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW21")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW31")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 15.2400 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c6841db6-32b2-4436-92ad-6dd0f6514e91")
+		(property "Reference" "D1"
+			(at 19.0500 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 19.0500 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 15.2400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 15.2400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 15.2400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 15.2400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 15.2400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "3b463dba-b84c-4db2-8cb9-8988ad70006a"))
+		(pin "2" (uuid "675012d9-e451-4758-87b7-d043cc568318"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D1")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D11")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D21")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D31")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 15.2400 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7d90c5e0-7424-46c1-a2d5-6603c1667d11")
+		(property "Reference" "D56"
+			(at 19.0500 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 19.0500 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 15.2400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 15.2400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 15.2400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 15.2400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 15.2400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "dee912e8-411e-43e1-ae59-892fe6cfb4a9"))
+		(pin "2" (uuid "853d372f-3a3a-4114-a965-94f2f0f35e4c"))
+		(pin "3" (uuid "444998ad-08d0-40db-95fe-e2923e3d032a"))
+		(pin "4" (uuid "180c32b6-09fd-445a-9cfa-84b58b5fcc8d"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D56")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D66")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D76")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D86")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D96")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 50.8000 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1cfd8f2e-5e43-4e15-a042-639b2d6ff4ac")
+		(property "Reference" "SW2"
+			(at 54.6100 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 54.6100 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 50.8000 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 50.8000 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "a64c17d7-1d8e-4183-be2c-9ea0c413483a"))
+		(pin "2" (uuid "49315330-0159-4ec6-8a31-d61f4975abb8"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW2")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW12")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW22")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW32")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 50.8000 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a2159735-9851-4af5-ad3c-284c1b7c43ea")
+		(property "Reference" "D2"
+			(at 54.6100 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 54.6100 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 50.8000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 50.8000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 50.8000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 50.8000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 50.8000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "0688647a-6f55-4e73-8a2b-a463d36b3a79"))
+		(pin "2" (uuid "04d2e20e-e039-4207-b707-c8d7a0274a25"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D2")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D12")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D22")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D32")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 50.8000 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a4ad81d0-17f2-4d89-b37e-03cd50f4b7a3")
+		(property "Reference" "D57"
+			(at 54.6100 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 54.6100 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 50.8000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 50.8000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 50.8000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 50.8000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 50.8000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "78c013f3-01c5-431f-8e40-8341e439d598"))
+		(pin "2" (uuid "29e0b3c5-355b-4f42-9fa6-ea1602900d13"))
+		(pin "3" (uuid "a85d6b5d-7a34-4333-82fc-4666e162af4a"))
+		(pin "4" (uuid "370423b4-31f5-412d-aee3-b9f36e069bc5"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D57")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D67")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D77")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D87")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D97")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 86.3600 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0dd51836-adc5-464b-9d33-083104ca3c33")
+		(property "Reference" "SW3"
+			(at 90.1700 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 90.1700 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 86.3600 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 86.3600 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2b967165-9b20-45c0-8090-7925579c67a6"))
+		(pin "2" (uuid "6a920ade-2570-49b3-8174-46db656e2ffd"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW3")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW13")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW23")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW33")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 86.3600 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f6b77726-308c-4d1a-b91e-63ba88ce5965")
+		(property "Reference" "D3"
+			(at 90.1700 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 90.1700 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 86.3600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 86.3600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 86.3600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 86.3600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 86.3600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4d5702b8-1d94-48c1-a03e-87ac7dd7f8a9"))
+		(pin "2" (uuid "5b8447fa-3493-4618-924e-724997f27969"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D3")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D13")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D23")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D33")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 86.3600 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f50a7e2e-df05-43be-b72b-3b3346b57cc1")
+		(property "Reference" "D58"
+			(at 90.1700 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 90.1700 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 86.3600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 86.3600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 86.3600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 86.3600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 86.3600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "fd434ce5-3a10-443b-b9ad-01fd2f474bce"))
+		(pin "2" (uuid "b11f09e7-508d-43bc-89ce-84212ae588bc"))
+		(pin "3" (uuid "c9755082-21d5-4f31-bd48-398b5493af6a"))
+		(pin "4" (uuid "a0e7b88f-0a3b-4226-bd90-9d0bfd2d82b2"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D58")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D68")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D78")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D88")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D98")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 121.9200 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d0fd0bb9-183e-4b93-8ca6-f7e9ce63e849")
+		(property "Reference" "SW4"
+			(at 125.7300 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 125.7300 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 121.9200 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 121.9200 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "328bdf65-aeab-4072-8887-cc926cf0469d"))
+		(pin "2" (uuid "6bd25acf-552f-4b98-8e69-aeb4878b23c4"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW4")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW14")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW24")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW34")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 121.9200 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8ac74a6d-4102-48e5-b5bf-22450ef095e8")
+		(property "Reference" "D4"
+			(at 125.7300 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 125.7300 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 121.9200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 121.9200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 121.9200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 121.9200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 121.9200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "f4502ade-273f-4a47-929c-70ca9e18506d"))
+		(pin "2" (uuid "14dbf5b6-8b74-4e6d-a51e-759ae4c727eb"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D4")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D14")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D24")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D34")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 121.9200 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "33aa08f5-b8f9-457f-b89a-16f2a6c4a840")
+		(property "Reference" "D59"
+			(at 125.7300 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 125.7300 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 121.9200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 121.9200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 121.9200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 121.9200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 121.9200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "a2dcc48d-b679-49d4-bda5-e11e4c593799"))
+		(pin "2" (uuid "e81890e5-f948-4c77-8c7f-fbbceeb38369"))
+		(pin "3" (uuid "49a3bf8a-d312-4b23-8923-96240e8e3869"))
+		(pin "4" (uuid "15ef4c23-b4d0-43b1-befa-390f6d0a14d5"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D59")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D69")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D79")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D89")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D99")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 157.4800 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a0eccac7-da9f-4201-8377-5d900af2da27")
+		(property "Reference" "SW5"
+			(at 161.2900 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 161.2900 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 157.4800 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 157.4800 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "2b8d53b6-655e-4113-bcbe-c83c76a26015"))
+		(pin "2" (uuid "0084af7b-44e0-4997-bfc5-46cdd3f4a571"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW5")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW15")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW25")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW35")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 157.4800 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "98cc1853-65ef-471c-857b-14577166c8c0")
+		(property "Reference" "D5"
+			(at 161.2900 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 161.2900 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 157.4800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 157.4800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 157.4800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 157.4800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 157.4800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e7722e1d-6f83-4f8d-9cad-23a49e7001c6"))
+		(pin "2" (uuid "ef1ccf59-41e4-4282-8364-806464a73ee0"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D5")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D15")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D25")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D35")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 157.4800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8e7ababf-3a94-47e2-8ddb-7a91622693f6")
+		(property "Reference" "D60"
+			(at 161.2900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 161.2900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 157.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 157.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 157.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 157.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 157.4800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "63654c95-eb85-46da-8381-963c6ba7cafa"))
+		(pin "2" (uuid "e59098fa-bf96-4517-8841-2ecbf57048e2"))
+		(pin "3" (uuid "e487da4d-f96a-4f9f-8d2b-4c46b6d5d36a"))
+		(pin "4" (uuid "0a8f893c-4e43-4da9-ad94-400e5da6eaac"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D60")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D70")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D80")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D90")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D100")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 193.0400 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c2321d48-adbe-4b24-9c8c-9f8652ecba9c")
+		(property "Reference" "SW6"
+			(at 196.8500 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 196.8500 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 193.0400 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 193.0400 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e5479c89-18fc-471a-a4bd-eff290dd269b"))
+		(pin "2" (uuid "b4a88fcd-822d-4b83-b727-8aa3f7879463"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW6")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW16")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW26")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW36")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 193.0400 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "335d1759-9f8b-40f5-bd44-5db7279ccae7")
+		(property "Reference" "D6"
+			(at 196.8500 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 196.8500 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 193.0400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 193.0400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 193.0400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 193.0400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 193.0400 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1fec66ea-03e8-4b05-8d36-8fc6e10464d1"))
+		(pin "2" (uuid "4a612c1a-e6ea-45c7-b488-3f38ab4d1dc8"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D6")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D16")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D26")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D36")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 193.0400 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "be2a7fa4-e952-4386-a103-fbcb68e47265")
+		(property "Reference" "D61"
+			(at 196.8500 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 196.8500 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 193.0400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 193.0400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 193.0400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 193.0400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 193.0400 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "47c08d62-9e22-41b5-9949-dfe86b7496d3"))
+		(pin "2" (uuid "77a37cb1-b91a-4cdc-9107-a76a5ef9b23d"))
+		(pin "3" (uuid "0f9697ca-d857-4d62-9a70-b567d358e68e"))
+		(pin "4" (uuid "f39165b8-a2fe-41c4-be8e-f449f74898ef"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D61")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D71")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D81")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D91")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D101")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 228.6000 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7d77a88a-a935-46ee-850e-278fd99d347c")
+		(property "Reference" "SW7"
+			(at 232.4100 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 232.4100 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 228.6000 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 228.6000 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "4b830031-f749-404d-9df5-8d8b53885137"))
+		(pin "2" (uuid "1a3d3db3-1974-41b5-8098-d254e8b70706"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW7")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW17")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW27")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW37")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 228.6000 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c838e3a8-9e49-4cb8-8b18-4d8be9a2dc05")
+		(property "Reference" "D7"
+			(at 232.4100 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 232.4100 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 228.6000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 228.6000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 228.6000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 228.6000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 228.6000 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "452e01d8-f7ad-4535-b03f-3db525ac2898"))
+		(pin "2" (uuid "32d59981-b692-42c5-9bf7-232ea81b7e46"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D7")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D17")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D27")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D37")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 228.6000 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "614cae7b-d9a8-419f-be45-3f628320bb69")
+		(property "Reference" "D62"
+			(at 232.4100 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 232.4100 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 228.6000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 228.6000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 228.6000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 228.6000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 228.6000 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "bd380818-ed9e-4ef2-9688-d8d27c5d7eab"))
+		(pin "2" (uuid "c61b098b-596e-4566-8d4c-c41db3b8b8ea"))
+		(pin "3" (uuid "708bbb5d-818e-4187-952f-3ed0aa52e2b9"))
+		(pin "4" (uuid "dbd770f6-0171-42e8-a9f2-66dc51f8cef9"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D62")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D72")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D82")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D92")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D102")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 264.1600 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0ef23b1e-297c-45f9-af95-640e12b3042b")
+		(property "Reference" "SW8"
+			(at 267.9700 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 267.9700 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 264.1600 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 264.1600 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "74696ffd-68b5-43a2-9229-2573544c16cd"))
+		(pin "2" (uuid "2ab33feb-2d41-46bd-8567-2990807b6a3a"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW8")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW18")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW28")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW38")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 264.1600 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "da34081b-01fc-4cc6-af92-f97922cbc359")
+		(property "Reference" "D8"
+			(at 267.9700 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 267.9700 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 264.1600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 264.1600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 264.1600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 264.1600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 264.1600 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "1b39913c-1399-40a2-bd7c-33e633250a79"))
+		(pin "2" (uuid "3cfcc40b-8c27-4217-b3e2-fde1d229f0bc"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D8")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D18")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D28")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D38")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 264.1600 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8cd9c3b7-0a2c-4621-a8d2-e34f94a1b8b7")
+		(property "Reference" "D63"
+			(at 267.9700 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 267.9700 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 264.1600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 264.1600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 264.1600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 264.1600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 264.1600 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "e6bb676f-3f7a-4dfb-920d-8e3d9306b597"))
+		(pin "2" (uuid "04197a80-8c02-490a-a874-68fe336e3679"))
+		(pin "3" (uuid "ad6f3565-1b21-4bf0-b9f7-99c9c7396925"))
+		(pin "4" (uuid "37583785-5e34-4d8b-9d13-be113872055b"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D63")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D73")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D83")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D93")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D103")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 299.7200 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "01fb359b-35a1-4ace-9aec-9369ca6d5c30")
+		(property "Reference" "SW9"
+			(at 303.5300 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 303.5300 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 299.7200 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 299.7200 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "185fe6ba-a21e-4bb3-9423-1be3e679e840"))
+		(pin "2" (uuid "0ff4144c-42bc-410c-996f-b7c8c64cbc94"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW9")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW19")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW29")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW39")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 299.7200 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7f668799-9c73-4aaf-a873-bc8c43f67b5a")
+		(property "Reference" "D9"
+			(at 303.5300 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 303.5300 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 299.7200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 299.7200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 299.7200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 299.7200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 299.7200 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "ec50b608-0a92-40ad-a588-8d39fc31dffc"))
+		(pin "2" (uuid "4119fcda-a36d-4533-bfa7-f713585b56ec"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D9")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D19")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D29")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D39")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 299.7200 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d9fc07a0-97b3-46c6-b7e7-55ace5aaa9df")
+		(property "Reference" "D64"
+			(at 303.5300 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 303.5300 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 299.7200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 299.7200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 299.7200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 299.7200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 299.7200 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "cc15dd24-3631-4159-839d-2458f65d02e2"))
+		(pin "2" (uuid "abd36e76-ffdb-41a3-8c0a-a376881c20ca"))
+		(pin "3" (uuid "061a1a69-d85c-4d1f-98a3-5a895a93af40"))
+		(pin "4" (uuid "240d75fd-cef2-4b67-a3b0-56d18272a820"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D64")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D74")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D84")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D94")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D104")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Switch:SW_Push")
+		(at 335.2800 45.7200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4813ccb9-29d8-4371-ab0a-4c6a25413aaf")
+		(property "Reference" "SW10"
+			(at 339.0900 43.1800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "MX"
+			(at 339.0900 48.2600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+			(at 335.2800 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 45.7200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9e02a25d-4e82-41c6-83ad-7d3219dea740"))
+		(pin "2" (uuid "aaefa3a9-3b03-4dc3-9468-a41a8ee716f3"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "SW10")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "SW20")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "SW30")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "SW40")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "SW50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 335.2800 81.2800 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e6f512ec-1cf9-4297-976d-2dd822200dd8")
+		(property "Reference" "D10"
+			(at 339.0900 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "1N4148W"
+			(at 339.0900 83.8200 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.2800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C81598"
+			(at 335.2800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "1N4148W"
+			(at 335.2800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "onsemi"
+			(at 335.2800 81.2800 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9014205f-f659-44c0-93c9-202c408a313f"))
+		(pin "2" (uuid "8dbbd6f3-f19c-45fd-82ce-fda57bca22ff"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D10")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D20")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D30")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D40")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "LED:SK6805")
+		(at 335.2800 121.9200 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "35326998-218c-4e4c-a85f-8a99730a6683")
+		(property "Reference" "D65"
+			(at 339.0900 119.3800 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Value" "SK6805-EC15"
+			(at 339.0900 124.4600 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
+		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Datasheet" "~"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "LCSC" "C2890035"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "MPN" "SK6805-EC15"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(property "Manufacturer" "OPSCO"
+			(at 335.2800 121.9200 0)
+			(effects (font (size 1.27 1.27))) (hide yes)
+		)
+		(pin "1" (uuid "9fc94897-d155-442c-88a2-510a944877fc"))
+		(pin "2" (uuid "e39780c0-983c-4bb4-b56a-26bd98f716b4"))
+		(pin "3" (uuid "53d459b1-bb63-4075-8d05-2a11b34d1bb1"))
+		(pin "4" (uuid "c3b9d400-e530-4dd7-82e3-d2c667d5675f"))
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
+					(reference "D65")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb12"
+					(reference "D75")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb13"
+					(reference "D85")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb14"
+					(reference "D95")
+					(unit 1)
+				)
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb15"
+					(reference "D105")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire (pts (xy 10.1600 45.7200) (xy 7.6200 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "432ea47f-2c31-41ad-9939-47229e5565e8")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 7.6200 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "9bca0c0d-1df5-4991-b9dc-8768b221f337")
+	)
+	(wire (pts (xy 20.3200 45.7200) (xy 22.8600 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "05f502ec-5dfd-48d5-93a5-f48c33c79dfc")
+	)
+	(label "KN1"
+		(at 22.8600 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "5753bdd5-45a7-449b-9f62-c47841384977")
+	)
+	(wire (pts (xy 19.0500 81.2800) (xy 21.5900 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "050fff12-038d-481b-8222-1dcc57f37ba0")
+	)
+	(label "KN1"
+		(at 21.5900 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "b6295f63-ce7c-4214-ab3d-b59aca51c957")
+	)
+	(wire (pts (xy 11.4300 81.2800) (xy 8.8900 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "1f7d1783-e1a0-447c-8eba-cafde1394e04")
+	)
+	(global_label "COL1"
+		(shape input)
+		(at 8.8900 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "c8130dae-e876-41c3-ab79-09830757c8c3")
+	)
+	(wire (pts (xy 15.2400 114.3000) (xy 15.2400 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "6e357a31-42e7-496a-a1b7-8e3f38447e76")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 15.2400 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "5d74ea73-0e85-4491-b3d5-9ab40ab9f9b5")
+	)
+	(wire (pts (xy 15.2400 129.5400) (xy 15.2400 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "5318f05d-c330-485e-880e-9ff12e8a8ac1")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 15.2400 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "0b15292d-18d5-4eee-b231-c0f78fec72a8")
+	)
+	(wire (pts (xy 7.6200 121.9200) (xy 5.0800 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "2991c9cd-c205-4c59-ad8c-306678e6b49c")
+	)
+	(hierarchical_label "DIN"
+		(shape input)
+		(at 5.0800 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "fee15d23-0b9d-4864-9f0d-d70f322a6652")
+	)
+	(wire (pts (xy 22.8600 121.9200) (xy 25.4000 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "91e47950-8038-4582-a3b8-12e229059c48")
+	)
+	(label "CH2"
+		(at 25.4000 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "2becb964-456e-4d96-a0e6-6057fe3ada1f")
+	)
+	(wire (pts (xy 45.7200 45.7200) (xy 43.1800 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "c9009200-c508-4923-86d5-7901f648d5ed")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 43.1800 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "23d11820-a505-47a9-b695-db1f74b0e1f1")
+	)
+	(wire (pts (xy 55.8800 45.7200) (xy 58.4200 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "a092579d-8992-4ff0-9364-c4f8d2267ecc")
+	)
+	(label "KN2"
+		(at 58.4200 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "8ea704ea-cfc4-4adb-8c45-d60db0a05e99")
+	)
+	(wire (pts (xy 54.6100 81.2800) (xy 57.1500 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "3df37b8b-3b0b-4ca2-8fec-08705a266624")
+	)
+	(label "KN2"
+		(at 57.1500 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "a7355b45-49e6-4838-9c15-a3c56ad49e23")
+	)
+	(wire (pts (xy 46.9900 81.2800) (xy 44.4500 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "2c3cbf2a-04dd-4414-8e88-0d0f3fee6dcc")
+	)
+	(global_label "COL2"
+		(shape input)
+		(at 44.4500 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "3be9e2c2-dfc6-4c0b-b263-2f8a7c3f5c4e")
+	)
+	(wire (pts (xy 50.8000 114.3000) (xy 50.8000 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "1c46161e-ff32-4888-85bd-cf5d906d51d2")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 50.8000 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "ef602ee9-596d-4896-96c4-340d37ad039a")
+	)
+	(wire (pts (xy 50.8000 129.5400) (xy 50.8000 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "f37d8caf-56b1-48c3-840f-83218952476c")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 50.8000 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "28913356-03b6-4288-8d2d-b9773223d9e4")
+	)
+	(wire (pts (xy 43.1800 121.9200) (xy 40.6400 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "eddeec72-c355-4910-8672-c34989c8eba1")
+	)
+	(label "CH2"
+		(at 40.6400 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "c038423e-a273-4f1a-ac70-a4bdaf2e056d")
+	)
+	(wire (pts (xy 58.4200 121.9200) (xy 60.9600 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "cfdcbac8-44b7-43b8-9011-f0aa17e1a982")
+	)
+	(label "CH3"
+		(at 60.9600 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "107def84-4480-4727-a6fe-f767ca62d3cc")
+	)
+	(wire (pts (xy 81.2800 45.7200) (xy 78.7400 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "747a8593-8b93-4314-ad91-fc819e68301e")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 78.7400 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "779fa98a-f5d9-4d20-9269-10f9ba72beb1")
+	)
+	(wire (pts (xy 91.4400 45.7200) (xy 93.9800 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "4151d560-f91f-41a1-8118-525d9499ca54")
+	)
+	(label "KN3"
+		(at 93.9800 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "a898c9b8-bec1-4486-90ae-7ea5392ce4d0")
+	)
+	(wire (pts (xy 90.1700 81.2800) (xy 92.7100 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "6f39be86-bc77-4c7f-8d93-55a409fe8edd")
+	)
+	(label "KN3"
+		(at 92.7100 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "687f28fe-aae9-40f2-a809-f0a4d858085b")
+	)
+	(wire (pts (xy 82.5500 81.2800) (xy 80.0100 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "1d225230-bbd2-40d8-92b7-0c6259d82502")
+	)
+	(global_label "COL3"
+		(shape input)
+		(at 80.0100 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "1b787bdb-3a65-4c19-a566-e11f28b88be7")
+	)
+	(wire (pts (xy 86.3600 114.3000) (xy 86.3600 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "9167e89e-9a53-45b1-bcb1-621395de3a13")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 86.3600 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "53d447a1-d014-43dd-95b2-edabcc2c73e2")
+	)
+	(wire (pts (xy 86.3600 129.5400) (xy 86.3600 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "46b742fd-b96b-48bb-b02f-18631afc591e")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 86.3600 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "9ed8ceac-97d2-43c5-ac9a-a550e2e1b3de")
+	)
+	(wire (pts (xy 78.7400 121.9200) (xy 76.2000 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "187ba9cc-263a-442f-9c53-8b7b8905d89e")
+	)
+	(label "CH3"
+		(at 76.2000 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "392ec9ba-e26a-4956-811b-fd8f97a26c28")
+	)
+	(wire (pts (xy 93.9800 121.9200) (xy 96.5200 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "57684e69-d147-4ccc-9b61-ef9674cc1d77")
+	)
+	(label "CH4"
+		(at 96.5200 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "6959401d-bf81-4e75-bbe6-2ad46b06a591")
+	)
+	(wire (pts (xy 116.8400 45.7200) (xy 114.3000 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "c3e9a8b6-9624-49cc-8613-bba790ccfd30")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 114.3000 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "1a725b80-4fab-4305-8fd5-7a6e8fadbc6e")
+	)
+	(wire (pts (xy 127.0000 45.7200) (xy 129.5400 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "ad36ac69-f2d0-492d-8bd2-625289675da5")
+	)
+	(label "KN4"
+		(at 129.5400 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "23097d28-a5cb-416a-933b-2ae890f07938")
+	)
+	(wire (pts (xy 125.7300 81.2800) (xy 128.2700 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "9ff95ad8-401b-40ba-9881-204a6cb4a1e2")
+	)
+	(label "KN4"
+		(at 128.2700 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "265ded9f-7772-4441-8fb3-a095395579e3")
+	)
+	(wire (pts (xy 118.1100 81.2800) (xy 115.5700 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "c7fe4958-fb12-47a3-a0d3-9d1a653b678f")
+	)
+	(global_label "COL4"
+		(shape input)
+		(at 115.5700 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "5d07dfb3-c64e-47fd-bb85-fbfc4e26624e")
+	)
+	(wire (pts (xy 121.9200 114.3000) (xy 121.9200 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "a2e50113-d9c0-4ecd-b9e4-1a3c08229815")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 121.9200 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "dd5f1e46-b53c-4d05-aedd-32d84ad7a122")
+	)
+	(wire (pts (xy 121.9200 129.5400) (xy 121.9200 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "91e528ca-b9dc-4ddd-847f-083e65c74377")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 121.9200 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "e414e2bf-2e90-4022-b36a-1ea06519d59a")
+	)
+	(wire (pts (xy 114.3000 121.9200) (xy 111.7600 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "a3a16f88-7bb1-4c26-be66-322508bde755")
+	)
+	(label "CH4"
+		(at 111.7600 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "9c9bba31-76ae-41e7-a876-24f0f8f593ba")
+	)
+	(wire (pts (xy 129.5400 121.9200) (xy 132.0800 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "ddc927ae-57b3-4e1f-a7ae-55b5fe12a3e5")
+	)
+	(label "CH5"
+		(at 132.0800 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "0aa7b973-7514-4483-a6f4-17d4da72e69e")
+	)
+	(wire (pts (xy 152.4000 45.7200) (xy 149.8600 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "f99fff40-484e-44bb-a8c6-d4c38e9f7575")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 149.8600 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "9d9e5548-82ff-4018-b1e1-831d082f2459")
+	)
+	(wire (pts (xy 162.5600 45.7200) (xy 165.1000 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "598a483b-1871-4ea3-a2d8-8728331146b9")
+	)
+	(label "KN5"
+		(at 165.1000 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "77047119-6924-4818-94f7-de9fb39cb3c7")
+	)
+	(wire (pts (xy 161.2900 81.2800) (xy 163.8300 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "f8b7b6bf-39f9-4307-b5ae-6fd5442672ac")
+	)
+	(label "KN5"
+		(at 163.8300 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "506a275f-5ed7-4482-9d16-d68b80731fb4")
+	)
+	(wire (pts (xy 153.6700 81.2800) (xy 151.1300 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "6acc7f46-a41a-4420-8ff7-cdaa3c89e75f")
+	)
+	(global_label "COL5"
+		(shape input)
+		(at 151.1300 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "bed11e1c-eb4f-41ff-8c4c-02dbd34ad868")
+	)
+	(wire (pts (xy 157.4800 114.3000) (xy 157.4800 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "7bad2c9b-42b6-4020-a002-e9c980679fc3")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 157.4800 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "af0e5f9f-eafe-4b04-83ed-a94fd8497aea")
+	)
+	(wire (pts (xy 157.4800 129.5400) (xy 157.4800 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "ab54e59d-ff47-498e-944f-20c3f4969d54")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 157.4800 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "673a8518-1079-43ae-9fc6-7c2608c75eba")
+	)
+	(wire (pts (xy 149.8600 121.9200) (xy 147.3200 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "4580337f-6f73-422c-af9b-008d52eb9f9a")
+	)
+	(label "CH5"
+		(at 147.3200 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "0eb1b307-e207-48be-a826-c2a2e5c0bbdb")
+	)
+	(wire (pts (xy 165.1000 121.9200) (xy 167.6400 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "0ecab17c-4896-472c-accf-4016a5cc2753")
+	)
+	(label "CH6"
+		(at 167.6400 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "604745da-7873-4f99-b998-6ccbbb4bac35")
+	)
+	(wire (pts (xy 187.9600 45.7200) (xy 185.4200 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "501c2e8f-f08f-41b5-bb20-24c5b812db1b")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 185.4200 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "fc576f14-47c0-40bc-9fac-9c70fb4ea7c2")
+	)
+	(wire (pts (xy 198.1200 45.7200) (xy 200.6600 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "bd16c08a-15e8-484f-9d0d-5d9c0f3e03c9")
+	)
+	(label "KN6"
+		(at 200.6600 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "990a74f1-9261-439d-96d4-c395f85a77bd")
+	)
+	(wire (pts (xy 196.8500 81.2800) (xy 199.3900 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "42887c59-95ab-4920-894b-461acfc4c376")
+	)
+	(label "KN6"
+		(at 199.3900 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "5df14b9a-9614-4461-90a6-7750775a6b32")
+	)
+	(wire (pts (xy 189.2300 81.2800) (xy 186.6900 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "12f38b13-edc9-430c-99f7-0492c609c890")
+	)
+	(global_label "COL6"
+		(shape input)
+		(at 186.6900 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "6c0100a6-4f71-45ee-9a02-9118a5a73723")
+	)
+	(wire (pts (xy 193.0400 114.3000) (xy 193.0400 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "2c8bc7e3-b3a8-4ad0-99b4-7cdf2081890b")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 193.0400 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "380dd2bd-fc6b-4dbb-9f1f-f81d2004a771")
+	)
+	(wire (pts (xy 193.0400 129.5400) (xy 193.0400 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "ee3cec80-da09-4e20-ad48-99118d1dca72")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 193.0400 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "0b20e43d-4736-43e6-b2fa-6f51541ba514")
+	)
+	(wire (pts (xy 185.4200 121.9200) (xy 182.8800 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "461f8ce3-1d3c-4300-a5cc-189f422b649c")
+	)
+	(label "CH6"
+		(at 182.8800 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "041661bb-e66e-4d5c-adb4-864aee71fd3a")
+	)
+	(wire (pts (xy 200.6600 121.9200) (xy 203.2000 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "f14eba50-8048-4b17-90cd-ab1c698919d2")
+	)
+	(label "CH7"
+		(at 203.2000 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "7da48bd9-91f1-4de0-9325-8a14ccbf7a33")
+	)
+	(wire (pts (xy 223.5200 45.7200) (xy 220.9800 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "25441259-9955-4e66-bced-2351edb9c747")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 220.9800 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "df4d9ef9-0919-4ebc-ad74-bc330ec34212")
+	)
+	(wire (pts (xy 233.6800 45.7200) (xy 236.2200 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "36b48c67-6f7a-4d98-87c1-d675f116e763")
+	)
+	(label "KN7"
+		(at 236.2200 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "39ac7967-383b-4d45-b34c-c88a3bcb9ff1")
+	)
+	(wire (pts (xy 232.4100 81.2800) (xy 234.9500 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "190bfec5-9d3f-4be5-b857-1ebe41f087c5")
+	)
+	(label "KN7"
+		(at 234.9500 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "e513aa71-6c53-4f26-8cef-08b494f526bb")
+	)
+	(wire (pts (xy 224.7900 81.2800) (xy 222.2500 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "e44c5f95-6ba7-4284-bca4-653de4ef1bd3")
+	)
+	(global_label "COL7"
+		(shape input)
+		(at 222.2500 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "8ea2924b-c802-495d-9acb-2ab3050571e0")
+	)
+	(wire (pts (xy 228.6000 114.3000) (xy 228.6000 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "d2e23141-8622-425a-a829-3dfbaac42eec")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 228.6000 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "1776f62b-f862-416f-a028-320c9bdd6ca0")
+	)
+	(wire (pts (xy 228.6000 129.5400) (xy 228.6000 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "709b2950-dd12-43f6-9b77-a4d4c3c1420c")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 228.6000 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "01604a0c-38cb-4114-afba-d0b19c76222d")
+	)
+	(wire (pts (xy 220.9800 121.9200) (xy 218.4400 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "172a35b9-0c17-4371-a3bb-a1426a44a445")
+	)
+	(label "CH7"
+		(at 218.4400 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "48ae6603-3618-4f8a-b130-7c4b82b45a96")
+	)
+	(wire (pts (xy 236.2200 121.9200) (xy 238.7600 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "bebb608b-0d53-43d8-9e00-5afabb85e0ad")
+	)
+	(label "CH8"
+		(at 238.7600 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "8faa415a-73f7-4571-a35e-82bbfef64815")
+	)
+	(wire (pts (xy 259.0800 45.7200) (xy 256.5400 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "1ec9327f-080f-4753-98fa-fe3444659c25")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 256.5400 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "760a17a2-cb26-4933-8cd5-e62e9f6c7b4c")
+	)
+	(wire (pts (xy 269.2400 45.7200) (xy 271.7800 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "42948628-58da-427f-9ec1-2cd0b35ff1be")
+	)
+	(label "KN8"
+		(at 271.7800 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "915098ed-de49-4585-9aaa-d541e9f62a1f")
+	)
+	(wire (pts (xy 267.9700 81.2800) (xy 270.5100 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "1d48f1d5-a522-4858-8865-c5601d70f712")
+	)
+	(label "KN8"
+		(at 270.5100 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "865a6b3d-9981-4c18-8603-fee233ca2e0b")
+	)
+	(wire (pts (xy 260.3500 81.2800) (xy 257.8100 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "47c6fbd7-5d26-4e26-aabd-82f1b56503d4")
+	)
+	(global_label "COL8"
+		(shape input)
+		(at 257.8100 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "ab2ba8b0-51e2-49c4-829f-2fbf3a4f80b0")
+	)
+	(wire (pts (xy 264.1600 114.3000) (xy 264.1600 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "940f6411-043b-482b-98f2-7aad75af2d9d")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 264.1600 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "91f19fe2-c48a-4755-933a-2b82a3f01d00")
+	)
+	(wire (pts (xy 264.1600 129.5400) (xy 264.1600 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "54b6629e-2aa4-42e2-acf1-704154a6e66d")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 264.1600 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "f92f85f9-d13b-4dc1-ad2c-b4d1b8893fb8")
+	)
+	(wire (pts (xy 256.5400 121.9200) (xy 254.0000 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "6be3d5e9-a9d2-431c-8069-577051a5b117")
+	)
+	(label "CH8"
+		(at 254.0000 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "6fc6c2b6-69dd-49b8-872d-56f7fcbc90ac")
+	)
+	(wire (pts (xy 271.7800 121.9200) (xy 274.3200 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "0c58bb8b-df6f-4685-8e67-134cf3ab3a4c")
+	)
+	(label "CH9"
+		(at 274.3200 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "c7daaebc-2d35-4f33-ad4f-8c438897afc8")
+	)
+	(wire (pts (xy 294.6400 45.7200) (xy 292.1000 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "7bec8671-85f1-43d7-82c3-c2a71e1c3d26")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 292.1000 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "e35a34f4-c177-4226-84be-ebd551cbe2f6")
+	)
+	(wire (pts (xy 304.8000 45.7200) (xy 307.3400 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "307a759b-630d-4486-ab50-3652f1239f7c")
+	)
+	(label "KN9"
+		(at 307.3400 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "d09fd6b1-874e-47f3-803d-c5cbfae63e18")
+	)
+	(wire (pts (xy 303.5300 81.2800) (xy 306.0700 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "2623c1a3-0d5e-496b-be5f-7b2a553e38bf")
+	)
+	(label "KN9"
+		(at 306.0700 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "69936b1e-8c49-430e-9bf2-88556c4e7e1f")
+	)
+	(wire (pts (xy 295.9100 81.2800) (xy 293.3700 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "b0c0b784-ff87-4de1-a105-9392bb75a402")
+	)
+	(global_label "COL9"
+		(shape input)
+		(at 293.3700 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "689e664b-bad7-4c8d-affe-1f605d0ab1d6")
+	)
+	(wire (pts (xy 299.7200 114.3000) (xy 299.7200 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "1433ec47-55ac-4f0c-a6f4-345d6b5a0ed9")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 299.7200 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "d2a20864-05fb-429a-8ee8-b4135f9a8a66")
+	)
+	(wire (pts (xy 299.7200 129.5400) (xy 299.7200 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "4d253997-67d2-4287-8c49-6ce1abc09781")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 299.7200 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "7de82b08-4784-4556-a616-d239a8c39971")
+	)
+	(wire (pts (xy 292.1000 121.9200) (xy 289.5600 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "c0a2c3b8-f642-4747-a9c9-3aa3508534a9")
+	)
+	(label "CH9"
+		(at 289.5600 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "18dcb32a-5356-445c-bc02-a46b24034e8d")
+	)
+	(wire (pts (xy 307.3400 121.9200) (xy 309.8800 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "531940a0-04ef-401f-8ae3-94262e1fb178")
+	)
+	(label "CH10"
+		(at 309.8800 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "551e38bb-e968-4e26-826b-97e7b55ed112")
+	)
+	(wire (pts (xy 330.2000 45.7200) (xy 327.6600 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "8d129dd7-b9d2-4a3d-9ae4-4fe2647c4ede")
+	)
+	(hierarchical_label "ROW"
+		(shape input)
+		(at 327.6600 45.7200 180)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "c394c840-672b-48e0-912d-fff291992885")
+	)
+	(wire (pts (xy 340.3600 45.7200) (xy 342.9000 45.7200))
+		(stroke (width 0) (type default))
+		(uuid "f026d44f-3eb7-4bdf-a871-e6d30a3864ca")
+	)
+	(label "KN10"
+		(at 342.9000 45.7200 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "1c01bb58-78a1-45c1-8fa1-6d9664ecdafc")
+	)
+	(wire (pts (xy 339.0900 81.2800) (xy 341.6300 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "411d867b-8d56-454d-9177-586e3094760b")
+	)
+	(label "KN10"
+		(at 341.6300 81.2800 0)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "db9afd4f-f87d-4533-8626-86e3772ef688")
+	)
+	(wire (pts (xy 331.4700 81.2800) (xy 328.9300 81.2800))
+		(stroke (width 0) (type default))
+		(uuid "6fb7d738-2091-4d3f-bbff-0607702ae525")
+	)
+	(global_label "COL10"
+		(shape input)
+		(at 328.9300 81.2800 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "04ab5719-1cf1-494c-82ab-80ccf45ded9a")
+	)
+	(wire (pts (xy 335.2800 114.3000) (xy 335.2800 111.7600))
+		(stroke (width 0) (type default))
+		(uuid "13b60ee5-9a86-4449-9787-4d7dca5eea46")
+	)
+	(global_label "VLED"
+		(shape input)
+		(at 335.2800 111.7600 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "074d06a4-9ae3-43fd-a580-dbab16b74e5f")
+	)
+	(wire (pts (xy 335.2800 129.5400) (xy 335.2800 132.0800))
+		(stroke (width 0) (type default))
+		(uuid "8c6feb48-50b7-4d79-abe8-9ef36d334ffe")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 335.2800 132.0800 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "a6b4976f-b747-4518-ac16-f16db9c7b3a5")
+	)
+	(wire (pts (xy 327.6600 121.9200) (xy 325.1200 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "69a4c532-5b6f-4911-a522-4f07f7bdcb88")
+	)
+	(label "CH10"
+		(at 325.1200 121.9200 180)
+		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(uuid "9b2bb391-0917-4a23-8c59-50e18f5c4a37")
+	)
+	(wire (pts (xy 342.9000 121.9200) (xy 345.4400 121.9200))
+		(stroke (width 0) (type default))
+		(uuid "9e290cfd-e4d2-4a91-ac2f-aaae71d3c3a5")
+	)
+	(hierarchical_label "DOUT"
+		(shape output)
+		(at 345.4400 121.9200 0)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "df79f899-ac7a-4992-9626-1d90e4a5d093")
+	)
+	(text "REUSABLE 10-KEY ROW  (multi-channel: instantiated x5 as Row1..Row5)\n  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)\n  Row2 -> SW11-20 / D11-20  / D66-75      ...\n  Row5 -> SW41-50 / D41-50  / D96-105\n\nEach of the 10 keys = MX switch + 1N4148W diode + SK6805-EC15 RGB:\n  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;\n          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]\n  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained\n          @root);  LED VDD -> VLED (gated), VSS -> GND\n\nShared globals: COL1..COL10, VLED, GND.\nPer-instance hier pins: ROW (-> KB_ROWn @root), DIN/DOUT (RGB chain).\nWire-once: a fix here propagates to all 5 rows. Placement 1:1 w/ panel.\nOne SK6805 sits just north of each MX switch (can't go under it)."
+		(exclude_from_sim no)
+		(at 15.24 203.20 0)
+		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(uuid "38fdd6c1-2ce9-45bc-8915-2386b935f218")
+	)
+	(sheet_instances
+		(path "/"
+			(page "2")
+		)
+	)
+	(embedded_fonts no)
+)

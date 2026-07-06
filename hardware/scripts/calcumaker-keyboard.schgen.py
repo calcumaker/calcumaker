@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
-"""Regenerate the Calcumaker 16 **keyboard board** hierarchical schematic.
+"""Regenerate the Calcumaker 16 **keyboard board** schematic — a KiCad
+*multi-channel* design.
 
-    CALCUMAKER_SCHGEN_DRAFT_OK=1 python3 scripts/calcumaker-keyboard.schgen.py
-    (or: CALCUMAKER_SCHGEN_DRAFT_OK=1 make gen-calcumaker-keyboard)
+    CALCUMAKER_SCHGEN_DRAFT_OK=1 KSCHGEN_FORCE=1 python3 scripts/calcumaker-keyboard.schgen.py
 
 *** DRAFT ***
-The keyboard board is the **top board** of a three-board split (see DESIGN.md →
+The keyboard board is the **top board** of the three-board split (DESIGN.md ->
 Board Partition). It stacks ABOVE the MCU board on a fine-pitch mezzanine and
-carries everything front-panel: the **50-key Cherry MX matrix** (5x10 + per-key
-diode), its **own STM32G031K8U6 scanner** (U1, UFQFPN-32), the **annunciator
-LEDs** (f/g beside the shift keys, C/G/low-batt along the top edge), and the
-mating **mezzanine header** (J1) back down to the MCU board. Splitting it off the
-MCU board keeps a dense LQFP-64 away from 50 through-hole keyswitches — each PCB
-gets an easy layout.
+carries the front-panel: the **50-key Cherry MX matrix**, its **own
+STM32G031K8U6 scanner** (U1), the **annunciator LEDs**, **per-key RGB** hint
+lighting, and the mezzanine header (J1) down to the MCU board.
 
-Keyscanning lives HERE (on the G0), not on the main board: only an **I2C + UART
-link + a KB_IRQ wake line + power** cross the mezzanine (NOT the raw matrix). The
-G0 scans + debounces + Stop/EXTI-wakes + drives the LEDs and reports (row,col)
-to the U575 over I2C (see DESIGN.md Low-power & wake). PLACED not wired — wire it
-in eeschema from the per-sheet notes. The MX matrix could later become a KiCad
-multi-channel design (one reusable 10-key row x5), but it's placed flat for now.
+**Multi-channel structure.** The 5x10 matrix is electrically five identical rows,
+so a row is authored ONCE as a reusable, fully-wired child sheet
+(``key_row.kicad_sch``) and instantiated **five times** at the root (Row1..Row5),
+each annotating to its own reference designators. Each of the 10 keys in a row =
+**MX switch + 1N4148W diode + SK6805-EC15 RGB LED**; the matrix (ROW/COL) and the
+RGB daisy-chain (DIN->DOUT) are wired in the one sheet, so a fix propagates to all
+five rows. This replaces the old FLAT design (100 switch/diode parts on one sheet
++ 50 flat RGB LEDs). Shared buses (COL1..10, VLED, GND) are global nets; each
+row's ROW line + RGB DIN/DOUT are hierarchical pins wired at the root.
+
+Peripheral one-off sheets (Annunciators, KbdMCU, RGBPower, MainIF) are
+single-instance and PLACED-not-wired -- wire them + the G0 pin assignment
+(KB_ROW1-5, COL1-10, KB_LED_DATA, KB_LED_EN) in eeschema from the per-sheet notes.
 
 This is DATA; the engine is scripts/kschgen.py. 0402 passives. Verify each
 lib_id/footprint exists in your KiCad 10 install before relying on it.
@@ -38,16 +42,28 @@ if not os.environ.get("CALCUMAKER_SCHGEN_DRAFT_OK"):
 
 HW = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # hardware/
 PROJ_DIR = os.path.join(HW, "calcumaker-keyboard")
-ROOT_UUID = "ca1c0000-0000-4000-8000-00000000eb01"   # keep stable across regens
+PROJECT = "calcumaker-keyboard"
+PAPER_ROOT = "A3"
+PAPER_ROW = "A2"          # a 10-key row + its labels wants the bigger sheet
+
+# ---- stable UUIDs (sheet-symbol + file ids; existing files keep their on-disk
+#      uuids, these seed fresh ones + keep forced-regen diffs readable) --------
+ROOT_UUID = "ca1c0000-0000-4000-8000-00000000eb01"
+ROW_FILE  = "ca1c0000-0000-4000-8000-00000000eb10"   # key_row.kicad_sch file id
+ROW_INST  = ["ca1c0000-0000-4000-8000-00000000eb1%d" % (n + 1) for n in range(5)]  # Row1..Row5
+ANNUNC    = "ca1c0000-0000-4000-8000-00000000eb20"
+KBD_MCU   = "ca1c0000-0000-4000-8000-00000000eb30"
+RGB_POWER = "ca1c0000-0000-4000-8000-00000000eb40"
+MAIN_IF   = "ca1c0000-0000-4000-8000-00000000eb50"
 
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C", "D", "LED")
 K.register_stdlib("Switch", "SW_Push")
-K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even")   # DF40 12-pin mezzanine to MCU (J1)
+K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even")   # DF40 12-pin mezzanine (J1)
 K.register_stdlib("Connector", "Conn_ARM_SWD_TagConnect_TC2030-NL")   # G0 SWD (J2)
 K.register_stdlib("MCU_ST_STM32G0", "STM32G031K8Ux")   # keyboard scanner MCU (UFQFPN-32)
 K.register_stdlib("LED", "SK6805")                     # per-key addressable RGB (1.5x1.5mm)
-K.register_stdlib("74xGxx", "74LVC1G125")              # 3V3 -> VSYS data level shifter
+K.register_stdlib("74xGxx", "74LVC1G125")              # 3V3 -> VLED data level shifter
 K.register_stdlib("Transistor_FET", "Q_PMOS_GSD", "Q_NMOS_GSD")   # LED-rail load switch
 
 # ---- footprint shorthands ---------------------------------------------------
@@ -59,154 +75,211 @@ LED0603 = "LED_SMD:LED_0603_1608Metric"
 SK6805_FP = "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"   # 1.5x1.5mm addressable RGB
 SOT235 = "Package_TO_SOT_SMD:SOT-23-5"            # 74LVC1G125 level shifter
 SOT23 = "Package_TO_SOT_SMD:SOT-23"               # AO3401A / 2N7002 load switch
-MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap variant optional
+MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap optional
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-12DP-0.4V_2x06-1MP_P0.4mm"
 
+RLCSC = {"470": "C25117", "10k": "C25744", "100k": "C25741"}
+CLCSC = {"100nF": "C1525"}
 
-def R(ref, val):
+G = 2.54
+
+
+def g(n):
+    return n * G
+
+
+def R(ref, val, x=0, y=0):
     return dict(ref=ref, lib_id="Device:R", value=val, fp=R0402,
-                lcsc={"470": "C25117", "10k": "C25744", "100k": "C25741"}.get(val, ""))
+                lcsc=RLCSC.get(val, ""), x=x, y=y)
 
 
-def C(ref, val, fp=C0402):
+def C(ref, val, fp=C0402, x=0, y=0):
     return dict(ref=ref, lib_id="Device:C", value=val, fp=fp,
-                lcsc={"100nF": "C1525"}.get(val, ""))
+                lcsc=CLCSC.get(val, ""), x=x, y=y)
 
 
-# ============================ Keypad sheet ===================================
-# Wide HP-16C-style layout: 5 rows x 10 cols = 50 full-size Cherry MX keys, with
-# f/g shifts (3 functions per key). See DESIGN.md "Keypad" for the keymap.
-# Matrix: ROWr (G0 GPIO out) -> SW -> 1N4148W (anode@SW, cathode@COLc) -> COLc
-# (G0 GPIO in, internal pull-up). Scanned LOCALLY by the on-board STM32G0 (U1) —
-# the matrix does NOT cross the mezzanine. Key (row r, col c): index = (r-1)*10 +
-# c => SW1..SW50, D1..D50 (this board has no PSU, so diodes = D1..).
-KEY_SW = [dict(ref="SW%d" % i, lib_id="Switch:SW_Push", value="MX", fp=MX_FP)
-          for i in range(1, 51)]
-KEY_D = [dict(ref="D%d" % i, lib_id="Device:D", value="1N4148W", fp=SOD123,
-              lcsc="C81598", mpn="1N4148W", mfr="onsemi") for i in range(1, 51)]
-KEYPAD = dict(name="Keypad", file="keypad.kicad_sch",
-    title="Cherry MX key matrix (5x10, 50 keys)", page="2",
-    big=KEY_SW, small=KEY_D,
-    note=(15, 130, K.note_block(
-        "KEYPAD  -  50 Cherry MX keys in a 5x10 scanned matrix",
-        "Wide HP-16C layout + f/g shifts (keymap in DESIGN.md).  PLACED, not wired.",
+def place1(path, specs, x0=g(8), y0=g(14), dx=g(16), dy=g(14), per=6):
+    """Lay single-instance comps in a grid -> write_wired_child comps format.
+    Each spec is a comp dict incl. 'ref'; the ref goes into the instance tuple."""
+    comps = []
+    for idx, sp in enumerate(specs):
+        ref = sp["ref"]
+        c = {k: v for k, v in sp.items() if k != "ref"}
+        c["x"] = x0 + (idx % per) * dx
+        c["y"] = y0 + (idx // per) * dy
+        comps.append((c, [(path, ref)]))
+    return comps
+
+
+# ===================== reusable 10-key ROW sheet =============================
+# 10 keys, each = MX switch + 1N4148W diode + SK6805 RGB. Instantiated x5.
+#   MATRIX  SW.1 -> ROW (hier);  SW.2 -> node KN;  D.A -> KN;  D.K -> COLk (global)
+#           (anode@switch, cathode->COL; per-key diode = n-key rollover)
+#   RGB     DIN -> LED1..LED10 -> DOUT (hier, chained @root);  VDD->VLED, VSS->GND
+def build_key_row():
+    comps = []
+    wiring = ""
+
+    def pr(fn):   # per-instance (path, reference), i = 0..4
+        return [(f"/{ROOT_UUID}/{ROW_INST[i]}", fn(i)) for i in range(5)]
+
+    for k in range(1, 11):
+        bx = g(6 + (k - 1) * 14)
+        # --- switch ---------------------------------------------------------
+        sw = dict(lib_id="Switch:SW_Push", value="MX", fp=MX_FP, x=bx, y=g(18))
+        comps.append((sw, pr(lambda i, kk=k: f"SW{kk + 10 * i}")))
+        wiring += K.net_pin(sw, 1, "ROW", kind="hlabel", shape="input")
+        wiring += K.net_pin(sw, 2, f"KN{k}", kind="label")
+        # --- matrix diode (anode at switch, cathode to column) --------------
+        d = dict(lib_id="Device:D", value="1N4148W", fp=SOD123, lcsc="C81598",
+                 mpn="1N4148W", mfr="onsemi", x=bx, y=g(32))
+        comps.append((d, pr(lambda i, kk=k: f"D{kk + 10 * i}")))
+        wiring += K.net_pin(d, "A", f"KN{k}", kind="label")
+        wiring += K.net_pin(d, "K", f"COL{k}", kind="glabel")
+        # --- per-key RGB LED (single-wire chain) ----------------------------
+        led = dict(lib_id="LED:SK6805", value="SK6805-EC15", fp=SK6805_FP,
+                   lcsc="C2890035", mpn="SK6805-EC15", mfr="OPSCO", x=bx, y=g(48))
+        comps.append((led, pr(lambda i, kk=k: f"D{55 + kk + 10 * i}")))  # D56-65,66-75,...
+        wiring += K.net_pin(led, "VDD", "VLED", kind="glabel")
+        wiring += K.net_pin(led, "VSS", "GND", kind="glabel")
+        if k == 1:
+            wiring += K.net_pin(led, "DIN", "DIN", kind="hlabel", shape="input")
+        else:
+            wiring += K.net_pin(led, "DIN", f"CH{k}", kind="label")
+        if k == 10:
+            wiring += K.net_pin(led, "DOUT", "DOUT", kind="hlabel", shape="output")
+        else:
+            wiring += K.net_pin(led, "DOUT", f"CH{k + 1}", kind="label")
+
+    note = (g(6), g(80), K.note_block(
+        "REUSABLE 10-KEY ROW  (multi-channel: instantiated x5 as Row1..Row5)",
+        "  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)",
+        "  Row2 -> SW11-20 / D11-20  / D66-75      ...",
+        "  Row5 -> SW41-50 / D41-50  / D96-105",
         "",
-        "WIRING",
-        "  ROW1..ROW5   -> G0 GPIO outputs  (U1, KbdMCU sheet)",
-        "  COL1..COL10  -> G0 GPIO inputs, INTERNAL pull-ups (no ext R, kept in Stop)",
-        "  each key SWn + series Dn (anode@switch, cathode->COL) for n-key rollover",
-        "  key (row r, col c):  SW# = D# = (r-1)*10 + c",
+        "Each of the 10 keys = MX switch + 1N4148W diode + SK6805-EC15 RGB:",
+        "  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;",
+        "          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]",
+        "  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained",
+        "          @root);  LED VDD -> VLED (gated), VSS -> GND",
         "",
-        "SCAN  G0 drives one ROW low, reads COLs; reports (row,col) to U575 via I2C.",
-        "WAKE  G0 holds all ROWs low + EXTI on COLs -> any keypress wakes the G0",
-        "      from Stop, which asserts KB_IRQ to wake the U575.",
-        "Optional Kailh hot-swap sockets.  See DESIGN.md Low-power & wake.")))
-
-# ======================= Annunciator LEDs sheet ==============================
-# Front-panel status lamps (DESIGN.md Open Q6): f (gold) + g (blue) BESIDE the
-# shift keys, C (carry) + G (overflow) + low-battery along the top edge under the
-# display bezel. Each = an on-board G0 GPIO (active high) -> Rn 470R -> LED ->
-# GND. They live here (not on the hidden MCU board) because they're visible
-# indicators next to the keys; the U575 pushes their state to the G0 over I2C.
-# 470R @3V3 = ~1.3mA (blue) .. ~2.8mA (red/yellow).
-def ALED(ref, val, lcsc, mpn, mfr):
-    return dict(ref=ref, lib_id="Device:LED", value=val, fp=LED0603,
-                lcsc=lcsc, mpn=mpn, mfr=mfr)
+        "Shared globals: COL1..COL10, VLED, GND.",
+        "Per-instance hier pins: ROW (-> KB_ROWn @root), DIN/DOUT (RGB chain).",
+        "Wire-once: a fix here propagates to all 5 rows. Placement 1:1 w/ panel.",
+        "One SK6805 sits just north of each MX switch (can't go under it)."))
+    return dict(uuid=ROW_FILE, file="key_row.kicad_sch", page="2",
+                title="Reusable 10-key row (MX + diode + SK6805 RGB)",
+                comps=comps, wiring=wiring, notes=[note], _dir=PROJ_DIR)
 
 
-ANNUNC = dict(name="Annunciators", file="annunc.kicad_sch",
-    title="Annunciator LEDs (f g C G low-batt)", page="3",
-    big=[],
-    small=[
+# ===================== Annunciator LEDs sheet (single instance) ==============
+def build_annunc():
+    path = f"/{ROOT_UUID}/{ANNUNC}"
+
+    def ALED(ref, val, lcsc, mpn, mfr):
+        return dict(ref=ref, lib_id="Device:LED", value=val, fp=LED0603,
+                    lcsc=lcsc, mpn=mpn, mfr=mfr)
+
+    specs = [
         ALED("D51", "f (yellow)", "C72038", "19-213/Y2C-CQ2R2L/3T(CY)", "Everlight"),
         ALED("D52", "g (blue)", "C965807", "XL-1608UBC-04", "XINGLIGHT"),
         ALED("D53", "C (red)", "C2286", "KT-0603R", "KENTO"),
         ALED("D54", "G (red)", "C2286", "KT-0603R", "KENTO"),
         ALED("D55", "LOWBAT (red)", "C2286", "KT-0603R", "KENTO"),
-        R("R1", "470"), R("R2", "470"), R("R3", "470"),
-        R("R4", "470"), R("R5", "470"),
-    ],
-    note=(15, 105, K.note_block(
-        "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)",
-        "PLACED, not wired.  5 drive lines from the on-board STM32G0 (active high),",
-        "each -> Rn 470R -> LED -> GND.  +3V3 feeds the resistors; GND returns.",
+        R("R1", "470"), R("R2", "470"), R("R3", "470"), R("R4", "470"), R("R5", "470"),
+    ]
+    note = (15, 100, K.note_block(
+        "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)  -  PLACED, not wired",
+        "5 drive lines from the on-board STM32G0 (active high), each -> Rn 470R",
+        "-> LED -> GND.  +3V3 feeds the resistors; GND returns.",
         "",
-        "  D51  f  yellow    beside the f key",
-        "  D52  g  blue      beside the g key",
-        "  D53  C  red       carry     ] top edge, under",
-        "  D54  G  red       overflow  ] the display bezel",
-        "  D55  LOWBAT red   low-battery",
+        "  D51 f  yellow  beside f key       D53 C red  carry    ] top edge,",
+        "  D52 g  blue    beside g key       D54 G red  overflow ] under the",
+        "                                    D55 LOWBAT red        display bezel",
         "",
-        "470R = ~1.3-2.8mA (adjust per color at bring-up).",
-        "FW: the U575 App drives f/g from keys::Shift, C/G from Calc carry/overflow,",
-        "LOWBAT from the battery ADC, pushing the 5-bit state to the G0 over I2C.",
-        "Radix / STATUS / errors render in the 7-seg digits.")))
+        "470R = ~1.3-2.8mA (tune per color). FW: U575 App drives f/g from",
+        "keys::Shift, C/G from Calc carry/overflow, LOWBAT from the batt ADC,",
+        "pushing the 5-bit state to the G0 over I2C."))
+    return dict(uuid=ANNUNC, file="annunc.kicad_sch", page="3",
+                title="Annunciator LEDs (f g C G low-batt)",
+                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
 
-# ======================= Keyboard scanner MCU sheet ==========================
-# STM32G031K8U6 (LCSC C432207, UFQFPN-32) scans the 5x10 matrix, drives the 5
-# annunciator LEDs, and talks to the U575 over I2C (+ UART) across the mezzanine.
-# It Stop-sleeps between keystrokes and wakes on a column EXTI, then asserts
-# KB_IRQ to wake the U575 (see DESIGN.md Low-power & wake). Internal HSI clock —
-# no crystal. Reflash via SWD (J2 Tag-Connect) or the ROM UART/DFU bootloader
-# over the mezzanine (KB_BOOT0/KB_NRST).
-KBD_MCU = dict(name="KbdMCU", file="kbd_mcu.kicad_sch",
-    title="Keyboard scanner MCU (STM32G031K8U6)", page="4",
-    big=[
+
+# ===================== Keyboard scanner MCU sheet (single instance) ==========
+def build_kbd_mcu():
+    path = f"/{ROOT_UUID}/{KBD_MCU}"
+    specs = [
         dict(ref="U1", lib_id="MCU_ST_STM32G0:STM32G031K8Ux", value="STM32G031K8U6",
              fp=G0_FP, lcsc="C432207", mpn="STM32G031K8U6", mfr="STMicroelectronics"),
-    ],
-    small=[
-        C("C1", "100nF"), C("C2", "100nF"),         # VDD decoupling
-        C("C3", "100nF"),                           # VDDA
-        C("C4", "4.7uF", C0603),                    # bulk
-        C("C5", "100nF"),                           # NRST
-        R("R6", "10k"),                             # BOOT0 pulldown (boot to app)
+        C("C1", "100nF"), C("C2", "100nF"), C("C3", "100nF"), C("C4", "4.7uF", C0603),
+        C("C5", "100nF"), R("R6", "10k"),
         dict(ref="J2", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
              value="SWD TC2030-NL", fp=SWD_FP),
-    ],
-    note=(15, 150, K.note_block(
-        "SCANNER MCU  -  U1  STM32G031K8U6  (LCSC C432207, UFQFPN-32)",
-        "PLACED, not wired.",
+    ]
+    note = (15, 150, K.note_block(
+        "SCANNER MCU  -  U1  STM32G031K8U6  (LCSC C432207, UFQFPN-32)  -  PLACED",
         "",
-        "POWER",
-        "  VDD  -> +3V3   C1/C2 100nF + C4 4.7uF bulk",
-        "  VDDA -> C3 100nF          VSS/EP -> GND",
-        "RESET / BOOT",
-        "  NRST  -> C5 100nF  (also -> KB_NRST on J1: U575 can reset it)",
-        "  BOOT0 -> R6 10k to GND (also -> KB_BOOT0 on J1: ROM UART/DFU reflash)",
-        "CLOCK   internal HSI, no crystal.",
+        "POWER  VDD -> +3V3 (C1/C2 100nF + C4 4.7uF); VDDA -> C3 100nF; VSS/EP GND",
+        "RESET  NRST -> C5 100nF (also KB_NRST on J1); BOOT0 -> R6 10k to GND",
+        "       (also KB_BOOT0 on J1: ROM UART/DFU reflash).  CLOCK internal HSI.",
         "",
-        "MATRIX  5 ROW (out) + 10 COL (in, int. pull-ups) -> Keypad sheet;",
-        "        hold ROWs low + COL EXTI for wake-from-Stop.",
+        "MATRIX  5 ROW out -> KB_ROW1..5 (global);  10 COL in (int. pull-ups) ->",
+        "        COL1..10 (global); hold ROWs low + COL EXTI for wake-from-Stop.",
         "ANNUN   5 GPIO -> the LED resistors (Annunciators sheet).",
-        "LINK (via J1 mezzanine to the U575)",
-        "  I2C1  SDA/SCL  reports keys, receives annunciator state",
-        "  USART TX/RX    alt/expansion + bootloader",
-        "  KB_IRQ (out)   wakes the U575",
+        "RGB     LED_DATA -> RGBPower U2.A;  LED_EN -> RGBPower gate (Q2).",
+        "LINK    I2C1 SDA/SCL + USART TX/RX + KB_IRQ out -> J1 mezzanine to U575.",
         "PROG    J2 SWD Tag-Connect (bare pads) or UART/DFU over J1.",
-        "See DESIGN.md Low-power & wake.")))
+        "See DESIGN.md Low-power & wake."))
+    return dict(uuid=KBD_MCU, file="kbd_mcu.kicad_sch", page="4",
+                title="Keyboard scanner MCU (STM32G031K8U6)",
+                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
 
-# ===================== Main-board mezzanine sheet ============================
-# The mating half of the LOW-PROFILE board-to-board stack. J1 = Hirose DF40 2x6
-# (12-pin) 0.4mm HEADER (DF40C-12DP, LCSC C6224952); the MCU board carries the
-# receptacle (DF40B-12DS C3641147). Grown from 10 -> 12 pins to carry VSYS + a
-# dedicated GND for the per-key RGB lighting (KeyLighting sheet). Only a serial
-# link + power cross it (the matrix stays on this board's G0). Pin-for-pin
-# identical assignment to J5 (mated pin N <-> N).
-MAIN_IF = dict(name="MainIF", file="main_if.kicad_sch",
-    title="MCU mezzanine (I2C + UART + VSYS down to the MCU board)", page="5",
-    big=[
-        dict(ref="J1", lib_id="Connector_Generic:Conn_02x06_Odd_Even",
-             value="TO MCU", fp=MEZZ_HEADER_FP,
-             lcsc="C6224952", mpn="DF40C-12DP-0.4V(51)", mfr="Hirose"),
-    ],
-    small=[],
-    note=(15, 105, K.note_block(
-        "MCU MEZZANINE  -  J1  DF40C-12DP-0.4V  (LCSC C6224952)",
+
+# ===================== RGB power + data gate sheet (single instance) =========
+# Level shifter + high-side load switch. The 50 SK6805 live on the Row sheets;
+# this drives + gates the whole chain.
+def build_rgb_power():
+    path = f"/{ROOT_UUID}/{RGB_POWER}"
+    specs = [
+        dict(ref="U2", lib_id="74xGxx:74LVC1G125", value="74LVC1G125", fp=SOT235,
+             lcsc="C23654", mpn="SN74LVC1G125DBVR", mfr="Texas Instruments"),
+        dict(ref="Q1", lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A",
+             fp=SOT23, lcsc="C15127", mpn="AO3401A", mfr="AOS"),
+        dict(ref="Q2", lib_id="Transistor_FET:Q_NMOS_GSD", value="2N7002",
+             fp=SOT23, lcsc="C8545", mpn="2N7002", mfr="onsemi"),
+        R("R7", "100k"), R("R8", "10k"), R("R10", "100k"), R("R9", "330"),
+        C("C6", "100nF"), C("C7", "22uF", C0603),
+    ]
+    note = (15, 120, K.note_block(
+        "RGB POWER + DATA GATE  -  drives the per-key SK6805 chain on the rows",
+        "PLACED, not wired.  (The 50 LEDs are on Row1..Row5, sheet key_row.)",
+        "",
+        "DATA   G0 LED_DATA -> U2.A;  U2.Y -> R9 330R -> KB_LED_DATA (-> Row1.DIN,",
+        "       chained Row1..Row5).  U2 74LVC1G125: /OE -> GND; VCC -> VLED.",
+        "GATE   VSYS (mezz pin 11, ~3.7-4.7V) -> Q1 AO3401A P-FET -> VLED (C7 22uF)",
+        "       Q1 gate: R7 100k pull-up to VSYS = OFF default; Q2 2N7002 pulls low",
+        "       G0 LED_EN -> R8 10k -> Q2 gate (R10 100k pulldown = OFF at boot)",
+        "       -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)",
+        "",
+        "CURRENT  firmware MUST cap total brightness: 50x full-white ~0.75A would",
+        "  exceed the DF40 contact + VSYS budget -- hint use lights a few keys."))
+    return dict(uuid=RGB_POWER, file="rgb_power.kicad_sch", page="6",
+                title="RGB power + data gate (level shift + load switch)",
+                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
+
+
+# ===================== Main-board mezzanine sheet (single instance) ==========
+def build_main_if():
+    path = f"/{ROOT_UUID}/{MAIN_IF}"
+    J1 = dict(lib_id="Connector_Generic:Conn_02x06_Odd_Even", value="TO MCU",
+              fp=MEZZ_HEADER_FP, lcsc="C6224952", mpn="DF40C-12DP-0.4V(51)",
+              mfr="Hirose", x=g(20), y=g(20))
+    note = (15, 105, K.note_block(
+        "MCU MEZZANINE  -  J1  DF40C-12DP-0.4V  (LCSC C6224952)  -  PLACED",
         "Hirose DF40 2x6 0.4mm HEADER; mates DOWN to the MCU-board receptacle",
-        "(mcu J5 DF40B-12DS, C3641147).  ~1.5mm stack.  PLACED, not wired.",
+        "(mcu J5 DF40B-12DS, C3641147).  ~1.5mm stack.",
         "PINOUT MUST match mcu J5 exactly (mated pin N <-> N):",
         "",
         K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
@@ -214,80 +287,81 @@ MAIN_IF = dict(name="MainIF", file="main_if.kicad_sch",
                      (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND"),
                      (11, "VSYS (LED pwr)"), (12, "GND (LED rtn)")]),
         "",
-        "SDA/SCL <-> the G0 I2C1;  UART_TX/RX <-> the G0 USART.",
-        "KB_IRQ  = G0 -> U575 wake (keypress).",
-        "KB_NRST / KB_BOOT0 = U575 -> G0 (reset + bootloader reflash).",
-        "VSYS (11) = the MCU-board load-shared batt/USB rail (~3.7-4.7V) -> the",
-        "  per-key RGB rail (gated locally by Q1, KeyLighting sheet). GND (12) is",
-        "  the dedicated LED-current return.",
-        "MECH: at 1.5mm stack keep MX pins off the MCU-board area (trim, or MCU",
-        "board under a keyless region).",
-        "STACK = 1.5mm: DF40C-12DP plug x DF40B-12DS receptacle. Both B & C plain",
-        "receptacles are 1.5mm (height = the suffix e.g. (2.0), NOT the B/C letter;",
-        "the DF40C plug is the common header). Verify the DF40 2x6 land + 3D",
-        "clearance at layout.")))
+        "SDA/SCL <-> G0 I2C1; UART <-> G0 USART; KB_IRQ = G0 -> U575 wake.",
+        "VSYS(11) -> the local RGB load switch (RGBPower Q1) -> VLED.",
+        "STACK = 1.5mm (DF40B-12DS x common DF40C-12DP plug; B/C = a pin-count",
+        "variant, not height -- the suffix e.g. (2.0) sets height)."))
+    return dict(uuid=MAIN_IF, file="main_if.kicad_sch", page="5",
+                title="MCU mezzanine (I2C + UART + VSYS to the MCU board)",
+                comps=[(J1, [(path, "J1")])], wiring="", notes=[note], _dir=PROJ_DIR)
 
-# ===================== Per-key RGB hint lighting sheet =======================
-# One SK6805-EC15 (1.5x1.5mm addressable RGB, LCSC C2890035) beside each of the
-# 50 keys to hint key positions / presses. It can't sit under the MX switch, so
-# it goes just north of each switch. Single-wire WS2812-protocol daisy chain off
-# ONE G0 pin. Powered from VSYS (mezzanine pin 11, ~3.7-4.7V -- "run off the
-# battery", more volts than 3V3) through a HIGH-SIDE LOAD SWITCH (Q1 P-FET) so
-# the whole rail -- LEDs + level shifter -- is gated OFF in sleep (G0 LED_EN low,
-# minimizing sleep power). U2 74LVC1G125 (powered from the gated rail) lifts the
-# 3.3V data to the LED VIH. Refs continue the board sequence: D1-50 = key diodes,
-# D51-55 = annunciators, so the RGB LEDs are D56-D105.
-RGB_LED = [dict(ref="D%d" % i, lib_id="LED:SK6805", value="SK6805-EC15",
-                fp=SK6805_FP, lcsc="C2890035", mpn="SK6805-EC15", mfr="OPSCO")
-           for i in range(56, 106)]   # D56..D105 -> one per key
-KEYLIGHT = dict(name="KeyLighting", file="keylight.kicad_sch",
-    title="Per-key RGB hint lighting (50x SK6805 on gated VSYS)", page="6",
-    big=[],
-    small=RGB_LED + [
-        # 3V3 -> VLED data level shifter (powered from the GATED LED rail).
-        dict(ref="U2", lib_id="74xGxx:74LVC1G125", value="74LVC1G125", fp=SOT235,
-             lcsc="C23654", mpn="SN74LVC1G125DBVR", mfr="Texas Instruments"),
-        # High-side load switch: Q1 P-FET passes VSYS->VLED; Q2 N-FET pulls Q1's
-        # gate low to turn on (G0 LED_EN high). Default OFF (R7 holds Q1 off).
-        dict(ref="Q1", lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A",
-             fp=SOT23, lcsc="C15127", mpn="AO3401A", mfr="AOS"),
-        dict(ref="Q2", lib_id="Transistor_FET:Q_NMOS_GSD", value="2N7002",
-             fp=SOT23, lcsc="C8545", mpn="2N7002", mfr="onsemi"),
-        R("R7", "100k"),    # Q1 gate pull-up to VSYS (P-FET OFF by default)
-        R("R8", "10k"),     # G0 LED_EN -> Q2 gate series
-        R("R10", "100k"),   # Q2 gate pulldown (LEDs OFF at boot / Hi-Z)
-        R("R9", "330"),     # data series into the first LED DIN
-        C("C6", "100nF"),               # U2 VCC decoupling
-        C("C7", "22uF", C0603),         # VLED bulk (LED chain)
-    ],
-    note=(15, 150, K.note_block(
-        "PER-KEY RGB HINT LIGHTING  -  50x SK6805-EC15 (LCSC C2890035, 1.5x1.5mm)",
-        "D56..D105, one beside each key (just north of the MX switch; can't go",
-        "under it).  Single-wire WS2812 protocol ~800kHz, daisy-chained.  PLACED,",
-        "not wired.  Placement 1:1 with SW1..SW50 (D56 by SW1 .. D105 by SW50).",
-        "",
-        "DATA CHAIN",
-        "  G0 LED_DATA -> U2.A;   U2.Y -> R9 330R -> D56 DIN",
-        "  D56 DOUT -> D57 DIN -> ... -> D105 DIN   (VLED + GND to every LED)",
-        "  add 100nF per LED (or per 2-4) local decoupling at layout",
-        "  U2 74LVC1G125: /OE -> GND (always on); VCC -> VLED (gated) so the data",
-        "  swings to the LED VIH (0.7*VDD) even at VSYS ~4.7V on USB",
-        "",
-        "POWER + SLEEP GATE",
-        "  VSYS (mezz pin 11, ~3.7-4.7V) -> Q1 AO3401A P-FET -> VLED (C7 22uF bulk)",
-        "  Q1 gate: R7 100k pull-up to VSYS = OFF by default; Q2 2N7002 pulls it low",
-        "  G0 LED_EN -> R8 10k -> Q2 gate  (R10 100k pulldown = OFF at boot / Hi-Z)",
-        "  -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)",
-        "",
-        "CURRENT  firmware MUST cap total brightness: 50x full-white ~0.75A would",
-        "  blow the DF40 contact + VSYS budget -- hint lighting lights a few keys.")))
+
+# ============================ root ===========================================
+def build_root_strings():
+    sym = ""
+    wiring = ""
+    prev = "KB_LED_DATA"          # feeds Row1.DIN
+    for i in range(5):
+        name = f"Row{i+1}"
+        x, y = g(10), g(10 + i * 11)
+        w, h = g(26), g(8)
+        rpy, dpy, opy = y + g(2), y + g(4), y + g(6)
+        sym += K.w_sheet(name, "key_row.kicad_sch", ROW_INST[i], x, y, w, h,
+                         pins=[("ROW", "input", x, rpy, 180),
+                               ("DIN", "input", x, dpy, 180),
+                               ("DOUT", "output", x + w, opy, 0)])
+        wiring += K.w_wire(x, rpy, x - g(3), rpy)
+        wiring += K.w_glabel(f"KB_ROW{i+1}", x - g(3), rpy, 180, shape="output")
+        wiring += K.w_wire(x, dpy, x - g(3), dpy)
+        wiring += K.w_glabel(prev, x - g(3), dpy, 180, shape="input")
+        nxt = f"RGB_CH{i+1}" if i < 4 else "RGB_END"
+        wiring += K.w_wire(x + w, opy, x + w + g(3), opy)
+        wiring += K.w_glabel(nxt, x + w + g(3), opy, 0, shape="output")
+        prev = nxt
+    for nm, fn, uu, yy in [("Annunciators", "annunc.kicad_sch", ANNUNC, 10),
+                           ("KbdMCU", "kbd_mcu.kicad_sch", KBD_MCU, 22),
+                           ("RGBPower", "rgb_power.kicad_sch", RGB_POWER, 34),
+                           ("MainIF", "main_if.kicad_sch", MAIN_IF, 46)]:
+        sym += K.w_sheet(nm, fn, uu, g(50), g(yy), g(22), g(8), pins=[])
+    wiring += K.text_note(K.note_block(
+        "Calcumaker 16 - Keyboard (MULTI-CHANNEL).",
+        "Row1..Row5 = five instances of ONE reusable sheet key_row.kicad_sch",
+        "(MX switch + diode + SK6805 RGB per key). Shared buses on global nets",
+        "COL1..COL10 / VLED / GND; each row's ROW line = a hier pin -> KB_ROWn,",
+        "and the RGB DIN/DOUT are chained: KB_LED_DATA -> Row1 -> Row2 -> ... ->",
+        "Row5 -> RGB_END. The G0 (KbdMCU) drives KB_ROW1-5 + COL1-10 + LED_DATA/EN;",
+        "RGBPower gates VLED off in sleep. Wire the one-off sheets in eeschema."),
+        g(50), g(60))
+    pro_sheets = [[ROW_INST[i], f"Row{i+1}"] for i in range(5)] + \
+                 [[ANNUNC, "Annunciators"], [KBD_MCU, "KbdMCU"],
+                  [RGB_POWER, "RGBPower"], [MAIN_IF, "MainIF"]]
+    return sym, wiring, pro_sheets
+
 
 # ============================ generate =======================================
-K.build(
-    project="calcumaker-keyboard", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
-    title=dict(title="Calcumaker 16 — Keyboard", date="2026-07-06", rev="0.3",
-               company="calcumaker authors",
-               comments=["Programmer's/technical arbitrary-precision RPN calculator",
-                         "Keyboard board: Cherry MX matrix + STM32G0 scanner + annunciators + per-key RGB (gated) + MCU mezzanine (DRAFT)"]),
-    sheets=[KEYPAD, ANNUNC, KBD_MCU, MAIN_IF, KEYLIGHT],
-)
+TITLE = dict(title="Calcumaker 16 — Keyboard", date="2026-07-06", rev="0.4",
+             company="calcumaker authors",
+             comments=["Programmer's/technical arbitrary-precision RPN calculator",
+                       "Keyboard board: MULTI-CHANNEL 5x10 MX matrix + per-key RGB (row x5) + G0 scanner + mezzanine (DRAFT)"])
+
+# Restructure to multi-channel: drop the obsolete flat sheets AND the one-off
+# sheets that carry pre-restructure UUIDs, so all regenerate fresh with the
+# constant UUIDs above (they were placed-not-wired -- nothing manual is lost).
+if os.environ.get("KSCHGEN_FORCE") == "1":
+    for _f in ("keypad.kicad_sch", "keylight.kicad_sch", "annunc.kicad_sch",
+               "kbd_mcu.kicad_sch", "main_if.kicad_sch"):
+        _p = os.path.join(PROJ_DIR, _f)
+        if os.path.exists(_p):
+            os.remove(_p)
+            print(f"removed {_f} (regenerating fresh)")
+
+print("child sheets:")
+K.write_wired_child(build_key_row(), PROJECT, ROOT_UUID, TITLE, PAPER_ROW)
+K.write_wired_child(build_annunc(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
+K.write_wired_child(build_kbd_mcu(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
+K.write_wired_child(build_rgb_power(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
+K.write_wired_child(build_main_if(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
+
+sym, wiring, pro_sheets = build_root_strings()
+K.write_root(PROJECT, PROJ_DIR, ROOT_UUID, TITLE, sym, wiring, pro_sheets,
+             paper=PAPER_ROOT)

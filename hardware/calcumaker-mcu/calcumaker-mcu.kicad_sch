@@ -6,11 +6,11 @@
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — MCU")
-		(date "2026-07-05")
-		(rev "0.2")
+		(date "2026-07-06")
+		(rev "0.3")
 		(company "calcumaker authors")
 		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
-		(comment 2 "MCU board: MCU + PSU + clock + SWD + display-IF + keyboard mezzanine (DRAFT)")
+		(comment 2 "MCU board: STM32U575RGT6 (LQFP-64) + PSU + clock + SWD + display-IF + keyboard mezzanine + 4MB QSPI flash (DRAFT)")
 	)
 	(lib_symbols)
 	(sheet
@@ -19,7 +19,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "23aa651c-01ea-4ee3-bb12-f879a30c281f")
+		(uuid "77d1e065-260c-4e9e-b78f-2ca7ebacff25")
 		(property "Sheetname" "MCU"
 			(at 40.64 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -35,7 +35,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "dc502c7f-271d-4dc5-a1c2-d18857eddfee")
+		(uuid "b734f1a0-165b-4dbe-8a4e-b7ae065fd64e")
 		(property "Sheetname" "Clock"
 			(at 96.52 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -51,7 +51,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "4bb53341-6b5a-4905-9015-f6916355f0f0")
+		(uuid "3f222ff3-c1f9-44c6-a6b5-77b65f093143")
 		(property "Sheetname" "Programming"
 			(at 152.40 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -67,7 +67,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "672f4fa7-1cc1-4703-8edf-f066cdb44902")
+		(uuid "eb68b384-3231-4c3a-becc-31213731c008")
 		(property "Sheetname" "PSU"
 			(at 208.28 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -83,7 +83,7 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "882301f2-c62c-4450-8afe-fd55e1916916")
+		(uuid "66273e88-92ab-499d-8908-57ce43e17319")
 		(property "Sheetname" "DisplayIF"
 			(at 264.16 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
@@ -99,13 +99,29 @@
 		(fields_autoplaced yes)
 		(stroke (width 0.1524) (type solid))
 		(fill (color 0 0 0 0.0000))
-		(uuid "f3eb8744-2884-4df4-9891-07d87447427d")
+		(uuid "32aa4625-0e65-45ea-b771-87030b782539")
 		(property "Sheetname" "KeyboardIF"
 			(at 320.04 39.37 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
 		(property "Sheetfile" "keyboard_if.kicad_sch"
 			(at 320.04 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 375.92 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef")
+		(property "Sheetname" "QSPIFlash"
+			(at 375.92 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "qspi_flash.kicad_sch"
+			(at 375.92 63.91 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)

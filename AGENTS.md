@@ -33,7 +33,7 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   2026-07-05 when the keyboard split off.)
 - `hardware/calcumaker-keyboard/` — the front-panel board that **mezzanine-stacks
   above** the MCU board: the 50-key Cherry MX matrix + per-key diodes + the
-  annunciator LEDs + the mating mezzanine header (J1). A dense LQFP-144 and 50
+  annunciator LEDs + the mating mezzanine header (J1). A dense LQFP-64 and 50
   through-hole keys don't share a PCB.
 - `hardware/calcumaker-display/` — 7-seg stack (2–3 rows) + driver + interconnect
   (angled PCB, cabled to the MCU board; the display bus + power cross the
@@ -70,8 +70,8 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   (crossterm): host keys → matrix cells, display = ASCII 7-seg from the real
   TM1640 segment bytes. `cargo run` (interactive) or
   `cargo run -- --press "2;3+"` (scripted; `;` = ENTER) for tests/demos.
-- **Board crate: `firmware/calcumaker-fw/`** — **STM32U575ZGT6**, Cortex-M33,
-  `no_std`, async via `embassy-stm32` (`stm32u575zg`), target
+- **Board crate: `firmware/calcumaker-fw/`** — **STM32U575RGT6**, Cortex-M33,
+  `no_std`, async via `embassy-stm32` (`stm32u575rg`), target
   `thumbv8m.main-none-eabihf`. Hardware only: matrix scan → `(row,col)`,
   TM1640 bus, heap via `embedded-alloc` (GMP → it via
   `mp_set_memory_functions`). On-target GMP/MPFR are **cross-built +

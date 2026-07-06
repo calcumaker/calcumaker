@@ -137,18 +137,22 @@ def build_row():
     wiring += K.net_pin(cbulk, 1, "+5V", kind="glabel")
     wiring += K.net_pin(cbulk, 2, "GND", kind="glabel")
 
-    note = (20.0, 240.0,
-            "Calcumaker 16 display — REUSABLE ROW (multi-channel: instantiated x3 "
-            "as Row1/Row2/Row3 => U1/DS1-16, U2/DS17-32, U3/DS33-48). One TM1640 "
-            "(C5337152) drives 16x FJ5161AH single-digit 0.56\" common-cathode "
-            "(C8093, THROUGH-HOLE) over a shared 8-line SEG bus (SEG1..8 = a..g,dp) "
-            "+ 16 GRID lines (GRID k -> digit k cathode). Runs at +5V (VDD + LED) "
-            "from the MCU-board EN-gated 5V boost. Shared across all rows via "
-            "global nets: +5V, GND, DISP_CLK. Per-row DIN is a hierarchical pin "
-            "(Row1<-DIN1, Row2<-DIN2, Row3<-DIN3 at the root). Digit->GRID mapping "
-            "is 1:1 and sequential; firmware seg7/App is the source of truth — keep "
-            "them in step. *** THT digits: no SMD multi-digit 7-seg on LCSC. *** "
-            "Verify FJ5161AH pad map vs the LTS6760 0.56\" land before fab.")
+    note = (20.0, 240.0, K.note_block(
+        "REUSABLE ROW  (multi-channel: instantiated x3 as Row1/Row2/Row3)",
+        "  Row1 -> U1 / DS1-16     Row2 -> U2 / DS17-32     Row3 -> U3 / DS33-48",
+        "",
+        "One TM1640 (C5337152) drives 16x FJ5161AH single-digit 0.56\" common-",
+        "cathode (C8093, THROUGH-HOLE):",
+        "  SEG1..8 (a..g,dp)  -  shared 8-line bus to all 16 digits' segments",
+        "  GRID1..16          -  one per digit  (GRID k -> digit k cathode)",
+        "  VDD  -> +5V              VSS  -> GND",
+        "  SCLK -> DISP_CLK (global net, shared by all 3 rows)",
+        "  DIN  -> hierarchical pin (Row1<-DIN1, Row2<-DIN2, Row3<-DIN3 @ root)",
+        "",
+        "Runs at +5V (VDD + LED) from the MCU-board EN-gated 5V boost.",
+        "Digit->GRID is 1:1 sequential; firmware seg7/App is the source of truth.",
+        "*** THT digits (no SMD multi-digit 7-seg on LCSC). ***",
+        "Verify FJ5161AH pad map vs the LTS6760 0.56\" land before fab."))
     return dict(uuid=ROW_FILE, file="display_row.kicad_sch", page="2",
                 title="Reusable 7-seg row (1x TM1640 + 16 digits)",
                 comps=comps, wiring=wiring, notes=[note], _dir=PROJ_DIR)
@@ -177,19 +181,22 @@ def build_interconnect():
     wiring += K.net_pin(C7, 1, "+5V", kind="glabel")
     wiring += K.net_pin(C7, 2, "GND", kind="glabel")
     comps = [(J1, [(path, "J1")]), (C7, [(path, "C7")])]
-    note = (20.0, 120.0,
-            "Calcumaker 16 display — Interconnect to the MCU board = 0.5mm 12P FFC "
-            "(J1 AFC01-S12FCA-00, LCSC C262661; the flat-flex CABLE = GCT FFC05-TIN "
-            "05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD @ layout, NOT assembled). "
-            "Pinout (MUST match calcumaker-mcu J3): "
-            "1=+5V, 2=+5V, 3=GND, 4=CLK (shared), 5=DIN1, 6=DIN2, 7=DIN3, 8=GND, "
-            "9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V + GND are DOUBLED/TRIPLED for the "
-            "display LED current (a 0.5mm FFC conductor is ~0.4A; 3 TM1640s peak "
-            "~0.3-0.5A on +5V, less with brightness capping). CLK/DIN are 5V-logic "
-            "from the MCU-board 74HCT125; DIN1/2/3 fan out to Row1/2/3; DISP_CLK is "
-            "shared. Pins 9-11 feed the OPTIONAL aux OLED (AuxDisplay) at 3V3 I2C. "
-            "Verify the FFC land + contact orientation (top/bottom, same/opposite "
-            "end) vs the AFC01 datasheet at layout. See DESIGN.md.")
+    note = (20.0, 120.0, K.note_block(
+        "DISPLAY INTERCONNECT  -  J1  AFC01-S12FCA-00  (LCSC C262661)",
+        "0.5mm 12-pos FFC to the MCU board.  Pinout MUST match mcu J3.",
+        "",
+        K.pin_table([(1, "+5V"), (2, "+5V"), (3, "GND"), (4, "CLK (shared)"),
+                     (5, "DIN1"), (6, "DIN2"), (7, "DIN3"), (8, "GND"),
+                     (9, "+3V3"), (10, "SDA"), (11, "SCL"), (12, "GND")]),
+        "",
+        "+5V/GND doubled: a 0.5mm FFC conductor is ~0.4A; 3x TM1640 peak",
+        "~0.3-0.5A on +5V (less with brightness capping).",
+        "CLK/DIN1-3 are 5V-logic from the MCU-board 74HCT125.",
+        "Pins 9-11 (+3V3/SDA/SCL) feed the DNP aux OLED (unused if bare).",
+        "",
+        "CABLE (non-BOM): GCT FFC05-TIN  05-12-A-<len>-A-4-06-4-T  (DigiKey);",
+        "                 length + A(same-side)/D(opposite) contacts TBD @ layout.",
+        "Verify the FFC land vs the AFC01 datasheet at layout.  See DESIGN.md."))
     return dict(uuid=IC, file="interconnect.kicad_sch", page="6",
                 title="MCU board interconnect (0.5mm FFC)", comps=comps,
                 wiring=wiring, notes=[note], _dir=PROJ_DIR)
@@ -206,13 +213,15 @@ def build_aux():
     wiring = ""
     for pin, net in j2nets.items():
         wiring += K.net_pin(J2, pin, net, kind="glabel")
-    note = (20.0, 110.0,
-            "Calcumaker 16 display — OPTIONAL aux OLED (DNP by default). J2 "
-            "receives a standard 0.91\" SSD1306 128x32 I2C module (VCC GND SCL "
-            "SDA; sourced separately, hand-placed with the THT digits). Wiring: "
-            "J2.1 VCC<-+3V3, J2.2 GND, J2.3 SCL, J2.4 SDA. I2C at 3V3 straight "
-            "from the MCU (pull-ups on the MCU board, DNP alongside). Shows full "
-            "error text / SETUP / STATUS; the 7-seg glass stays primary.")
+    note = (20.0, 110.0, K.note_block(
+        "AUX OLED  -  J2   (OPTIONAL, DNP by default)",
+        "Receives a 0.91\" SSD1306 128x32 I2C module (sourced separately,",
+        "hand-placed with the THT digits).  I2C at 3V3 straight from the MCU",
+        "(pull-ups on the MCU board, DNP alongside).",
+        "",
+        K.pin_table([(1, "VCC <- +3V3"), (2, "GND"), (3, "SCL"), (4, "SDA")], cols=1),
+        "",
+        "Shows full error text / SETUP / STATUS; the 7-seg glass stays primary."))
     return dict(uuid=AX, file="aux.kicad_sch", page="7",
                 title="Aux OLED 128x32 (SSD1306 I2C) — DNP-optional",
                 comps=[(J2, [(path, "J2")])], wiring=wiring, notes=[note],

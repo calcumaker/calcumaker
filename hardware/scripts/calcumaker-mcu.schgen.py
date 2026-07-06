@@ -6,11 +6,11 @@
 
 *** DRAFT ***
 The MCU board is the **brain/PSU logic board** of a THREE-board split (see
-DESIGN.md → Board Partition): it carries the **MCU (STM32U575ZGT6)**, **PSU**
+DESIGN.md → Board Partition): it carries the **MCU (STM32U575RGT6)**, **PSU**
 (USB-C/charge/buck-boost), clock, SWD, the **display 5V rail + level shifter +
 interconnect** (0.5mm FFC) to the angled display board, and a **fine-pitch
 mezzanine** up to the **keyboard board** that stacks above it (the Cherry MX
-matrix + its own STM32G0 scanner + annunciator LEDs live there — a dense LQFP-144
+matrix + its own STM32G0 scanner + annunciator LEDs live there — a dense LQFP-64
 and 50 through-hole keys don't belong on one PCB). Keyscanning is off the main
 board: only an **I2C + UART link + KB_IRQ wake + power** cross the mezzanine (not
 the raw matrix). The PSU sheet is concrete; the MCU config and connector pinouts
@@ -48,8 +48,9 @@ K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
 K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x12",
                   "Conn_02x05_Odd_Even")   # 01x12 = display FFC (J3); 02x05 = keyboard DF40 mezzanine (J5)
 K.register_stdlib("74xx", "74AHCT125")  # level shifter symbol (use value "74HCT125"); 3V3->5V
-K.register_stdlib("MCU_ST_STM32U5", "STM32U575ZGTx")   # LQFP-144 (stock)
+K.register_stdlib("MCU_ST_STM32U5", "STM32U575RGTx")   # LQFP-64 (stock) — smaller pkg now the matrix is off-board
 K.register_stdlib("Converter_DCDC", "TPS61022")        # 5V boost (stock)
+K.register_stdlib("Memory_Flash", "W25Q32JVSS")        # 4MB (32Mbit) quad-SPI NOR on OCTOSPI1
 
 # ---- footprint shorthands ---------------------------------------------------
 # Size policy (user): 0402 for resistors + small/decoupling caps; bulk MLCCs
@@ -65,7 +66,8 @@ SOT235 = "Package_TO_SOT_SMD:SOT-23-5"
 SOT236 = "Package_TO_SOT_SMD:SOT-23-6"
 SOT23 = "Package_TO_SOT_SMD:SOT-23"
 SOD123 = "Diode_SMD:D_SOD-123"
-LQFP144 = "Package_QFP:LQFP-144_20x20mm_P0.5mm"
+LQFP64 = "Package_QFP:LQFP-64_10x10mm_P0.5mm"
+QSPI_FP = "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"       # W25Q32JVSS (SOIC-8 208mil)
 XTAL_FP = "Crystal:Crystal_SMD_3215-2Pin_3.2x1.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 
@@ -86,15 +88,15 @@ def C(ref, val, fp=C0402):
 
 
 # ============================ MCU core sheet =================================
-# STM32U575ZGTx (LQFP-144) + power decoupling + reset/boot. Clock and programming
+# STM32U575RGTx (LQFP-64) + power decoupling + reset/boot. Clock and programming
 # are their own subsheets. NOTE: the U5 core can run from the internal LDO or the
 # internal SMPS; SMPS mode needs an external inductor on VLXSMPS + VDD12 caps
 # (datasheet) — placed/configured at layout. VDDA/VREF+ and VDDUSB decoupled.
 MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
     page="2",
     big=[
-        dict(ref="U1", lib_id="MCU_ST_STM32U5:STM32U575ZGTx", value="STM32U575ZGT6",
-             fp=LQFP144, lcsc="C5271004", mpn="STM32U575ZGT6", mfr="STMicroelectronics"),
+        dict(ref="U1", lib_id="MCU_ST_STM32U5:STM32U575RGTx", value="STM32U575RGT6",
+             fp=LQFP64, lcsc="C5270980", mpn="STM32U575RGT6", mfr="STMicroelectronics"),
     ],
     small=[
         # Refs are globally unique across the board: PSU uses C1-C7/R1-R5,
@@ -108,16 +110,31 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         R("R8", "10k"),                                    # BOOT0 pulldown
         C("C22", "2.2uF", C0603), C("C23", "2.2uF", C0603),  # VCORE/VCAP (LDO/SMPS) — verify per mode
     ],
-    note=(15, 150, "Calcumaker 16 MCU board — MCU core (U1 STM32U575ZGTx, LQFP-144). "
-          "POWER: VDD pins -> +3V3 (5x 100nF C12-C16 + C17 10uF bulk); VDDA/VREF+ "
-          "-> C18 1uF + C19 100nF; VDDUSB -> C20 100nF; EP/VSS -> GND. "
-          "VCORE: choose LDO or internal SMPS — SMPS needs an inductor on VLXSMPS "
-          "+ VDD12; C22/C23 are VCAP placeholders (set per mode, datasheet). "
-          "RESET/BOOT: NRST + C21 100nF; BOOT0 -> R8 10k to GND. "
-          "OFF-SHEET: USB PA11/PA12 -> PSU ESD; SWD PA13/PA14 + NRST -> Programming; "
-          "LSE OSC32_IN/OUT -> Clock; display bus (CLK+DIN1/2/3) + DISP_PWR_EN -> "
-          "DisplayIF; keyboard-board link (I2C+UART+KB_IRQ/NRST/BOOT0) -> "
-          "KeyboardIF mezzanine J5."))
+    note=(15, 150, K.note_block(
+        "MCU CORE  -  U1  STM32U575RGT6   (LQFP-64, Cortex-M33)",
+        "Smaller pkg now the key matrix scans on the keyboard G0, not here.",
+        "",
+        "POWER",
+        "  VDD (each pin) -> +3V3   C12-C16 100nF + C17 10uF bulk",
+        "                           (LQFP-64 has fewer VDD than the 5 caps;",
+        "                            spares are extra bypass, trim @ layout)",
+        "  VDDA / VREF+   -> +3V3   C18 1uF + C19 100nF",
+        "  VDDUSB         -> +3V3   C20 100nF",
+        "  VSS / EP       -> GND",
+        "  VCORE          -> LDO or internal SMPS (SMPS: L on VLXSMPS + VDD12);",
+        "                    C22/C23 = VCAP placeholders (set per mode)",
+        "RESET / BOOT",
+        "  NRST -> C21 100nF          BOOT0 -> R8 10k to GND",
+        "",
+        "OFF-SHEET",
+        "  USB   PA11/PA12  -> PSU ESD (U3)",
+        "  SWD   PA13/PA14  -> Programming J4  (+ NRST)",
+        "  LSE   OSC32      -> Clock Y1",
+        "  DISP  CLK+DIN1-3 + DISP_PWR_EN   -> DisplayIF",
+        "  KBD   I2C+UART+KB_IRQ/NRST/BOOT0 -> KeyboardIF J5",
+        "  QSPI  OCTOSPI1 CLK/NCS/IO0-3     -> QSPIFlash U7",
+        "",
+        "Verify OCTOSPI1 pin mapping is available on LQFP-64.")))
 
 # ============================ Clock sheet ====================================
 CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
@@ -127,10 +144,15 @@ CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
              lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
         C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
     ],
-    note=(15, 100, "Calcumaker 16 MCU board — LSE 32.768kHz (Y1) -> MCU OSC32_IN/"
-          "OSC32_OUT (PC14/PC15). C24/C25 load caps: match to Y1 CL via "
-          "2*(CL - Cstray); 12pF shown — trim with the RTC SMOOTHCALIB. Drives "
-          "the RTC for sleep timing."))
+    note=(15, 100, K.note_block(
+        "CLOCK  -  LSE 32.768 kHz   (Y1  Q13FC13500004, LCSC C32346)",
+        "",
+        "  Y1.1 -> OSC32_IN  (PC14)",
+        "  Y1.2 -> OSC32_OUT (PC15)",
+        "  C24 / C25 -> LSE load caps to GND   (12pF shown)",
+        "",
+        "Load caps: CL match = 2*(CL - Cstray); trim with the RTC SMOOTHCALIB.",
+        "Drives the RTC for sleep timing.")))
 
 # ============================ Programming sheet ==============================
 # PSU uses J1/J2, DisplayIF uses J3, so SWD = J4.
@@ -139,9 +161,12 @@ PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
         dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
              value="SWD TC2030-NL", fp=SWD_FP),
     ], small=[],
-    note=(15, 95, "Calcumaker 16 MCU board — SWD programming (J4 Tag-Connect TC2030-NL, "
-          "no-legs pogo pad). Pins: +3V3, GND, SWDIO(PA13), SWCLK(PA14), NRST. "
-          "Bare land — no part mounted."))
+    note=(15, 95, K.note_block(
+        "SWD PROGRAMMING  -  J4  Tag-Connect TC2030-NL  (no-legs pogo pad)",
+        "Bare land, no part mounted.",
+        "",
+        K.pin_table([(1, "+3V3 (VTref)"), (2, "SWDIO (PA13)"), (3, "NRST"),
+                     (4, "SWCLK (PA14)"), (5, "GND"), (6, "SWO (PB3, opt)")], cols=1))))
 
 # ============================ PSU sheet (concrete) ===========================
 # Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
@@ -181,16 +206,20 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
         dict(ref="D2", lib_id="Device:LED", value="CHG", fp=LED0402, lcsc="C130719"),
         R("R5", "1k"),
     ],
-    note=(15, 165, "Calcumaker 16 MCU board — Power (USB-C -> charge -> load-share -> "
-          "buck-boost 3V3). PLACED, not wired. See DESIGN.md Power Tree.\n"
-          "USB-C J1: CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB. "
-          "VBUS bulk C6.\nCHARGER U4 MCP73831: VDD<-VBUS; VBAT->BAT+; PROG R3 "
-          "(size to cell); STAT->D2+R5. C1/C2 in/out.\nLOAD-SHARE: Q1 AO3401A "
-          "src=BAT+, drn=VSYS, gate<-VBUS via R4; D1 B5819W VBUS->VSYS.\n"
-          "BUCK-BOOST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5. "
-          "CFG strap=3.3V. VOUT=+3V3 -> MCU ONLY (display is on its own EN-gated "
-          "5V boost, Display-IF sheet), so the TPS63900 stays lightly loaded / "
-          "low-Iq for sleep.\nBATTERY J2 JST-PH: 1=BAT+, 2=GND (1S)."))
+    note=(15, 165, K.note_block(
+        "POWER  -  USB-C -> charge -> load-share -> buck-boost 3V3",
+        "PLACED, not wired.  See DESIGN.md Power Tree.",
+        "",
+        "USB-C  J1   CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB;",
+        "            VBUS bulk C6.",
+        "CHARGER U4  MCP73831: VDD<-VBUS, VBAT->BAT+, PROG R3 (size to cell),",
+        "            STAT->D2+R5; C1/C2 in/out.",
+        "LOAD-SHR Q1 AO3401A: src=BAT+, drn=VSYS, gate<-VBUS via R4;",
+        "            D1 B5819W VBUS->VSYS.",
+        "BUCK-BST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5;",
+        "            CFG strap=3.3V.  VOUT=+3V3 -> MCU ONLY (display has its own",
+        "            EN-gated 5V boost) so the TPS63900 stays low-Iq in sleep.",
+        "BATTERY J2  JST-PH 1S:  1=BAT+, 2=GND.")))
 
 # ===================== Keyboard mezzanine sheet ==============================
 # Fine-pitch board-to-board mezzanine UP to the keyboard board that stacks above.
@@ -210,21 +239,25 @@ KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
              lcsc="C424636", mpn="DF40C-10DS-0.4V(51)", mfr="Hirose"),
     ],
     small=[],
-    note=(15, 105, "Calcumaker 16 MCU — Keyboard mezzanine (J5 = Hirose DF40 2x5 "
-          "0.4mm RECEPTACLE DF40C-10DS-0.4V, LCSC C424636). The keyboard board "
-          "stacks ABOVE on this LOW-PROFILE board-to-board pair (mating header = "
-          "calcumaker-keyboard J1 DF40C-10DP-0.4V C424635; 0.4mm pitch, **1.5mm "
-          "stack height**). Keyscanning lives on the KEYBOARD board's STM32G0, so "
-          "only a serial link + power cross here. PLACED, not wired. PINOUT (both "
-          "halves MUST agree): 1=+3V3, 2=GND, 3=I2C_SDA, 4=I2C_SCL, 5=KB_UART_TX, "
-          "6=KB_UART_RX, 7=KB_IRQ, 8=KB_NRST, 9=KB_BOOT0, 10=GND. I2C = the G0 "
-          "reports (row,col) events; KB_IRQ -> a MCU WKUP pin wakes the U575 on a "
-          "keypress; UART = alt/expansion + the G0's ROM/DFU bootloader; KB_NRST/"
-          "KB_BOOT0 let the MCU reflash the G0. MECH: at a 1.5mm stack the MX pins "
-          "under the keyboard (~2-3mm) can't sit over the MCU board — keep the MCU "
-          "board under a keyless region (or trim pins); keep USB-C/battery at the "
-          "board EDGE. Verify DF40C-10DS land vs the KiCad DF40 2x5 footprint + the "
-          "3D stack at layout. See DESIGN.md Board Partition + Low-power & wake."))
+    note=(15, 105, K.note_block(
+        "KEYBOARD MEZZANINE  -  J5  DF40C-10DS-0.4V  (LCSC C424636)",
+        "Hirose DF40 2x5 0.4mm RECEPTACLE; low-profile 1.5mm stack.",
+        "Mates the keyboard-board header (kbd J1 DF40C-10DP, C424635).",
+        "Keyscanning is on the keyboard G0 -> only a serial link + power cross.",
+        "PLACED, not wired.  Both halves MUST agree on this pinout:",
+        "",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
+                     (5, "KB_UART_TX"), (6, "KB_UART_RX"), (7, "KB_IRQ"),
+                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND")]),
+        "",
+        "I2C     G0 reports (row,col) events + gets annunciator state.",
+        "KB_IRQ  G0 -> a MCU WKUP pin: wakes the U575 on a keypress.",
+        "UART    alt/expansion + the G0 ROM/DFU bootloader.",
+        "NRST/BOOT0  let the MCU reflash the G0.",
+        "",
+        "MECH: 1.5mm stack < MX pin protrusion (~2-3mm) -> keep the MCU board",
+        "under a keyless region (or trim pins); USB-C/battery at the board EDGE.",
+        "Verify DF40C-10DS land vs the KiCad DF40 2x5 fp + 3D stack at layout.")))
 
 # ===================== Display power + interface sheet =======================
 # The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).
@@ -264,29 +297,71 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
         R("R6", "732k"), R("R7", "100k"),                 # FB divider: Vout=0.6*(1+R6/R7)=~5.0V
         R("R14", "4.7k"), R("R15", "4.7k"),               # I2C pull-ups for the aux OLED (DNP with it)
     ],
-    note=(15, 110, "Calcumaker 16 MCU board — Display 5V rail + interface. "
-          "5V BOOST U5 TPS61022 (C915088, EN-gated): VIN<-VSYS (3.0-4.7V), L2 "
-          "1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF; FB R6/R7 divider "
-          "-> +5V (Vref 0.6V); EN<-MCU DISP_PWR_EN (low in sleep). LEVEL SHIFT "
-          "U6 74HCT125 @ +5V (VIH=2V accepts 3V3): IN<-MCU CLK,DIN1,DIN2,DIN3 "
-          "(3V3); OUT-> J3 at 5V logic; C11 100nF; tie all 4 /OE low. J3 = 0.5mm "
-          "12P FFC to display (AFC01-S12FCA-00 C262661; cable = GCT FFC05-TIN "
-          "05-12-A-<len>-A-4-06-4-T, DigiKey, length TBD). "
-          "Pinout (MUST match calcumaker-display J1): 1=+5V, 2=+5V, 3=GND, 4=CLK, "
-          "5=DIN1, 6=DIN2, 7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND. +5V/GND "
-          "DOUBLED for LED current (0.5mm FFC conductor ~0.4A). Pins 9-11 = the DNP "
-          "aux OLED I2C. See DESIGN.md Power Tree / Board Partition."))
+    note=(15, 110, K.note_block(
+        "DISPLAY 5V RAIL + INTERFACE",
+        "",
+        "5V BOOST  U5 TPS61022 (C915088, EN-gated)",
+        "  VIN<-VSYS (3.0-4.7V), L2 1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF",
+        "  FB R6/R7 divider -> +5V (Vref 0.6V);  EN<-MCU DISP_PWR_EN (low in sleep)",
+        "LEVEL SHIFT  U6 74HCT125 @ +5V (VIH=2V accepts 3V3)",
+        "  IN<-MCU CLK,DIN1,DIN2,DIN3 (3V3);  OUT-> J3 @ 5V logic;",
+        "  C11 100nF;  tie all 4 /OE low",
+        "",
+        "J3 = 0.5mm 12-pos FFC to display (AFC01-S12FCA-00, C262661).",
+        "Pinout MUST match calcumaker-display J1:",
+        "",
+        K.pin_table([(1, "+5V"), (2, "+5V"), (3, "GND"), (4, "CLK"), (5, "DIN1"),
+                     (6, "DIN2"), (7, "DIN3"), (8, "GND"), (9, "+3V3"), (10, "SDA"),
+                     (11, "SCL"), (12, "GND")]),
+        "",
+        "+5V/GND doubled for LED current (a 0.5mm FFC conductor is ~0.4A).",
+        "Pins 9-11 = the DNP aux OLED I2C.",
+        "CABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).",
+        "See DESIGN.md Power Tree / Board Partition.")))
 
 # NOTE: the Keypad (Cherry MX matrix) and Annunciator-LED sheets moved to the
 # separate, stacked **calcumaker-keyboard** board (2026-07-05 split). They reach
 # the MCU across the KeyboardIF mezzanine (J5) above.
 
+# ======================= QSPI flash memory sheet =============================
+# 4MB (32Mbit) quad-SPI NOR flash on the STM32U575 OCTOSPI1 peripheral (quad
+# I/O). Memory-mappable (XIP) for constants/tables, and usable as storage for
+# state persistence / keystroke programs. CS# pulled up so the flash stays
+# deselected during MCU reset/boot.
+QSPI_FLASH = dict(name="QSPIFlash", file="qspi_flash.kicad_sch",
+    title="4MB quad-SPI NOR flash (OCTOSPI1)", page="8",
+    big=[
+        dict(ref="U7", lib_id="Memory_Flash:W25Q32JVSS", value="W25Q32JVSSIQ",
+             fp=QSPI_FP, lcsc="C179173", mpn="W25Q32JVSSIQ", mfr="Winbond"),
+    ],
+    small=[
+        C("C26", "100nF"),      # flash VCC decoupling (close to pin 8)
+        R("R9", "10k"),         # CS# pull-up to +3V3 (deselect during reset/boot)
+    ],
+    note=(15, 95, K.note_block(
+        "QSPI FLASH  -  U7  W25Q32JVSSIQ  (LCSC C179173)",
+        "4MB (32Mbit) quad-SPI NOR, SOIC-8, 2.7-3.6V, on the STM32U575 OCTOSPI1.",
+        "",
+        K.pin_table([("1", "CS#       <- OCTOSPI NCS  (+ R9 10k pull-up to +3V3)"),
+                     ("6", "CLK       <- OCTOSPI CLK"),
+                     ("5", "IO0 / DI  <-> OCTOSPI IO0"),
+                     ("2", "IO1 / DO  <-> OCTOSPI IO1"),
+                     ("3", "IO2 / WP# <-> OCTOSPI IO2"),
+                     ("7", "IO3 / HOLD# <-> OCTOSPI IO3"),
+                     ("8", "VCC = +3V3   (C26 100nF at pin 8)"),
+                     ("4", "GND")], cols=1),
+        "",
+        "Assign OCTOSPI1 to LQFP-64 pins (PB/PC bank); keep the 4 IO + CLK",
+        "short and length-matched at layout (>=50 MHz quad).",
+        "Use: memory-mapped XIP for constant tables + state/program storage.",
+        "1.8V-IO variant = W25Q32JW.")))
+
 # ============================ generate =======================================
 K.build(
     project="calcumaker-mcu", proj_dir=PROJ_DIR, root_uuid=ROOT_UUID,
-    title=dict(title="Calcumaker 16 — MCU", date="2026-07-05", rev="0.2",
+    title=dict(title="Calcumaker 16 — MCU", date="2026-07-06", rev="0.3",
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
-                         "MCU board: MCU + PSU + clock + SWD + display-IF + keyboard mezzanine (DRAFT)"]),
-    sheets=[MCU, CLOCK, PROG, PSU, DISPLAY_IF, KEYBOARD_IF],
+                         "MCU board: STM32U575RGT6 (LQFP-64) + PSU + clock + SWD + display-IF + keyboard mezzanine + 4MB QSPI flash (DRAFT)"]),
+    sheets=[MCU, CLOCK, PROG, PSU, DISPLAY_IF, KEYBOARD_IF, QSPI_FLASH],
 )

@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "f3eb8744-2884-4df4-9891-07d87447427d")
+	(uuid "32aa4625-0e65-45ea-b771-87030b782539")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — MCU — Keyboard mezzanine (I2C + UART link to the stacked keyboard)")
-		(date "2026-07-05")
-		(rev "0.2")
+		(date "2026-07-06")
+		(rev "0.3")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -410,7 +410,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9961cf39-4659-4908-b0b9-a92a2a48d8ad")
+		(uuid "863608e6-5b67-4db9-9a10-0c7914812966")
 		(property "Reference" "J5"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -439,30 +439,30 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "28494d9d-9bce-440b-b26c-bbc2496c5416"))
-		(pin "2" (uuid "e0fbdde0-c94a-4d31-a279-06ce3fdf8cac"))
-		(pin "3" (uuid "67bf3d61-c002-41b1-95e6-8e7d80c653df"))
-		(pin "4" (uuid "25152fc9-7aff-4217-9542-0dc7e80f7de4"))
-		(pin "5" (uuid "087cf66a-1607-4e2f-982e-b29a5f0060fd"))
-		(pin "6" (uuid "d2c59176-31f7-4bf2-831a-430b0246cb2d"))
-		(pin "7" (uuid "3cad626f-498a-45d5-b043-08b345af2a66"))
-		(pin "8" (uuid "4e4d53d1-2d15-4b72-8704-5ad230e894b7"))
-		(pin "9" (uuid "0e1747df-ace2-4c7b-9b85-e5e2625ac756"))
-		(pin "10" (uuid "886a267f-ba62-4b56-baac-528b065ac82b"))
+		(pin "1" (uuid "29ec924f-ee26-4c40-8b90-51d80f32c430"))
+		(pin "2" (uuid "d3f36706-997a-4205-af98-aca0219b99cb"))
+		(pin "3" (uuid "2e5a06cc-ab8d-40c3-8e74-fdc83d50482c"))
+		(pin "4" (uuid "4338b091-599f-47f8-aaf8-bbdd3e7e56f6"))
+		(pin "5" (uuid "2759ab45-2080-48d4-b4c8-490bf95006ba"))
+		(pin "6" (uuid "656d5be2-9419-4389-b1fb-3be111c91900"))
+		(pin "7" (uuid "ee56a33b-4cc1-461f-b0c2-d33894bc638f"))
+		(pin "8" (uuid "afb9d68f-05ae-4e7b-b91c-8519220f6383"))
+		(pin "9" (uuid "976e6f83-bd79-49d2-8bc9-8a79aea1ec94"))
+		(pin "10" (uuid "de7c4b15-b684-4913-b367-0efb4eeba6ad"))
 		(instances
 			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/f3eb8744-2884-4df4-9891-07d87447427d"
+				(path "/ca1c0000-0000-4000-8000-00000000ma01/32aa4625-0e65-45ea-b771-87030b782539"
 					(reference "J5")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 MCU — Keyboard mezzanine (J5 = Hirose DF40 2x5 0.4mm RECEPTACLE DF40C-10DS-0.4V, LCSC C424636). The keyboard board stacks ABOVE on this LOW-PROFILE board-to-board pair (mating header = calcumaker-keyboard J1 DF40C-10DP-0.4V C424635; 0.4mm pitch, **1.5mm stack height**). Keyscanning lives on the KEYBOARD board's STM32G0, so only a serial link + power cross here. PLACED, not wired. PINOUT (both halves MUST agree): 1=+3V3, 2=GND, 3=I2C_SDA, 4=I2C_SCL, 5=KB_UART_TX, 6=KB_UART_RX, 7=KB_IRQ, 8=KB_NRST, 9=KB_BOOT0, 10=GND. I2C = the G0 reports (row,col) events; KB_IRQ -> a MCU WKUP pin wakes the U575 on a keypress; UART = alt/expansion + the G0's ROM/DFU bootloader; KB_NRST/KB_BOOT0 let the MCU reflash the G0. MECH: at a 1.5mm stack the MX pins under the keyboard (~2-3mm) can't sit over the MCU board — keep the MCU board under a keyless region (or trim pins); keep USB-C/battery at the board EDGE. Verify DF40C-10DS land vs the KiCad DF40 2x5 footprint + the 3D stack at layout. See DESIGN.md Board Partition + Low-power & wake."
+	(text "KEYBOARD MEZZANINE  -  J5  DF40C-10DS-0.4V  (LCSC C424636)\nHirose DF40 2x5 0.4mm RECEPTACLE; low-profile 1.5mm stack.\nMates the keyboard-board header (kbd J1 DF40C-10DP, C424635).\nKeyscanning is on the keyboard G0 -> only a serial link + power cross.\nPLACED, not wired.  Both halves MUST agree on this pinout:\n\n  PIN  SIGNAL        PIN  SIGNAL    \n    1  +3V3            6  KB_UART_RX\n    2  GND             7  KB_IRQ    \n    3  I2C_SDA         8  KB_NRST   \n    4  I2C_SCL         9  KB_BOOT0  \n    5  KB_UART_TX     10  GND\n\nI2C     G0 reports (row,col) events + gets annunciator state.\nKB_IRQ  G0 -> a MCU WKUP pin: wakes the U575 on a keypress.\nUART    alt/expansion + the G0 ROM/DFU bootloader.\nNRST/BOOT0  let the MCU reflash the G0.\n\nMECH: 1.5mm stack < MX pin protrusion (~2-3mm) -> keep the MCU board\nunder a keyless region (or trim pins); USB-C/battery at the board EDGE.\nVerify DF40C-10DS land vs the KiCad DF40 2x5 fp + 3D stack at layout."
 		(exclude_from_sim no)
 		(at 15.00 105.00 0)
-		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "51f3e67e-8189-44bf-b5c6-f28fb8a9f290")
+		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(uuid "7770f1d5-61f5-4e20-a456-de04641422ea")
 	)
 	(sheet_instances
 		(path "/"

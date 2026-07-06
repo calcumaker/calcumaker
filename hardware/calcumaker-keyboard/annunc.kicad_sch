@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "e123962d-af1f-484c-976e-978d59e057ae")
+	(uuid "4e94bd18-e5fe-49a6-ae02-b46fd6d77075")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Keyboard — Annunciator LEDs (f g C G low-batt)")
@@ -361,7 +361,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5d7586cb-32dc-465a-84ab-88d8b3de6dbf")
+		(uuid "cda5dbcc-93cb-4cd1-8564-c68d55b18991")
 		(property "Reference" "D51"
 			(at 34.2900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -390,11 +390,11 @@
 			(at 30.4800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "62925b37-5566-496c-a6b6-d6b448d8a543"))
-		(pin "2" (uuid "84a253bc-13eb-4c9a-b6f2-83e8342970b9"))
+		(pin "1" (uuid "da6490b8-3a48-40f8-95ab-4c6bf5c71796"))
+		(pin "2" (uuid "965c4b47-ae64-4198-a7a8-edc0db41e3b7"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "D51")
 					(unit 1)
 				)
@@ -409,7 +409,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a7a7f535-9f8b-4a42-b287-261baee7a112")
+		(uuid "4372ea7d-646e-4734-b6c6-e9741ebd8219")
 		(property "Reference" "D52"
 			(at 72.3900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -438,11 +438,11 @@
 			(at 68.5800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "7c0eef10-ca47-4d81-b907-42b9cb736d7a"))
-		(pin "2" (uuid "1777c5a9-7342-441f-b684-9bbe5bb02e79"))
+		(pin "1" (uuid "6c26479a-bafb-4163-87b6-a298bef38f96"))
+		(pin "2" (uuid "81d5994f-4684-4b6f-be3a-7a0082ed8e1a"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "D52")
 					(unit 1)
 				)
@@ -457,7 +457,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5326ab5c-cf2c-4e0f-80b4-edc147291762")
+		(uuid "50f45dcd-10b1-4139-aceb-e94d08697441")
 		(property "Reference" "D53"
 			(at 110.4900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -486,11 +486,11 @@
 			(at 106.6800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "4255756e-3f33-4425-8de1-0cd7856619d6"))
-		(pin "2" (uuid "3623f758-c003-4095-8985-1a6aac30cd0f"))
+		(pin "1" (uuid "107b57a5-7d5e-4249-82cc-79e0f0080444"))
+		(pin "2" (uuid "217e12a9-a38f-413d-9c18-3c15cf7e09a0"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "D53")
 					(unit 1)
 				)
@@ -505,7 +505,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "25ae2739-dcb5-47cf-8782-3746b1fccdf1")
+		(uuid "5f38063a-8c61-458b-813b-69ed0c6e8785")
 		(property "Reference" "D54"
 			(at 148.5900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -534,11 +534,11 @@
 			(at 144.7800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "5185fe12-b43b-4ab1-bbaf-43e6818c445f"))
-		(pin "2" (uuid "4eb9d329-00a6-4e0d-9987-b09107907421"))
+		(pin "1" (uuid "b57679a6-6c6b-49ec-8055-7f372236f575"))
+		(pin "2" (uuid "9c9543f9-9623-4480-8713-1698883513d5"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "D54")
 					(unit 1)
 				)
@@ -553,7 +553,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "94d1652d-1196-4ed9-8a89-1114a303fe1d")
+		(uuid "59470a52-e5b4-49c7-adc2-9fa9579a14cc")
 		(property "Reference" "D55"
 			(at 186.6900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -582,11 +582,11 @@
 			(at 182.8800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "77c31443-377a-4373-9093-eb2c3527dc68"))
-		(pin "2" (uuid "51d11d2a-01f5-4e9c-8a57-b3b81b1d2e29"))
+		(pin "1" (uuid "e2c44ca5-deb8-4509-be34-e006c739a295"))
+		(pin "2" (uuid "96c63350-d2c6-406e-96c6-c960935934fe"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "D55")
 					(unit 1)
 				)
@@ -601,7 +601,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "57408f75-f835-4511-b07c-5eeb24c5b9df")
+		(uuid "c41af384-0c9f-4945-9b66-956e892c856a")
 		(property "Reference" "R1"
 			(at 224.7900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -622,11 +622,11 @@
 			(at 220.9800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e1f74ad8-4762-45c4-9c98-3e6113451106"))
-		(pin "2" (uuid "0a9118e1-edcd-4efe-992e-bdd02baae326"))
+		(pin "1" (uuid "c815ab7f-2f60-4415-8757-544c34b53b6e"))
+		(pin "2" (uuid "356a236a-9efe-425f-a33f-c43cfdd95984"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "R1")
 					(unit 1)
 				)
@@ -641,7 +641,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "be4b838f-2612-4ccd-a433-5715a9293812")
+		(uuid "afe4cadb-61d2-4608-a4c1-70007a5c3386")
 		(property "Reference" "R2"
 			(at 262.8900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -662,11 +662,11 @@
 			(at 259.0800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e241e1ac-92a2-4a28-b517-a4155b38bcde"))
-		(pin "2" (uuid "c8d61817-c4b0-424b-80bf-04a8bc562bdb"))
+		(pin "1" (uuid "0d68e61a-9ed3-48b3-8f8e-d51bacb410e2"))
+		(pin "2" (uuid "f11e9609-57e2-4270-8005-af0433e60644"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "R2")
 					(unit 1)
 				)
@@ -681,7 +681,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "85736ee6-e369-4eb9-9399-0693af93768a")
+		(uuid "7a1f392e-1422-4952-a140-43bbeb651d46")
 		(property "Reference" "R3"
 			(at 300.9900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -702,11 +702,11 @@
 			(at 297.1800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "abbcc37d-86b6-427d-b9b3-9c5d6c4fee5e"))
-		(pin "2" (uuid "1b00fa69-136b-47cc-b795-32208d512882"))
+		(pin "1" (uuid "236e4db1-c047-4ea4-9b7a-606fdb75c527"))
+		(pin "2" (uuid "d2b3d161-7180-4552-ac2f-9972d6b9a380"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "R3")
 					(unit 1)
 				)
@@ -721,7 +721,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "37614443-7967-4d08-a0da-6aafc853e1be")
+		(uuid "9d5eab6b-3eef-4726-94a5-ffee91c91fb5")
 		(property "Reference" "R4"
 			(at 339.0900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -742,11 +742,11 @@
 			(at 335.2800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "6cd0654f-b043-4209-95ce-8142aa2f9f59"))
-		(pin "2" (uuid "600933a1-acfc-447a-b138-746ac6d47c42"))
+		(pin "1" (uuid "9be0672c-0543-40c8-bb84-8018ae7324ae"))
+		(pin "2" (uuid "9523ff4a-b534-4a54-bacf-4ffb22370a44"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "R4")
 					(unit 1)
 				)
@@ -761,7 +761,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7f2c56b6-03f9-4b74-9b33-92e3cf222d80")
+		(uuid "a49b5224-d584-48dd-a8f3-c17e837bfd6e")
 		(property "Reference" "R5"
 			(at 377.1900 38.1000 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -782,22 +782,22 @@
 			(at 373.3800 40.6400 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "dfc359db-2a42-478d-90fc-1f0c7607daa9"))
-		(pin "2" (uuid "1ea2888a-3460-4b26-a3c2-84c5c331d62a"))
+		(pin "1" (uuid "fd330326-9a24-4893-b2d9-0bf7ad0d8361"))
+		(pin "2" (uuid "ceefcb07-9900-464b-b139-d4ada9f076ed"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/e123962d-af1f-484c-976e-978d59e057ae"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/4e94bd18-e5fe-49a6-ae02-b46fd6d77075"
 					(reference "R5")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 keyboard — Annunciator LEDs (DESIGN.md status-line mapping). PLACED, not wired. Five drive lines from the ON-BOARD STM32G0 (U1, active high), each -> Rn 470R -> LED -> GND: D51 'f' yellow + D52 'g' blue mounted BESIDE the f/g keys; D53 'C' carry, D54 'G' overflow, D55 low-battery along the top edge under the display bezel. +3V3 feeds the resistors; GND is the return. 470R = ~1.3-2.8mA; adjust per color at bring-up. Firmware: the U575's calcumaker-core App drives f/g from keys::Shift, C/G from Calc::carry()/overflow(), LOWBAT from the battery ADC, and pushes the 5-bit state to the G0 over I2C; the G0 sets the pins. Radix/STATUS/errors render in the 7-seg digits."
+	(text "ANNUNCIATOR LEDs   (DESIGN.md status-line mapping)\nPLACED, not wired.  5 drive lines from the on-board STM32G0 (active high),\neach -> Rn 470R -> LED -> GND.  +3V3 feeds the resistors; GND returns.\n\n  D51  f  yellow    beside the f key\n  D52  g  blue      beside the g key\n  D53  C  red       carry     ] top edge, under\n  D54  G  red       overflow  ] the display bezel\n  D55  LOWBAT red   low-battery\n\n470R = ~1.3-2.8mA (adjust per color at bring-up).\nFW: the U575 App drives f/g from keys::Shift, C/G from Calc carry/overflow,\nLOWBAT from the battery ADC, pushing the 5-bit state to the G0 over I2C.\nRadix / STATUS / errors render in the 7-seg digits."
 		(exclude_from_sim no)
 		(at 15.00 105.00 0)
-		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "9a3e2f4e-1961-4f61-8d3a-9a916fc8857c")
+		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(uuid "fd837ffd-5b41-44be-87f1-acf3c2304875")
 	)
 	(sheet_instances
 		(path "/"

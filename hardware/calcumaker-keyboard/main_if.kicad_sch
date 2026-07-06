@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "35d144ad-c1bb-47ad-89df-34abbc593a21")
+	(uuid "b7ee0e1e-9650-4819-94f9-be2379d6e47b")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — Keyboard — MCU mezzanine (I2C + UART link down to the MCU board)")
@@ -410,7 +410,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e36e39ad-9a24-4ea8-9bcf-a5a600df2dd7")
+		(uuid "f5395230-c110-4133-bbcb-d71352c58eac")
 		(property "Reference" "J1"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -439,30 +439,30 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "7842a731-4d22-498c-b149-16ab977fd9dc"))
-		(pin "2" (uuid "884d547f-e842-4f90-90ef-0313cf1e01af"))
-		(pin "3" (uuid "f747e39b-cfb9-42f6-a57c-95f9d12c8d98"))
-		(pin "4" (uuid "15d1847b-d17c-4f3e-a07f-64169b1f1cf6"))
-		(pin "5" (uuid "e6c84168-8159-4853-9678-76a68933b4d3"))
-		(pin "6" (uuid "69ab640d-b0e6-43dc-85a5-9fd1d107f146"))
-		(pin "7" (uuid "d08a1aad-a542-4aba-9778-ed2aa3e4c414"))
-		(pin "8" (uuid "0684e597-307c-44a7-b72f-6e2823a3e1c5"))
-		(pin "9" (uuid "d07718c9-30fc-4f4e-b1af-f322d551dafe"))
-		(pin "10" (uuid "ec79ac45-6acb-4f0d-9e27-c3c21a054fb8"))
+		(pin "1" (uuid "1c8e26cf-3671-4321-981f-63a7e33c6be4"))
+		(pin "2" (uuid "4e0aea88-faec-40c3-85fa-6a6640fff615"))
+		(pin "3" (uuid "8a73b59b-9207-4f9a-b5bc-207c2744f39d"))
+		(pin "4" (uuid "b08e4f8a-f9e4-4fc4-89c5-e1be4620d83b"))
+		(pin "5" (uuid "ae820724-721b-43cb-b2e5-6092a68440e6"))
+		(pin "6" (uuid "fc2b8353-cccf-4888-87cd-c7e9160dd27b"))
+		(pin "7" (uuid "111b364f-da76-4c9b-96e2-84f73c0444cc"))
+		(pin "8" (uuid "7c9da83a-0a57-4cef-b54d-6c8ea70c76a1"))
+		(pin "9" (uuid "62811f1b-f514-4da7-9e9c-821b00030837"))
+		(pin "10" (uuid "29c3c636-0cc5-48ac-b10f-8da3ca256dc3"))
 		(instances
 			(project "calcumaker-keyboard"
-				(path "/ca1c0000-0000-4000-8000-00000000eb01/35d144ad-c1bb-47ad-89df-34abbc593a21"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01/b7ee0e1e-9650-4819-94f9-be2379d6e47b"
 					(reference "J1")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(text "Calcumaker 16 keyboard — MCU mezzanine (J1 = Hirose DF40 2x5 0.4mm HEADER DF40C-10DP-0.4V, LCSC C424635). Mates DOWN to the MCU board's receptacle (calcumaker-mcu J5 DF40C-10DS-0.4V C424636); LOW-PROFILE 1.5mm stack. PLACED, not wired. PINOUT (MUST match calcumaker-mcu J5 exactly): 1=+3V3, 2=GND, 3=I2C_SDA, 4=I2C_SCL, 5=KB_UART_TX, 6=KB_UART_RX, 7=KB_IRQ, 8=KB_NRST, 9=KB_BOOT0, 10=GND. SDA/SCL <-> the G0's I2C1; UART_TX/RX <-> the G0's USART; KB_IRQ = G0 -> U575 wake (keypress); KB_NRST/KB_BOOT0 = U575 -> G0 (reset + bootloader reflash). MECH: at 1.5mm stack keep the MX pins off the MCU-board area (trim, or MCU board under a keyless region). Verify DF40C-10DP land vs the KiCad DF40 2x5 footprint + the 3D stack at layout. See DESIGN.md Board Partition + Low-power & wake."
+	(text "MCU MEZZANINE  -  J1  DF40C-10DP-0.4V  (LCSC C424635)\nHirose DF40 2x5 0.4mm HEADER; mates DOWN to the MCU-board receptacle\n(mcu J5 DF40C-10DS, C424636).  Low-profile 1.5mm stack.  PLACED, not wired.\nPINOUT MUST match mcu J5 exactly (mated pin N <-> N):\n\n  PIN  SIGNAL        PIN  SIGNAL    \n    1  +3V3            6  KB_UART_RX\n    2  GND             7  KB_IRQ    \n    3  I2C_SDA         8  KB_NRST   \n    4  I2C_SCL         9  KB_BOOT0  \n    5  KB_UART_TX     10  GND\n\nSDA/SCL <-> the G0 I2C1;  UART_TX/RX <-> the G0 USART.\nKB_IRQ  = G0 -> U575 wake (keypress).\nKB_NRST / KB_BOOT0 = U575 -> G0 (reset + bootloader reflash).\nMECH: at 1.5mm stack keep MX pins off the MCU-board area (trim, or MCU\nboard under a keyless region).\nVerify DF40C-10DP land vs the KiCad DF40 2x5 fp + 3D stack at layout."
 		(exclude_from_sim no)
 		(at 15.00 105.00 0)
-		(effects (font (size 1.5 1.5)) (justify left top))
-		(uuid "61108a16-a88d-47f6-a0b7-61818592d603")
+		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(uuid "2bedd766-0a7c-482b-9896-8efbb3b682eb")
 	)
 	(sheet_instances
 		(path "/"

@@ -468,7 +468,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3e55f027-eaed-40e2-be57-05e672e92bf1")
+		(uuid "7d4edf18-2815-4864-8ca8-27f0eb182297")
 		(property "Reference" "J1"
 			(at 54.6100 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -497,18 +497,18 @@
 			(at 50.8000 50.8000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "8b2d816e-537d-477b-8e62-5f285e5fa616"))
-		(pin "2" (uuid "8109b51b-3ce1-45f7-ade4-ecc2312e2ef0"))
-		(pin "3" (uuid "75897761-9841-4220-93dc-07ecc78f563b"))
-		(pin "4" (uuid "41a4535b-715a-4cde-9f55-95b70b7918a6"))
-		(pin "5" (uuid "00746fd1-d4ed-4886-8aa6-2f4e3005d3d9"))
-		(pin "6" (uuid "d1a818c0-10b1-4bdc-8028-1b4b9ba201a1"))
-		(pin "7" (uuid "9e5d163d-c4b3-4b51-8372-9ada62b543b5"))
-		(pin "8" (uuid "dd0c617e-b9c5-4442-bdac-3787eaa86708"))
-		(pin "9" (uuid "586ad8e8-4b49-4bba-91a5-325554dc45fe"))
-		(pin "10" (uuid "26c4c791-7788-490a-8219-eadb99359273"))
-		(pin "11" (uuid "52dad458-f84c-4274-8c81-542538ef5bb2"))
-		(pin "12" (uuid "70cc0d7a-d29a-43a4-9cb0-bba299a1a3e3"))
+		(pin "1" (uuid "62850af7-061d-4527-bc5d-43609c370f16"))
+		(pin "2" (uuid "e2ae61fe-972d-493b-8bb9-5a8dc12c2cff"))
+		(pin "3" (uuid "a458737d-c780-421e-b3ab-47ddccbf6404"))
+		(pin "4" (uuid "53bcc025-1920-423c-9397-c3be5212f62f"))
+		(pin "5" (uuid "457f71a3-546e-4b03-8d8d-667de447f3ea"))
+		(pin "6" (uuid "e513cf9b-3bca-4167-9e36-b285bba9079b"))
+		(pin "7" (uuid "69a81505-dc58-4e3f-86ce-fd1bb5cf4855"))
+		(pin "8" (uuid "6efd0bc7-6a4a-46a2-b3f0-5b75360ddae4"))
+		(pin "9" (uuid "8b459b84-dc1a-4d8d-bd23-5aabe7578c9a"))
+		(pin "10" (uuid "e659d00f-3481-4457-b28e-1e5ff032a5af"))
+		(pin "11" (uuid "7ca2ec8e-404f-4ea4-998c-93d82431330a"))
+		(pin "12" (uuid "1249d94c-d393-4c53-a16a-d083b41ce21a"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb50"
@@ -522,7 +522,7 @@
 		(exclude_from_sim no)
 		(at 15.00 105.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "c58cf0c8-092b-4e16-8bd3-de577327c059")
+		(uuid "762c191f-c73a-4eeb-adaa-c4f252582709")
 	)
 	(sheet_instances
 		(path "/"

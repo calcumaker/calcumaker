@@ -15,7 +15,7 @@ lighting, and the mezzanine header (J1) down to the MCU board.
 so a row is authored ONCE as a reusable, fully-wired child sheet
 (``key_row.kicad_sch``) and instantiated **five times** at the root (Row1..Row5),
 each annotating to its own reference designators. Each of the 10 keys in a row =
-**MX switch + 1N4148W diode + SK6805-EC15 RGB LED**; the matrix (ROW/COL) and the
+**MX switch + 1N4148W diode + SK6812MINI-E RGB LED**; the matrix (ROW/COL) and the
 RGB daisy-chain (DIN->DOUT) are wired in the one sheet, so a fix propagates to all
 five rows. This replaces the old FLAT design (100 switch/diode parts on one sheet
 + 50 flat RGB LEDs). Shared buses (COL1..10, VLED, GND) are global nets; each
@@ -62,7 +62,9 @@ K.register_stdlib("Switch", "SW_Push")
 K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even")   # DF40 12-pin mezzanine (J1)
 K.register_stdlib("Connector", "Conn_ARM_SWD_TagConnect_TC2030-NL")   # G0 SWD (J2)
 K.register_stdlib("MCU_ST_STM32G0", "STM32G031K8Ux")   # keyboard scanner MCU (UFQFPN-32)
-K.register_stdlib("LED", "SK6805")                     # per-key addressable RGB (1.5x1.5mm)
+K.register_stdlib("LED", "SK6812")                     # per-key addressable RGB (base sym; MINI-E extends
+#                                                        it + kschgen doesn't resolve `extends`, so use
+#                                                        the base + override value/fp to the MINI-E variant)
 K.register_stdlib("74xGxx", "74LVC1G125")              # 3V3 -> VLED data level shifter
 K.register_stdlib("Transistor_FET", "Q_PMOS_GSD", "Q_NMOS_GSD")   # LED-rail load switch
 
@@ -72,10 +74,18 @@ C0402 = "Capacitor_SMD:C_0402_1005Metric"
 C0603 = "Capacitor_SMD:C_0603_1608Metric"
 SOD123 = "Diode_SMD:D_SOD-123"
 LED0603 = "LED_SMD:LED_0603_1608Metric"
-SK6805_FP = "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"   # 1.5x1.5mm addressable RGB
+RGB_LED_FP = "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"  # REVERSE (bottom) mount ->
+#            LED sits on the BOTTOM with the sockets (single-sided assembly), shining UP through the
+#            PCB into the MX switch's north LED window. Stock KiCad fp + 3D.
 SOT235 = "Package_TO_SOT_SMD:SOT-23-5"            # 74LVC1G125 level shifter
 SOT23 = "Package_TO_SOT_SMD:SOT-23"               # AO3401A / 2N7002 load switch
-MX_FP = "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"   # plate/PCB-mount 1u; Kailh hot-swap optional
+MX_FP = "calcumaker:SW_MX_HS_CPG151101S11_1u"   # VENDORED (marbastlib, CERN-OHL-P): Kailh
+#            CPG151101S11 HOT-SWAP socket footprint (LCSC C41430893). PLACE-ON-BACK: switch fps go on
+#            the board's BACK copper layer so the socket (authored on F.Cu) lands on the bottom + the
+#            keycaps face up on the front; needs a switch plate. **HOT-SWAP ONLY** -- the switch
+#            thru-holes are 0.15mm-ring socket pass-throughs, NOT solder pads, so a switch-only /
+#            solder-in build is NOT possible on this fp (that would be a separate board rev using the
+#            solder-in-only SW_Cherry_MX_1.00u_PCB fp). See DESIGN.md "Hot-swap switches".
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-12DP-0.4V_2x06-1MP_P0.4mm"
@@ -114,7 +124,7 @@ def place1(path, specs, x0=g(8), y0=g(14), dx=g(16), dy=g(14), per=6):
 
 
 # ===================== reusable 10-key ROW sheet =============================
-# 10 keys, each = MX switch + 1N4148W diode + SK6805 RGB. Instantiated x5.
+# 10 keys, each = MX switch + 1N4148W diode + SK6812MINI-E RGB. Instantiated x5.
 #   MATRIX  SW.1 -> ROW (hier);  SW.2 -> node KN;  D.A -> KN;  D.K -> COLk (global)
 #           (anode@switch, cathode->COL; per-key diode = n-key rollover)
 #   RGB     DIN -> LED1..LED10 -> DOUT (hier, chained @root);  VDD->VLED, VSS->GND
@@ -138,9 +148,9 @@ def build_key_row():
         comps.append((d, pr(lambda i, kk=k: f"D{kk + 10 * i}")))
         wiring += K.net_pin(d, "A", f"KN{k}", kind="label")
         wiring += K.net_pin(d, "K", f"COL{k}", kind="glabel")
-        # --- per-key RGB LED (single-wire chain) ----------------------------
-        led = dict(lib_id="LED:SK6805", value="SK6805-EC15", fp=SK6805_FP,
-                   lcsc="C2890035", mpn="SK6805-EC15", mfr="OPSCO", x=bx, y=g(48))
+        # --- per-key RGB LED (single-wire chain), reverse/bottom mount ------
+        led = dict(lib_id="LED:SK6812", value="SK6812MINI-E", fp=RGB_LED_FP,
+                   lcsc="C5149201", mpn="SK6812MINI-E", mfr="OPSCO", x=bx, y=g(48))
         comps.append((led, pr(lambda i, kk=k: f"D{55 + kk + 10 * i}")))  # D56-65,66-75,...
         wiring += K.net_pin(led, "VDD", "VLED", kind="glabel")
         wiring += K.net_pin(led, "VSS", "GND", kind="glabel")
@@ -159,7 +169,7 @@ def build_key_row():
         "  Row2 -> SW11-20 / D11-20  / D66-75      ...",
         "  Row5 -> SW41-50 / D41-50  / D96-105",
         "",
-        "Each of the 10 keys = MX switch + 1N4148W diode + SK6805-EC15 RGB:",
+        "Each of the 10 keys = MX switch + 1N4148W diode + SK6812MINI-E RGB:",
         "  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;",
         "          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]",
         "  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained",
@@ -168,9 +178,17 @@ def build_key_row():
         "Shared globals: COL1..COL10, VLED, GND.",
         "Per-instance hier pins: ROW (-> KB_ROWn @root), DIN/DOUT (RGB chain).",
         "Wire-once: a fix here propagates to all 5 rows. Placement 1:1 w/ panel.",
-        "One SK6805 sits just north of each MX switch (can't go under it)."))
+        "LED = SK6812MINI-E (C5149201), REVERSE/BOTTOM mount: it sits on the BOTTOM",
+        "with the Kailh sockets -> SINGLE-SIDED assembly (one stencil, no flip),",
+        "shining UP through the PCB into the MX switch's north LED window.",
+        "",
+        "SWITCH FP = SW_MX_HS_CPG151101S11_1u -> HOT-SWAP (Kailh CPG151101S11,",
+        "  LCSC C41430893). PLACE-ON-BACK: put switch fps on the BACK copper layer",
+        "  so the socket lands on the bottom + keycaps face up on front; + a plate.",
+        "  NOT solderable for a switch-only build (thru-holes are 0.15mm-ring socket",
+        "  pass-throughs, not solder pads) -> solder-in = a separate board rev."))
     return dict(uuid=ROW_FILE, file="key_row.kicad_sch", page="2",
-                title="Reusable 10-key row (MX + diode + SK6805 RGB)",
+                title="Reusable 10-key row (MX + diode + SK6812MINI-E RGB)",
                 comps=comps, wiring=wiring, notes=[note], _dir=PROJ_DIR)
 
 
@@ -238,7 +256,7 @@ def build_kbd_mcu():
 
 
 # ===================== RGB power + data gate sheet (single instance) =========
-# Level shifter + high-side load switch. The 50 SK6805 live on the Row sheets;
+# Level shifter + high-side load switch. The 50 SK6812MINI-E live on the Row sheets;
 # this drives + gates the whole chain.
 def build_rgb_power():
     path = f"/{ROOT_UUID}/{RGB_POWER}"
@@ -253,7 +271,7 @@ def build_rgb_power():
         C("C6", "100nF"), C("C7", "22uF", C0603),
     ]
     note = (15, 120, K.note_block(
-        "RGB POWER + DATA GATE  -  drives the per-key SK6805 chain on the rows",
+        "RGB POWER + DATA GATE  -  drives the per-key SK6812MINI-E chain on the rows",
         "PLACED, not wired.  (The 50 LEDs are on Row1..Row5, sheet key_row.)",
         "",
         "DATA   G0 LED_DATA -> U2.A;  U2.Y -> R9 330R -> KB_LED_DATA (-> Row1.DIN,",
@@ -326,7 +344,7 @@ def build_root_strings():
     wiring += K.text_note(K.note_block(
         "Calcumaker 16 - Keyboard (MULTI-CHANNEL).",
         "Row1..Row5 = five instances of ONE reusable sheet key_row.kicad_sch",
-        "(MX switch + diode + SK6805 RGB per key). Shared buses on global nets",
+        "(MX switch + diode + SK6812MINI-E RGB per key). Shared buses on global nets",
         "COL1..COL10 / VLED / GND; each row's ROW line = a hier pin -> KB_ROWn,",
         "and the RGB DIN/DOUT are chained: KB_LED_DATA -> Row1 -> Row2 -> ... ->",
         "Row5 -> RGB_END. The G0 (KbdMCU) drives KB_ROW1-5 + COL1-10 + LED_DATA/EN;",

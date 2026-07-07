@@ -45,8 +45,9 @@ K.register_stdlib("Power_Protection", "USBLC6-2SC6")
 K.register_stdlib("Transistor_FET", "Q_PMOS_GSD")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
-K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x12",
-                  "Conn_02x06_Odd_Even")   # 01x12 = display FFC (J3); 02x06 = keyboard DF40 12-pin mezzanine (J5)
+K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x12", "Conn_01x16",
+                  "Conn_02x06_Odd_Even")   # 01x12 = display FFC (J3); 02x06 = keyboard DF40 stack (J5);
+#                                            01x16 = keyboard FFC-cable alternative (J6)
 K.register_stdlib("74xx", "74AHCT125")  # level shifter symbol (use value "74HCT125"); 3V3->5V
 K.register_stdlib("MCU_ST_STM32U5", "STM32U575RGTx")   # LQFP-64 (stock) — smaller pkg now the matrix is off-board
 K.register_stdlib("Converter_DCDC", "TPS61022")        # 5V boost (stock)
@@ -234,39 +235,45 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
 # same 1.5mm stack: on DF40 the receptacle SUFFIX sets the height [none=1.5mm,
 # (2.0)=2.0mm], not the B/C letter, and the DF40C plug is the common header.)
 MEZZ_SOCKET_FP = "Connector_Hirose_DF40:Hirose_DF40B-12DS-0.4V_2x06-1MP_P0.4mm"
+FFC16_FP = "Connector_FFC-FPC:Hirose_FH12-16S-0.5SH_1x16-1MP_P0.50mm_Horizontal"
 KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
-    title="Keyboard mezzanine (I2C + UART + VSYS to the stacked keyboard)", page="7",
+    title="Keyboard link -- DF40 stack (J5) OR 16-pin FFC cable (J6), populate one", page="7",
     big=[
         dict(ref="J5", lib_id="Connector_Generic:Conn_02x06_Odd_Even",
-             value="TO KEYBOARD", fp=MEZZ_SOCKET_FP,
+             value="TO KEYBOARD (stack)", fp=MEZZ_SOCKET_FP,
              lcsc="C3641147", mpn="DF40B-12DS-0.4V(58)", mfr="Hirose"),
+        dict(ref="J6", lib_id="Connector_Generic:Conn_01x16", value="TO KEYBOARD (FFC)",
+             fp=FFC16_FP, lcsc="C262665", mpn="AFC01-S16FCA-00", mfr="JUSHUO"),
     ],
     small=[],
-    note=(15, 105, K.note_block(
-        "KEYBOARD MEZZANINE  -  J5  DF40B-12DS-0.4V  (LCSC C3641147)",
-        "Hirose DF40 2x6 0.4mm RECEPTACLE; ~1.5mm stack.",
-        "Mates the keyboard-board header (kbd J1 DF40C-12DP, C6224952).",
+    note=(15, 95, K.note_block(
+        "KEYBOARD LINK  -  TWO options on the SAME nets; POPULATE ONE:",
+        "  J5 STACK = DF40B-12DS 2x6 0.4mm (C3641147), ~1.5mm rigid mezzanine up",
+        "     to the keyboard header (kbd J1 DF40C-12DP). Compact, BUT the MCU",
+        "     board then sits under the keys -> tight vs the keyboard's bottom",
+        "     Kailh sockets/LEDs.",
+        "  J6 CABLE = 16-pin 0.5mm FFC (AFC01-S16FCA-00, C262665) -> the MCU board",
+        "     mounts FREELY in the case (fixes the spacing/interference). 16-pin",
+        "     so its cable CAN'T cross-plug the 12-pin display FFC (J3).",
         "Keyscanning is on the keyboard G0 -> only a serial link + power cross.",
-        "PLACED, not wired.  Both halves MUST agree on this pinout:",
+        "PLACED, not wired.  The keyboard end (MainIF) mirrors both connectors.",
         "",
-        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
-                     (5, "KB_UART_TX"), (6, "KB_UART_RX"), (7, "KB_IRQ"),
-                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND"),
-                     (11, "VSYS (LED pwr)"), (12, "GND (LED rtn)")]),
+        "J5 DF40 (12-pin):",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "SDA"), (4, "SCL"), (5, "UART_TX"),
+                     (6, "UART_RX"), (7, "KB_IRQ"), (8, "KB_NRST"), (9, "KB_BOOT0"),
+                     (10, "GND"), (11, "VSYS"), (12, "GND")]),
+        "J6 FFC (16-pin: VSYS x2, GND x3 for LED current + 2 spare):",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "SDA"), (4, "SCL"), (5, "UART_TX"),
+                     (6, "UART_RX"), (7, "KB_IRQ"), (8, "KB_NRST"), (9, "KB_BOOT0"),
+                     (10, "GND"), (11, "VSYS"), (12, "VSYS"), (13, "GND"), (14, "GND"),
+                     (15, "NC"), (16, "NC")]),
         "",
-        "I2C     G0 reports (row,col) events + gets annunciator state.",
-        "KB_IRQ  G0 -> a MCU WKUP pin: wakes the U575 on a keypress.",
-        "UART    alt/expansion + the G0 ROM/DFU bootloader.",
-        "NRST/BOOT0  let the MCU reflash the G0.",
-        "VSYS(11) = the load-shared batt/USB rail (PSU sheet, ~3.7-4.7V) -> the",
-        "  keyboard's per-key RGB (gated on the keyboard by Q1). GND(12) = LED rtn.",
-        "  Off-sheet: tie J5.11 to VSYS on the PSU sheet.",
-        "",
-        "MECH: 1.5mm stack < MX pin protrusion (~2-3mm) -> keep the MCU board",
-        "under a keyless region (or trim pins); USB-C/battery at the board EDGE.",
-        "STACK = 1.5mm (DF40B-12DS x common DF40C-12DP plug; B/C = a pin-count",
-        "variant, not height -- the suffix e.g. (2.0) sets height). Verify the",
-        "DF40 2x6 land + 3D clearance at layout.")))
+        "I2C = G0 reports keys + gets annunciator state; KB_IRQ = G0->MCU WKUP",
+        "wake; UART = alt/bootloader; NRST/BOOT0 = MCU reflashes the G0. VSYS =",
+        "load-shared batt/USB rail (PSU sheet) -> the keyboard per-key RGB (gated",
+        "on the keyboard). FFC cable (non-BOM): GCT FFC05-TIN 05-16-A-<len>-A-4-",
+        "06-4-T (DigiKey). Stacked build: MCU board under a keyless region /",
+        "board edge. Verify lands + 3D clearance at layout.")))
 
 # ===================== Display power + interface sheet =======================
 # The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).

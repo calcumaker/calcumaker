@@ -59,7 +59,7 @@ MAIN_IF   = "ca1c0000-0000-4000-8000-00000000eb50"
 # ---- symbol libraries -------------------------------------------------------
 K.register_stdlib("Device", "R", "C", "D", "LED")
 K.register_stdlib("Switch", "SW_Push")
-K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even")   # DF40 12-pin mezzanine (J1)
+K.register_stdlib("Connector_Generic", "Conn_02x06_Odd_Even", "Conn_01x16")   # J1 DF40 stack + J3 FFC cable
 K.register_stdlib("Connector", "Conn_ARM_SWD_TagConnect_TC2030-NL")   # G0 SWD (J2)
 K.register_stdlib("MCU_ST_STM32G0", "STM32G031K8Ux")   # keyboard scanner MCU (UFQFPN-32)
 K.register_stdlib("LED", "SK6812")                     # per-key addressable RGB (base sym; MINI-E extends
@@ -89,6 +89,7 @@ MX_FP = "calcumaker:SW_MX_HS_CPG151101S11_1u"   # VENDORED (marbastlib, CERN-OHL
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-12DP-0.4V_2x06-1MP_P0.4mm"
+FFC16_FP = "Connector_FFC-FPC:Hirose_FH12-16S-0.5SH_1x16-1MP_P0.50mm_Horizontal"  # keyboard FFC-cable alt (J3)
 
 RLCSC = {"470": "C25117", "10k": "C25744", "100k": "C25741"}
 CLCSC = {"100nF": "C1525"}
@@ -291,27 +292,39 @@ def build_rgb_power():
 # ===================== Main-board mezzanine sheet (single instance) ==========
 def build_main_if():
     path = f"/{ROOT_UUID}/{MAIN_IF}"
-    J1 = dict(lib_id="Connector_Generic:Conn_02x06_Odd_Even", value="TO MCU",
+    J1 = dict(lib_id="Connector_Generic:Conn_02x06_Odd_Even", value="TO MCU (stack)",
               fp=MEZZ_HEADER_FP, lcsc="C6224952", mpn="DF40C-12DP-0.4V(51)",
-              mfr="Hirose", x=g(20), y=g(20))
-    note = (15, 105, K.note_block(
-        "MCU MEZZANINE  -  J1  DF40C-12DP-0.4V  (LCSC C6224952)  -  PLACED",
-        "Hirose DF40 2x6 0.4mm HEADER; mates DOWN to the MCU-board receptacle",
-        "(mcu J5 DF40B-12DS, C3641147).  ~1.5mm stack.",
-        "PINOUT MUST match mcu J5 exactly (mated pin N <-> N):",
+              mfr="Hirose", x=g(18), y=g(18))
+    J3 = dict(lib_id="Connector_Generic:Conn_01x16", value="TO MCU (FFC)",
+              fp=FFC16_FP, lcsc="C262665", mpn="AFC01-S16FCA-00", mfr="JUSHUO",
+              x=g(40), y=g(18))
+    note = (15, 95, K.note_block(
+        "MCU LINK  -  TWO options on the SAME nets; POPULATE ONE (mirrors mcu",
+        "KeyboardIF J5/J6):",
+        "  J1 STACK = DF40C-12DP 2x6 0.4mm HEADER (C6224952) -> mates DOWN to the",
+        "     MCU receptacle (mcu J5 DF40B-12DS). ~1.5mm rigid stack, compact.",
+        "  J3 CABLE = 16-pin 0.5mm FFC (AFC01-S16FCA-00, C262665) -> the MCU-board",
+        "     FFC (mcu J6). Lets the MCU board mount freely -> more room under the",
+        "     keys. 16-pin != the 12-pin display FFC -> can't cross-plug.",
+        "PLACED, not wired.  Pinouts MUST match mcu J5 (DF40) / J6 (FFC):",
         "",
-        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "I2C_SDA"), (4, "I2C_SCL"),
-                     (5, "KB_UART_TX"), (6, "KB_UART_RX"), (7, "KB_IRQ"),
-                     (8, "KB_NRST"), (9, "KB_BOOT0"), (10, "GND"),
-                     (11, "VSYS (LED pwr)"), (12, "GND (LED rtn)")]),
+        "J1 DF40 (12-pin):",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "SDA"), (4, "SCL"), (5, "UART_TX"),
+                     (6, "UART_RX"), (7, "KB_IRQ"), (8, "KB_NRST"), (9, "KB_BOOT0"),
+                     (10, "GND"), (11, "VSYS"), (12, "GND")]),
+        "J3 FFC (16-pin: VSYS x2, GND x3, 2 spare):",
+        K.pin_table([(1, "+3V3"), (2, "GND"), (3, "SDA"), (4, "SCL"), (5, "UART_TX"),
+                     (6, "UART_RX"), (7, "KB_IRQ"), (8, "KB_NRST"), (9, "KB_BOOT0"),
+                     (10, "GND"), (11, "VSYS"), (12, "VSYS"), (13, "GND"), (14, "GND"),
+                     (15, "NC"), (16, "NC")]),
         "",
-        "SDA/SCL <-> G0 I2C1; UART <-> G0 USART; KB_IRQ = G0 -> U575 wake.",
-        "VSYS(11) -> the local RGB load switch (RGBPower Q1) -> VLED.",
-        "STACK = 1.5mm (DF40B-12DS x common DF40C-12DP plug; B/C = a pin-count",
-        "variant, not height -- the suffix e.g. (2.0) sets height)."))
+        "SDA/SCL <-> G0 I2C1; UART <-> G0 USART; KB_IRQ = G0 -> U575 wake;",
+        "NRST/BOOT0 = U575 reflashes the G0. VSYS -> the local RGB load switch",
+        "(RGBPower Q1) -> VLED. FFC cable (non-BOM): GCT 05-16-A-<len>-A-4-06-4-T."))
     return dict(uuid=MAIN_IF, file="main_if.kicad_sch", page="5",
-                title="MCU mezzanine (I2C + UART + VSYS to the MCU board)",
-                comps=[(J1, [(path, "J1")])], wiring="", notes=[note], _dir=PROJ_DIR)
+                title="MCU link -- DF40 stack (J1) OR 16-pin FFC (J3), populate one",
+                comps=[(J1, [(path, "J1")]), (J3, [(path, "J3")])], wiring="",
+                notes=[note], _dir=PROJ_DIR)
 
 
 # ============================ root ===========================================

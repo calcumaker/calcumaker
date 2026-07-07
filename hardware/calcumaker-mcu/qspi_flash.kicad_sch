@@ -557,7 +557,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "aa8b4f88-6919-4293-9214-bc5261b0b0a1")
+		(uuid "5cea6ca8-017f-4801-8eb7-9cc0faf35b7a")
 		(property "Reference" "U7"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -586,14 +586,14 @@
 			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "89f94d96-ce92-4449-b31b-0d28b821ae74"))
-		(pin "2" (uuid "d4f741fc-d552-4826-b510-460eb2764a9e"))
-		(pin "3" (uuid "fa004a5e-45fc-4216-b668-63e3969ccecd"))
-		(pin "4" (uuid "be0f0caa-ffbc-4843-9d22-9155c9776184"))
-		(pin "5" (uuid "eed9cf53-09ef-444a-b590-8e2c6d322f01"))
-		(pin "6" (uuid "18fb9a45-1578-4d70-ab2d-2e8266c1bede"))
-		(pin "7" (uuid "3f98ad47-671b-4bb9-b042-29f0cb6c9d3b"))
-		(pin "8" (uuid "f97a6922-4e34-4462-b932-a51d339350d4"))
+		(pin "1" (uuid "f4643a6e-dde2-40ec-ac1a-c7ceff0f5215"))
+		(pin "2" (uuid "de055ba4-2ced-4881-b35e-150414c2007e"))
+		(pin "3" (uuid "fb0f0ced-98a9-4da8-8b59-578465816666"))
+		(pin "4" (uuid "e0b68de6-01bb-4c76-a28b-97186eed863f"))
+		(pin "5" (uuid "ad993577-331b-418f-a491-376b12db7526"))
+		(pin "6" (uuid "d038fe76-3c4e-4677-9f67-744f678ccb47"))
+		(pin "7" (uuid "442400dd-3d29-4a0c-9aa5-04f48f1721e6"))
+		(pin "8" (uuid "6f74f75b-0f26-44fc-aa7d-dfa76ffb3354"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
@@ -611,7 +611,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2749978e-9515-44e9-a88d-8cb0f5e34d7b")
+		(uuid "52abb168-4545-4a2b-b451-80918a552843")
 		(property "Reference" "C26"
 			(at 34.2900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -632,8 +632,8 @@
 			(at 30.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "d7ff09c8-d398-4e1b-9622-3ab8948f88ef"))
-		(pin "2" (uuid "0f1f8819-1bb8-41a9-9dfd-5269f10b94bc"))
+		(pin "1" (uuid "f017b3dd-a0c4-460c-b279-5a6373643e69"))
+		(pin "2" (uuid "ffc0e788-efb5-4040-94b2-d1a5c5c7d6c2"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
@@ -651,7 +651,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e11944c8-1356-41e6-9cd2-e909505fe5ae")
+		(uuid "0479439f-17c9-42fa-a335-ef4add5c47ea")
 		(property "Reference" "R9"
 			(at 72.3900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -672,8 +672,8 @@
 			(at 68.5800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "40190f30-ff3b-4016-9722-01857a6f9579"))
-		(pin "2" (uuid "ca743cb2-8925-4cff-bfd7-69bb8489768f"))
+		(pin "1" (uuid "58f57fd2-ec8e-48b5-8279-0de013478c00"))
+		(pin "2" (uuid "f59406eb-4621-49a1-83e9-7345050bfa6d"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
@@ -687,7 +687,7 @@
 		(exclude_from_sim no)
 		(at 15.00 137.92 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "eb6f7eee-18d6-4a86-90b6-c8ec1ce4ad73")
+		(uuid "3d25cb0e-fdfa-4066-bf7a-8ca8997fec5a")
 	)
 	(sheet_instances
 		(path "/"

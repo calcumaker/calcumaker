@@ -125,34 +125,39 @@ gives each PCB an easy job — the MCU board is a compact SMT brain, the keyboar
 is a plain switch matrix — and lets the keyboard be the physical top surface the
 user types on while the MCU board hides underneath.
 
-**Stacking — the mezzanine:** because the keyboard has its **own STM32G0 scanner**
-(below), only a **serial link + power** cross the stack, not the raw matrix. A
-**low-profile fine-pitch mezzanine** — **Hirose DF40, 0.4 mm pitch, 2×6 (12-pin),
-~1.5 mm stack height** — receptacle `J5` **DF40B-12DS-0.4V** (LCSC C3641147) on the
-MCU board, header `J1` **DF40C-12DP-0.4V** (LCSC C6224952) on the keyboard board.
-It carries 12 pins: `+3V3 · GND · I²C_SDA · I²C_SCL · UART_TX · UART_RX · KB_IRQ ·
-KB_NRST · KB_BOOT0 · GND · VSYS · GND` — the last pair is the always-on
-battery/USB rail (+ return) feeding the keyboard's per-key RGB lighting. (Grown
-from 10→12 pins for that; the DF40C-12DS receptacle isn't LCSC-stocked so the MCU
-side is DF40B-12DS — **still a 1.5 mm stack**: on DF40 the receptacle *suffix*
-sets the height (none = 1.5 mm, `(2.0)` = 2.0 mm), not the B/C letter, and the
-DF40C plug is the common header.) Both an **I²C and a UART** bus are exposed (I²C is the
-primary key/annunciator channel; UART is spare/expansion + the G0's ROM
-bootloader); `KB_IRQ` is the keypress wake line (see Low-power & wake). The two
-halves are pin-for-pin identical (mated pin N ↔ pin N). DF40 was chosen over a
-generic 1.27 mm header/socket because it's a **documented Hirose mating pair with
-a dedicated KiCad footprint + 3D model and real LCSC stock** — the cheap generic
-ZX parts had no datasheet and unverifiable gender/land.
+**Keyboard link — stack *or* cable (populate one).** Because the keyboard has its
+**own STM32G0 scanner**, only a **serial link + power** cross to the MCU board,
+not the raw matrix. The same 12 signals map to **two footprints on each board —
+populate whichever the build needs**:
 
-*Mechanical:* the DF40C mates at only **1.5 mm** — genuinely low-profile, but too
-thin to clear the **MX switch pins (~2–3 mm)** protruding below the keyboard PCB.
-So the MCU board must sit under a **keyless region** (top / display-bezel area)
-or the pins get trimmed; and tall connectors (**USB-C ~3.2 mm, battery JST
-~5 mm**) go at the **MCU board edge, overhanging beyond the keyboard footprint**.
-4 corner standoffs (matched to the 1.5 mm stack) take the load. All new footprints
-carry KiCad **3D (STEP) models** — verify the stack in the 3D viewer, and the
-DF40 land vs the KiCad DF40 2×6 footprint, at layout. (Taller DF40 variants —
-DF40HC(2.0)/(2.5)/… — swap in on the same land if more clearance is wanted.)
+- **Stacked:** a **Hirose DF40, 0.4 mm, 2×6 (12-pin), ~1.5 mm** mezzanine —
+  receptacle `J5` **DF40B-12DS-0.4V** (C3641147) on the MCU board, header `J1`
+  **DF40C-12DP-0.4V** (C6224952) on the keyboard. Compact rigid sandwich.
+- **Cabled:** a **16-pin 0.5 mm FFC** — `J6` (MCU) + `J3` (keyboard), both
+  **AFC01-S16FCA-00** (C262665, same family as the display FFC). The flat cable
+  lets the **MCU board mount anywhere in the case**, off the keyboard footprint.
+
+**Why the cable option exists:** the DF40 stack is only ~1.5 mm (tallest DF40 is
+4 mm), but the keyboard's **bottom is now crowded** — Kailh hot-swap sockets
+(~1.8 mm), reverse-mount LEDs, switch bodies — so the MCU board (STM32U5 QFP + PSU)
+has nowhere to sit stacked directly under the keys. The **FFC decouples its
+position** and fixes that; the DF40 stays for anyone who wants the compact
+sandwich. **The FFC is 16-pin so its cable can't cross-plug the 12-pin display
+FFC** (and the extra pins give **VSYS ×2 + GND ×3** for the LED current, + 2 spare).
+
+The 12 signals: `+3V3 · GND · I²C_SDA · I²C_SCL · UART_TX · UART_RX · KB_IRQ ·
+KB_NRST · KB_BOOT0 · GND · VSYS · GND` — VSYS is the always-on battery/USB rail
+feeding the keyboard's per-key RGB. I²C is the primary key/annunciator channel;
+UART is spare/expansion + the G0's ROM bootloader; `KB_IRQ` is the keypress wake.
+
+*Mechanical:* the **cabled** build mounts both boards to the enclosure
+independently (like the display) — no clearance conflict, and the recommended
+default given the crowded keyboard bottom. The **stacked** build needs the MCU
+board under a keyless region (or trimmed MX/socket clearance), tall connectors
+(USB-C ~3.2 mm, battery JST ~5 mm) at the board edge, and 4 corner standoffs.
+(DF40C-12DS isn't LCSC-stocked so the receptacle is DF40B-12DS — still 1.5 mm: the
+DF40 *suffix* sets stack height, not the B/C letter; taller DF40HC variants swap
+on the same land. Verify all lands + 3D clearance at layout.)
 
 ### Per-key RGB accent lighting (keyboard)
 
@@ -599,7 +604,7 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
 | DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + **J3 (0.5 mm FFC)** → display |
-| KeyboardIF | `keyboard_if.kicad_sch` | Hirose DF40 **2×6 (12-pin)** 0.4 mm mezzanine receptacle (J5, DF40B-12DS, ~1.5 mm stack) — I²C+UART + **VSYS** to the keyboard board |
+| KeyboardIF | `keyboard_if.kicad_sch` | Keyboard link, **populate one**: DF40 2×6 stack (J5, DF40B-12DS) **or** 16-pin FFC cable (J6, AFC01-S16FCA-00) — I²C+UART+**VSYS** |
 | QSPIFlash | `qspi_flash.kicad_sch` | 4 MB quad-SPI NOR (U7, W25Q32JVSSIQ) on OCTOSPI1 + CS# pull-up (R9) + decoupling (C26) |
 
 **`calcumaker-keyboard`:**
@@ -611,10 +616,10 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
 | KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
 | RGBPower | `rgb_power.kicad_sch` | RGB **level shifter (U2)** + **gated high-side load switch (Q1/Q2 + R7–10/C6–7)** — drives + sleep-gates the per-key chain off VSYS |
-| MainIF | `main_if.kicad_sch` | Hirose DF40 **2×6 (12-pin)** 0.4 mm mezzanine header (J1, DF40C-12DP, ~1.5 mm stack) → down to the MCU board (+VSYS +GND for the RGB) |
+| MainIF | `main_if.kicad_sch` | MCU link, **populate one**: DF40 2×6 header (J1, DF40C-12DP) **or** 16-pin FFC (J3, AFC01-S16FCA-00) → the MCU board (+VSYS for the RGB) |
 
 All three boards **generate from their manifests and pass the structure check**:
-`calcumaker-mcu` = 55 components (placed-not-wired), `calcumaker-keyboard` = 178
+`calcumaker-mcu` = 56 components (placed-not-wired), `calcumaker-keyboard` = 179
 components (**5×10 matrix + per-key RGB wired multi-channel** as `key_row` ×5; the
 G0/annunciator/RGB-power/mezzanine sheets placed-not-wired), `calcumaker-display`
 = 60 components (fully wired, multi-channel).
@@ -777,7 +782,8 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
-| Keyboard mezzanine ×2 | **Hirose DF40 0.4mm 2×6 (12-pin)** 1.5mm stack: DF40B-12DS (mcu J5) + DF40C-12DP (keyboard J1) | ✅ LCSC C3641147 / C6224952; +VSYS+GND for RGB; both 1.5mm (B/C = pin-count variant, not height); verify MX-pin clearance |
+| Keyboard link — stack option ×2 | **Hirose DF40 0.4mm 2×6 (12-pin)** 1.5mm: DF40B-12DS (mcu J5) + DF40C-12DP (kbd J1) | ✅ LCSC C3641147 / C6224952; compact rigid stack; DNP if using the FFC |
+| Keyboard link — cable option ×2 | **AFC01-S16FCA-00** 16-pin 0.5mm FFC: mcu J6 + kbd J3 (+ GCT FFC cable, non-BOM) | ✅ LCSC C262665; MCU board mounts freely; 16-pin ≠ 12-pin display FFC (no cross-plug); DNP if stacking |
 | Keyswitches (keyboard) ×50 | Cherry MX (full size) — **hot-swap** footprint `SW_MX_HS_CPG151101S11_1u` (place-on-back; Kailh socket) | 5×10 matrix; socket CPG151101S11 (C41430893); **not** solder-in-capable |
 | Key diodes (keyboard) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
 | Annunciator LEDs (keyboard) ×5 | f yellow (C72038), g blue (C965807), C·G·low-batt red (C2286) + 5× 470Ω | ✅ front-panel, beside the keys |

@@ -40,6 +40,17 @@ pub struct mpfr_struct {
     pub _mpfr_d: *mut c_void,
 }
 
+/// `__mpc_struct = { __mpfr_struct re; __mpfr_struct im; }`.
+#[repr(C)]
+pub struct mpc_struct {
+    pub re: mpfr_struct,
+    pub im: mpfr_struct,
+}
+
+/// MPC combined rounding mode: `MPC_RND(re, im)` packs an MPFR mode per part.
+/// `MPC_RNDNN` (both round-to-nearest) is 0 — we round-to-nearest throughout.
+pub const MPC_RNDNN: c_int = 0;
+
 extern "C" {
     // ---- GNU MP: mpz ------------------------------------------------------
     pub fn __gmpz_init(x: *mut mpz_struct);
@@ -122,4 +133,31 @@ extern "C" {
     pub fn mpfr_exp10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_pow(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_const_pi(r: *mut mpfr_struct, rnd: c_int) -> c_int;
+}
+
+extern "C" {
+    // ---- MPC (complex) ----------------------------------------------------
+    // `rnd` on the mpc_* ops is a combined mpc_rnd_t (use MPC_RNDNN); the
+    // real/imag extractors take a plain mpfr rnd.
+    pub fn mpc_init2(z: *mut mpc_struct, prec: mpfr_prec_t);
+    pub fn mpc_clear(z: *mut mpc_struct);
+    pub fn mpc_set(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_set_fr_fr(z: *mut mpc_struct, re: *const mpfr_struct, im: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpc_real(re: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_imag(im: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_abs(a: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_arg(a: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_add(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_sub(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_mul(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_div(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_neg(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_conj(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_sqrt(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_exp(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_log(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_pow(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_sin(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_cos(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_tan(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
 }

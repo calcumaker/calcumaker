@@ -32,6 +32,10 @@ pub use calc::{AngleMode, Calc, CalcError, FloatFmt, NumMode, Radix, SignMode, S
 pub use keys::Key;
 pub use value::Value;
 
+/// Arbitrary-precision complex (MPC) — re-exported for the frontends until it is
+/// wired into [`Value`] and the engine (HP-42S-style complex support).
+pub use gmp_mpfr_nostd::Complex;
+
 /// Format any [`Value`] for display under the calculator's current modes
 /// (radix, word size / sign mode, FIX/SCI/ENG) — the same formatting
 /// [`Calc::display`] uses for the top of stack.

@@ -16,10 +16,12 @@
 
 extern crate alloc;
 
+mod complex;
 mod ffi;
 mod float;
 mod integer;
 
+pub use complex::Complex;
 pub use float::Float;
 pub use integer::Integer;
 

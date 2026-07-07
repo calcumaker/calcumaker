@@ -17,7 +17,7 @@ fn main() {
     }
 
     // Homebrew keg-only prefixes (macOS), if present.
-    for lib in ["mpfr", "gmp"] {
+    for lib in ["mpc", "mpfr", "gmp"] {
         if let Ok(out) = Command::new("brew").args(["--prefix", lib]).output() {
             if out.status.success() {
                 if let Ok(p) = String::from_utf8(out.stdout) {
@@ -33,7 +33,8 @@ fn main() {
     for d in ["/opt/homebrew/lib", "/usr/local/lib", "/usr/lib"] {
         println!("cargo:rustc-link-search=native={d}");
     }
-    // mpfr depends on gmp -> list mpfr first.
+    // mpc -> mpfr -> gmp (each depends on the next).
+    println!("cargo:rustc-link-lib=dylib=mpc");
     println!("cargo:rustc-link-lib=dylib=mpfr");
     println!("cargo:rustc-link-lib=dylib=gmp");
 }

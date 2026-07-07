@@ -57,7 +57,7 @@ fn main() {
         }
         println!("cargo:rustc-link-arg=--gc-sections");
         println!("cargo:rustc-link-arg=--start-group");
-        for l in ["mpfr", "gmp", "c_nano", "m", "nosys", "gcc"] {
+        for l in ["mpc", "mpfr", "gmp", "c_nano", "m", "nosys", "gcc"] {
             println!("cargo:rustc-link-arg=-l{l}");
         }
         println!("cargo:rustc-link-arg=--end-group");

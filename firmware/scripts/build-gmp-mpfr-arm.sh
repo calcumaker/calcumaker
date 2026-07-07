@@ -16,6 +16,7 @@ set -euo pipefail
 
 GMP_VER="${GMP_VER:-6.3.0}"
 MPFR_VER="${MPFR_VER:-4.2.1}"
+MPC_VER="${MPC_VER:-1.3.1}"
 TARGET="${TARGET:-arm-none-eabi}"
 
 FW_DIR="$(cd "$(dirname "$0")/.." && pwd)"          # .../firmware
@@ -50,6 +51,7 @@ fetch() { # url file
 }
 fetch "https://ftp.gnu.org/gnu/gmp/gmp-$GMP_VER.tar.xz"   "gmp-$GMP_VER.tar.xz"
 fetch "https://ftp.gnu.org/gnu/mpfr/mpfr-$MPFR_VER.tar.xz" "mpfr-$MPFR_VER.tar.xz"
+fetch "https://ftp.gnu.org/gnu/mpc/mpc-$MPC_VER.tar.gz"    "mpc-$MPC_VER.tar.gz"
 
 # ---- GMP -------------------------------------------------------------------
 echo "==> building GMP $GMP_VER"
@@ -71,10 +73,22 @@ tar xf "mpfr-$MPFR_VER.tar.xz"
   make -j"$JOBS"
   make install )
 
+# ---- MPC (complex, against the cross GMP + MPFR) ---------------------------
+echo "==> building MPC $MPC_VER"
+rm -rf "mpc-$MPC_VER"
+tar xf "mpc-$MPC_VER.tar.gz"
+( cd "mpc-$MPC_VER"
+  ./configure --host="$TARGET" --prefix="$OUT" \
+      --disable-shared --enable-static --with-gmp="$OUT" --with-mpfr="$OUT"
+  make -j"$JOBS"
+  make install )
+
 echo ""
 echo "==> done:"
-ls -la "$OUT/lib/"libgmp.a "$OUT/lib/"libmpfr.a
+ls -la "$OUT/lib/"libgmp.a "$OUT/lib/"libmpfr.a "$OUT/lib/"libmpc.a
 echo "==> symbol spot-check (should be > 0 each):"
 echo "    __gmpz_init : $("$TARGET-nm" "$OUT/lib/libgmp.a"  2>/dev/null | grep -c 'T __gmpz_init')"
 echo "    mpfr_init2  : $("$TARGET-nm" "$OUT/lib/libmpfr.a" 2>/dev/null | grep -c 'T mpfr_init2')"
 echo "    mpfr_sqrt   : $("$TARGET-nm" "$OUT/lib/libmpfr.a" 2>/dev/null | grep -c 'T mpfr_sqrt')"
+echo "    mpc_init2   : $("$TARGET-nm" "$OUT/lib/libmpc.a"  2>/dev/null | grep -c 'T mpc_init2')"
+echo "    mpc_sqrt    : $("$TARGET-nm" "$OUT/lib/libmpc.a"  2>/dev/null | grep -c 'T mpc_sqrt')"

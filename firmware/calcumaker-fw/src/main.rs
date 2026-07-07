@@ -47,6 +47,7 @@ macro_rules! log_error { ($($t:tt)*) => { ::defmt::error!($($t)*) }; }
 #[cfg(not(feature = "nucleo"))]
 macro_rules! log_error { ($($t:tt)*) => {{}}; }
 
+mod bootloader;
 mod clock;
 mod display;
 mod keypad;

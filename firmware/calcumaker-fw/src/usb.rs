@@ -161,6 +161,12 @@ async fn process(
         write(acm, b"(typed X over HID)\r\n").await?;
         return Ok(());
     }
+    if line == "dfu" {
+        // Reboot into the STM32 ROM USB-DFU bootloader (dfu-util over USB-C).
+        write(acm, b"entering ROM DFU bootloader (run `make dfu` to reflash)...\r\n").await?;
+        Timer::after(embassy_time::Duration::from_millis(50)).await; // flush the ACM
+        crate::bootloader::enter_rom_dfu();
+    }
     for tok in line.split_whitespace() {
         let _ = calc.input(tok); // engine validates arity; errors are non-fatal
     }

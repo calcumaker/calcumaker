@@ -42,6 +42,15 @@ check:
 check-nucleo:
 	cargo check --release --no-default-features --features nucleo
 
+## Field firmware update over USB-C via the STM32 ROM USB-DFU bootloader (no
+## ST-Link). Builds the app, drives the app's `dfu` REPL command to enter the
+## ROM bootloader, flashes over DFU, and restores the boot option bytes so it
+## boots the new app. dfu-util needs USB access (sudo or a udev rule).
+.PHONY: dfu
+dfu:
+	cargo build --release --no-default-features --features nucleo
+	bash ../scripts/dfu-flash.sh target/$(TARGET)/release/calcumaker-fw
+
 ## Show the section sizes of the last-built Nucleo image.
 size:
 	arm-none-eabi-size target/$(TARGET)/release/calcumaker-fw

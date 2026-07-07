@@ -16,6 +16,7 @@ event intake from the keyboard-board G0, and the display bus.
 | `main.rs` | Heap init, GMP/MPFR C-alloc shim, and the async entry on embassy's **low-power executor**; runs the self-test then hands off to USB. |
 | `clock.rs` | RCC config: 160 MHz SYSCLK (PLL1-R/HSI), 48 MHz USB (HSI48+CRS), LSI for the RTC. Shared by both boards. |
 | `usb.rs` | USB OTG_FS **composite device**: CDC-ACM console wired to a live RPN REPL over `calcumaker_core`, + a HID keyboard that types the X value to the host. |
+| `bootloader.rs` | Enter the STM32 ROM USB-DFU bootloader for field updates (option-byte boot pattern, see below). |
 | `selftest.rs` | Golden-case engine self-test (see the validation target below). |
 | `keypad.rs` | Provisional keyboard-event intake. The real matrix scan/debounce/IRQ lives on the keyboard board's STM32G0 firmware; the U575 consumes `(row,col)` events. |
 | `display.rs` | TM1640 bus driver skeleton for the multi-row 7-segment display. |
@@ -64,6 +65,27 @@ firmware/scripts/build-gmp-mpfr-arm.sh
 GMP_MPFR_LIBDIR=firmware/vendor/gmp-mpfr-arm \
   cargo build --manifest-path firmware/calcumaker-fw/Cargo.toml --target thumbv8m.main-none-eabihf
 ```
+
+## Firmware update over USB-C (no ST-Link)
+
+Field updates use the **STM32 ROM USB-DFU bootloader** — single flash slot (the
+app owns `0x08000000`+), no custom bootloader, no A/B partitions.
+
+```bash
+make dfu     # build → enter ROM DFU → dfu-util flash → restore boot → app
+```
+
+How it works (`bootloader.rs` + `scripts/dfu-flash.sh`):
+1. The app's **`dfu`** REPL command programs the boot option bytes
+   (`nSWBOOT0=0, nBOOT0=0`) and sets `OBL_LAUNCH`, resetting straight into the
+   ROM DFU device (`0483:df11`). *(A naive jump to system memory `0x0BF90000`
+   HardFaults on the U5; the RM-defined boot-pattern entry is what works.)*
+2. `dfu-util` writes the new firmware to internal flash (alt 0), then **rewrites
+   the boot option bytes back** (`OPTR` → boot main flash, alt 1) — the same DFU
+   session clears the flags it set — which resets into the new app.
+
+Physical **BOOT0** high at reset reaches the same ROM DFU as a hardware backup.
+`dfu-util` needs USB access (sudo or a `0483:df11` udev rule).
 
 ## Nucleo-U575ZI-Q validation target
 

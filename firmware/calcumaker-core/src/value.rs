@@ -2,7 +2,7 @@
 //! arbitrary-precision real (scientific modes). Backed by GMP + MPFR via
 //! `gmp-mpfr-nostd`.
 
-use gmp_mpfr_nostd::{Float, Integer};
+use gmp_mpfr_nostd::{Complex, Float, Integer};
 
 #[derive(Clone)]
 pub enum Value {
@@ -10,19 +10,40 @@ pub enum Value {
     Int(Integer),
     /// Arbitrary-precision real (MPFR `mpfr`).
     Real(Float),
+    /// Arbitrary-precision complex (MPC) — one stack object (HP-42S model).
+    Complex(Complex),
 }
 
 impl Value {
     /// View/convert this value as an MPFR float at the given precision (bits).
+    /// A complex collapses to its real part (real-only contexts; complex-aware
+    /// ops use [`Value::to_complex`]).
     pub fn to_real(&self, prec: u32) -> Float {
         match self {
             Value::Int(i) => Float::from_integer(prec, i),
             Value::Real(f) => Float::with_prec(prec, f),
+            Value::Complex(z) => z.real(prec),
+        }
+    }
+
+    /// View/convert this value as an MPC complex (real values gain a zero
+    /// imaginary part).
+    pub fn to_complex(&self, prec: u32) -> Complex {
+        match self {
+            Value::Complex(z) => z.clone(),
+            _ => {
+                let zero = Float::from_i64(prec, 0);
+                Complex::from_reals(prec, &self.to_real(prec), &zero)
+            }
         }
     }
 
     pub fn is_int(&self) -> bool {
         matches!(self, Value::Int(_))
+    }
+
+    pub fn is_complex(&self) -> bool {
+        matches!(self, Value::Complex(_))
     }
 }
 
@@ -35,5 +56,11 @@ impl From<Integer> for Value {
 impl From<Float> for Value {
     fn from(f: Float) -> Self {
         Value::Real(f)
+    }
+}
+
+impl From<Complex> for Value {
+    fn from(z: Complex) -> Self {
+        Value::Complex(z)
     }
 }

@@ -1922,3 +1922,32 @@ fn error_codes_by_class() {
     // and every error still carries its full text
     assert_eq!(c.input("mean").unwrap_err().text(), "need more data points (s+)");
 }
+
+// ---- Complex numbers (HP-42S model) ---------------------------------------
+
+#[test]
+fn complex_merge_and_arith() {
+    assert_eq!(run(256, &["3", "4", "complex"]), "3+4i"); // Y=re, X=im
+    assert_eq!(run(256, &["3", "4", "complex", "complex"]), "4"); // split -> X=im
+    assert_eq!(run(256, &["3", "4", "complex", "1", "2", "complex", "+"]), "4+6i");
+    assert_eq!(run(256, &["3", "4", "complex", "1", "2", "complex", "*"]), "-5+10i");
+    // i*i stays a single complex object (not demoted to a real)
+    assert_eq!(run(256, &["0", "1", "complex", "0", "1", "complex", "*"]), "-1+0i");
+    // a real promotes to complex when the other operand is complex
+    assert_eq!(run(256, &["5", "0", "2", "complex", "+"]), "5+2i");
+}
+
+#[test]
+fn complex_chs_abs_sq() {
+    assert_eq!(run(256, &["3", "4", "complex", "chs"]), "-3-4i");
+    assert_eq!(run(256, &["3", "4", "complex", "abs"]), "5"); // magnitude -> real
+    assert_eq!(run(256, &["3", "4", "complex", "sq"]), "-7+24i");
+}
+
+#[test]
+fn complex_polar_display() {
+    // i in polar/degrees is 1 ∠ 90
+    assert_eq!(run(256, &["0", "1", "complex", "polar", "deg"]), "1 \u{2220} 90");
+    // rect toggles back
+    assert_eq!(run(256, &["0", "1", "complex", "polar", "rect"]), "0+1i");
+}

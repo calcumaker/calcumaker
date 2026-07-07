@@ -17,7 +17,7 @@ use alloc::string::{String, ToString};
 use alloc::vec;
 use alloc::vec::Vec;
 
-use gmp_mpfr_nostd::{Float, Integer};
+use gmp_mpfr_nostd::{Complex, Float, Integer};
 
 use crate::value::Value;
 
@@ -265,6 +265,12 @@ pub struct Calc {
     radix_suffix: bool,
     /// Number-type mode (see [`NumMode`]).
     num_mode: NumMode,
+    /// Complex display/interpret mode: `false` = rectangular (`a+bi`), `true` =
+    /// polar (`r∠θ`, θ in `angle_mode`). HP-42S RECT/POLAR.
+    polar: bool,
+    /// HP-42S CPXRES/REALRES: when set (default), a real op with a complex
+    /// result (e.g. `√-4`) returns the complex value; when clear it errors.
+    cpxres: bool,
     user_flags: [bool; 3],
     carry: bool,
     overflow: bool,
@@ -388,6 +394,8 @@ impl Calc {
             leading_zeros: false,
             radix_suffix: true,
             num_mode: NumMode::Flex,
+            polar: false,
+            cpxres: true,
             user_flags: [false; 3],
             carry: false,
             overflow: false,
@@ -467,6 +475,14 @@ impl Calc {
     }
     pub fn set_angle_mode(&mut self, m: AngleMode) {
         self.angle_mode = m;
+    }
+    /// Complex display mode: `true` = polar (`r∠θ`), `false` = rectangular.
+    pub fn polar(&self) -> bool {
+        self.polar
+    }
+    /// HP-42S CPXRES (`true`, default) vs REALRES (`false`).
+    pub fn cpxres(&self) -> bool {
+        self.cpxres
     }
     /// 16C flag 3: pad hex/oct/bin display with leading zeros to the word width.
     pub fn leading_zeros(&self) -> bool {
@@ -732,6 +748,24 @@ impl Calc {
             "*" => self.arith('*'),
             "/" => self.arith('/'),
             "chs" => self.chs(),
+            // Complex (HP-42S): merge/split, display mode, and CPXRES/REALRES.
+            "complex" => self.complex_op(),
+            "rect" => {
+                self.polar = false;
+                Ok(())
+            }
+            "polar" => {
+                self.polar = true;
+                Ok(())
+            }
+            "cpxres" => {
+                self.cpxres = true;
+                Ok(())
+            }
+            "realres" => {
+                self.cpxres = false;
+                Ok(())
+            }
             "swap" => self.swap(),
             "drop" => self.pop_unchecked().map(|_| ()),
             "dup" => self.dup(),
@@ -982,7 +1016,7 @@ impl Calc {
     fn peek_int(&self, depth: usize, what: &'static str) -> Result<&Integer, CalcError> {
         match &self.stack[self.stack.len() - 1 - depth] {
             Value::Int(i) => Ok(i),
-            Value::Real(_) => Err(e_domain(what)),
+            Value::Real(_) | Value::Complex(_) => Err(e_domain(what)),
         }
     }
 
@@ -998,6 +1032,7 @@ impl Calc {
                     Err(e_domain(what))
                 }
             }
+            Value::Complex(_) => Err(e_domain(what)),
         }
     }
 
@@ -1125,6 +1160,19 @@ impl Calc {
             };
             let v = self.canon_flagged(exact);
             self.stack.push(Value::Int(v));
+        } else if self.stack[len - 1].is_complex() || self.stack[len - 2].is_complex() {
+            // Complex arithmetic (HP-42S: the result stays a single complex
+            // object even when the imaginary part is zero).
+            let b = self.pop_x().to_complex(self.prec);
+            let a = self.stack.pop().expect("validated").to_complex(self.prec);
+            let r = match op {
+                '+' => a.add(&b),
+                '-' => a.sub(&b),
+                '*' => a.mul(&b),
+                '/' => a.div(&b),
+                _ => unreachable!(),
+            };
+            self.stack.push(Value::Complex(r));
         } else {
             let b = self.pop_x().to_real(self.prec);
             let a = self.stack.pop().expect("validated").to_real(self.prec);
@@ -1136,6 +1184,24 @@ impl Calc {
                 _ => unreachable!(),
             };
             self.stack.push(Value::Real(r));
+        }
+        Ok(())
+    }
+
+    /// HP-42S COMPLEX: merge Y (real) + X (imaginary) into one complex; applied
+    /// to a complex, split it back into Y = real part, X = imaginary part.
+    fn complex_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        if self.stack.last().map(Value::is_complex).unwrap_or(false) {
+            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            self.stack.push(Value::Real(z.real(self.prec)));
+            self.stack.push(Value::Real(z.imag(self.prec)));
+        } else {
+            self.need(2)?;
+            let im = self.pop_x().to_real(self.prec);
+            let re = self.stack.pop().expect("validated").to_real(self.prec);
+            self.stack
+                .push(Value::Complex(Complex::from_reals(self.prec, &re, &im)));
         }
         Ok(())
     }
@@ -1528,6 +1594,7 @@ impl Calc {
         let v = match self.pop_x() {
             Value::Int(x) => Value::Int(self.canon_flagged(-x)),
             Value::Real(f) => Value::Real(-f),
+            Value::Complex(z) => Value::Complex(z.neg()),
         };
         self.stack.push(v);
         Ok(())
@@ -1749,6 +1816,8 @@ impl Calc {
         let v = match self.pop_x() {
             Value::Int(x) => Value::Int(self.canon_flagged(x.abs())),
             Value::Real(f) => Value::Real(f.abs()),
+            // |z| — the magnitude, a real (HP-42S).
+            Value::Complex(z) => Value::Real(z.abs(self.prec)),
         };
         self.stack.push(v);
         Ok(())
@@ -1835,6 +1904,7 @@ impl Calc {
                 let g = f.clone();
                 Value::Real(f * g)
             }
+            Value::Complex(z) => Value::Complex(z.mul(&z)),
         };
         self.stack.push(v);
         Ok(())
@@ -1915,6 +1985,7 @@ impl Calc {
         self.need(1)?;
         match self.stack.last().expect("validated") {
             Value::Int(_) => Ok(()),
+            Value::Complex(_) => Err(e_domain("cannot convert a complex to an integer")),
             Value::Real(f) => {
                 if f.is_nan() || f.is_inf() {
                     return Err(e_domain("cannot convert nan/inf to an integer"));
@@ -1930,9 +2001,13 @@ impl Calc {
     /// FRAC — fractional part; 0 for integers (kind-preserving).
     fn frac(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
+        if self.stack.last().map(Value::is_complex).unwrap_or(false) {
+            return Err(e_domain("frac undefined for a complex"));
+        }
         let v = match self.pop_x() {
             Value::Int(_) => Value::Int(Integer::new()),
             Value::Real(f) => Value::Real(f.frac()),
+            Value::Complex(_) => unreachable!("guarded above"),
         };
         self.stack.push(v);
         Ok(())

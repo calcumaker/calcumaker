@@ -6,9 +6,9 @@
 use alloc::format;
 use alloc::string::{String, ToString};
 
-use gmp_mpfr_nostd::Float;
+use gmp_mpfr_nostd::{Complex, Float};
 
-use crate::calc::{encode_bits, Calc, FloatFmt, Radix};
+use crate::calc::{encode_bits, AngleMode, Calc, FloatFmt, Radix};
 use crate::value::Value;
 
 /// Decimal significant digits worth showing for a given binary precision.
@@ -54,6 +54,36 @@ pub(crate) fn format_radix(v: &Value, c: &Calc, radix: Radix) -> String {
             }
         }
         Value::Real(f) => format_real(f, c.prec(), c.float_fmt()),
+        Value::Complex(z) => format_complex(z, c),
+    }
+}
+
+/// Format a complex number: `a+bi` (rectangular) or `r ∠ θ` (polar, θ in the
+/// current angle unit) — HP-42S RECT/POLAR.
+fn format_complex(z: &Complex, c: &Calc) -> String {
+    let (prec, fmt) = (c.prec(), c.float_fmt());
+    if c.polar() {
+        let r = format_real(&z.abs(prec), prec, fmt);
+        let theta = format_real(&angle_out(z.arg(prec), c.angle_mode(), prec), prec, fmt);
+        format!("{r} \u{2220} {theta}")
+    } else {
+        let re = format_real(&z.real(prec), prec, fmt);
+        let im = format_real(&z.imag(prec), prec, fmt);
+        // `im` already carries its own sign; join without doubling it.
+        if im.starts_with('-') {
+            format!("{re}{im}i")
+        } else {
+            format!("{re}+{im}i")
+        }
+    }
+}
+
+/// Convert an angle in radians to the display angle unit (polar θ / complex).
+fn angle_out(rad: Float, mode: AngleMode, prec: u32) -> Float {
+    match mode {
+        AngleMode::Rad => rad,
+        AngleMode::Deg => rad * Float::from_i64(prec, 180) / Float::pi(prec),
+        AngleMode::Grad => rad * Float::from_i64(prec, 200) / Float::pi(prec),
     }
 }
 

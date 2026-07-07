@@ -537,10 +537,24 @@ impl Calc {
     }
 
     /// Format the top of stack (X) for the display; empty string if the stack is
-    /// empty.
+    /// empty. This is the **full working-precision** rendering (respects
+    /// FIX/SCI/ENG but, in `Auto`, shows all `prec`-worth of digits). For what
+    /// the physical display actually shows — clamped + rounded to the digit
+    /// window — use [`Calc::show_fit`].
     pub fn display(&self) -> String {
         match self.stack.last() {
             Some(v) => crate::format::format(v, self),
+            None => String::new(),
+        }
+    }
+
+    /// The X readout **as the hardware display renders it**: the top of stack
+    /// fitted to a `cells`-wide digit window (e.g. `seg7::DIGITS_PER_ROW`),
+    /// applying the same precision limit + rounding the 7-seg glass uses (this
+    /// is what `App::text_rows` shows). Empty string if the stack is empty.
+    pub fn show_fit(&self, cells: usize) -> String {
+        match self.stack.last() {
+            Some(v) => crate::format::format_fit(v, self, cells),
             None => String::new(),
         }
     }

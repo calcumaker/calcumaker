@@ -10,7 +10,7 @@
 //! then owns the ACM REPL loop and the HID writer. The engine lives here for
 //! now — once the matrix/display are wired it moves up to the shared `App`.
 
-use calcumaker_core::Calc;
+use calcumaker_core::{seg7, Calc};
 use embassy_executor::Spawner;
 use embassy_stm32::usb::{Driver, InterruptHandler};
 use embassy_stm32::{bind_interrupts, peripherals, Peri};
@@ -156,7 +156,7 @@ async fn process(
         return Ok(());
     }
     if line == "type" {
-        let x = calc.display();
+        let x = calc.show_fit(seg7::DIGITS_PER_ROW);
         type_string(hid, x.as_bytes()).await;
         write(acm, b"(typed X over HID)\r\n").await?;
         return Ok(());
@@ -164,8 +164,10 @@ async fn process(
     for tok in line.split_whitespace() {
         let _ = calc.input(tok); // engine validates arity; errors are non-fatal
     }
+    // Show X as the hardware display renders it — the digit-window precision
+    // limit + rounding (show_fit), not the full working-precision value.
     write(acm, b"= ").await?;
-    write(acm, calc.display().as_bytes()).await?;
+    write(acm, calc.show_fit(seg7::DIGITS_PER_ROW).as_bytes()).await?;
     write(acm, b"\r\n").await
 }
 

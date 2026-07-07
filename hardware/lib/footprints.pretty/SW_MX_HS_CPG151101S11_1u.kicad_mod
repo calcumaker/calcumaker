@@ -564,7 +564,7 @@
 	(model "${KIPRJMOD}/../lib/3dmodels/SW_Cherry_MX_1.00u_PCB.step"
 		(offset (xyz 0 0 -1.6))
 		(scale (xyz 1 1 1))
-		(rotate (xyz 180 0 0))
+		(rotate (xyz 0 180 0))
 	)
 	(model "${KIPRJMOD}/../lib/3dmodels/HS_CPG151101S11_MX.step"
 		(offset

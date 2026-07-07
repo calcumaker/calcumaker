@@ -20,12 +20,34 @@ extern crate alloc;
 
 use core::alloc::Layout;
 use cortex_m_rt::entry;
-use panic_halt as _;
 
 use calcumaker_core::{App, Key};
 
+// Panic handler + logger. Exactly one panic handler may be linked:
+//   - production (default features): panic-halt (spin).
+//   - `nucleo` validation target (--no-default-features --features nucleo):
+//     panic-probe reports the panic over RTT, and defmt-rtt is the log sink.
+#[cfg(feature = "panic-halt")]
+use panic_halt as _;
+#[cfg(feature = "nucleo")]
+use {defmt_rtt as _, panic_probe as _};
+
+// Logging shim: `log_info!` / `log_error!` map to defmt on the Nucleo target and
+// compile to nothing otherwise, so the self-test payload (src/selftest.rs) is
+// shared verbatim between the validation and production images. Defined before
+// the modules that use them so they are in textual scope.
+#[cfg(feature = "nucleo")]
+macro_rules! log_info { ($($t:tt)*) => { ::defmt::info!($($t)*) }; }
+#[cfg(not(feature = "nucleo"))]
+macro_rules! log_info { ($($t:tt)*) => {{}}; }
+#[cfg(feature = "nucleo")]
+macro_rules! log_error { ($($t:tt)*) => { ::defmt::error!($($t)*) }; }
+#[cfg(not(feature = "nucleo"))]
+macro_rules! log_error { ($($t:tt)*) => {{}}; }
+
 mod display;
 mod keypad;
+mod selftest;
 
 // TLSF (vs LLFF) handles the variable-size bignum allocation churn with less
 // fragmentation; GMP allocates here via the C shim below.
@@ -186,6 +208,38 @@ fn exercise_keys(app: &mut App) {
 #[entry]
 fn main() -> ! {
     init_heap();
+    log_info!("calcumaker-fw boot; running engine self-test");
+
+    // On the validation target, time the self-test with the DWT cycle counter so
+    // we know how long the arbitrary-precision stack actually takes on silicon.
+    #[cfg(feature = "nucleo")]
+    let dwt_start = {
+        let mut cp = cortex_m::Peripherals::take().unwrap();
+        cp.DCB.enable_trace();
+        cp.DWT.enable_cycle_counter();
+        cortex_m::peripheral::DWT::cycle_count()
+    };
+
+    // Validation payload: replay the golden RPN cases and check the on-target
+    // GMP/MPFR reproduces the host results. On the Nucleo target this streams
+    // PASS/FAIL over RTT; in the production image it runs silently (output
+    // compiled out) but still forces the whole math stack to be linked + run.
+    let report = selftest::run_all();
+
+    // Clocks are NOT configured yet (no embassy bring-up), so the CPU runs at the
+    // STM32U5 reset default: MSIS = 4 MHz. Production will run at 160 MHz (~40x).
+    #[cfg(feature = "nucleo")]
+    {
+        let cycles = cortex_m::peripheral::DWT::cycle_count().wrapping_sub(dwt_start);
+        log_info!(
+            "self-test: {=u32} CPU cycles (~{=u32} ms @ 4 MHz reset clock)",
+            cycles,
+            cycles / 4_000
+        );
+    }
+    // Keep the tally live so it (and its fields) aren't dead-stripped/warned in
+    // the silent production build, where the log macros compile to nothing.
+    core::hint::black_box((report.passed, report.failed, report.ok()));
 
     // Exercise the full engine so the linker keeps every operation + the GMP /
     // MPFR code they reach (this is the "does the whole stack link" image).

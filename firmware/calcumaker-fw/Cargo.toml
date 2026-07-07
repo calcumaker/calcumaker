@@ -14,7 +14,17 @@ readme = "README.md"
 # heap locking needs (single-core U575: disable interrupts).
 cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = "0.7"
-panic-halt = "1.0"
+# Production panic handler (spin). The `nucleo` validation target swaps this for
+# panic-probe so panics print over RTT — see [features] below.
+panic-halt = { version = "1.0", optional = true }
+
+# --- Nucleo-U575ZI-Q validation target (feature `nucleo`) --------------------
+# RTT + defmt so the self-test streams its results back through the ST-LINK, and
+# panic-probe so a panic is reported (not silently spun). These are the ONLY
+# additions vs. the production image; all engine + self-test code is shared.
+defmt       = { version = "0.3", optional = true }
+defmt-rtt   = { version = "0.4", optional = true }
+panic-probe = { version = "0.3", features = ["print-defmt"], optional = true }
 # Heap for the arbitrary-precision allocator. GMP is pointed at it via
 # mp_set_memory_functions. TLSF: better fragmentation behaviour for the
 # variable-size bignum allocations.
@@ -26,6 +36,15 @@ embedded-alloc = { version = "0.6", default-features = false, features = ["tlsf"
 # GMP_MPFR_LIBDIR — see build.rs). GMP/MPFR's C allocator (malloc/free/realloc/
 # calloc) is shimmed onto the Rust global heap in main.rs.
 calcumaker-core = { path = "../calcumaker-core", default-features = false }
+
+[features]
+# Production link-smoke image: spin-on-panic, no logging (self-test still runs;
+# its output is compiled out). This is the default `cargo build` for the RGT6.
+default = ["panic-halt"]
+# Nucleo-U575ZI-Q validation target. Build/flash with `make run-nucleo` (which
+# passes --no-default-features so panic-halt is dropped in favour of
+# panic-probe). Enables RTT/defmt result logging + defmt.x (see build.rs).
+nucleo = ["dep:defmt", "dep:defmt-rtt", "dep:panic-probe"]
 
 # --- MCU HAL: STM32U575ZGT6 (selected — see ../../DESIGN.md) ------------------
 # Move to embassy-stm32 with the U575 chip feature (verify exact feature name):

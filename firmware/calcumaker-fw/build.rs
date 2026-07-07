@@ -25,6 +25,13 @@ fn main() {
     println!("cargo:rerun-if-changed=memory.x");
     println!("cargo:rerun-if-changed=build.rs");
 
+    // Nucleo validation target: defmt needs its linker script (`defmt.x`, put on
+    // the search path by the defmt crate's own build script) to place the RTT
+    // log-string table. Only added under `--features nucleo`.
+    if env::var_os("CARGO_FEATURE_NUCLEO").is_some() {
+        println!("cargo:rustc-link-arg=-Tdefmt.x");
+    }
+
     // Cross-built GMP + MPFR for the calculator engine. Point GMP_MPFR_LIBDIR at
     // the install prefix produced by `firmware/scripts/build-gmp-mpfr-arm.sh`
     // (default: firmware/vendor/gmp-mpfr-arm). mpfr before gmp (mpfr -> gmp).

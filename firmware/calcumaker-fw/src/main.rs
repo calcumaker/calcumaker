@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-//! Calcumaker 16 firmware — **cross-compile / link smoke image**.
+//! Calcumaker 16 firmware — MCU bring-up on **embassy-stm32** (STM32U575).
 //!
 //! Everything calculator lives in **`calcumaker-core`** (host-tested, emulated
 //! by `calcumaker-emu`): the RPN engine over GMP + MPFR, the keymap + f/g shift
@@ -10,18 +10,20 @@
 //! linked against the same FFI (`gmp-mpfr-nostd`); their C allocator
 //! (malloc/free/realloc/calloc) is shimmed onto the Rust global heap below.
 //!
-//! `main` here does NOT wire real GPIO/peripherals yet — it **exercises every
-//! engine operation** (all ~150 `Calc` tokens + a full key/shift sweep + the
-//! display/format/7-seg paths) so the linker keeps the whole engine and the
-//! image proves the full arbitrary-precision stack cross-compiles and links.
-//! See ../../DESIGN.md → Numeric core.
+//! Bring-up so far: 160 MHz clocks (`clock`), the arbitrary-precision engine
+//! self-test (`selftest`), and USB (composite CDC-ACM REPL + HID keyboard,
+//! `usb`). The keyboard matrix / TM1640 display are still stubs (`keypad`,
+//! `display`) pending the board. See ../../DESIGN.md → firmware bring-up.
 
 extern crate alloc;
 
 use core::alloc::Layout;
-use cortex_m_rt::entry;
 
 use calcumaker_core::{App, Key};
+use embassy_executor::Spawner;
+use embassy_stm32::executor::Executor; // stm32 low-power executor (sleeps via low_power::sleep)
+use embassy_time::Instant;
+use static_cell::StaticCell;
 
 // Panic handler + logger. Exactly one panic handler may be linked:
 //   - production (default features): panic-halt (spin).
@@ -45,9 +47,11 @@ macro_rules! log_error { ($($t:tt)*) => { ::defmt::error!($($t)*) }; }
 #[cfg(not(feature = "nucleo"))]
 macro_rules! log_error { ($($t:tt)*) => {{}}; }
 
+mod clock;
 mod display;
 mod keypad;
 mod selftest;
+mod usb;
 
 // TLSF (vs LLFF) handles the variable-size bignum allocation churn with less
 // fragmentation; GMP allocates here via the C shim below.
@@ -205,38 +209,41 @@ fn exercise_keys(app: &mut App) {
     }
 }
 
-#[entry]
+#[cortex_m_rt::entry]
 fn main() -> ! {
     init_heap();
-    log_info!("calcumaker-fw boot; running engine self-test");
+    // Use embassy-stm32's low-power executor: when idle it calls low_power::sleep,
+    // entering the deepest STOP mode the peripheral stop-refcounts allow. While
+    // USB is enumerated its Stop1 refcount holds the part in Sleep (WFI); STOP2
+    // is only reached once USB is gated. See DESIGN.md → Low-power & wake.
+    static EXECUTOR: StaticCell<Executor> = StaticCell::new();
+    EXECUTOR.init(Executor::new()).run(|spawner| {
+        // `#[task]` returns Result<SpawnToken, _> in embassy-executor 0.10.
+        spawner.spawn(amain(spawner).unwrap());
+    });
+}
 
-    // On the validation target, time the self-test with the DWT cycle counter so
-    // we know how long the arbitrary-precision stack actually takes on silicon.
-    #[cfg(feature = "nucleo")]
-    let dwt_start = {
-        let mut cp = cortex_m::Peripherals::take().unwrap();
-        cp.DCB.enable_trace();
-        cp.DWT.enable_cycle_counter();
-        cortex_m::peripheral::DWT::cycle_count()
-    };
+#[embassy_executor::task]
+async fn amain(spawner: Spawner) {
+    // Bring up the U575: 160 MHz SYSCLK + 48 MHz USB clock + LSI/LPTIM (clock.rs).
+    let p = embassy_stm32::init(clock::config());
+    log_info!("calcumaker-fw boot @ 160 MHz; running engine self-test");
 
     // Validation payload: replay the golden RPN cases and check the on-target
     // GMP/MPFR reproduces the host results. On the Nucleo target this streams
     // PASS/FAIL over RTT; in the production image it runs silently (output
     // compiled out) but still forces the whole math stack to be linked + run.
+    let t0 = Instant::now();
     let report = selftest::run_all();
-
-    // Clocks are NOT configured yet (no embassy bring-up), so the CPU runs at the
-    // STM32U5 reset default: MSIS = 4 MHz. Production will run at 160 MHz (~40x).
-    #[cfg(feature = "nucleo")]
-    {
-        let cycles = cortex_m::peripheral::DWT::cycle_count().wrapping_sub(dwt_start);
-        log_info!(
-            "self-test: {=u32} CPU cycles (~{=u32} ms @ 4 MHz reset clock)",
-            cycles,
-            cycles / 4_000
-        );
-    }
+    // Underscore-prefixed so it isn't flagged unused in the production build,
+    // where log_info! compiles to nothing.
+    let _elapsed_us = t0.elapsed().as_micros();
+    log_info!(
+        "self-test: {=u64} µs @ 160 MHz ({=u32} passed, {=u32} failed)",
+        _elapsed_us,
+        report.passed,
+        report.failed,
+    );
     // Keep the tally live so it (and its fields) aren't dead-stripped/warned in
     // the silent production build, where the log macros compile to nothing.
     core::hint::black_box((report.passed, report.failed, report.ok()));
@@ -253,16 +260,7 @@ fn main() -> ! {
     core::hint::black_box(app.x_full());
     core::hint::black_box(app.aux_lines());
 
-    // Board skeleton (no real GPIO yet — see keypad.rs / display.rs TODOs).
-    let mut display = display::Display::new();
-    let mut keypad = keypad::Keypad::new();
-
-    loop {
-        if let Some((row, col)) = keypad.scan() {
-            app.press(row, col);
-            display.render(&[[0; display::DIGITS_PER_ROW]; display::ROWS]);
-        }
-        // TODO(mcu): enter low-power Stop mode, wake on KB_IRQ from the G0.
-        cortex_m::asm::wfi();
-    }
+    // USB: composite CDC-ACM (engine REPL) + HID keyboard on OTG_FS. Owns the
+    // device loop; the calculator engine lives inside it for now.
+    usb::run(spawner, p.USB_OTG_FS, p.PA12, p.PA11).await;
 }

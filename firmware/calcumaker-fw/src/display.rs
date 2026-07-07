@@ -9,6 +9,9 @@
 //! a..g + dp) that this driver pushes to the chips verbatim — the emulator
 //! renders the same bytes. Skeleton — bit-bang/timing wired after MCU bring-up.
 
+// Placeholder until the TM1640 bus is wired (post-USB bring-up).
+#![allow(dead_code)]
+
 /// Rows shown at once. Board is laid out for 3; set to 2 for the 2-row build
 /// (top row unpopulated). Must match `calcumaker_core::seg7::DISPLAY_ROWS`.
 pub const ROWS: usize = 3;

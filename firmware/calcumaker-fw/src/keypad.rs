@@ -10,6 +10,9 @@
 //! link frames into `(row, col)` presses, which `calcumaker_core::App::press`
 //! resolves and applies. The transport is wired after MCU bring-up.
 
+// Placeholder until the keyboard-link intake is wired (post-USB bring-up).
+#![allow(dead_code)]
+
 /// Matrix dimensions — must match `calcumaker_core::keys::{ROWS, COLS}`.
 /// (Consumed by the keyboard-link adapter once the protocol is wired.)
 #[allow(dead_code)]

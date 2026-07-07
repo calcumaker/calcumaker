@@ -37,20 +37,50 @@ embedded-alloc = { version = "0.6", default-features = false, features = ["tlsf"
 # calloc) is shimmed onto the Rust global heap in main.rs.
 calcumaker-core = { path = "../calcumaker-core", default-features = false }
 
-[features]
-# Production link-smoke image: spin-on-panic, no logging (self-test still runs;
-# its output is compiled out). This is the default `cargo build` for the RGT6.
-default = ["panic-halt"]
-# Nucleo-U575ZI-Q validation target. Build/flash with `make run-nucleo` (which
-# passes --no-default-features so panic-halt is dropped in favour of
-# panic-probe). Enables RTT/defmt result logging + defmt.x (see build.rs).
-nucleo = ["dep:defmt", "dep:defmt-rtt", "dep:panic-probe"]
+# --- Embassy async HAL + runtime ---------------------------------------------
+# One crate serves both boards: the MCU chip feature (stm32u575zi for the Nucleo
+# vs stm32u575rg for production) is selected by our own nucleo/production
+# features below. `memory-x` makes embassy supply the linker memory map per chip
+# (so the local memory.x is gone; the ZI's 2 MB vs RG's 1 MB is handled for us).
+# `low-power` + the stm32 low-power executor: when idle it enters the deepest
+# sleep the peripheral stop-refcounts allow. USB OTG is stop_mode=Stop1, so while
+# the console is enumerated the part stays in Sleep (WFI, USB-safe); deeper STOP
+# is only reached once USB is gated. NOTE: the general TIM time driver
+# (time-driver-any) can't keep time across STOP, so this pass delivers Sleep-mode
+# idling; deep STOP2 with timekeeping needs an RTC time driver, which
+# embassy-stm32 0.6 doesn't yet provide for the U5 (its LPTIM driver miscompiles
+# against this metapac). Revisit on an embassy bump. See DESIGN.md → Low-power.
+embassy-stm32 = { version = "0.6", default-features = false, features = [
+    "rt", "memory-x", "time-driver-any", "low-power", "executor-thread", "exti", "unstable-pac",
+] }
+# The executor itself + its `__pender` come from embassy-stm32's low-power
+# `executor-thread` (see above); here we only need the task macro / Spawner /
+# raw executor, so no arch/executor features (they'd double-define `__pender`).
+embassy-executor = { version = "0.10" }
+embassy-time = "0.5"
+embassy-futures = "0.1"
+embassy-usb = "0.6"
+# HID report descriptors (KeyboardReport) for the composite device. Must match
+# the version embassy-usb links (0.10) so the AsInputReport traits unify.
+usbd-hid = "0.10"
+static_cell = "2"
 
-# --- MCU HAL: STM32U575ZGT6 (selected — see ../../DESIGN.md) ------------------
-# Move to embassy-stm32 with the U575 chip feature (verify exact feature name):
-#   embassy-stm32   = { version = "0.2", features = ["stm32u575zg", "memory-x", "time-driver-any"] }
-#   embassy-executor = { version = "0.6", features = ["arch-cortex-m", "executor-thread"] }
-#   embassy-time    = "0.3"
+[features]
+# Production image: STM32U575RGT6, spin-on-panic, no logging (self-test still
+# runs; its output is compiled out). This is the default `cargo build`.
+default = ["panic-halt", "production"]
+# Production MCU chip select (LQFP-64, 1 MB).
+production = ["embassy-stm32/stm32u575rg"]
+# Nucleo-U575ZI-Q validation target (STM32U575ZIT6Q, 2 MB). Build/flash with
+# `make run-nucleo` (passes --no-default-features so `production`/panic-halt drop
+# out in favour of the ZI chip + panic-probe). Enables RTT/defmt result logging
+# (+ defmt.x, see build.rs) and routes embassy's own logs to defmt.
+nucleo = [
+    "dep:defmt", "dep:defmt-rtt", "dep:panic-probe",
+    "embassy-stm32/stm32u575zi",
+    "embassy-stm32/defmt", "embassy-executor/defmt", "embassy-usb/defmt",
+    "embassy-time/defmt", "embassy-time/defmt-timestamp-uptime",
+]
 
 # Bignum code is large; favour size and keep symbols for debugging.
 [profile.release]

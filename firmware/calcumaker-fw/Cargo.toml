@@ -93,11 +93,15 @@ stop-demo = []
 # (tick-hz-32_768 / embassy#3504). Real STOP2 drops the debug link.
 stop-demo-debug = ["stop-demo", "embassy-stm32/low-power-debug-with-sleep"]
 
-# Bignum code is large; favour size and keep symbols for debugging.
+# Flash-constrained U575 (1 MB on the production RGT6): favour size hard.
+# opt-level "z" (over "s") saves ~18 KB; panic=abort drops the unwinding path
+# (never used in no_std). debug=true keeps symbols for defmt/probe-rs (debug info
+# isn't loaded to flash, so it's free). C libs (GMP/MPFR) are built -Os separately.
 [profile.release]
-opt-level = "s"
+opt-level = "z"
 lto = true
 codegen-units = 1
+panic = "abort"
 debug = true
 
 [profile.dev]

@@ -85,7 +85,15 @@ How it works (`bootloader.rs` + `scripts/dfu-flash.sh`):
    session clears the flags it set — which resets into the new app.
 
 Physical **BOOT0** high at reset reaches the same ROM DFU as a hardware backup.
-`dfu-util` needs USB access (sudo or a `0483:df11` udev rule).
+
+`dfu-util` / `probe-rs` need USB access. Install the versioned udev rule once for
+sudo-free access to the ST-Link, the ROM DFU (`0483:df11`), and the app:
+
+```bash
+sudo cp ../scripts/70-calcumaker.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger --subsystem-match=usb
+```
+(Without it, run `make dfu` with `DFU_UTIL="sudo dfu-util"`.)
 
 ## Nucleo-U575ZI-Q validation target
 

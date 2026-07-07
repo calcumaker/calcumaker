@@ -18,8 +18,9 @@ BIN="${1:?usage: dfu-flash.sh <firmware.elf|.bin>}"
 OPTR_APP="${OPTR_APP:-0x1feff8aa}"          # nSWBOOT0=1,nBOOT0=1 -> boot main flash
 APP_ID="1209:c160"                          # the running Calcumaker app
 DFU_ID="0483:df11"                          # STM32 system ROM DFU
+# Needs USB access to 0483:df11 — install the udev rule (see README) or run
+# with sudo. Override with DFU_UTIL="sudo dfu-util" if you lack the rule.
 DFU=${DFU_UTIL:-dfu-util}
-[ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null && DFU="sudo $DFU"
 
 # ELF -> raw binary if needed.
 if file -b "$BIN" | grep -q ELF; then

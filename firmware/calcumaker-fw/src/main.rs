@@ -260,7 +260,32 @@ async fn amain(spawner: Spawner) {
     core::hint::black_box(app.x_full());
     core::hint::black_box(app.aux_lines());
 
+    // STOP-mode demo (opt-in): bring up NO USB — the OTG peripheral's Stop1
+    // refcount would otherwise pin the part in Sleep. Idle in 3 s bursts so the
+    // low-power executor drops to STOP2 (RTC-woken) between them, and log the
+    // uptime each wake: it must track real time across STOP, which is the
+    // embassy#3504 / tick-hz-32_768 correctness check.
+    #[cfg(feature = "stop-demo")]
+    {
+        let _ = (spawner, p.USB_OTG_FS, p.PA12, p.PA11);
+        // Boot grace period: idle in short (< min_stop_pause) bursts for a few
+        // seconds so the executor stays in *Sleep* (SWD/RTT alive) before it
+        // starts entering deep STOP2 (which powers down the debug port). Without
+        // this, a low-power image that STOPs within ~10 ms of boot locks out the
+        // ST-Link — recovery then needs st-flash under reset. See DESIGN.md.
+        for _ in 0..50 {
+            embassy_time::Timer::after(embassy_time::Duration::from_millis(100)).await;
+        }
+        let mut n = 0u32;
+        loop {
+            log_info!("stop-demo tick {=u32} @ {=u64} ms uptime", n, Instant::now().as_millis());
+            n += 1;
+            embassy_time::Timer::after(embassy_time::Duration::from_secs(3)).await;
+        }
+    }
+
     // USB: composite CDC-ACM (engine REPL) + HID keyboard on OTG_FS. Owns the
     // device loop; the calculator engine lives inside it for now.
+    #[cfg(not(feature = "stop-demo"))]
     usb::run(spawner, p.USB_OTG_FS, p.PA12, p.PA11).await;
 }

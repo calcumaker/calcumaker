@@ -57,7 +57,10 @@ embassy-stm32 = { version = "0.6", default-features = false, features = [
 # `executor-thread` (see above); here we only need the task macro / Spawner /
 # raw executor, so no arch/executor features (they'd double-define `__pender`).
 embassy-executor = { version = "0.10" }
-embassy-time = "0.5"
+# tick-hz-32768 matches the LSI/RTC granularity: with the default 1 MHz tick the
+# U5 low-power time driver miscalculates STOP durations (embassy#3504, filed on a
+# Nucleo-U575ZI-Q). 32 kHz ticks are plenty for our ms-scale timing.
+embassy-time = { version = "0.5", features = ["tick-hz-32_768"] }
 embassy-futures = "0.1"
 embassy-usb = "0.6"
 # HID report descriptors (KeyboardReport) for the composite device. Must match
@@ -81,6 +84,14 @@ nucleo = [
     "embassy-stm32/defmt", "embassy-executor/defmt", "embassy-usb/defmt",
     "embassy-time/defmt", "embassy-time/defmt-timestamp-uptime",
 ]
+# Low-power validation: skip USB (which would hold the Stop1 refcount) and idle
+# in bursts so the executor enters STOP2 between them. Combine with `nucleo`:
+# `--no-default-features --features nucleo,stop-demo`. See main.rs.
+stop-demo = []
+# Same demo but keeps the debug/RTT link alive (Sleep instead of deep STOP), so
+# the per-wake timing is observable over RTT — validates the RTC time accounting
+# (tick-hz-32_768 / embassy#3504). Real STOP2 drops the debug link.
+stop-demo-debug = ["stop-demo", "embassy-stm32/low-power-debug-with-sleep"]
 
 # Bignum code is large; favour size and keep symbols for debugging.
 [profile.release]

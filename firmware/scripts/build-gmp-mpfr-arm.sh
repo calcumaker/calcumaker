@@ -33,8 +33,12 @@ export RANLIB="$TARGET-ranlib"
 # function/data-sections keep the final firmware small via --gc-sections.
 # -std=gnu17: GCC 15 defaults to C23, where `void g(){}` means "no args" and
 # breaks GMP 6.3.0's old-style configure probes (and some .c) — pin pre-C23.
-export CFLAGS="$ARCH_FLAGS -O2 -ffunction-sections -fdata-sections -std=gnu17 --specs=nosys.specs"
-JOBS="$(sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+# Optimise for SIZE by default: GMP+MPFR are ~200 KB of the image and the STM32U575
+# is flash-constrained (1 MB on the production RGT6); the math has huge time
+# headroom at 160 MHz. Override with OPT=-O2 for a speed build / size comparison.
+OPT="${OPT:--Os}"
+export CFLAGS="$ARCH_FLAGS $OPT -ffunction-sections -fdata-sections -std=gnu17 --specs=nosys.specs"
+JOBS="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
 
 echo "==> toolchain: $($CC --version | head -1)"
 echo "==> output:    $OUT"

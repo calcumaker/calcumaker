@@ -46,14 +46,15 @@ and talks to the U575 over I²C/UART (keyscanning is off the MCU board).*
 | **Scanner MCU (U1)** | **STM32G031K8U6** | **C432207** | UFQFPN-32 (`UFQFPN-32-1EP_5x5mm`) | ✅ ~$0.60; scans matrix + drives LEDs + I²C/UART to U575; QFN like tsumikoro's G0 |
 | G0 decoupling | 100nF ×3 + 4.7µF (C1–C4) | C1525 / — | 0402 / 0603 | VDD/VDDA + bulk |
 | G0 NRST / BOOT0 | 100nF (C5) + 10k (R6) | C1525 / C25744 | 0402 | reset cap + BOOT0 pulldown |
-| Keyswitches ×50 | Cherry MX (full size) | — | SW_Cherry_MX_1.00u_PCB | 5×10 matrix → the **G0** (local scan); Kailh hot-swap optional; SW1–50 |
+| Keyswitches ×50 | Cherry MX (full size, user-supplied) | — | **`calcumaker:SW_MX_HS_CPG151101S11_1u`** (hot-swap, vendored) | 5×10 → the **G0**; **place-on-back** (socket → bottom, keycaps up); **hot-swap only** — thru-holes are 0.15mm-ring socket pass-throughs, NOT solder pads; SW1–50 |
+| Hot-swap socket ×50 | **Kailh CPG151101S11** | **C41430893** | (SMD pads in the switch fp) | ✅ ~93k stock, JLCPCB-assemblable (bottom-side); switches plug in. Solder-in-only would be a separate board rev (fp `SW_Cherry_MX_1.00u_PCB`) |
 | Key diodes ×50 | 1N4148W | C81598 | SOD-123 | ✅ one per key (NKRO); D1–D50 |
 | Annunciator LED f (gold) | Everlight 19-213/Y2C (yellow) | C72038 | **0603** | ✅ D51, beside the f key (driven by the G0) |
 | Annunciator LED g (blue) | XL-1608UBC-04 | C965807 | **0603** | ✅ D52, beside the g key |
 | Annunciator LEDs C / G / low-batt | KT-0603R (red) ×3 | C2286 | **0603** | ✅ D53–D55, top edge under the display bezel |
 | Annunciator resistors ×5 | 470 Ω | C25117 | 0402 | ✅ R1–R5 (~1.3–2.8 mA @3V3; tune per color at bring-up) |
 | G0 programming (J2) | SWD Tag-Connect TC2030-NL | — | pogo pad | ✅ (bare land) — or reflash via the UART/DFU bootloader over J1 |
-| **Per-key RGB ×50 (D56–D105)** | **SK6805-EC15** 1.5×1.5mm single-wire addressable RGB | **C2890035** | `LED_SMD:LED_SK6812_EC15_1.5x1.5mm` | ✅ ~$0.06; smallest serial RGB w/ KiCad fp + stock; one beside each key (hint lighting); daisy-chained off the G0 |
+| **Per-key RGB ×50 (D56–D105)** | **SK6812MINI-E** reverse/bottom-mount addressable RGB | **C5149201** | `LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount` | ✅ ~161k stock; **bottom-mount → single-sided assembly w/ the Kailh sockets**; shines up through the switch; daisy-chained off the G0 |
 | RGB level shifter (U2) | **SN74LVC1G125** single buffer (3V3→VLED data) | **C23654** | SOT-23-5 | ✅ powered from the gated LED rail; /OE→GND; lifts data to LED V_IH |
 | RGB load switch (Q1/Q2) | **AO3401A** P-FET + **2N7002** N-FET + R7–R10/C6/C7 | **C15127** / **C8545** | SOT-23 | ✅ high-side gate on VSYS→VLED; G0 `LED_EN` cuts LEDs in sleep (near-zero leakage) |
 | **MCU mezzanine header (J1)** | **Hirose DF40C-12DP-0.4V** 2×6 0.4mm B2B | **C6224952** | `Connector_Hirose_DF40:…DF40C-12DP-0.4V_2x06` | ✅ mates the MCU receptacle (J5, DF40B-12DS); ~1.5mm stack; carries +VSYS+GND for the RGB; pinout MUST match |

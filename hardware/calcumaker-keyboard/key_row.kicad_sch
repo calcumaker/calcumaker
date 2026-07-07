@@ -5,7 +5,7 @@
 	(uuid "ca1c0000-0000-4000-8000-00000000eb10")
 	(paper "A2")
 	(title_block
-		(title "Calcumaker 16 — Keyboard — Reusable 10-key row (MX + diode + SK6805 RGB)")
+		(title "Calcumaker 16 — Keyboard — Reusable 10-key row (MX + diode + SK6812MINI-E RGB)")
 		(date "2026-07-06")
 		(rev "0.4")
 		(company "calcumaker authors")
@@ -363,7 +363,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "LED:SK6805"
+	(symbol "LED:SK6812"
 		(pin_names
 			(offset 0.254)
 		)
@@ -383,7 +383,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Value" "SK6805"
+		(property "Value" "SK6812"
 			(at 1.27 -5.715 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -394,7 +394,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "LED_SMD:LED_SK6805_PLCC4_2.4x2.7mm_P1.3mm"
+		(property "Footprint" "LED_SMD:LED_SK6812_PLCC4_5.0x5.0mm_P3.2mm"
 			(at 1.27 -7.62 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -406,7 +406,7 @@
 				(justify left top)
 			)
 		)
-		(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/3484/3484_Datasheet.pdf"
+		(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/1138/SK6812+LED+datasheet+.pdf"
 			(at 2.54 -9.525 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -429,7 +429,7 @@
 				)
 			)
 		)
-		(property "ki_keywords" "RGB LED NeoPixel Nano addressable"
+		(property "ki_keywords" "RGB LED NeoPixel addressable"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -440,7 +440,7 @@
 				)
 			)
 		)
-		(property "ki_fp_filters" "LED*SK6805*PLCC*2.4x2.7mm*P1.3mm*"
+		(property "ki_fp_filters" "LED*SK6812*PLCC*5.0x5.0mm*P3.2mm*"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -451,7 +451,7 @@
 				)
 			)
 		)
-		(symbol "SK6805_0_0"
+		(symbol "SK6812_0_0"
 			(text "RGB"
 				(at 2.286 -4.191 0)
 				(effects
@@ -461,7 +461,7 @@
 				)
 			)
 		)
-		(symbol "SK6805_0_1"
+		(symbol "SK6812_0_1"
 			(polyline
 				(pts
 					(xy 1.27 -2.54) (xy 1.778 -2.54)
@@ -558,25 +558,7 @@
 				)
 			)
 		)
-		(symbol "SK6805_1_1"
-			(pin output line
-				(at 7.62 0 180)
-				(length 2.54)
-				(name "DOUT"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
+		(symbol "SK6812_1_1"
 			(pin power_in line
 				(at 0 -7.62 90)
 				(length 2.54)
@@ -587,7 +569,7 @@
 						)
 					)
 				)
-				(number "2"
+				(number "1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -605,7 +587,7 @@
 						)
 					)
 				)
-				(number "3"
+				(number "2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -617,6 +599,24 @@
 				(at 0 7.62 270)
 				(length 2.54)
 				(name "VDD"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at 7.62 0 180)
+				(length 2.54)
+				(name "DOUT"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -643,7 +643,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b54b4e3a-b665-4da4-b02d-d760fc31158a")
+		(uuid "8324d17c-8192-47e9-90f8-983d2a31c308")
 		(property "Reference" "SW1"
 			(at 19.0500 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -652,7 +652,7 @@
 			(at 19.0500 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 15.2400 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -660,8 +660,8 @@
 			(at 15.2400 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "61dbc3f1-965d-4b86-8591-3ff58fba4b7c"))
-		(pin "2" (uuid "0666ff32-dd5b-4c19-8401-d58406ea20a6"))
+		(pin "1" (uuid "7a3b9222-e585-4e5f-8ed8-74c4c87121b6"))
+		(pin "2" (uuid "817717bb-04cc-4827-ac98-f17d19344229"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -695,7 +695,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c6841db6-32b2-4436-92ad-6dd0f6514e91")
+		(uuid "7f077c42-9175-4a55-a72b-33f7ae77732b")
 		(property "Reference" "D1"
 			(at 19.0500 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -724,8 +724,8 @@
 			(at 15.2400 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "3b463dba-b84c-4db2-8cb9-8988ad70006a"))
-		(pin "2" (uuid "675012d9-e451-4758-87b7-d043cc568318"))
+		(pin "1" (uuid "3cfc68f7-d884-494f-8f8f-cadcaacfad3d"))
+		(pin "2" (uuid "81135c7c-9e69-4167-96c5-318a462221ad"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -752,23 +752,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 15.2400 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7d90c5e0-7424-46c1-a2d5-6603c1667d11")
+		(uuid "87c29e0b-b009-48a5-a4ee-48f426ec359a")
 		(property "Reference" "D56"
 			(at 19.0500 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 19.0500 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 15.2400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -776,11 +776,11 @@
 			(at 15.2400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 15.2400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 15.2400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -788,10 +788,10 @@
 			(at 15.2400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "dee912e8-411e-43e1-ae59-892fe6cfb4a9"))
-		(pin "2" (uuid "853d372f-3a3a-4114-a965-94f2f0f35e4c"))
-		(pin "3" (uuid "444998ad-08d0-40db-95fe-e2923e3d032a"))
-		(pin "4" (uuid "180c32b6-09fd-445a-9cfa-84b58b5fcc8d"))
+		(pin "1" (uuid "ffb68464-9d73-4322-8168-c13d84a9c131"))
+		(pin "2" (uuid "0d41e4d5-46f0-487f-807c-98456329e78b"))
+		(pin "3" (uuid "0b5a1972-bf1a-4037-9aa1-294125bf160a"))
+		(pin "4" (uuid "808f9c73-a26a-49b5-946e-fbb62afb7e00"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -825,7 +825,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1cfd8f2e-5e43-4e15-a042-639b2d6ff4ac")
+		(uuid "934886b9-6d5d-427b-8fd8-55df4904e855")
 		(property "Reference" "SW2"
 			(at 54.6100 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -834,7 +834,7 @@
 			(at 54.6100 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 50.8000 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -842,8 +842,8 @@
 			(at 50.8000 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "a64c17d7-1d8e-4183-be2c-9ea0c413483a"))
-		(pin "2" (uuid "49315330-0159-4ec6-8a31-d61f4975abb8"))
+		(pin "1" (uuid "4b92728a-d366-439e-a799-7b00767dfe5a"))
+		(pin "2" (uuid "d388baa3-67d4-43d9-9f59-f4c2a51eb53d"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -877,7 +877,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a2159735-9851-4af5-ad3c-284c1b7c43ea")
+		(uuid "d89de37a-21db-488a-affe-f6b363633b42")
 		(property "Reference" "D2"
 			(at 54.6100 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -906,8 +906,8 @@
 			(at 50.8000 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "0688647a-6f55-4e73-8a2b-a463d36b3a79"))
-		(pin "2" (uuid "04d2e20e-e039-4207-b707-c8d7a0274a25"))
+		(pin "1" (uuid "d8baef6a-e767-424a-9593-6f0594d8d762"))
+		(pin "2" (uuid "d65b974f-335a-4a80-906c-4599169efb30"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -934,23 +934,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 50.8000 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a4ad81d0-17f2-4d89-b37e-03cd50f4b7a3")
+		(uuid "330033fb-ef64-47f2-b98c-dea52e64f4aa")
 		(property "Reference" "D57"
 			(at 54.6100 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 54.6100 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 50.8000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -958,11 +958,11 @@
 			(at 50.8000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 50.8000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 50.8000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -970,10 +970,10 @@
 			(at 50.8000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "78c013f3-01c5-431f-8e40-8341e439d598"))
-		(pin "2" (uuid "29e0b3c5-355b-4f42-9fa6-ea1602900d13"))
-		(pin "3" (uuid "a85d6b5d-7a34-4333-82fc-4666e162af4a"))
-		(pin "4" (uuid "370423b4-31f5-412d-aee3-b9f36e069bc5"))
+		(pin "1" (uuid "dd7fc1bd-8124-406d-9d55-7595b658227a"))
+		(pin "2" (uuid "0244446d-2c28-44ce-99e3-df8871236da9"))
+		(pin "3" (uuid "a808dbb1-cfbc-4088-804a-1b14026fecca"))
+		(pin "4" (uuid "34e3bc47-01d2-4334-a8bb-651ef5f2262d"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1007,7 +1007,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0dd51836-adc5-464b-9d33-083104ca3c33")
+		(uuid "82386eaa-14b3-46d7-8831-1361f852204d")
 		(property "Reference" "SW3"
 			(at 90.1700 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1016,7 +1016,7 @@
 			(at 90.1700 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 86.3600 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1024,8 +1024,8 @@
 			(at 86.3600 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "2b967165-9b20-45c0-8090-7925579c67a6"))
-		(pin "2" (uuid "6a920ade-2570-49b3-8174-46db656e2ffd"))
+		(pin "1" (uuid "82fcc8a4-6878-468b-8805-16ef9fed541c"))
+		(pin "2" (uuid "bc1b08f0-17c9-4367-85ff-70ad6425cb2d"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1059,7 +1059,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f6b77726-308c-4d1a-b91e-63ba88ce5965")
+		(uuid "60510cd1-353f-4531-9cd0-a2facc160ab1")
 		(property "Reference" "D3"
 			(at 90.1700 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1088,8 +1088,8 @@
 			(at 86.3600 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "4d5702b8-1d94-48c1-a03e-87ac7dd7f8a9"))
-		(pin "2" (uuid "5b8447fa-3493-4618-924e-724997f27969"))
+		(pin "1" (uuid "6620984b-0fd4-430b-a5bf-77ae00bdbe7b"))
+		(pin "2" (uuid "0850e5e9-3b6d-4f93-8908-ef3c2fc8fea1"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1116,23 +1116,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 86.3600 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f50a7e2e-df05-43be-b72b-3b3346b57cc1")
+		(uuid "cc0fb03e-b151-470d-9164-41f37713222d")
 		(property "Reference" "D58"
 			(at 90.1700 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 90.1700 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 86.3600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1140,11 +1140,11 @@
 			(at 86.3600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 86.3600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 86.3600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1152,10 +1152,10 @@
 			(at 86.3600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "fd434ce5-3a10-443b-b9ad-01fd2f474bce"))
-		(pin "2" (uuid "b11f09e7-508d-43bc-89ce-84212ae588bc"))
-		(pin "3" (uuid "c9755082-21d5-4f31-bd48-398b5493af6a"))
-		(pin "4" (uuid "a0e7b88f-0a3b-4226-bd90-9d0bfd2d82b2"))
+		(pin "1" (uuid "7bb096c2-5336-4dee-b9e4-c4d8c09f8377"))
+		(pin "2" (uuid "22df708f-366a-4f26-820a-3b7dab689a48"))
+		(pin "3" (uuid "842edc6b-10d0-44c3-b764-b0c0a566414a"))
+		(pin "4" (uuid "45be17aa-0a30-40cf-a4f7-b4012d115164"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1189,7 +1189,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d0fd0bb9-183e-4b93-8ca6-f7e9ce63e849")
+		(uuid "cd8c8780-f75d-47a8-a6cf-e65e4e5b0cd3")
 		(property "Reference" "SW4"
 			(at 125.7300 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1198,7 +1198,7 @@
 			(at 125.7300 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 121.9200 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1206,8 +1206,8 @@
 			(at 121.9200 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "328bdf65-aeab-4072-8887-cc926cf0469d"))
-		(pin "2" (uuid "6bd25acf-552f-4b98-8e69-aeb4878b23c4"))
+		(pin "1" (uuid "f9bf4747-4228-495e-ada0-c9a02d9e636a"))
+		(pin "2" (uuid "6e21d371-c932-4e31-af44-7dfbb4853b47"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1241,7 +1241,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8ac74a6d-4102-48e5-b5bf-22450ef095e8")
+		(uuid "d043c539-d285-4df6-9b92-414c593cf402")
 		(property "Reference" "D4"
 			(at 125.7300 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1270,8 +1270,8 @@
 			(at 121.9200 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "f4502ade-273f-4a47-929c-70ca9e18506d"))
-		(pin "2" (uuid "14dbf5b6-8b74-4e6d-a51e-759ae4c727eb"))
+		(pin "1" (uuid "d71bf511-a897-4b5b-b562-2f49715d65fb"))
+		(pin "2" (uuid "2710a57a-b3a1-470a-adb5-a3c26ea89a56"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1298,23 +1298,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 121.9200 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "33aa08f5-b8f9-457f-b89a-16f2a6c4a840")
+		(uuid "d5fb269e-0088-49c5-aadf-8feb6d30fa61")
 		(property "Reference" "D59"
 			(at 125.7300 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 125.7300 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 121.9200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1322,11 +1322,11 @@
 			(at 121.9200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 121.9200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 121.9200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1334,10 +1334,10 @@
 			(at 121.9200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "a2dcc48d-b679-49d4-bda5-e11e4c593799"))
-		(pin "2" (uuid "e81890e5-f948-4c77-8c7f-fbbceeb38369"))
-		(pin "3" (uuid "49a3bf8a-d312-4b23-8923-96240e8e3869"))
-		(pin "4" (uuid "15ef4c23-b4d0-43b1-befa-390f6d0a14d5"))
+		(pin "1" (uuid "c3da2d3c-5acb-47fb-a58f-ccb329344162"))
+		(pin "2" (uuid "d371f0ab-97bc-4b1a-84d2-fac7bfb46ba6"))
+		(pin "3" (uuid "26a06a80-8ea7-47d1-8d09-8733edd549dc"))
+		(pin "4" (uuid "a37c8e45-e0a2-4dc7-bdb5-f8889d48badf"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1371,7 +1371,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a0eccac7-da9f-4201-8377-5d900af2da27")
+		(uuid "fc730bb7-afd0-4b4e-ad1c-2e5b34fe0fc6")
 		(property "Reference" "SW5"
 			(at 161.2900 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1380,7 +1380,7 @@
 			(at 161.2900 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 157.4800 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1388,8 +1388,8 @@
 			(at 157.4800 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "2b8d53b6-655e-4113-bcbe-c83c76a26015"))
-		(pin "2" (uuid "0084af7b-44e0-4997-bfc5-46cdd3f4a571"))
+		(pin "1" (uuid "98d212bd-782b-4f74-a169-eb405ede8d2e"))
+		(pin "2" (uuid "22b2ab7e-46de-4a28-a6b6-45a2361b2e0c"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1423,7 +1423,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "98cc1853-65ef-471c-857b-14577166c8c0")
+		(uuid "0355a0fd-892d-44f7-8456-c226572e3be1")
 		(property "Reference" "D5"
 			(at 161.2900 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1452,8 +1452,8 @@
 			(at 157.4800 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e7722e1d-6f83-4f8d-9cad-23a49e7001c6"))
-		(pin "2" (uuid "ef1ccf59-41e4-4282-8364-806464a73ee0"))
+		(pin "1" (uuid "7f76636f-9b9c-4946-b889-0ae019aca911"))
+		(pin "2" (uuid "e1355157-b5e4-4401-929c-5b6d95541d19"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1480,23 +1480,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 157.4800 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8e7ababf-3a94-47e2-8ddb-7a91622693f6")
+		(uuid "25840570-63ca-4263-9c64-770ed3afdcd5")
 		(property "Reference" "D60"
 			(at 161.2900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 161.2900 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 157.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1504,11 +1504,11 @@
 			(at 157.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 157.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 157.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1516,10 +1516,10 @@
 			(at 157.4800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "63654c95-eb85-46da-8381-963c6ba7cafa"))
-		(pin "2" (uuid "e59098fa-bf96-4517-8841-2ecbf57048e2"))
-		(pin "3" (uuid "e487da4d-f96a-4f9f-8d2b-4c46b6d5d36a"))
-		(pin "4" (uuid "0a8f893c-4e43-4da9-ad94-400e5da6eaac"))
+		(pin "1" (uuid "26ef2b27-bd34-4bd1-906d-8ad75d9c316b"))
+		(pin "2" (uuid "a1d56810-b53d-43f8-8eb4-4b2e3973356f"))
+		(pin "3" (uuid "d6876e88-b8bd-4756-a2f1-de0bc3d9ea09"))
+		(pin "4" (uuid "6d0ef369-c0d4-4831-af9d-d22ead815a19"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1553,7 +1553,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c2321d48-adbe-4b24-9c8c-9f8652ecba9c")
+		(uuid "36d22ca9-43be-43d2-b40c-28481d4e1ed2")
 		(property "Reference" "SW6"
 			(at 196.8500 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1562,7 +1562,7 @@
 			(at 196.8500 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 193.0400 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1570,8 +1570,8 @@
 			(at 193.0400 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e5479c89-18fc-471a-a4bd-eff290dd269b"))
-		(pin "2" (uuid "b4a88fcd-822d-4b83-b727-8aa3f7879463"))
+		(pin "1" (uuid "5a964e9d-1b16-4134-8fd8-2bc223ce5eb8"))
+		(pin "2" (uuid "329d5965-79e0-437f-a992-ecb88eadc48f"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1605,7 +1605,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "335d1759-9f8b-40f5-bd44-5db7279ccae7")
+		(uuid "db8b725b-f192-4f74-81ba-f3c25078a0b5")
 		(property "Reference" "D6"
 			(at 196.8500 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1634,8 +1634,8 @@
 			(at 193.0400 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1fec66ea-03e8-4b05-8d36-8fc6e10464d1"))
-		(pin "2" (uuid "4a612c1a-e6ea-45c7-b488-3f38ab4d1dc8"))
+		(pin "1" (uuid "440c9554-e845-4fe2-9566-db5fce8a55b6"))
+		(pin "2" (uuid "be0498fb-a08d-433c-b2f1-47c1ce228d10"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1662,23 +1662,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 193.0400 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "be2a7fa4-e952-4386-a103-fbcb68e47265")
+		(uuid "53e0c5e3-8b94-4e31-bdc3-b03a693b41e8")
 		(property "Reference" "D61"
 			(at 196.8500 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 196.8500 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 193.0400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1686,11 +1686,11 @@
 			(at 193.0400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 193.0400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 193.0400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1698,10 +1698,10 @@
 			(at 193.0400 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "47c08d62-9e22-41b5-9949-dfe86b7496d3"))
-		(pin "2" (uuid "77a37cb1-b91a-4cdc-9107-a76a5ef9b23d"))
-		(pin "3" (uuid "0f9697ca-d857-4d62-9a70-b567d358e68e"))
-		(pin "4" (uuid "f39165b8-a2fe-41c4-be8e-f449f74898ef"))
+		(pin "1" (uuid "6880fee4-7c21-4c80-8ac7-e936a0c31906"))
+		(pin "2" (uuid "8e539c1d-82ee-430d-8053-7f6ce7517127"))
+		(pin "3" (uuid "db783db5-0750-4726-8d05-a169e575a7a8"))
+		(pin "4" (uuid "7fd2db18-b39d-462c-acae-e0f321feef82"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1735,7 +1735,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7d77a88a-a935-46ee-850e-278fd99d347c")
+		(uuid "34a278c3-f181-4a8d-8505-471b88db1ca9")
 		(property "Reference" "SW7"
 			(at 232.4100 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1744,7 +1744,7 @@
 			(at 232.4100 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 228.6000 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1752,8 +1752,8 @@
 			(at 228.6000 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "4b830031-f749-404d-9df5-8d8b53885137"))
-		(pin "2" (uuid "1a3d3db3-1974-41b5-8098-d254e8b70706"))
+		(pin "1" (uuid "79468a6f-6fec-4633-a86e-e1f681f6d195"))
+		(pin "2" (uuid "a67712e8-2970-40ec-845c-8155c9b2dd6a"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1787,7 +1787,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c838e3a8-9e49-4cb8-8b18-4d8be9a2dc05")
+		(uuid "ee8565d5-a35a-4466-bfe3-bcbe62433d9a")
 		(property "Reference" "D7"
 			(at 232.4100 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1816,8 +1816,8 @@
 			(at 228.6000 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "452e01d8-f7ad-4535-b03f-3db525ac2898"))
-		(pin "2" (uuid "32d59981-b692-42c5-9bf7-232ea81b7e46"))
+		(pin "1" (uuid "6c3d2058-a2ba-41f0-8e3b-a900eac92b34"))
+		(pin "2" (uuid "3013b42e-5787-470b-b06d-7c7a1c17af56"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1844,23 +1844,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 228.6000 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "614cae7b-d9a8-419f-be45-3f628320bb69")
+		(uuid "c166b588-38ab-49a7-a4d0-3034540e8d12")
 		(property "Reference" "D62"
 			(at 232.4100 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 232.4100 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 228.6000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1868,11 +1868,11 @@
 			(at 228.6000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 228.6000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 228.6000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1880,10 +1880,10 @@
 			(at 228.6000 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "bd380818-ed9e-4ef2-9688-d8d27c5d7eab"))
-		(pin "2" (uuid "c61b098b-596e-4566-8d4c-c41db3b8b8ea"))
-		(pin "3" (uuid "708bbb5d-818e-4187-952f-3ed0aa52e2b9"))
-		(pin "4" (uuid "dbd770f6-0171-42e8-a9f2-66dc51f8cef9"))
+		(pin "1" (uuid "c7d091d5-1cba-45e1-a774-8f4a89a0e376"))
+		(pin "2" (uuid "25032144-234d-4da4-afb8-313e8be7f371"))
+		(pin "3" (uuid "c2a2acb4-d6c1-4cb4-8322-f0f9587ca22d"))
+		(pin "4" (uuid "719987c7-1c95-4de7-bb30-640a631a353d"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1917,7 +1917,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0ef23b1e-297c-45f9-af95-640e12b3042b")
+		(uuid "342a2ac9-c5c3-4e2c-9f8c-201096fb5ba6")
 		(property "Reference" "SW8"
 			(at 267.9700 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1926,7 +1926,7 @@
 			(at 267.9700 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 264.1600 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -1934,8 +1934,8 @@
 			(at 264.1600 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "74696ffd-68b5-43a2-9229-2573544c16cd"))
-		(pin "2" (uuid "2ab33feb-2d41-46bd-8567-2990807b6a3a"))
+		(pin "1" (uuid "5931ca78-5c2a-4441-b733-9ef49001a38f"))
+		(pin "2" (uuid "0efd0806-86f9-495c-8e45-96ddb5ca84d8"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -1969,7 +1969,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "da34081b-01fc-4cc6-af92-f97922cbc359")
+		(uuid "8af5ce01-0b3e-4c6d-8fce-cd82364258ac")
 		(property "Reference" "D8"
 			(at 267.9700 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1998,8 +1998,8 @@
 			(at 264.1600 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1b39913c-1399-40a2-bd7c-33e633250a79"))
-		(pin "2" (uuid "3cfcc40b-8c27-4217-b3e2-fde1d229f0bc"))
+		(pin "1" (uuid "c58599a8-ffda-421a-9cd3-13adc4d73484"))
+		(pin "2" (uuid "5d53bcf9-ceba-49bf-8b99-ff6582dd2c71"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2026,23 +2026,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 264.1600 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8cd9c3b7-0a2c-4621-a8d2-e34f94a1b8b7")
+		(uuid "7a42acdf-fa51-46c9-86e5-0e60ab641600")
 		(property "Reference" "D63"
 			(at 267.9700 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 267.9700 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 264.1600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2050,11 +2050,11 @@
 			(at 264.1600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 264.1600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 264.1600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2062,10 +2062,10 @@
 			(at 264.1600 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e6bb676f-3f7a-4dfb-920d-8e3d9306b597"))
-		(pin "2" (uuid "04197a80-8c02-490a-a874-68fe336e3679"))
-		(pin "3" (uuid "ad6f3565-1b21-4bf0-b9f7-99c9c7396925"))
-		(pin "4" (uuid "37583785-5e34-4d8b-9d13-be113872055b"))
+		(pin "1" (uuid "f860206d-e7d2-4841-89b0-e7ebacc11977"))
+		(pin "2" (uuid "a31c6e4f-8fe2-4822-ae13-c4f45d75092a"))
+		(pin "3" (uuid "aa8d0dc3-bc9c-411c-b2c8-c4360f2f26a1"))
+		(pin "4" (uuid "509c76fc-7ed9-476e-8deb-423f746053b6"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2099,7 +2099,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "01fb359b-35a1-4ace-9aec-9369ca6d5c30")
+		(uuid "bc9c4ac2-a031-4611-b557-a5c252b2a131")
 		(property "Reference" "SW9"
 			(at 303.5300 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -2108,7 +2108,7 @@
 			(at 303.5300 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 299.7200 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2116,8 +2116,8 @@
 			(at 299.7200 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "185fe6ba-a21e-4bb3-9423-1be3e679e840"))
-		(pin "2" (uuid "0ff4144c-42bc-410c-996f-b7c8c64cbc94"))
+		(pin "1" (uuid "d29dc06a-9555-4ac7-aeee-06d2bd6f0339"))
+		(pin "2" (uuid "ee18b995-fe63-4fb4-bd84-bd9a9e777dab"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2151,7 +2151,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "7f668799-9c73-4aaf-a873-bc8c43f67b5a")
+		(uuid "7afe0083-b271-4393-b5b0-2e0e361434a2")
 		(property "Reference" "D9"
 			(at 303.5300 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -2180,8 +2180,8 @@
 			(at 299.7200 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "ec50b608-0a92-40ad-a588-8d39fc31dffc"))
-		(pin "2" (uuid "4119fcda-a36d-4533-bfa7-f713585b56ec"))
+		(pin "1" (uuid "0c1df783-19ae-475e-bc02-2051ecdea1ac"))
+		(pin "2" (uuid "bf3f60fc-2c5e-41c9-82e9-357228e0424c"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2208,23 +2208,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 299.7200 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "d9fc07a0-97b3-46c6-b7e7-55ace5aaa9df")
+		(uuid "74e1d383-a149-49b1-8658-4d8f74d7ea49")
 		(property "Reference" "D64"
 			(at 303.5300 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 303.5300 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 299.7200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2232,11 +2232,11 @@
 			(at 299.7200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 299.7200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 299.7200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2244,10 +2244,10 @@
 			(at 299.7200 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "cc15dd24-3631-4159-839d-2458f65d02e2"))
-		(pin "2" (uuid "abd36e76-ffdb-41a3-8c0a-a376881c20ca"))
-		(pin "3" (uuid "061a1a69-d85c-4d1f-98a3-5a895a93af40"))
-		(pin "4" (uuid "240d75fd-cef2-4b67-a3b0-56d18272a820"))
+		(pin "1" (uuid "782faba2-5168-468e-ae71-a62caacb03af"))
+		(pin "2" (uuid "6cfe843d-88e9-4325-9770-5ed1f6cb23bf"))
+		(pin "3" (uuid "eeb0369a-1c55-4e8c-add9-dba6f9e2197e"))
+		(pin "4" (uuid "c0180f8a-6a64-4f51-83e8-e7ea8b8c4b8c"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2281,7 +2281,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4813ccb9-29d8-4371-ab0a-4c6a25413aaf")
+		(uuid "d9817bbf-82d4-4f34-b2a6-e3c8b67ba599")
 		(property "Reference" "SW10"
 			(at 339.0900 43.1800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -2290,7 +2290,7 @@
 			(at 339.0900 48.2600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Button_Switch_Keyboard:SW_Cherry_MX_1.00u_PCB"
+		(property "Footprint" "calcumaker:SW_MX_HS_CPG151101S11_1u"
 			(at 335.2800 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2298,8 +2298,8 @@
 			(at 335.2800 45.7200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "9e02a25d-4e82-41c6-83ad-7d3219dea740"))
-		(pin "2" (uuid "aaefa3a9-3b03-4dc3-9468-a41a8ee716f3"))
+		(pin "1" (uuid "740a2028-023a-465a-bbc9-0948ec7b5342"))
+		(pin "2" (uuid "f3144161-f9bb-483f-9570-87ab6f8b9bbc"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2333,7 +2333,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e6f512ec-1cf9-4297-976d-2dd822200dd8")
+		(uuid "0b720530-12fd-4c65-a6d6-3317d917c843")
 		(property "Reference" "D10"
 			(at 339.0900 78.7400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -2362,8 +2362,8 @@
 			(at 335.2800 81.2800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "9014205f-f659-44c0-93c9-202c408a313f"))
-		(pin "2" (uuid "8dbbd6f3-f19c-45fd-82ce-fda57bca22ff"))
+		(pin "1" (uuid "8e0fa3d5-b812-4f62-bea1-276ff0b72033"))
+		(pin "2" (uuid "180a595f-e808-48d8-a43a-616b7184ca0b"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2390,23 +2390,23 @@
 		)
 	)
 	(symbol
-		(lib_id "LED:SK6805")
+		(lib_id "LED:SK6812")
 		(at 335.2800 121.9200 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "35326998-218c-4e4c-a85f-8a99730a6683")
+		(uuid "a16cdf33-5ae9-45aa-a589-3bad93098981")
 		(property "Reference" "D65"
 			(at 339.0900 119.3800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "SK6805-EC15"
+		(property "Value" "SK6812MINI-E"
 			(at 339.0900 124.4600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "LED_SMD:LED_SK6812_EC15_1.5x1.5mm"
+		(property "Footprint" "LED_SMD:LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount"
 			(at 335.2800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2414,11 +2414,11 @@
 			(at 335.2800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C2890035"
+		(property "LCSC" "C5149201"
 			(at 335.2800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "SK6805-EC15"
+		(property "MPN" "SK6812MINI-E"
 			(at 335.2800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
@@ -2426,10 +2426,10 @@
 			(at 335.2800 121.9200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "9fc94897-d155-442c-88a2-510a944877fc"))
-		(pin "2" (uuid "e39780c0-983c-4bb4-b56a-26bd98f716b4"))
-		(pin "3" (uuid "53d459b1-bb63-4075-8d05-2a11b34d1bb1"))
-		(pin "4" (uuid "c3b9d400-e530-4dd7-82e3-d2c667d5675f"))
+		(pin "1" (uuid "34dc4582-f0c6-49c4-9db1-6c7b8f4757a8"))
+		(pin "2" (uuid "04f52e3c-c36b-4c65-b9d1-42f8509e4683"))
+		(pin "3" (uuid "f3f692a6-3990-48d3-8b9a-eb849d86209b"))
+		(pin "4" (uuid "6d43f7dc-a9c6-40ba-8bf8-0138eecc796a"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb11"
@@ -2457,801 +2457,801 @@
 	)
 	(wire (pts (xy 10.1600 45.7200) (xy 7.6200 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "432ea47f-2c31-41ad-9939-47229e5565e8")
+		(uuid "848862e2-1ada-4fc7-8a82-32a4db6260e9")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 7.6200 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "9bca0c0d-1df5-4991-b9dc-8768b221f337")
+		(uuid "900c8981-da8b-4bb2-9394-e1d736f485e0")
 	)
 	(wire (pts (xy 20.3200 45.7200) (xy 22.8600 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "05f502ec-5dfd-48d5-93a5-f48c33c79dfc")
+		(uuid "d7d35474-3355-4f82-9633-ad69d568a31c")
 	)
 	(label "KN1"
 		(at 22.8600 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "5753bdd5-45a7-449b-9f62-c47841384977")
+		(uuid "f89a374f-eca6-4294-a904-47b0e357cd5d")
 	)
 	(wire (pts (xy 19.0500 81.2800) (xy 21.5900 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "050fff12-038d-481b-8222-1dcc57f37ba0")
+		(uuid "956214fb-a9a6-45bc-9899-fcc3dfe3e74c")
 	)
 	(label "KN1"
 		(at 21.5900 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "b6295f63-ce7c-4214-ab3d-b59aca51c957")
+		(uuid "41cab382-7559-472c-99b7-6cb3852b4563")
 	)
 	(wire (pts (xy 11.4300 81.2800) (xy 8.8900 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "1f7d1783-e1a0-447c-8eba-cafde1394e04")
+		(uuid "3d57e02a-7bb3-416e-91e2-b7c0c366a523")
 	)
 	(global_label "COL1"
 		(shape input)
 		(at 8.8900 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "c8130dae-e876-41c3-ab79-09830757c8c3")
+		(uuid "f2e944b0-e3d3-44f7-a035-4e5ef664b843")
 	)
 	(wire (pts (xy 15.2400 114.3000) (xy 15.2400 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "6e357a31-42e7-496a-a1b7-8e3f38447e76")
+		(uuid "780540bf-0954-490e-a2ac-eee0a5fbe8b0")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 15.2400 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "5d74ea73-0e85-4491-b3d5-9ab40ab9f9b5")
+		(uuid "80847905-0979-4e8c-8e84-818122d4a51c")
 	)
 	(wire (pts (xy 15.2400 129.5400) (xy 15.2400 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "5318f05d-c330-485e-880e-9ff12e8a8ac1")
+		(uuid "46f2d2e0-2692-4691-abf7-5f6e0ba57a21")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 15.2400 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "0b15292d-18d5-4eee-b231-c0f78fec72a8")
+		(uuid "5496ec8d-0c5c-4ffb-9356-4d5b4fb1e011")
 	)
 	(wire (pts (xy 7.6200 121.9200) (xy 5.0800 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "2991c9cd-c205-4c59-ad8c-306678e6b49c")
+		(uuid "ea6a3db5-2438-4bb6-90aa-bc3fb1d177a8")
 	)
 	(hierarchical_label "DIN"
 		(shape input)
 		(at 5.0800 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "fee15d23-0b9d-4864-9f0d-d70f322a6652")
+		(uuid "acc24d63-752a-4b29-a9dc-d690c0f01318")
 	)
 	(wire (pts (xy 22.8600 121.9200) (xy 25.4000 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "91e47950-8038-4582-a3b8-12e229059c48")
+		(uuid "da8667cf-b6eb-4eb0-b8b5-e1e3f81104f7")
 	)
 	(label "CH2"
 		(at 25.4000 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "2becb964-456e-4d96-a0e6-6057fe3ada1f")
+		(uuid "69c346a8-0347-4920-ac61-04aac4208a7c")
 	)
 	(wire (pts (xy 45.7200 45.7200) (xy 43.1800 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "c9009200-c508-4923-86d5-7901f648d5ed")
+		(uuid "8da5f8cc-9778-4274-8e04-04d01645c72b")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 43.1800 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "23d11820-a505-47a9-b695-db1f74b0e1f1")
+		(uuid "986738f4-410e-4325-8159-d2756d0a4a4e")
 	)
 	(wire (pts (xy 55.8800 45.7200) (xy 58.4200 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "a092579d-8992-4ff0-9364-c4f8d2267ecc")
+		(uuid "45d7fe6a-e5e9-443c-b62a-d10e3df2a6bf")
 	)
 	(label "KN2"
 		(at 58.4200 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "8ea704ea-cfc4-4adb-8c45-d60db0a05e99")
+		(uuid "93e04a48-c311-4196-9970-9d4dfbf8b522")
 	)
 	(wire (pts (xy 54.6100 81.2800) (xy 57.1500 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "3df37b8b-3b0b-4ca2-8fec-08705a266624")
+		(uuid "064ae12d-da84-43a4-8d5a-21192ab5babd")
 	)
 	(label "KN2"
 		(at 57.1500 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "a7355b45-49e6-4838-9c15-a3c56ad49e23")
+		(uuid "7c595ea7-1ea3-4f34-a628-3958fedf9a2a")
 	)
 	(wire (pts (xy 46.9900 81.2800) (xy 44.4500 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "2c3cbf2a-04dd-4414-8e88-0d0f3fee6dcc")
+		(uuid "c04781f7-f0a8-44a8-8fab-dd1fec1429ac")
 	)
 	(global_label "COL2"
 		(shape input)
 		(at 44.4500 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "3be9e2c2-dfc6-4c0b-b263-2f8a7c3f5c4e")
+		(uuid "387f6d79-2b6e-4546-b38b-028540df244b")
 	)
 	(wire (pts (xy 50.8000 114.3000) (xy 50.8000 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "1c46161e-ff32-4888-85bd-cf5d906d51d2")
+		(uuid "e9e59dec-a503-4a36-bc29-9adec90494eb")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 50.8000 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "ef602ee9-596d-4896-96c4-340d37ad039a")
+		(uuid "2efb0952-329d-4747-839b-869958233b6d")
 	)
 	(wire (pts (xy 50.8000 129.5400) (xy 50.8000 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "f37d8caf-56b1-48c3-840f-83218952476c")
+		(uuid "a3378c04-d23c-4b8a-b1f0-f1919f652001")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 50.8000 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "28913356-03b6-4288-8d2d-b9773223d9e4")
+		(uuid "b9e0d2ee-7d98-4909-a8dc-721902bbaf8e")
 	)
 	(wire (pts (xy 43.1800 121.9200) (xy 40.6400 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "eddeec72-c355-4910-8672-c34989c8eba1")
+		(uuid "ff8fb3be-ede8-4aad-9ad0-699554c18c2b")
 	)
 	(label "CH2"
 		(at 40.6400 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "c038423e-a273-4f1a-ac70-a4bdaf2e056d")
+		(uuid "8f7eca61-5edd-42e7-a0ac-422ffc072a2f")
 	)
 	(wire (pts (xy 58.4200 121.9200) (xy 60.9600 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "cfdcbac8-44b7-43b8-9011-f0aa17e1a982")
+		(uuid "58bd8836-abee-495c-8f62-ecd8d00c8efb")
 	)
 	(label "CH3"
 		(at 60.9600 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "107def84-4480-4727-a6fe-f767ca62d3cc")
+		(uuid "0ac45ae8-4fd8-4fcb-8073-0f7cd082e0a5")
 	)
 	(wire (pts (xy 81.2800 45.7200) (xy 78.7400 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "747a8593-8b93-4314-ad91-fc819e68301e")
+		(uuid "cae438ae-b5f0-4461-8ec7-78258b08020a")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 78.7400 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "779fa98a-f5d9-4d20-9269-10f9ba72beb1")
+		(uuid "5615e806-bcf4-41ef-80aa-18eed4472f5f")
 	)
 	(wire (pts (xy 91.4400 45.7200) (xy 93.9800 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "4151d560-f91f-41a1-8118-525d9499ca54")
+		(uuid "b6f449a9-2fd7-40b2-b2dc-2b16d422fdc1")
 	)
 	(label "KN3"
 		(at 93.9800 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "a898c9b8-bec1-4486-90ae-7ea5392ce4d0")
+		(uuid "e1a1b9e1-b8a0-409f-816e-18e55b9c24f0")
 	)
 	(wire (pts (xy 90.1700 81.2800) (xy 92.7100 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "6f39be86-bc77-4c7f-8d93-55a409fe8edd")
+		(uuid "31dfde7a-faf8-4d12-91b5-4672eac9606a")
 	)
 	(label "KN3"
 		(at 92.7100 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "687f28fe-aae9-40f2-a809-f0a4d858085b")
+		(uuid "253875be-2a64-4f2e-a167-9840299a36a6")
 	)
 	(wire (pts (xy 82.5500 81.2800) (xy 80.0100 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "1d225230-bbd2-40d8-92b7-0c6259d82502")
+		(uuid "161cf8c4-9ab9-4b68-bfb3-0adc6febcdde")
 	)
 	(global_label "COL3"
 		(shape input)
 		(at 80.0100 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "1b787bdb-3a65-4c19-a566-e11f28b88be7")
+		(uuid "3a7b07c0-366c-4a8e-9783-1e9380e980f5")
 	)
 	(wire (pts (xy 86.3600 114.3000) (xy 86.3600 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "9167e89e-9a53-45b1-bcb1-621395de3a13")
+		(uuid "26019d63-3e1d-42d2-8568-c088cda156a5")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 86.3600 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "53d447a1-d014-43dd-95b2-edabcc2c73e2")
+		(uuid "2060bf64-f6d0-4865-96ec-cbf414c843fc")
 	)
 	(wire (pts (xy 86.3600 129.5400) (xy 86.3600 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "46b742fd-b96b-48bb-b02f-18631afc591e")
+		(uuid "800aa40b-b5cf-4042-b30e-31ee49359b11")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 86.3600 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "9ed8ceac-97d2-43c5-ac9a-a550e2e1b3de")
+		(uuid "7cb1606c-6bc2-409a-932e-309d4aa66b92")
 	)
 	(wire (pts (xy 78.7400 121.9200) (xy 76.2000 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "187ba9cc-263a-442f-9c53-8b7b8905d89e")
+		(uuid "242e655d-d495-4a2f-b6f4-c33df639a38c")
 	)
 	(label "CH3"
 		(at 76.2000 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "392ec9ba-e26a-4956-811b-fd8f97a26c28")
+		(uuid "f1dee0bb-49a5-41ab-9ba0-403c5a6bbd2b")
 	)
 	(wire (pts (xy 93.9800 121.9200) (xy 96.5200 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "57684e69-d147-4ccc-9b61-ef9674cc1d77")
+		(uuid "bbc9d1cb-2dda-4c84-a500-7bffb4b164bf")
 	)
 	(label "CH4"
 		(at 96.5200 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "6959401d-bf81-4e75-bbe6-2ad46b06a591")
+		(uuid "0d9217f9-0607-42b5-bdf6-5e431e3cf959")
 	)
 	(wire (pts (xy 116.8400 45.7200) (xy 114.3000 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "c3e9a8b6-9624-49cc-8613-bba790ccfd30")
+		(uuid "51b73db2-1bf8-42e9-ba7b-4ec552d2a6f3")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 114.3000 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "1a725b80-4fab-4305-8fd5-7a6e8fadbc6e")
+		(uuid "e2d3bca0-b212-4dc6-ac32-94cb898e029a")
 	)
 	(wire (pts (xy 127.0000 45.7200) (xy 129.5400 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "ad36ac69-f2d0-492d-8bd2-625289675da5")
+		(uuid "93cca6f1-195b-4a84-bac7-f483c01ef049")
 	)
 	(label "KN4"
 		(at 129.5400 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "23097d28-a5cb-416a-933b-2ae890f07938")
+		(uuid "7ffe7ff0-71bd-4e2d-9606-70a37069d670")
 	)
 	(wire (pts (xy 125.7300 81.2800) (xy 128.2700 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "9ff95ad8-401b-40ba-9881-204a6cb4a1e2")
+		(uuid "ed1980c8-70fd-4420-8345-d20fc7cb9569")
 	)
 	(label "KN4"
 		(at 128.2700 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "265ded9f-7772-4441-8fb3-a095395579e3")
+		(uuid "3cc0def6-8e3e-4842-8f25-22f278d35af6")
 	)
 	(wire (pts (xy 118.1100 81.2800) (xy 115.5700 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "c7fe4958-fb12-47a3-a0d3-9d1a653b678f")
+		(uuid "f58ca06c-fc1e-4fb6-a5f5-2962bcd0053d")
 	)
 	(global_label "COL4"
 		(shape input)
 		(at 115.5700 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "5d07dfb3-c64e-47fd-bb85-fbfc4e26624e")
+		(uuid "0d138421-647f-46bb-a9f5-1a4b4e784945")
 	)
 	(wire (pts (xy 121.9200 114.3000) (xy 121.9200 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "a2e50113-d9c0-4ecd-b9e4-1a3c08229815")
+		(uuid "2fb20c38-de2d-4d0c-8402-63165658c15f")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 121.9200 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "dd5f1e46-b53c-4d05-aedd-32d84ad7a122")
+		(uuid "6a5b4e00-c928-48f1-bfbd-95e1e841a606")
 	)
 	(wire (pts (xy 121.9200 129.5400) (xy 121.9200 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "91e528ca-b9dc-4ddd-847f-083e65c74377")
+		(uuid "825e4947-77bd-4e8a-85b7-fadcdcfc1e8f")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 121.9200 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "e414e2bf-2e90-4022-b36a-1ea06519d59a")
+		(uuid "b38e7360-22e6-48fd-9e65-a1959dd20d05")
 	)
 	(wire (pts (xy 114.3000 121.9200) (xy 111.7600 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "a3a16f88-7bb1-4c26-be66-322508bde755")
+		(uuid "61cc9e62-90d9-4e3c-8fc8-f56cd9713d7a")
 	)
 	(label "CH4"
 		(at 111.7600 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "9c9bba31-76ae-41e7-a876-24f0f8f593ba")
+		(uuid "2a00b427-e78d-4805-9b39-ddb919055887")
 	)
 	(wire (pts (xy 129.5400 121.9200) (xy 132.0800 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "ddc927ae-57b3-4e1f-a7ae-55b5fe12a3e5")
+		(uuid "41fcfcf9-39a9-4b1a-96c5-a4f831af9d93")
 	)
 	(label "CH5"
 		(at 132.0800 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "0aa7b973-7514-4483-a6f4-17d4da72e69e")
+		(uuid "c3306c2c-06ec-496f-a566-3980649a17aa")
 	)
 	(wire (pts (xy 152.4000 45.7200) (xy 149.8600 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "f99fff40-484e-44bb-a8c6-d4c38e9f7575")
+		(uuid "f60ba570-b52b-4546-899a-5e49f937e23c")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 149.8600 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "9d9e5548-82ff-4018-b1e1-831d082f2459")
+		(uuid "f1f92782-2758-41f8-95e3-c5cca737f8e4")
 	)
 	(wire (pts (xy 162.5600 45.7200) (xy 165.1000 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "598a483b-1871-4ea3-a2d8-8728331146b9")
+		(uuid "264ee149-1024-4ce5-8980-f6341a14b162")
 	)
 	(label "KN5"
 		(at 165.1000 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "77047119-6924-4818-94f7-de9fb39cb3c7")
+		(uuid "0324a2bf-fbf2-4c26-92aa-ac3b94320d68")
 	)
 	(wire (pts (xy 161.2900 81.2800) (xy 163.8300 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "f8b7b6bf-39f9-4307-b5ae-6fd5442672ac")
+		(uuid "5b4e2423-3260-43ad-800f-dc3b94da0f15")
 	)
 	(label "KN5"
 		(at 163.8300 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "506a275f-5ed7-4482-9d16-d68b80731fb4")
+		(uuid "ee1077ee-973c-4491-8667-d5830fb4cd74")
 	)
 	(wire (pts (xy 153.6700 81.2800) (xy 151.1300 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "6acc7f46-a41a-4420-8ff7-cdaa3c89e75f")
+		(uuid "ecff1b3c-a076-4996-8bb2-6cfa3c4655f3")
 	)
 	(global_label "COL5"
 		(shape input)
 		(at 151.1300 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "bed11e1c-eb4f-41ff-8c4c-02dbd34ad868")
+		(uuid "7154906c-c665-4360-bde9-79c1ebeacd7a")
 	)
 	(wire (pts (xy 157.4800 114.3000) (xy 157.4800 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "7bad2c9b-42b6-4020-a002-e9c980679fc3")
+		(uuid "cf2aba75-ec21-4c30-96d7-14facccaee78")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 157.4800 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "af0e5f9f-eafe-4b04-83ed-a94fd8497aea")
+		(uuid "660ac588-586a-49e7-b261-ea493bff62d5")
 	)
 	(wire (pts (xy 157.4800 129.5400) (xy 157.4800 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "ab54e59d-ff47-498e-944f-20c3f4969d54")
+		(uuid "7213aab1-5d7b-47a3-a540-cbee88fc9097")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 157.4800 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "673a8518-1079-43ae-9fc6-7c2608c75eba")
+		(uuid "a64ee7c7-2848-40c3-ba18-c300182f8bf7")
 	)
 	(wire (pts (xy 149.8600 121.9200) (xy 147.3200 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "4580337f-6f73-422c-af9b-008d52eb9f9a")
+		(uuid "43a9e356-8316-47a5-8f8d-fad8b076004f")
 	)
 	(label "CH5"
 		(at 147.3200 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "0eb1b307-e207-48be-a826-c2a2e5c0bbdb")
+		(uuid "731b1d98-21d3-45d0-85d8-978ec2679450")
 	)
 	(wire (pts (xy 165.1000 121.9200) (xy 167.6400 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "0ecab17c-4896-472c-accf-4016a5cc2753")
+		(uuid "d7368185-1b89-44a9-a2bf-350d62239c73")
 	)
 	(label "CH6"
 		(at 167.6400 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "604745da-7873-4f99-b998-6ccbbb4bac35")
+		(uuid "f5e1b407-1e48-4e70-bfd6-8ced8c83ff05")
 	)
 	(wire (pts (xy 187.9600 45.7200) (xy 185.4200 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "501c2e8f-f08f-41b5-bb20-24c5b812db1b")
+		(uuid "0e9501e8-b6bf-47ea-a6df-d9398672fd4d")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 185.4200 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "fc576f14-47c0-40bc-9fac-9c70fb4ea7c2")
+		(uuid "c3662ac2-07ed-4a0d-a277-a346b7fcf806")
 	)
 	(wire (pts (xy 198.1200 45.7200) (xy 200.6600 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "bd16c08a-15e8-484f-9d0d-5d9c0f3e03c9")
+		(uuid "d985f15a-0d73-4176-b462-5697e5b77c29")
 	)
 	(label "KN6"
 		(at 200.6600 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "990a74f1-9261-439d-96d4-c395f85a77bd")
+		(uuid "87c89852-fe1c-4728-a938-6638e8fba553")
 	)
 	(wire (pts (xy 196.8500 81.2800) (xy 199.3900 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "42887c59-95ab-4920-894b-461acfc4c376")
+		(uuid "41840b32-8247-4010-982c-fb3ebf345af3")
 	)
 	(label "KN6"
 		(at 199.3900 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "5df14b9a-9614-4461-90a6-7750775a6b32")
+		(uuid "7ddf5b7e-d96a-48c8-83bc-cb4ed3739e83")
 	)
 	(wire (pts (xy 189.2300 81.2800) (xy 186.6900 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "12f38b13-edc9-430c-99f7-0492c609c890")
+		(uuid "cf7626a1-0ec8-4852-a918-2592dd08d372")
 	)
 	(global_label "COL6"
 		(shape input)
 		(at 186.6900 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "6c0100a6-4f71-45ee-9a02-9118a5a73723")
+		(uuid "aa02d411-c027-4b75-b9b0-680eba549895")
 	)
 	(wire (pts (xy 193.0400 114.3000) (xy 193.0400 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "2c8bc7e3-b3a8-4ad0-99b4-7cdf2081890b")
+		(uuid "c0ea1f56-2c28-4af4-b54c-2bc52357f893")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 193.0400 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "380dd2bd-fc6b-4dbb-9f1f-f81d2004a771")
+		(uuid "faecd7b0-c7bf-4dc3-b385-cc0f7906699c")
 	)
 	(wire (pts (xy 193.0400 129.5400) (xy 193.0400 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "ee3cec80-da09-4e20-ad48-99118d1dca72")
+		(uuid "7396cdc6-3041-4c8b-93a0-975cca093e7a")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 193.0400 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "0b20e43d-4736-43e6-b2fa-6f51541ba514")
+		(uuid "2b217046-8a31-4c3a-8921-602e68873d7a")
 	)
 	(wire (pts (xy 185.4200 121.9200) (xy 182.8800 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "461f8ce3-1d3c-4300-a5cc-189f422b649c")
+		(uuid "d37e9522-a421-419d-981f-b0fa80c1528b")
 	)
 	(label "CH6"
 		(at 182.8800 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "041661bb-e66e-4d5c-adb4-864aee71fd3a")
+		(uuid "0e6e616d-02bb-42ce-94d7-2483ca5ab767")
 	)
 	(wire (pts (xy 200.6600 121.9200) (xy 203.2000 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "f14eba50-8048-4b17-90cd-ab1c698919d2")
+		(uuid "91315e57-f738-46a7-a259-e38a8ad8cfa0")
 	)
 	(label "CH7"
 		(at 203.2000 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "7da48bd9-91f1-4de0-9325-8a14ccbf7a33")
+		(uuid "544d6a12-f061-47f3-9be3-f507b15c3900")
 	)
 	(wire (pts (xy 223.5200 45.7200) (xy 220.9800 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "25441259-9955-4e66-bced-2351edb9c747")
+		(uuid "dda4eef9-b11e-4c7a-8c2d-5434b8e6cc97")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 220.9800 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "df4d9ef9-0919-4ebc-ad74-bc330ec34212")
+		(uuid "3821b847-42ef-4218-92d8-67e51a7a08b8")
 	)
 	(wire (pts (xy 233.6800 45.7200) (xy 236.2200 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "36b48c67-6f7a-4d98-87c1-d675f116e763")
+		(uuid "12c23ddb-d145-41a8-9ce6-e20660d1629b")
 	)
 	(label "KN7"
 		(at 236.2200 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "39ac7967-383b-4d45-b34c-c88a3bcb9ff1")
+		(uuid "1714de6a-d82f-42b8-b9c9-518a1e61d73d")
 	)
 	(wire (pts (xy 232.4100 81.2800) (xy 234.9500 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "190bfec5-9d3f-4be5-b857-1ebe41f087c5")
+		(uuid "7f244aa8-aef9-4e47-825f-1898529eaf87")
 	)
 	(label "KN7"
 		(at 234.9500 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "e513aa71-6c53-4f26-8cef-08b494f526bb")
+		(uuid "6b70ad16-16a0-49ad-91c2-24e22bc2e2b0")
 	)
 	(wire (pts (xy 224.7900 81.2800) (xy 222.2500 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "e44c5f95-6ba7-4284-bca4-653de4ef1bd3")
+		(uuid "3083c945-274f-4b98-be57-2690f3c2961f")
 	)
 	(global_label "COL7"
 		(shape input)
 		(at 222.2500 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "8ea2924b-c802-495d-9acb-2ab3050571e0")
+		(uuid "40b3511f-fd20-4f57-bf84-d7a85e38be3c")
 	)
 	(wire (pts (xy 228.6000 114.3000) (xy 228.6000 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "d2e23141-8622-425a-a829-3dfbaac42eec")
+		(uuid "5f2888be-0da5-4012-879c-7958943af0b8")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 228.6000 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "1776f62b-f862-416f-a028-320c9bdd6ca0")
+		(uuid "5ef9d589-43d1-460e-849c-3f20e57143f6")
 	)
 	(wire (pts (xy 228.6000 129.5400) (xy 228.6000 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "709b2950-dd12-43f6-9b77-a4d4c3c1420c")
+		(uuid "a1793382-bedf-465a-bcb4-2957f04a2243")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 228.6000 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "01604a0c-38cb-4114-afba-d0b19c76222d")
+		(uuid "692e1116-063e-4770-947d-60a98b42ad2d")
 	)
 	(wire (pts (xy 220.9800 121.9200) (xy 218.4400 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "172a35b9-0c17-4371-a3bb-a1426a44a445")
+		(uuid "06ed092e-87f4-4a1a-8d9b-a68eff29789e")
 	)
 	(label "CH7"
 		(at 218.4400 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "48ae6603-3618-4f8a-b130-7c4b82b45a96")
+		(uuid "704f1e30-cd30-4552-b012-b310fc4cef74")
 	)
 	(wire (pts (xy 236.2200 121.9200) (xy 238.7600 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "bebb608b-0d53-43d8-9e00-5afabb85e0ad")
+		(uuid "643797d1-fbfa-4b56-901c-60375a029c2a")
 	)
 	(label "CH8"
 		(at 238.7600 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "8faa415a-73f7-4571-a35e-82bbfef64815")
+		(uuid "edd4c5c6-35e1-496c-9349-5264f55af09b")
 	)
 	(wire (pts (xy 259.0800 45.7200) (xy 256.5400 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "1ec9327f-080f-4753-98fa-fe3444659c25")
+		(uuid "fe004ee3-9880-498e-b0fb-4834e74906fb")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 256.5400 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "760a17a2-cb26-4933-8cd5-e62e9f6c7b4c")
+		(uuid "4b596b5b-0610-499b-bb4c-9d6f3364d7e7")
 	)
 	(wire (pts (xy 269.2400 45.7200) (xy 271.7800 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "42948628-58da-427f-9ec1-2cd0b35ff1be")
+		(uuid "ec1b3703-c8ff-4755-8c4b-c218a0cd440d")
 	)
 	(label "KN8"
 		(at 271.7800 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "915098ed-de49-4585-9aaa-d541e9f62a1f")
+		(uuid "264c6d69-28a9-4360-a350-8f3327cb9c6b")
 	)
 	(wire (pts (xy 267.9700 81.2800) (xy 270.5100 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "1d48f1d5-a522-4858-8865-c5601d70f712")
+		(uuid "847a9d25-400e-4662-8076-788c7f2b9c65")
 	)
 	(label "KN8"
 		(at 270.5100 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "865a6b3d-9981-4c18-8603-fee233ca2e0b")
+		(uuid "4153ff15-98a4-4200-a995-80e49fc7fe04")
 	)
 	(wire (pts (xy 260.3500 81.2800) (xy 257.8100 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "47c6fbd7-5d26-4e26-aabd-82f1b56503d4")
+		(uuid "7fa60461-d0cc-4ee9-bd91-625189a618ec")
 	)
 	(global_label "COL8"
 		(shape input)
 		(at 257.8100 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "ab2ba8b0-51e2-49c4-829f-2fbf3a4f80b0")
+		(uuid "7afa09be-922f-48cf-8553-c32ba72bf0dd")
 	)
 	(wire (pts (xy 264.1600 114.3000) (xy 264.1600 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "940f6411-043b-482b-98f2-7aad75af2d9d")
+		(uuid "de413d6e-2ad4-4cd8-8bf2-9141d79f8615")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 264.1600 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "91f19fe2-c48a-4755-933a-2b82a3f01d00")
+		(uuid "ab9b4fec-5fcd-4ef6-94fd-c3ba81cfcedb")
 	)
 	(wire (pts (xy 264.1600 129.5400) (xy 264.1600 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "54b6629e-2aa4-42e2-acf1-704154a6e66d")
+		(uuid "818a983f-4f41-4282-a3b1-2c0b18c3f241")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 264.1600 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "f92f85f9-d13b-4dc1-ad2c-b4d1b8893fb8")
+		(uuid "82633a10-cd52-4e90-b48b-92e2577f23ed")
 	)
 	(wire (pts (xy 256.5400 121.9200) (xy 254.0000 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "6be3d5e9-a9d2-431c-8069-577051a5b117")
+		(uuid "0f826178-fd29-4778-93f6-ea3835c8e7c3")
 	)
 	(label "CH8"
 		(at 254.0000 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "6fc6c2b6-69dd-49b8-872d-56f7fcbc90ac")
+		(uuid "8777ab10-b9f0-42ae-95af-7dc7361e7335")
 	)
 	(wire (pts (xy 271.7800 121.9200) (xy 274.3200 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "0c58bb8b-df6f-4685-8e67-134cf3ab3a4c")
+		(uuid "003486dc-f35d-43a0-97e9-485aa913b148")
 	)
 	(label "CH9"
 		(at 274.3200 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "c7daaebc-2d35-4f33-ad4f-8c438897afc8")
+		(uuid "65bdeb29-b25c-41c6-b78c-d059e249f672")
 	)
 	(wire (pts (xy 294.6400 45.7200) (xy 292.1000 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "7bec8671-85f1-43d7-82c3-c2a71e1c3d26")
+		(uuid "796fc6e4-af08-4f9b-97e4-30d873bbf93d")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 292.1000 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "e35a34f4-c177-4226-84be-ebd551cbe2f6")
+		(uuid "97b8615f-832b-491f-ba39-40af6234c7b9")
 	)
 	(wire (pts (xy 304.8000 45.7200) (xy 307.3400 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "307a759b-630d-4486-ab50-3652f1239f7c")
+		(uuid "97abdcd2-f342-47fa-8648-75b7ea90b707")
 	)
 	(label "KN9"
 		(at 307.3400 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "d09fd6b1-874e-47f3-803d-c5cbfae63e18")
+		(uuid "66f5b87d-663b-4a1a-95ea-c0bd3041515a")
 	)
 	(wire (pts (xy 303.5300 81.2800) (xy 306.0700 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "2623c1a3-0d5e-496b-be5f-7b2a553e38bf")
+		(uuid "26240d28-4787-45b9-82b7-9ea2b19633d7")
 	)
 	(label "KN9"
 		(at 306.0700 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "69936b1e-8c49-430e-9bf2-88556c4e7e1f")
+		(uuid "269ce8fe-0494-42b8-adf3-ed0719c55368")
 	)
 	(wire (pts (xy 295.9100 81.2800) (xy 293.3700 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "b0c0b784-ff87-4de1-a105-9392bb75a402")
+		(uuid "df30b9e2-d853-45d5-89be-44f16324d53c")
 	)
 	(global_label "COL9"
 		(shape input)
 		(at 293.3700 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "689e664b-bad7-4c8d-affe-1f605d0ab1d6")
+		(uuid "08762937-c0dc-4696-89a6-26db578c82a7")
 	)
 	(wire (pts (xy 299.7200 114.3000) (xy 299.7200 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "1433ec47-55ac-4f0c-a6f4-345d6b5a0ed9")
+		(uuid "a098bd4b-090c-4775-af8e-646379e85a5c")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 299.7200 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "d2a20864-05fb-429a-8ee8-b4135f9a8a66")
+		(uuid "96944f29-5c02-4a2a-8677-7349ba142282")
 	)
 	(wire (pts (xy 299.7200 129.5400) (xy 299.7200 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "4d253997-67d2-4287-8c49-6ce1abc09781")
+		(uuid "04bd4ecc-587a-4efe-8545-6c3f335c77ea")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 299.7200 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "7de82b08-4784-4556-a616-d239a8c39971")
+		(uuid "c8a57bae-b131-4091-8cbb-05d4e7b49f5f")
 	)
 	(wire (pts (xy 292.1000 121.9200) (xy 289.5600 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "c0a2c3b8-f642-4747-a9c9-3aa3508534a9")
+		(uuid "ce894599-e628-49d5-88b0-d524fc29e573")
 	)
 	(label "CH9"
 		(at 289.5600 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "18dcb32a-5356-445c-bc02-a46b24034e8d")
+		(uuid "ac37c082-b237-4459-959c-2f78770e1244")
 	)
 	(wire (pts (xy 307.3400 121.9200) (xy 309.8800 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "531940a0-04ef-401f-8ae3-94262e1fb178")
+		(uuid "211c6ae6-cfd1-47da-9e55-b7f537b45b46")
 	)
 	(label "CH10"
 		(at 309.8800 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "551e38bb-e968-4e26-826b-97e7b55ed112")
+		(uuid "b1edbad9-59ef-4039-b650-36644bc76402")
 	)
 	(wire (pts (xy 330.2000 45.7200) (xy 327.6600 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "8d129dd7-b9d2-4a3d-9ae4-4fe2647c4ede")
+		(uuid "4ba2bc14-1e81-4ddf-8da9-e7738c84c40a")
 	)
 	(hierarchical_label "ROW"
 		(shape input)
 		(at 327.6600 45.7200 180)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "c394c840-672b-48e0-912d-fff291992885")
+		(uuid "23986957-5a56-4937-a8d0-ae1a6ad4d7ca")
 	)
 	(wire (pts (xy 340.3600 45.7200) (xy 342.9000 45.7200))
 		(stroke (width 0) (type default))
-		(uuid "f026d44f-3eb7-4bdf-a871-e6d30a3864ca")
+		(uuid "d710f643-6eec-4cfa-939d-5dd71a601099")
 	)
 	(label "KN10"
 		(at 342.9000 45.7200 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "1c01bb58-78a1-45c1-8fa1-6d9664ecdafc")
+		(uuid "9cb5527f-0d31-4871-bd73-6363546e4109")
 	)
 	(wire (pts (xy 339.0900 81.2800) (xy 341.6300 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "411d867b-8d56-454d-9177-586e3094760b")
+		(uuid "68f1646d-b975-419a-95ba-3cbb76663a02")
 	)
 	(label "KN10"
 		(at 341.6300 81.2800 0)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "db9afd4f-f87d-4533-8626-86e3772ef688")
+		(uuid "81943433-106b-413c-9e75-beb13791e3d2")
 	)
 	(wire (pts (xy 331.4700 81.2800) (xy 328.9300 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "6fb7d738-2091-4d3f-bbff-0607702ae525")
+		(uuid "83d86ecb-2f1a-45cb-9c26-53e2397cf6d4")
 	)
 	(global_label "COL10"
 		(shape input)
 		(at 328.9300 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "04ab5719-1cf1-494c-82ab-80ccf45ded9a")
+		(uuid "06cdc594-ac95-410d-979d-c7b609d568d2")
 	)
 	(wire (pts (xy 335.2800 114.3000) (xy 335.2800 111.7600))
 		(stroke (width 0) (type default))
-		(uuid "13b60ee5-9a86-4449-9787-4d7dca5eea46")
+		(uuid "769ba344-ba03-494e-84a6-e111115d4be2")
 	)
 	(global_label "VLED"
 		(shape input)
 		(at 335.2800 111.7600 270)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "074d06a4-9ae3-43fd-a580-dbab16b74e5f")
+		(uuid "91d52976-06cc-4cc5-b0ae-df635f7a8e15")
 	)
 	(wire (pts (xy 335.2800 129.5400) (xy 335.2800 132.0800))
 		(stroke (width 0) (type default))
-		(uuid "8c6feb48-50b7-4d79-abe8-9ef36d334ffe")
+		(uuid "c054bdf1-44fb-48e5-a7b7-aaa43808286a")
 	)
 	(global_label "GND"
 		(shape input)
 		(at 335.2800 132.0800 90)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "a6b4976f-b747-4518-ac16-f16db9c7b3a5")
+		(uuid "6d7ee990-1892-46cf-b825-9d3c20ca6e8e")
 	)
 	(wire (pts (xy 327.6600 121.9200) (xy 325.1200 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "69a4c532-5b6f-4911-a522-4f07f7bdcb88")
+		(uuid "75d9ab83-7b6d-419c-8bfd-1aa5a4ba2733")
 	)
 	(label "CH10"
 		(at 325.1200 121.9200 180)
 		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "9b2bb391-0917-4a23-8c59-50e18f5c4a37")
+		(uuid "7d0302fb-1464-4f79-8a35-797f71839d3e")
 	)
 	(wire (pts (xy 342.9000 121.9200) (xy 345.4400 121.9200))
 		(stroke (width 0) (type default))
-		(uuid "9e290cfd-e4d2-4a91-ac2f-aaae71d3c3a5")
+		(uuid "1734adb7-5263-49bc-b112-5431c556b391")
 	)
 	(hierarchical_label "DOUT"
 		(shape output)
 		(at 345.4400 121.9200 0)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "df79f899-ac7a-4992-9626-1d90e4a5d093")
+		(uuid "574de32e-470a-4cd5-97cf-919fc775b790")
 	)
-	(text "REUSABLE 10-KEY ROW  (multi-channel: instantiated x5 as Row1..Row5)\n  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)\n  Row2 -> SW11-20 / D11-20  / D66-75      ...\n  Row5 -> SW41-50 / D41-50  / D96-105\n\nEach of the 10 keys = MX switch + 1N4148W diode + SK6805-EC15 RGB:\n  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;\n          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]\n  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained\n          @root);  LED VDD -> VLED (gated), VSS -> GND\n\nShared globals: COL1..COL10, VLED, GND.\nPer-instance hier pins: ROW (-> KB_ROWn @root), DIN/DOUT (RGB chain).\nWire-once: a fix here propagates to all 5 rows. Placement 1:1 w/ panel.\nOne SK6805 sits just north of each MX switch (can't go under it)."
+	(text "REUSABLE 10-KEY ROW  (multi-channel: instantiated x5 as Row1..Row5)\n  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)\n  Row2 -> SW11-20 / D11-20  / D66-75      ...\n  Row5 -> SW41-50 / D41-50  / D96-105\n\nEach of the 10 keys = MX switch + 1N4148W diode + SK6812MINI-E RGB:\n  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;\n          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]\n  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained\n          @root);  LED VDD -> VLED (gated), VSS -> GND\n\nShared globals: COL1..COL10, VLED, GND.\nPer-instance hier pins: ROW (-> KB_ROWn @root), DIN/DOUT (RGB chain).\nWire-once: a fix here propagates to all 5 rows. Placement 1:1 w/ panel.\nLED = SK6812MINI-E (C5149201), REVERSE/BOTTOM mount: it sits on the BOTTOM\nwith the Kailh sockets -> SINGLE-SIDED assembly (one stencil, no flip),\nshining UP through the PCB into the MX switch's north LED window.\n\nSWITCH FP = SW_MX_HS_CPG151101S11_1u -> HOT-SWAP (Kailh CPG151101S11,\n  LCSC C41430893). PLACE-ON-BACK: put switch fps on the BACK copper layer\n  so the socket lands on the bottom + keycaps face up on front; + a plate.\n  NOT solderable for a switch-only build (thru-holes are 0.15mm-ring socket\n  pass-throughs, not solder pads) -> solder-in = a separate board rev."
 		(exclude_from_sim no)
 		(at 15.24 203.20 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "38fdd6c1-2ce9-45bc-8915-2386b935f218")
+		(uuid "ad1fa0b6-12b7-4ff3-9729-525cce060822")
 	)
 	(sheet_instances
 		(path "/"

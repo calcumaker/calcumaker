@@ -156,10 +156,13 @@ DF40HC(2.0)/(2.5)/… — swap in on the same land if more clearance is wanted.)
 
 ### Per-key RGB accent lighting (keyboard)
 
-Fifty **SK6805-EC15** (1.5×1.5 mm single-wire addressable RGB, LCSC C2890035) —
-one beside each key — **hint key positions / presses**. At 1.5 mm they can't sit
-under the MX switch, so each mounts just north of its switch. It's the smallest
-serial RGB with both a KiCad footprint and real LCSC stock. All 50 daisy-chain
+Fifty **SK6812MINI-E** (LCSC **C5149201**, single-wire addressable RGB) —
+**per-key backlight** that hints key positions / presses. It's a **reverse /
+bottom-mount** part (KiCad `LED_SK6812MINI-E_3.2x2.8mm_P1.5mm_ReverseMount`): it
+sits on the **bottom** of the PCB and shines **up through** a cutout into each MX
+switch's north LED window. That puts the LEDs on the **same side as the Kailh
+sockets → single-sided assembly** (one stencil, one reflow pass, no board flip —
+cheaper JLC, and it's why we didn't use a top-emit part). All 50 daisy-chain
 (DIN→DOUT) off **one G0 pin** (WS2812 protocol, ~800 kHz); refs `D56–D105`.
 
 **Power = gated VSYS.** The LEDs are ~5 V parts and the keyboard rail is only
@@ -174,6 +177,31 @@ marginal at VSYS ≈ 4.7 V on USB otherwise).
 **Current budget:** 50× full-white ≈ 0.75 A would exceed the DF40 contact + VSYS
 budget, so the firmware **must cap total brightness** — "hint" use lights a few
 keys at a time (pressed key + neighbours), an all-keys idle glow stays dim.
+
+### Hot-swap switches (place-on-back) — this is a hot-swap board
+
+The keyswitches use marbastlib's **`SW_MX_HS_CPG151101S11_1u`** footprint (vendored,
+CERN-OHL-P): the switch mount + the Kailh **CPG151101S11** hot-swap socket. It is a
+**place-on-back** footprint — the switch footprints go on the board's **back copper
+layer**, so the socket (authored on `F.Cu`) lands on the physical **bottom** and
+the keycaps face up on the front.
+
+**This is a hot-swap board.** The socket (LCSC **C41430893**, ~93k stock,
+JLCPCB-assemblable) is populated on the bottom; switches **plug in**,
+field-swappable. A **plate** holds the unsoldered switches (a separate mechanical
+part). The socket protrudes ~1.8 mm below the PCB (enclosure/standoff detail).
+
+> **Not solderable for a switch-only build.** The switch thru-holes are minimal
+> **0.15 mm-ring pass-throughs** for the pin into the socket — **not** solder
+> pads. So a switch-only / **solder-in build is not supported on this footprint**.
+> A solder-in board would use the dedicated solder-in footprint
+> (`SW_Cherry_MX_1.00u_PCB`, also vendored) — a **separate board revision**, not a
+> BOM toggle on this one. (Earlier notes framed this as a one-board "combo" — that
+> was wrong; the pass-throughs don't make a reliable solder joint.)
+
+Wider keys (2u Enter, etc.) need **stabilizers** — marbastlib's `STAB_MX_2u` and
+KiCad's own `SW_Cherry_MX_2.00u_PCB` already carry the stabilizer mounts — a
+layout option for later.
 
 Keeping the display driver *on the display board* means only **+5V, GND, and the
 display serial bus** (a handful of signals) cross that connector — instead of
@@ -579,7 +607,7 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Sheet | File | Contents |
 |-------|------|----------|
 | Root | `calcumaker-keyboard.kicad_sch` | 5× `key_row` instances + 4 one-off sheets; per-row `ROW`→`KB_ROWn` + the RGB DIN→DOUT chain wired here |
-| **key_row ×5** | `key_row.kicad_sch` | **Reusable 10-key row (MULTI-CHANNEL, fully wired): each key = MX switch + 1N4148W diode + SK6805 RGB.** Instantiated ×5: Row1–5 → SW1–50 / D1–50 (matrix) / D56–105 (RGB). Shared COL1–10/VLED/GND global; ROW + RGB DIN/DOUT hierarchical |
+| **key_row ×5** | `key_row.kicad_sch` | **Reusable 10-key row (MULTI-CHANNEL, fully wired): each key = MX switch + 1N4148W diode + SK6812MINI-E RGB (reverse-mount).** Instantiated ×5: Row1–5 → SW1–50 / D1–50 (matrix) / D56–105 (RGB). Shared COL1–10/VLED/GND global; ROW + RGB DIN/DOUT hierarchical |
 | Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
 | KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
 | RGBPower | `rgb_power.kicad_sch` | RGB **level shifter (U2)** + **gated high-side load switch (Q1/Q2 + R7–10/C6–7)** — drives + sleep-gates the per-key chain off VSYS |
@@ -750,10 +778,10 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
 | Keyboard mezzanine ×2 | **Hirose DF40 0.4mm 2×6 (12-pin)** 1.5mm stack: DF40B-12DS (mcu J5) + DF40C-12DP (keyboard J1) | ✅ LCSC C3641147 / C6224952; +VSYS+GND for RGB; both 1.5mm (B/C = pin-count variant, not height); verify MX-pin clearance |
-| Keyswitches (keyboard) ×50 | Cherry MX (full size) + optional Kailh hot-swap sockets | 5×10 matrix |
+| Keyswitches (keyboard) ×50 | Cherry MX (full size) — **hot-swap** footprint `SW_MX_HS_CPG151101S11_1u` (place-on-back; Kailh socket) | 5×10 matrix; socket CPG151101S11 (C41430893); **not** solder-in-capable |
 | Key diodes (keyboard) ×50 | 1N4148W (SOD-123) | C81598; one per key (NKRO) |
 | Annunciator LEDs (keyboard) ×5 | f yellow (C72038), g blue (C965807), C·G·low-batt red (C2286) + 5× 470Ω | ✅ front-panel, beside the keys |
-| Per-key RGB (keyboard) ×50 | **SK6805-EC15** 1.5×1.5mm single-wire addressable RGB — one beside each key (hint lighting, D56–D105) | ✅ LCSC C2890035, ~$0.06; daisy-chained off the G0 |
+| Per-key RGB (keyboard) ×50 | **SK6812MINI-E** reverse/bottom-mount RGB — under each key, backlight (D56–D105); **single-sided w/ the sockets** | ✅ LCSC C5149201, ~161k; daisy-chained off the G0 |
 | RGB level shift + gate (keyboard) | **SN74LVC1G125** (3V3→VLED data) + **AO3401A**/**2N7002** high-side load switch | ✅ LCSC C23654 / C15127 / C8545 — LEDs on **gated VSYS**, off in sleep |
 | USB-C (mcu) | receptacle + CC 5.1k + USBLC6 ESD | as ephemerkey PSU |
 | Charger (mcu) | MCP73831 / BQ-class | sized to cell |

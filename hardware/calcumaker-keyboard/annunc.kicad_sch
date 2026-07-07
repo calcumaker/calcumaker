@@ -361,7 +361,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "729a29fc-528b-407a-8f74-332959e48d65")
+		(uuid "0fd2c774-6e0f-4871-8d75-18c5dc605611")
 		(property "Reference" "D51"
 			(at 24.1300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -390,8 +390,8 @@
 			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "75964180-1930-4fb7-a3e7-ccbad1e6d94f"))
-		(pin "2" (uuid "65e84a11-54b8-4f7b-b9a3-267c53db8e60"))
+		(pin "1" (uuid "e66ff627-8a87-40ff-8769-7e32499e713a"))
+		(pin "2" (uuid "004ee5f2-2b28-4b74-9f4f-ef483b3e1937"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -409,7 +409,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "537eaa04-8f8b-4f7c-a7d8-e34ab3e9f071")
+		(uuid "1d9ee792-d79f-4cac-af4a-696caf66cbd2")
 		(property "Reference" "D52"
 			(at 64.7700 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -438,8 +438,8 @@
 			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "5e9226a0-3897-416b-9fe5-13a224779d73"))
-		(pin "2" (uuid "9999fde8-c54d-4bb1-b434-1a5d81884873"))
+		(pin "1" (uuid "b6a90efa-a202-430b-ab57-7bb2d379617d"))
+		(pin "2" (uuid "ec00b80b-274c-4fda-bee1-2449b8978709"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -457,7 +457,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2392d59e-78d1-42f7-a145-9e7107a25228")
+		(uuid "4f25f62f-72a8-4026-b278-3ea259793dac")
 		(property "Reference" "D53"
 			(at 105.4100 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -486,8 +486,8 @@
 			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "18e4125d-da05-45c6-9119-8e838388482d"))
-		(pin "2" (uuid "b288fc04-6e84-4356-9f09-8667ad92998c"))
+		(pin "1" (uuid "afd5d60b-06f4-49b0-928f-ddc72cf723ca"))
+		(pin "2" (uuid "48da725e-72ec-4ad3-b2bb-28b8967d9063"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -505,7 +505,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a1c19660-90e6-402d-a708-4409b0ed8e8f")
+		(uuid "9589171b-3dbc-4c4e-b5c2-b82938aa6559")
 		(property "Reference" "D54"
 			(at 146.0500 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -534,8 +534,8 @@
 			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e95821af-8595-4eb9-9166-bade43653dd1"))
-		(pin "2" (uuid "27d3cb36-8005-4a57-b669-09de714c336b"))
+		(pin "1" (uuid "cbfd8f3d-da45-4716-a46a-165d546c9007"))
+		(pin "2" (uuid "e2afc327-476e-4e97-87fd-8b0a9281d54b"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -553,7 +553,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "20d0b3e1-2884-4705-a555-17008541792b")
+		(uuid "fef0a165-8bbc-4d77-be48-a39e37b41f24")
 		(property "Reference" "D55"
 			(at 186.6900 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -582,8 +582,8 @@
 			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "ef2d54ed-0c58-4b74-8518-a7488db0c446"))
-		(pin "2" (uuid "53ce226b-ab5b-4d5b-925e-6d3cf8d74394"))
+		(pin "1" (uuid "ad8dd9b3-2572-41b2-b127-df3398f14635"))
+		(pin "2" (uuid "08bf0155-31d0-4c3c-b37e-9adf943d7566"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -601,7 +601,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "34354e29-8897-4cee-bff2-aae9f1c4f288")
+		(uuid "6793c154-caed-429d-a77b-902b15fff28b")
 		(property "Reference" "R1"
 			(at 227.3300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -622,8 +622,8 @@
 			(at 223.5200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "eea38cc6-060d-4914-8f7e-0e675bc651e3"))
-		(pin "2" (uuid "593e8566-da02-4555-b0c8-27a330944219"))
+		(pin "1" (uuid "8115aafb-ee72-4fa0-87d1-de72909a2baa"))
+		(pin "2" (uuid "4e9192b9-8d99-4d10-84c9-5170ecc2c309"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -641,7 +641,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6939afaf-e126-4ce3-8e6a-eaa5a41f51e5")
+		(uuid "5067b960-5c15-42b8-ac61-dfd48c0ea99b")
 		(property "Reference" "R2"
 			(at 24.1300 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -662,8 +662,8 @@
 			(at 20.3200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "3c24f7d3-00f9-4305-bc27-8af394c20071"))
-		(pin "2" (uuid "d9c3fd8d-0b9b-47a6-a6a4-bc94b1f45bfa"))
+		(pin "1" (uuid "32648e3f-74ca-41ab-abc0-3e601c25ec6a"))
+		(pin "2" (uuid "457360b1-1d27-42b2-8ed8-a9221fc3cd93"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -681,7 +681,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1e2ff7a3-319d-43c4-96ec-0402a172fdc1")
+		(uuid "630e69ab-a4ef-47a4-95c3-9ba2cce4d945")
 		(property "Reference" "R3"
 			(at 64.7700 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -702,8 +702,8 @@
 			(at 60.9600 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "dd2daacc-2d8c-4242-b1f7-b08393e56be3"))
-		(pin "2" (uuid "3dfe78a9-99b4-4176-80a3-93c311584968"))
+		(pin "1" (uuid "88214c3f-5e12-4a34-90d3-821fe8fca0c5"))
+		(pin "2" (uuid "72396405-c235-4ae4-ac27-813f5460e2ef"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -721,7 +721,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "51e21948-d98f-4a1e-9d4b-df2f29c3e64e")
+		(uuid "37d8f37a-d693-4be4-a065-8242b1fc5516")
 		(property "Reference" "R4"
 			(at 105.4100 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -742,8 +742,8 @@
 			(at 101.6000 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1732a5c4-836b-4f1f-a85e-6646788af383"))
-		(pin "2" (uuid "63f9ebdf-ac2b-4af5-8870-82db394efffc"))
+		(pin "1" (uuid "a6427bb5-47c6-4bf9-b0b3-e6cefe3b5709"))
+		(pin "2" (uuid "9a0cbe6c-480f-4a7c-9052-0baaf638de12"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -761,7 +761,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "effd3a1f-e429-48e6-9404-95dac6c30c98")
+		(uuid "9faebc73-be35-4631-b2c8-046c0a63af01")
 		(property "Reference" "R5"
 			(at 146.0500 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -782,8 +782,8 @@
 			(at 142.2400 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "131d6919-a08d-409f-abd5-0a2a4d8201c2"))
-		(pin "2" (uuid "14389994-fadc-4e10-9355-555d1e93b3f8"))
+		(pin "1" (uuid "932e0fa5-5a1e-428f-9366-60fb252db42e"))
+		(pin "2" (uuid "63d06a9a-4756-44bd-9a83-583d4aecbd76"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb20"
@@ -797,7 +797,7 @@
 		(exclude_from_sim no)
 		(at 15.00 100.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "00be792f-f9ea-49be-9716-5feb75dc7d34")
+		(uuid "160f2471-b945-4b30-8b6d-c0cdfe91fb1e")
 	)
 	(sheet_instances
 		(path "/"

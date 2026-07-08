@@ -113,6 +113,8 @@ pub fn label(k: Key) -> &'static str {
         Key::Re => "Re",
         Key::Im => "Im",
         Key::ReIm => "Re<>Im",
+        Key::ToPolar => ">P",
+        Key::ToRect => ">R",
         Key::Pi => "PI",
         Key::Fact => "x!",
         Key::Pct => "%",

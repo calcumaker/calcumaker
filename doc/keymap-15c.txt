@@ -9,7 +9,7 @@ Each key:   f (gold) shift function
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 | SINH   | COSH   | TANH   | PREC   | x^2    | R<>P   | CPLX   | PI     | LSTx   | STATUS |
 | SIN    | COS    | TAN    | LN     | SQRT   | y^x    | 1/x    | EEX    | BSP    | CLX    |
-| Re     | Im     | Re<>Im | CONJ   | ARG    |        |        |        |        | SETUP  |
+| Re     | Im     | Re<>Im | CONJ   | ARG    | >P     | >R     |        |        | SETUP  |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 |        |        |        |        |        |        |        |        |        |        |
 | ASIN   | ACOS   | ATAN   | LOG    | e^x    | 10^x   | 7      | 8      | 9      | /      |

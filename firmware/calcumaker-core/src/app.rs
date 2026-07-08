@@ -882,6 +882,8 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::Re => "re",
         Key::Im => "im",
         Key::ReIm => "reim",
+        Key::ToPolar => "topolar",
+        Key::ToRect => "torect",
         Key::Fact => "fact",
         _ => return None,
     })

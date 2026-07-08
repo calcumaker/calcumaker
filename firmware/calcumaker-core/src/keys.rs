@@ -43,6 +43,8 @@ pub enum Key {
     // RECT/POLAR; then the 15C's part ops — conjugate, argument, real/imag
     // extraction, and Re<>Im swap.
     Complex, CplxDisp, Conj, Arg, Re, Im, ReIm,
+    // 15C coordinate conversion (two reals): →P rectangular→polar, →R the inverse
+    ToPolar, ToRect,
     // real display format (X = digit count; FmtAuto = %g-style)
     Fix, Sci, Eng, FmtAuto,
     // angle unit for circular trig (cycles RAD → DEG → GRAD)
@@ -178,10 +180,10 @@ pub static SCI: Keymap = Keymap {
 // The 15C wears the scientific base + f-layer (with f+I COMPLEX and f+P R<>P),
 // but its **g-layer is the complex faceplate**: the part ops the 15C is known for
 // live on the top row over SIN/COS/TAN/LN/√ — g+SIN=Re, g+COS=Im, g+TAN=Re<>Im,
-// g+LN=CONJ, g+√=ARG. Stats stay on g-row 2, SETUP on g-CLx. This is what sets
-// the 15C apart from the plain SCI personality.
+// g+LN=CONJ, g+√=ARG — plus the coordinate conversions g+y^x=→P, g+1/x=→R. Stats
+// stay on g-row 2, SETUP on g-CLx. This sets the 15C apart from the plain SCI.
 pub const C15_LAYER_G: [[Key; COLS]; ROWS] = [
-    [Re,     Im,     ReIm, Conj, Arg,      Nop,  Nop,    Nop,  Nop,   Setup],
+    [Re,     Im,     ReIm, Conj, Arg,      ToPolar, ToRect, Nop, Nop,  Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],

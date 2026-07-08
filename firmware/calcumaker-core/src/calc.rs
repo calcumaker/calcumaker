@@ -772,6 +772,8 @@ impl Calc {
             "re" => self.re_op(),
             "im" => self.im_op(),
             "reim" => self.reim_op(),
+            "topolar" => self.to_polar_op(),
+            "torect" => self.to_rect_op(),
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())
@@ -1279,6 +1281,42 @@ impl Calc {
         let (re, im) = (z.real(self.prec), z.imag(self.prec));
         self.stack
             .push(Value::Complex(Complex::from_reals(self.prec, &im, &re)));
+        Ok(())
+    }
+
+    /// The current angle unit → radians (inverse of [`Self::angle_from_rad`]).
+    fn angle_to_rad(&self, a: Float) -> Float {
+        if self.angle_mode == AngleMode::Rad {
+            return a;
+        }
+        let half = self.angle_mode.half_turn();
+        a * Float::pi(self.prec) / Float::from_i64(self.prec, half)
+    }
+
+    /// HP →P: rectangular (X = x, Y = y) → polar (X = r, Y = θ in the angle
+    /// unit). Two *reals* — the classic coordinate conversion, distinct from a
+    /// complex value; r = |x+yi|, θ = arg, computed via the complex helpers.
+    fn to_polar_op(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let x = self.pop_x().to_real(self.prec);
+        let y = self.stack.pop().expect("validated").to_real(self.prec);
+        let z = Complex::from_reals(self.prec, &x, &y);
+        let theta = self.angle_from_rad(z.arg(self.prec));
+        self.stack.push(Value::Real(theta)); // Y = θ
+        self.stack.push(Value::Real(z.abs(self.prec))); // X = r
+        Ok(())
+    }
+
+    /// HP →R: polar (X = r, Y = θ) → rectangular (X = x, Y = y).
+    fn to_rect_op(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let r = self.pop_x().to_real(self.prec);
+        let theta = self.stack.pop().expect("validated").to_real(self.prec);
+        let rad = self.angle_to_rad(theta);
+        let x = r.clone() * rad.clone().cos();
+        let y = r * rad.sin();
+        self.stack.push(Value::Real(y)); // Y = y
+        self.stack.push(Value::Real(x)); // X = x
         Ok(())
     }
 

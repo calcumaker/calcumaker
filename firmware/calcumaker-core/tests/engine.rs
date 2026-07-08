@@ -1990,3 +1990,13 @@ fn complex_part_ops() {
     assert_eq!(run(256, &["deg", "1", "1", "complex", "arg"]), "45"); // phase
     assert_eq!(run(256, &["float", "5", "reim"]), "0+5i"); // real -> pure imaginary
 }
+
+#[test]
+fn coord_conversion_p_r() {
+    // →P: rectangular (X=x, Y=y) → polar (X=r, Y=θ). x=3, y=4 → r=5, θ=53.13°.
+    assert_eq!(run(256, &["deg", "4", "3", "topolar"]), "5"); // X = r
+    // →R with θ=0 is exact: r=7, θ=0 → x=7.
+    assert_eq!(run(256, &["deg", "0", "7", "torect"]), "7"); // X = x
+    // Round-trip →P→R recovers the x-coordinate exactly.
+    assert_eq!(run(256, &["deg", "4", "3", "topolar", "torect"]), "3"); // X = x
+}

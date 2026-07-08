@@ -79,7 +79,7 @@ K.register_stdlib("Device", "R", "C", "Crystal")
 K.register_stdlib("LED", "SK6812")                     # pixel (base sym; value/fp overridden to XL-1010)
 K.register_stdlib("MCU_RaspberryPi", "RP2040")         # STOCK symbol (QFN-56)
 K.register_stdlib("Memory_Flash", "W25Q32JVSS")        # RP2040 boot/code QSPI flash
-K.register_stdlib("74xx", "74LVC125")                  # quad 3V3->VLED data level shifter
+K.register_stdlib("74xGxx", "74LVC1G125")              # single-gate 3V3->VLED data shifter (x3 chains)
 K.register_stdlib("Transistor_FET", "Q_PMOS_GSD", "Q_NMOS_GSD")   # LED-rail load switch
 K.register_stdlib("Power_Protection", "USBLC6-2SC6")   # USB ESD (BOOTSEL/DFU port)
 K.register_stdlib("Switch", "SW_Push")                 # BOOTSEL button
@@ -91,6 +91,7 @@ R0402 = "Resistor_SMD:R_0402_1005Metric"
 C0402 = "Capacitor_SMD:C_0402_1005Metric"
 C0603 = "Capacitor_SMD:C_0603_1608Metric"
 SOT23 = "Package_TO_SOT_SMD:SOT-23"
+SOT235 = "Package_TO_SOT_SMD:SOT-23-5"
 SOT236 = "Package_TO_SOT_SMD:SOT-23-6"
 PIXEL_FP = "calcumaker:LED_XL1010RGBC_1.0x1.0mm"        # authored 1x1mm 4-pad land
 RP2040_FP = "Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm"   # STOCK
@@ -233,81 +234,192 @@ def build_led_row():
 # ===================== RP2040 min-system sheet (single instance) =============
 def build_rp2040():
     path = f"/{ROOT_UUID}/{RP2040_U}"
-    specs = [
-        dict(ref="U1", lib_id="MCU_RaspberryPi:RP2040", value="RP2040", fp=RP2040_FP,
-             lcsc="C2040", mpn="RP2040", mfr="Raspberry Pi"),
-        dict(ref="U2", lib_id="Memory_Flash:W25Q32JVSS", value="W25Q32JVSSIQ",
-             fp=FLASH_FP, lcsc="C179173", mpn="W25Q32JVSSIQ", mfr="Winbond"),
-        dict(ref="U3", lib_id="Power_Protection:USBLC6-2SC6", value="USBLC6-2SC6",
-             fp=SOT236, lcsc="C2687116", mpn="USBLC6-2SC6", mfr="STMicroelectronics"),
-        dict(ref="Y1", lib_id="Device:Crystal", value="12MHz", fp=XTAL_FP),   # LCSC TBD @ BOM
-        dict(ref="J4", lib_id="Connector:USB_C_Receptacle_USB2.0_16P", value="USB-C (BOOTSEL)",
-             fp=USBC_FP, lcsc="C2927039", mpn="USB-TYPE-C-019", mfr="GCT"),
-        dict(ref="SW1", lib_id="Switch:SW_Push", value="BOOTSEL", fp=BTN_FP),   # LCSC TBD @ BOM
-        R("R1", "1k"), R("R2", "27"), R("R3", "27"), R("R4", "10k"),
-        C("C1", "100nF"), C("C2", "100nF"), C("C3", "100nF"), C("C4", "100nF"),
-        C("C5", "100nF"), C("C6", "100nF"), C("C7", "100nF"),        # IOVDD/USB/ADC/VREG_VIN decouple
-        C("C8", "1uF"),                                              # DVDD (internal 1.1V LDO out)
-        C("C9", "10uF", C0603), C("C10", "10uF", C0603),            # 3V3 bulk
-        C("C11", "15pF"), C("C12", "15pF"),                         # Y1 load caps (LCSC TBD)
-    ]
-    note = (15, 165, K.note_block(
-        "RP2040 MIN-SYSTEM  -  U1 RP2040 (C2040, QFN-56)  -  PLACED, not wired",
-        "PIO drives the WS2812 chains; embassy-rp firmware (a 2nd MCU ecosystem).",
-        "",
-        "POWER  IOVDD/USBVDD/ADC_AVDD/VREG_VIN -> +3V3 (from unified connector);",
-        "       C1-C7 100nF decouple; C9/C10 10uF bulk. DVDD = internal 1.1V LDO",
-        "       out -> C8 1uF. VSS/EP -> GND.",
-        "CLOCK  Y1 12MHz + C11/C12 15pF + R1 1k series on XIN (USB needs the xtal).",
-        "FLASH  U2 W25Q32JVSSIQ (C179173) on QSPI (SD0-3/SCLK/CSn); R4 10k CSn",
-        "       pull-up. RP2040 boots from it.",
-        "USB    J4 USB-C (BOOTSEL/DFU drag-drop UF2 programming); U3 USBLC6 ESD;",
-        "       R2/R3 27R series on D+/D-. SW1 = BOOTSEL button (hold at power-on).",
-        "LINK   unified SPI slave <- SPI_SCLK/MOSI/CS (main MCU 'display intent');",
-        "       DISP_IRQ out (ready); DISP_NRST -> RUN; DISP_BOOT -> BOOTSEL.",
-        "OUT    3x LED data (one per stack row) + LED_EN -> RGBPower (U4 shifter).",
-        "       Drive the aux OLED locally over I2C (AuxOLED J3) from OLED intent.",
-        "Y1 12MHz + SW1 BOOTSEL: pick LCSC at BOM.  See DESIGN.md display-module IF."))
+    comps, w = [], ""
+
+    def one(c, ref):
+        comps.append((c, [(path, ref)]))
+        return c
+
+    # --- RP2040 (57-pin, single unit) ---
+    U1 = one(dict(lib_id="MCU_RaspberryPi:RP2040", value="RP2040", fp=RP2040_FP,
+                  lcsc="C2040", mpn="RP2040", mfr="Raspberry Pi", x=g(44), y=g(44)), "U1")
+    for n in (1, 10, 22, 33, 42, 49):                    # IOVDD
+        w += K.net_pin(U1, n, "+3V3", kind="glabel")
+    for n in (44, 48, 43):                               # VREG_VIN / USB_VDD / ADC_AVDD
+        w += K.net_pin(U1, n, "+3V3", kind="glabel")
+    for n in (45, 23, 50):                               # VREG_VOUT + DVDD (1.1V core)
+        w += K.net_pin(U1, n, "DVDD", kind="glabel")
+    w += K.net_pin(U1, 57, "GND", kind="glabel")          # thermal pad / GND
+    w += K.net_pin(U1, 19, "GND", kind="glabel")          # TESTEN -> GND
+    w += K.net_pin(U1, 20, "XIN", kind="glabel")
+    w += K.net_pin(U1, 21, "XOUT", kind="glabel")
+    for n, net in [(52, "QSPI_SCLK"), (53, "QSPI_SD0"), (55, "QSPI_SD1"),
+                   (54, "QSPI_SD2"), (51, "QSPI_SD3"), (56, "QSPI_CS")]:
+        w += K.net_pin(U1, n, net, kind="glabel")
+    w += K.net_pin(U1, 47, "USB_DP", kind="glabel")
+    w += K.net_pin(U1, 46, "USB_DM", kind="glabel")
+    w += K.net_pin(U1, 26, "DISP_NRST", kind="glabel")    # RUN <- reset from U575
+    w += K.net_pin(U1, 24, "SWCLK", kind="glabel")
+    w += K.net_pin(U1, 25, "SWDIO", kind="glabel")
+    # peripheral GPIOs (by pin number)
+    for n, net in [(4, "SPI_SCLK"), (2, "SPI_MOSI"), (3, "SPI_CS"), (38, "DISP_IRQ"),
+                   (27, "LED_DATA1"), (28, "LED_DATA2"), (29, "LED_DATA3"),
+                   (34, "LED_EN"), (6, "OLED_SDA"), (7, "OLED_SCL")]:
+        w += K.net_pin(U1, n, net, kind="glabel")
+
+    # --- decoupling + bulk ---
+    for i, ref in enumerate(("C1", "C2", "C3", "C4", "C5", "C6")):
+        c = one(dict(C(ref, "100nF"), x=g(8 + i * 5), y=g(6)), ref)
+        w += K.net_pin(c, 1, "+3V3", kind="glabel")
+        w += K.net_pin(c, 2, "GND", kind="glabel")
+    C8 = one(dict(C("C8", "1uF"), x=g(40), y=g(6)), "C8")           # DVDD (1.1V LDO out)
+    w += K.net_pin(C8, 1, "DVDD", kind="glabel")
+    w += K.net_pin(C8, 2, "GND", kind="glabel")
+    for i, ref in enumerate(("C9", "C10")):
+        c = one(dict(C(ref, "10uF", C0603), x=g(46 + i * 5), y=g(6)), ref)
+        w += K.net_pin(c, 1, "+3V3", kind="glabel")
+        w += K.net_pin(c, 2, "GND", kind="glabel")
+
+    # --- 12 MHz crystal (XIN--Y1--XOSC, R1 series on XOSC->XOUT, 15pF loads) ---
+    Y1 = one(dict(lib_id="Device:Crystal", value="12MHz", fp=XTAL_FP, x=g(8), y=g(70)), "Y1")
+    w += K.net_pin(Y1, 1, "XIN", kind="glabel")
+    w += K.net_pin(Y1, 2, "XOSC", kind="label")
+    R1 = one(dict(R("R1", "1k"), x=g(16), y=g(70)), "R1")
+    w += K.net_pin(R1, 1, "XOSC", kind="label")
+    w += K.net_pin(R1, 2, "XOUT", kind="glabel")
+    C11 = one(dict(C("C11", "15pF"), x=g(6), y=g(78)), "C11")
+    w += K.net_pin(C11, 1, "XIN", kind="glabel")
+    w += K.net_pin(C11, 2, "GND", kind="glabel")
+    C12 = one(dict(C("C12", "15pF"), x=g(12), y=g(78)), "C12")
+    w += K.net_pin(C12, 1, "XOSC", kind="label")
+    w += K.net_pin(C12, 2, "GND", kind="glabel")
+
+    # --- QSPI boot flash ---
+    U2 = one(dict(lib_id="Memory_Flash:W25Q32JVSS", value="W25Q32JVSSIQ", fp=FLASH_FP,
+                  lcsc="C179173", mpn="W25Q32JVSSIQ", mfr="Winbond", x=g(78), y=g(44)), "U2")
+    for n, net in [(1, "QSPI_CS"), (2, "QSPI_SD1"), (3, "QSPI_SD2"), (4, "GND"),
+                   (5, "QSPI_SD0"), (6, "QSPI_SCLK"), (7, "QSPI_SD3"), (8, "+3V3")]:
+        w += K.net_pin(U2, n, net, kind="glabel")
+    R4 = one(dict(R("R4", "10k"), x=g(88), y=g(36)), "R4")           # CS# pull-up
+    w += K.net_pin(R4, 1, "+3V3", kind="glabel")
+    w += K.net_pin(R4, 2, "QSPI_CS", kind="glabel")
+    C7 = one(dict(C("C7", "100nF"), x=g(88), y=g(50)), "C7")         # flash decouple
+    w += K.net_pin(C7, 1, "+3V3", kind="glabel")
+    w += K.net_pin(C7, 2, "GND", kind="glabel")
+    # BOOTSEL: hold flash CS low at power-on
+    SW1 = one(dict(lib_id="Switch:SW_Push", value="BOOTSEL", fp=BTN_FP, x=g(78), y=g(64)), "SW1")
+    w += K.net_pin(SW1, 1, "QSPI_CS", kind="glabel")
+    w += K.net_pin(SW1, 2, "GND", kind="glabel")
+
+    # --- USB-C (BOOTSEL/DFU) + ESD. Redundant VBUS/GND pins + CC 5.1k @ layout. ---
+    U3 = one(dict(lib_id="Power_Protection:USBLC6-2SC6", value="USBLC6-2SC6", fp=SOT236,
+                  lcsc="C2687116", mpn="USBLC6-2SC6", mfr="STMicroelectronics",
+                  x=g(30), y=g(74)), "U3")
+    w += K.net_pin(U3, "I/O1", "USB_DP_C", kind="label")
+    w += K.net_pin(U3, "I/O2", "USB_DM_C", kind="label")
+    w += K.net_pin(U3, "VBUS", "VBUS", kind="glabel")
+    w += K.net_pin(U3, "GND", "GND", kind="glabel")
+    R2 = one(dict(R("R2", "27"), x=g(40), y=g(72)), "R2")
+    w += K.net_pin(R2, 1, "USB_DP", kind="glabel")
+    w += K.net_pin(R2, 2, "USB_DP_C", kind="label")
+    R3 = one(dict(R("R3", "27"), x=g(40), y=g(78)), "R3")
+    w += K.net_pin(R3, 1, "USB_DM", kind="glabel")
+    w += K.net_pin(R3, 2, "USB_DM_C", kind="label")
+    J4 = one(dict(lib_id="Connector:USB_C_Receptacle_USB2.0_16P", value="USB-C (BOOTSEL)",
+                  fp=USBC_FP, lcsc="C2927039", mpn="USB-TYPE-C-019", mfr="GCT",
+                  x=g(52), y=g(74)), "J4")
+    w += K.net_pin(J4, "VBUS", "VBUS", kind="glabel")
+    w += K.net_pin(J4, "GND", "GND", kind="glabel")
+    w += K.net_pin(J4, "D+", "USB_DP_C", kind="label")
+    w += K.net_pin(J4, "D-", "USB_DM_C", kind="label")
+
+    note = (g(4), g(84), K.note_block(
+        "RP2040 MIN-SYSTEM (WIRED)  -  U1 RP2040 (C2040, QFN-56). PIO drives WS2812.",
+        "POWER  IOVDD/VREG_VIN/USB_VDD/ADC_AVDD -> +3V3 (C1-C6); VREG_VOUT+DVDD =",
+        "       1.1V core -> C8 1uF; C9/C10 10uF bulk. GND pad + TESTEN -> GND.",
+        "CLOCK  Y1 12MHz (XIN..R1..XOUT), C11/C12 15pF loads.  FLASH  U2 W25Q32 on",
+        "       QSPI (SD0-3/SCLK/CS); R4 10k CS pull-up; SW1 BOOTSEL pulls CS low.",
+        "USB    U1 D+/D- -> R2/R3 27R -> U3 USBLC6 ESD -> J4 USB-C (drag-drop UF2).",
+        "       TODO @layout: tie the redundant VBUS/GND pins + add CC1/CC2 5.1k Rd.",
+        "LINK   SPI slave <- SPI_SCLK/MOSI/CS; DISP_IRQ out; RUN <- DISP_NRST.",
+        "OUT    LED_DATA1/2/3 + LED_EN -> RGBPower; OLED_SDA/SCL -> AuxOLED J3.",
+        "Y1 12MHz + SW1 BOOTSEL: pick LCSC at BOM."))
     return dict(uuid=RP2040_U, file="rp2040.kicad_sch", page="3",
-                title="RP2040 min-system (MCU + QSPI flash + USB BOOTSEL)",
-                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
+                title="RP2040 min-system (MCU + QSPI flash + USB BOOTSEL) — wired",
+                comps=comps, wiring=w, notes=[note], _dir=PROJ_DIR)
 
 
 # ===================== RGB power + data gate sheet (single instance) =========
 def build_rgb_power():
     path = f"/{ROOT_UUID}/{RGBPOWER}"
-    specs = [
-        dict(ref="U4", lib_id="74xx:74LVC125", value="74LVC125", fp=SHIFT_FP,
-             lcsc="C460512", mpn="74LVC125AS14-13", mfr="Diodes Incorporated"),
-        dict(ref="Q1", lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A",
-             fp=SOT23, lcsc="C15127", mpn="AO3401A", mfr="AOS"),
-        dict(ref="Q2", lib_id="Transistor_FET:Q_NMOS_GSD", value="2N7002",
-             fp=SOT23, lcsc="C8545", mpn="2N7002", mfr="onsemi"),
-        dict(ref="J2", lib_id="Connector_Generic:Conn_01x02", value="VSYS IN (LED pwr)",
-             fp=JST2_FP, lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST"),
-        R("R5", "100k"), R("R6", "10k"), R("R7", "100k"), R("R8", "100k"),
-        C("C13", "100nF"), C("C14", "22uF", C0603), C("C15", "22uF", C0603),
-    ]
-    note = (15, 130, K.note_block(
-        "RGB POWER + DATA GATE  -  drives the 3 WS2812 chains (Row1-3)",
-        "PLACED, not wired.  (The 2304 LEDs are in led_cluster, nested in led_row.)",
-        "",
-        "DATA   RP2040 3x LED data (3V3) -> U4 74LVC125 (3 of 4 buffers) ->",
-        "       CH1_DATA / CH2_DATA / CH3_DATA (VLED level). U4 /OE -> GND; VCC->VLED.",
-        "GATE   J2 VSYS (dedicated 2-pin inlet from the MCU-board PSU, ~3.5-4.7V)",
-        "       -> Q1 AO3401A P-FET -> VLED. Q1 gate R5 100k pull-up to VSYS = OFF;",
-        "       Q2 2N7002 pulls the gate low: RP2040 LED_EN -> R6 10k -> Q2 (R7 100k",
-        "       pulldown = OFF at boot). LED_EN low in sleep -> LEDs + U4 fully off.",
-        "BULK   C14/C15 22uF at VLED; ADD a bulk electrolytic (>=470uF) at layout.",
-        "",
-        "POWER BUDGET  2304x WS2812 at full white ~ many amps -> NEVER full white.",
-        "  Firmware MUST enforce a global brightness/current cap; VLED comes from",
-        "  the dedicated VSYS inlet (J2), NOT over the signal FFC. -S pixel = 3.5V",
-        "  floor -> gate/dim on a VBAT sense when the cell is low.",
-        "R8 100k spare (a ~330R data series may help; tune @ layout)."))
+    comps, w = [], ""
+
+    def one(c, ref):
+        comps.append((c, [(path, ref)]))
+        return c
+
+    # VSYS inlet (dedicated LED-power lead from mcu J7 — amps, off the signal FFC)
+    J2 = one(dict(lib_id="Connector_Generic:Conn_01x02", value="VSYS IN (LED pwr)",
+                  fp=JST2_FP, lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST",
+                  x=g(8), y=g(12)), "J2")
+    w += K.net_pin(J2, 1, "VSYS", kind="glabel")
+    w += K.net_pin(J2, 2, "GND", kind="glabel")
+
+    # High-side P-FET: VSYS -> VLED, gate = QG (R5 pull-up to VSYS = OFF default)
+    Q1 = one(dict(lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A", fp=SOT23,
+                  lcsc="C15127", mpn="AO3401A", mfr="AOS", x=g(26), y=g(16)), "Q1")
+    w += K.net_pin(Q1, "S", "VSYS", kind="glabel")
+    w += K.net_pin(Q1, "D", "VLED", kind="glabel")
+    w += K.net_pin(Q1, "G", "QG", kind="label")
+    R5 = one(dict(R("R5", "100k"), x=g(26), y=g(6)), "R5")
+    w += K.net_pin(R5, 1, "VSYS", kind="glabel")
+    w += K.net_pin(R5, 2, "QG", kind="label")
+    # N-FET pulls QG low when LED_EN is high (R7 pulldown = OFF at boot/sleep)
+    Q2 = one(dict(lib_id="Transistor_FET:Q_NMOS_GSD", value="2N7002", fp=SOT23,
+                  lcsc="C8545", mpn="2N7002", mfr="onsemi", x=g(40), y=g(16)), "Q2")
+    w += K.net_pin(Q2, "D", "QG", kind="label")
+    w += K.net_pin(Q2, "S", "GND", kind="glabel")
+    w += K.net_pin(Q2, "G", "QEN", kind="label")
+    R6 = one(dict(R("R6", "10k"), x=g(40), y=g(26)), "R6")
+    w += K.net_pin(R6, 1, "LED_EN", kind="glabel")
+    w += K.net_pin(R6, 2, "QEN", kind="label")
+    R7 = one(dict(R("R7", "100k"), x=g(48), y=g(26)), "R7")
+    w += K.net_pin(R7, 1, "QEN", kind="label")
+    w += K.net_pin(R7, 2, "GND", kind="glabel")
+    # VLED bulk
+    for i, (ref, val, fp) in enumerate([("C13", "22uF", C0603), ("C14", "22uF", C0603),
+                                        ("C15", "100nF", C0402)]):
+        c = one(dict(C(ref, val, fp), x=g(56 + i * 5), y=g(12)), ref)
+        w += K.net_pin(c, 1, "VLED", kind="glabel")
+        w += K.net_pin(c, 2, "GND", kind="glabel")
+
+    # 3x single-gate shifter: A <- LED_DATAk (RP2040 3V3), Y -> CHk_DATA (VLED);
+    # VCC = VLED, /OE = GND (always enabled), one per WS2812 chain.
+    for k in range(1, 4):
+        U = one(dict(lib_id="74xGxx:74LVC1G125", value="74LVC1G125", fp=SOT235,
+                     lcsc="C23654", mpn="SN74LVC1G125DBVR", mfr="Texas Instruments",
+                     x=g(10 + (k - 1) * 18), y=g(44)), f"U{3 + k}")
+        w += K.net_pin(U, 5, "VLED", kind="glabel")            # VCC
+        w += K.net_pin(U, 3, "GND", kind="glabel")             # GND
+        w += K.net_pin(U, 1, "GND", kind="glabel")             # /OE low = enabled
+        w += K.net_pin(U, 2, f"LED_DATA{k}", kind="glabel")    # A  <- RP2040 (3V3)
+        w += K.net_pin(U, 4, f"CH{k}_DATA", kind="glabel")     # Y  -> chain k
+        cc = one(dict(C(f"C{15 + k}", "100nF"), x=g(10 + (k - 1) * 18), y=g(54)), f"C{15 + k}")
+        w += K.net_pin(cc, 1, "VLED", kind="glabel")
+        w += K.net_pin(cc, 2, "GND", kind="glabel")
+
+    note = (g(4), g(64), K.note_block(
+        "RGB POWER + DATA GATE  (WIRED)  -  feeds the 3 WS2812 chains (Row1-3)",
+        "GATE   J2 VSYS -> Q1 AO3401A P-FET -> VLED; Q1 gate QG (R5 100k pull-up",
+        "       to VSYS = OFF). RP2040 LED_EN -> R6 10k -> Q2 2N7002 (R7 100k",
+        "       pulldown) pulls QG low = ON. LED_EN low in sleep -> all off.",
+        "DATA   RP2040 LED_DATA1/2/3 (3V3) -> U4/U5/U6 74LVC1G125 (VCC=VLED, /OE=",
+        "       GND) -> CH1/2/3_DATA. C16-18 decouple; C13/C14 22uF VLED bulk.",
+        "POWER  2304x WS2812 full-white ~ many amps -> firmware MUST cap brightness;",
+        "       VLED from the J2 inlet, NOT the FFC. ADD a >=470uF bulk @ layout."))
     return dict(uuid=RGBPOWER, file="rgb_power.kicad_sch", page="4",
-                title="RGB power + data gate (quad level shift + VLED load switch)",
-                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
+                title="RGB power + data gate (load switch + 3x level shift)",
+                comps=comps, wiring=w, notes=[note], _dir=PROJ_DIR)
 
 
 # ===================== unified SPI connector sheet (single instance) =========

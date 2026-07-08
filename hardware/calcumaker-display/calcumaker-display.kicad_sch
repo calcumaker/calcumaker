@@ -31,7 +31,7 @@
 		(pin "DIN" input
 			(at 71.1200 40.6400 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "11bf09f4-561b-46ee-acde-b7ee81667324")
+			(uuid "1125eaae-a8b3-4db8-b59b-ad27ed4ba2fe")
 		)
 	)
 	(sheet
@@ -52,7 +52,7 @@
 		(pin "DIN" input
 			(at 71.1200 71.1200 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "e124027b-c4a2-4169-a43f-aa9fa21005f0")
+			(uuid "2c7a145b-60e9-42cb-b6f9-9d6698f51fad")
 		)
 	)
 	(sheet
@@ -73,7 +73,7 @@
 		(pin "DIN" input
 			(at 71.1200 101.6000 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "8df8c49a-c08e-40f2-a18d-14f9030bebc3")
+			(uuid "ca276048-5134-4cf0-9640-07de0e730515")
 		)
 	)
 	(sheet
@@ -142,42 +142,42 @@
 	)
 	(wire (pts (xy 71.1200 40.6400) (xy 63.5000 40.6400))
 		(stroke (width 0) (type default))
-		(uuid "44ef9e47-12a4-4274-843d-34063a14769c")
+		(uuid "aa368fbe-94ee-449b-a105-bbc14c430397")
 	)
 	(global_label "DIN1"
 		(shape output)
 		(at 63.5000 40.6400 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "3f180465-9bfa-4681-8ccf-249c34f6a301")
+		(uuid "123d8dc3-52f6-484c-a7b6-867141d5b29e")
 	)
 	(wire (pts (xy 71.1200 71.1200) (xy 63.5000 71.1200))
 		(stroke (width 0) (type default))
-		(uuid "54e180ce-2dc1-4e33-a505-1ae25ed9d12e")
+		(uuid "6ba494fe-9942-4768-ad69-d06302265c09")
 	)
 	(global_label "DIN2"
 		(shape output)
 		(at 63.5000 71.1200 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "af1fc260-48ad-4c07-9a13-d8136464f19e")
+		(uuid "02d76ab1-2deb-4975-8436-6591052a995c")
 	)
 	(wire (pts (xy 71.1200 101.6000) (xy 63.5000 101.6000))
 		(stroke (width 0) (type default))
-		(uuid "9ac8f098-be65-4267-83ca-d5a50a1f77d6")
+		(uuid "4e820893-12b7-40f3-86c2-6b2199d57acc")
 	)
 	(global_label "DIN3"
 		(shape output)
 		(at 63.5000 101.6000 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "9d247ab9-c545-4071-b33e-225474847c3f")
+		(uuid "d105b974-242f-4c62-ba37-4cc73a5f763d")
 	)
 	(text "Calcumaker 16 — Display (MULTI-CHANNEL). Row1/2/3 are three instances of ONE reusable sheet (display_row.kicad_sch). Shared bus is carried on global nets +5V / GND / DISP_CLK; each row's serial data DIN is a hierarchical pin fed by DIN1/DIN2/DIN3 from the interconnect. Top row (Row3 / U3 / DS33-48) is optional -> 2- or 3-row build."
 		(exclude_from_sim no)
 		(at 20.00 105.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "db142845-da5f-4a32-b0c5-c5c1140d5458")
+		(uuid "d03d525e-8c1e-42b9-b467-bb21cf54a0ab")
 	)
 	(sheet_instances
 		(path "/"

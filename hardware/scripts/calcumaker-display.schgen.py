@@ -69,7 +69,7 @@ K.register_stdlib("Device", "R", "C", "L")
 K.register_stdlib("MCU_ST_STM32G0", "STM32G031K8Ux")   # module MCU (SPI-slave frame receiver)
 K.register_stdlib("Connector", "Conn_ARM_SWD_TagConnect_TC2030-NL")   # G0 SWD (J3)
 K.register_stdlib("Converter_DCDC", "TPS61022")        # local VSYS->5V boost (moved off the MCU board)
-K.register_stdlib("74xx", "74AHCT125")                 # 3V3->5V shift for CLK+DIN1/2/3 (value 74HCT125)
+K.register_stdlib("74xGxx", "74LVC1G125")              # single-gate 3V3->5V shifter (x4: CLK+DIN1/2/3)
 
 # ---- footprint shorthands ---------------------------------------------------
 R0402 = "Resistor_SMD:R_0402_1005Metric"
@@ -79,7 +79,7 @@ L2016 = "Inductor_SMD:L_0805_2012Metric"
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 BOOST_FP = "Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm"
-SHIFT_FP = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+SOT235 = "Package_TO_SOT_SMD:SOT-23-5"   # single-gate buffer
 TM1640_FP = "Package_SO:SOIC-28W_7.5x18.7mm_P1.27mm"   # verify vs TM1640 SOP-28
 DIGIT_FP  = "Display_7Segment:7SegmentLED_LTS6760_LTS6780"  # 0.56" single-digit land
 
@@ -267,57 +267,136 @@ def build_aux():
 # ================= module MCU sheet (STM32G031, SPI-slave) ===================
 def build_disp_mcu():
     path = f"/{ROOT_UUID}/{MCU_SH}"
-    specs = [
-        dict(ref="U4", lib_id="MCU_ST_STM32G0:STM32G031K8Ux", value="STM32G031K8U6",
-             fp=G0_FP, lcsc="C432207", mpn="STM32G031K8U6", mfr="STMicroelectronics"),
-        C("C8", "100nF"), C("C9", "100nF"), C("C10", "100nF"), C("C11", "4.7uF", C0603),
-        C("C12", "100nF"), R("R1", "10k"),
-        dict(ref="J3", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
-             value="SWD TC2030-NL", fp=SWD_FP),
-    ]
-    note = (15, 150, K.note_block(
-        "MODULE MCU  -  U4  STM32G031K8U6  (LCSC C432207, UFQFPN-32)  -  PLACED",
-        "SPI-slave frame receiver: renders 'display intent' to the 3 TM1640s so",
-        "the MCU board speaks ONE protocol regardless of which display is attached.",
-        "",
-        "POWER  VDD -> +3V3 (C8/C9 100nF + C11 4.7uF); VDDA -> C10 100nF; VSS/EP GND",
-        "RESET  NRST -> C12 100nF + DISP_NRST (J1);  BOOT0 -> R1 10k + DISP_BOOT (J1)",
-        "LINK   SPI1 SCLK/MOSI/CS <- J1 SPI_SCLK/MOSI/CS;  DISP_IRQ out -> J1.",
-        "DRIVE  4x GPIO -> DISP_CLK + DIN1/DIN2/DIN3 (3V3) -> DispPower 74HCT125",
-        "       -> 5V to the TM1640s (Row1-3). CLOCK internal HSI.",
-        "OLED   I2C1 OLED_SDA/OLED_SCL -> AuxDisplay J2 (drives the DNP OLED locally).",
-        "PROG   J3 SWD Tag-Connect (bare pads).  See DESIGN.md display-module IF."))
+    comps, w = [], ""
+
+    def one(c, ref):
+        comps.append((c, [(path, ref)]))
+        return c
+
+    # STM32G031K8Ux (33 pins; symbol extends STM32G031K_4-6-8_Ux). Wire by number.
+    U4 = one(dict(lib_id="MCU_ST_STM32G0:STM32G031K8Ux", value="STM32G031K8U6",
+                  fp=G0_FP, lcsc="C432207", mpn="STM32G031K8U6",
+                  mfr="STMicroelectronics", x=g(40), y=g(44)), "U4")
+    w += K.net_pin(U4, 4, "+3V3", kind="glabel")          # VDD
+    w += K.net_pin(U4, 5, "GND", kind="glabel")           # VSS
+    w += K.net_pin(U4, 33, "GND", kind="glabel")          # VSS/EP
+    w += K.net_pin(U4, 6, "DISP_NRST", kind="glabel")     # PF2/NRST
+    w += K.net_pin(U4, 7, "DISP_IRQ", kind="glabel")      # PA0 -> IRQ out
+    w += K.net_pin(U4, 11, "SPI_CS", kind="glabel")       # PA4  SPI1 NSS
+    w += K.net_pin(U4, 12, "SPI_SCLK", kind="glabel")     # PA5  SPI1 SCK
+    w += K.net_pin(U4, 14, "SPI_MOSI", kind="glabel")     # PA7  SPI1 MOSI
+    w += K.net_pin(U4, 24, "SWDIO", kind="label")         # PA13
+    w += K.net_pin(U4, 25, "SWCLK", kind="label")         # PA14
+    w += K.net_pin(U4, 15, "CLK_3V3", kind="glabel")      # PB0 -> shifter -> DISP_CLK
+    w += K.net_pin(U4, 16, "DIN1_3V3", kind="glabel")     # PB1 -> DIN1
+    w += K.net_pin(U4, 17, "DIN2_3V3", kind="glabel")     # PB2 -> DIN2
+    w += K.net_pin(U4, 27, "DIN3_3V3", kind="glabel")     # PB3 -> DIN3
+    w += K.net_pin(U4, 30, "OLED_SCL", kind="glabel")     # PB6 I2C1 SCL
+    w += K.net_pin(U4, 31, "OLED_SDA", kind="glabel")     # PB7 I2C1 SDA
+
+    # decoupling + reset
+    for i, (ref, val, fp) in enumerate([("C8", "100nF", C0402), ("C9", "100nF", C0402),
+                                        ("C10", "100nF", C0402), ("C11", "4.7uF", C0603)]):
+        c = one(dict(C(ref, val, fp), x=g(8 + i * 5), y=g(66)), ref)
+        w += K.net_pin(c, 1, "+3V3", kind="glabel")
+        w += K.net_pin(c, 2, "GND", kind="glabel")
+    C12 = one(dict(C("C12", "100nF"), x=g(30), y=g(66)), "C12")       # NRST cap
+    w += K.net_pin(C12, 1, "DISP_NRST", kind="glabel")
+    w += K.net_pin(C12, 2, "GND", kind="glabel")
+    R1 = one(dict(R("R1", "10k"), x=g(36), y=g(66)), "R1")            # BOOT0/DISP_BOOT pulldown
+    w += K.net_pin(R1, 1, "DISP_BOOT", kind="glabel")
+    w += K.net_pin(R1, 2, "GND", kind="glabel")
+
+    # SWD Tag-Connect
+    J3 = one(dict(lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
+                  value="SWD TC2030-NL", fp=SWD_FP, x=g(60), y=g(44)), "J3")
+    w += K.net_pin(J3, 1, "+3V3", kind="glabel")
+    w += K.net_pin(J3, 2, "SWDIO", kind="label")
+    w += K.net_pin(J3, 3, "DISP_NRST", kind="glabel")
+    w += K.net_pin(J3, 4, "SWCLK", kind="label")
+    w += K.net_pin(J3, 5, "GND", kind="glabel")
+
+    note = (15, 84, K.note_block(
+        "MODULE MCU (WIRED)  -  U4 STM32G031K8U6 (C432207, UFQFPN-32)",
+        "SPI-slave frame receiver -> renders 'display intent' to the 3 TM1640s.",
+        "POWER  VDD(4)->+3V3 (C8/C9 100nF + C11 4.7uF); VSS(5,33)->GND.",
+        "RESET  NRST=PF2(6)->DISP_NRST + C12 100nF.  BOOT0: R1 10k on DISP_BOOT;",
+        "       route to the G031 BOOT0/option-byte at layout (UART-boot entry).",
+        "LINK   SPI1 PA5/PA7/PA4 <- SPI_SCLK/MOSI/CS;  PA0 -> DISP_IRQ.",
+        "DRIVE  PB0-3 -> CLK_3V3 + DIN1/2/3_3V3 (3V3) -> DispPower shifters -> 5V",
+        "       to the TM1640s (Row1-3). CLOCK internal HSI.",
+        "OLED   PB6/PB7 = I2C1 SCL/SDA -> AuxDisplay J2.  PROG  J3 SWD Tag-Connect."))
     return dict(uuid=MCU_SH, file="disp_mcu.kicad_sch", page="8",
-                title="Module MCU (STM32G031K8U6, SPI-slave)",
-                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
+                title="Module MCU (STM32G031K8U6, SPI-slave) — wired",
+                comps=comps, wiring=w, notes=[note], _dir=PROJ_DIR)
 
 
 # ============ local 5V boost + level shifter sheet (VSYS->5V) ================
 def build_disp_power():
     path = f"/{ROOT_UUID}/{PWR_SH}"
-    specs = [
-        dict(ref="U5", lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR",
-             fp=BOOST_FP, lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments"),
-        dict(ref="U6", lib_id="74xx:74AHCT125", value="74HCT125", fp=SHIFT_FP,
-             lcsc="C352957", mpn="SN74HCT125DR", mfr="Texas Instruments"),
-        dict(ref="L1", lib_id="Device:L", value="1uH", fp=L2016,
-             lcsc="C5832342", mpn="FTC201610S1R0MBCA", mfr="Sunlord"),
-        C("C13", "10uF", C0603), C("C14", "22uF", C0603), C("C15", "22uF", C0603),
-        C("C16", "100nF"), R("R2", "732k"), R("R3", "100k"),
-    ]
-    note = (15, 130, K.note_block(
-        "LOCAL 5V RAIL + LEVEL SHIFT  -  PLACED, not wired",
-        "Moved off the MCU board so the unified FFC stays technology-agnostic.",
-        "",
-        "5V BOOST  U5 TPS61022 (C915088): VIN<-VSYS (J1), L1 1uH (C5832342),",
-        "  Cin C13 10uF, Cout C14/C15 2x22uF; FB R2 732k/R3 100k -> +5V (Vref 0.6V).",
-        "  EN -> +5V-always (or a G0 GPIO to gate the display off in deep sleep).",
-        "SHIFT     U6 74HCT125 @ +5V: IN <- G0 CLK/DIN1/DIN2/DIN3 (3V3);  OUT ->",
-        "  DISP_CLK + DIN1/2/3 at 5V logic to the TM1640s (Row1-3). /OE all low.",
-        "  C16 100nF VCC decouple. (TM1640 VIH=0.7*5=3.5V > 3V3, hence the shift.)"))
+    comps, w = [], ""
+
+    def one(c, ref):
+        comps.append((c, [(path, ref)]))
+        return c
+
+    # VSYS -> +5V boost (TPS61022, adjustable)
+    U5 = one(dict(lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR", fp=BOOST_FP,
+                  lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments",
+                  x=g(30), y=g(44)), "U5")
+    w += K.net_pin(U5, 7, "VSYS", kind="glabel")          # VIN
+    w += K.net_pin(U5, 2, "SW", kind="label")             # SW node (to L1)
+    w += K.net_pin(U5, 3, "+5V", kind="glabel")           # VOUT
+    w += K.net_pin(U5, 4, "FB", kind="label")             # feedback
+    w += K.net_pin(U5, 5, "VSYS", kind="glabel")          # EN -> always on (gate off = a GPIO later)
+    w += K.net_pin(U5, 6, "GND", kind="glabel")           # MODE -> GND (forced PWM)
+    w += K.net_pin(U5, 1, "GND", kind="glabel")           # GND
+    L1 = one(dict(lib_id="Device:L", value="1uH", fp=L2016, lcsc="C5832342",
+                  mpn="FTC201610S1R0MBCA", mfr="Sunlord", x=g(18), y=g(40)), "L1")
+    w += K.net_pin(L1, 1, "VSYS", kind="glabel")
+    w += K.net_pin(L1, 2, "SW", kind="label")
+    C13 = one(dict(C("C13", "10uF", C0603), x=g(10), y=g(50)), "C13")   # Cin
+    w += K.net_pin(C13, 1, "VSYS", kind="glabel")
+    w += K.net_pin(C13, 2, "GND", kind="glabel")
+    for i, ref in enumerate(("C14", "C15")):                            # Cout 2x22uF
+        c = one(dict(C(ref, "22uF", C0603), x=g(46 + i * 5), y=g(50)), ref)
+        w += K.net_pin(c, 1, "+5V", kind="glabel")
+        w += K.net_pin(c, 2, "GND", kind="glabel")
+    R2 = one(dict(R("R2", "732k"), x=g(44), y=g(38)), "R2")             # FB divider hi
+    w += K.net_pin(R2, 1, "+5V", kind="glabel")
+    w += K.net_pin(R2, 2, "FB", kind="label")
+    R3 = one(dict(R("R3", "100k"), x=g(44), y=g(58)), "R3")             # FB divider lo
+    w += K.net_pin(R3, 1, "FB", kind="label")
+    w += K.net_pin(R3, 2, "GND", kind="glabel")
+
+    # 4x single-gate HCT shifter: A <- x_3V3 (G031), Y -> x (5V to the TM1640s).
+    # HCT (VIH=2V @5V) accepts 3V3 cleanly. VCC=+5V, /OE=GND.
+    for i, (a, y) in enumerate([("CLK_3V3", "DISP_CLK"), ("DIN1_3V3", "DIN1"),
+                                ("DIN2_3V3", "DIN2"), ("DIN3_3V3", "DIN3")]):
+        U = one(dict(lib_id="74xGxx:74LVC1G125", value="74HCT1G125", fp=SOT235,
+                     lcsc="C547448", mpn="74HCT1G125GW", mfr="Nexperia",
+                     x=g(8 + i * 15), y=g(70)), f"U{6 + i}")
+        w += K.net_pin(U, 5, "+5V", kind="glabel")         # VCC
+        w += K.net_pin(U, 3, "GND", kind="glabel")         # GND
+        w += K.net_pin(U, 1, "GND", kind="glabel")         # /OE low = enabled
+        w += K.net_pin(U, 2, a, kind="glabel")             # A  <- G031 (3V3)
+        w += K.net_pin(U, 4, y, kind="glabel")             # Y  -> TM1640s (5V)
+        cc = one(dict(C(f"C{16 + i}", "100nF"), x=g(8 + i * 15), y=g(80)), f"C{16 + i}")
+        w += K.net_pin(cc, 1, "+5V", kind="glabel")
+        w += K.net_pin(cc, 2, "GND", kind="glabel")
+
+    note = (15, 90, K.note_block(
+        "LOCAL 5V RAIL + LEVEL SHIFT (WIRED)  -  moved off the MCU board.",
+        "5V BOOST  U5 TPS61022 (C915088): VIN<-VSYS, L1 1uH (VSYS->SW), Cin C13",
+        "  10uF, Cout C14/C15 2x22uF; FB R2 732k / R3 100k -> +5V (Vref 0.6V).",
+        "  EN->VSYS (always on; tie to a G031 GPIO to gate off in deep sleep).",
+        "SHIFT  U6-U9 74HCT1G125 @ +5V (VIH=2V accepts 3V3): A <- G031 CLK/DIN1/2/3",
+        "  (3V3), Y -> DISP_CLK + DIN1/2/3 (5V) to the TM1640s. /OE=GND; C16-19",
+        "  decouple. *** VERIFY the 74HCT1G125GW package (SOT-353 vs the SOT-23-5",
+        "  land) at layout, or pick the SOT-23-5-packaged HCT1G125. ***"))
     return dict(uuid=PWR_SH, file="disp_power.kicad_sch", page="9",
-                title="Local 5V boost (TPS61022) + 74HCT125 level shifter",
-                comps=place1(path, specs), wiring="", notes=[note], _dir=PROJ_DIR)
+                title="Local 5V boost (TPS61022) + 4x 74HCT1G125 level shifter — wired",
+                comps=comps, wiring=w, notes=[note], _dir=PROJ_DIR)
 
 
 # ============================ root sheet ====================================

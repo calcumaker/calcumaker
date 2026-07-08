@@ -1,0 +1,14 @@
+[package]
+name = "calcumaker-display-proto"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0"
+description = "calcumaker — display-module wire protocol ('display intent' over SPI): the frame the U575 sends and each display module (7-seg STM32G031 / RGB-matrix RP2040) renders locally. no_std, no deps, host-testable."
+readme = "README.md"
+
+# Pure no_std, NO dependencies — shared by the U575 sender (calcumaker-fw), the
+# 7-seg module fw (calcumaker-display-fw), and the matrix module fw
+# (calcumaker-matrix-fw). Keeps ONE definition of the wire frame.
+[dependencies]
+
+[dev-dependencies]

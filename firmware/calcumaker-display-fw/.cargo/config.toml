@@ -1,0 +1,16 @@
+# calcumaker-display-fw cargo config
+#
+# MCU: STM32G031K8U6 (UFQFPN-32), Cortex-M0+ -> thumbv6m-none-eabi.
+[build]
+target = "thumbv6m-none-eabi"
+
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# Flash + run + RTT log via probe-rs (SWD on the J3 Tag-Connect).
+runner = "probe-rs run --chip STM32G031K8Ux"
+rustflags = [
+  "-C", "link-arg=-Tlink.x",       # from cortex-m-rt (consumes embassy's memory.x)
+  # "-C", "link-arg=-Tdefmt.x",    # add under --features dev for defmt RTT
+]
+
+[env]
+DEFMT_LOG = "info"

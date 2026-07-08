@@ -1,0 +1,4 @@
+[toolchain]
+channel = "stable"
+targets = ["thumbv6m-none-eabi"]   # STM32G031K8U6 (Cortex-M0+)
+components = ["rust-src", "llvm-tools"]

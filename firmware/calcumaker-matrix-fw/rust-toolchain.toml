@@ -1,0 +1,4 @@
+[toolchain]
+channel = "stable"
+targets = ["thumbv6m-none-eabi"]   # RP2040 (Cortex-M0+)
+components = ["rust-src", "llvm-tools"]

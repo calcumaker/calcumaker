@@ -1,0 +1,19 @@
+# calcumaker-matrix-fw cargo config
+#
+# MCU: RP2040 (dual Cortex-M0+) -> thumbv6m-none-eabi. Boots from the on-board
+# W25Q32 QSPI flash (XIP); embassy-rp supplies the boot2 + link-rp.x.
+[build]
+target = "thumbv6m-none-eabi"
+
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# Flash + run via probe-rs (SWD). Alternatively drag-drop the UF2 over USB BOOTSEL.
+runner = "probe-rs run --chip RP2040"
+rustflags = [
+  "-C", "link-arg=--nmagic",
+  "-C", "link-arg=-Tlink.x",       # cortex-m-rt (consumes memory.x)
+  "-C", "link-arg=-Tlink-rp.x",    # embassy-rp (boot2 / XIP placement)
+  # "-C", "link-arg=-Tdefmt.x",    # add under --features dev
+]
+
+[env]
+DEFMT_LOG = "info"

@@ -373,13 +373,25 @@ _PIN_RE = re.compile(
 
 
 def pin_geom(lib_id):
-    """[{number,name,x,y,angle,length}] for lib_id's pins (library coords, +Y up)."""
+    """[{number,name,x,y,angle,length}] for lib_id's pins (library coords, +Y up).
+
+    Follows `(extends ...)`: a derived symbol (e.g. STM32G031K8Ux extends
+    STM32G031K_4-6-8_Ux, or 74AHCT125 extends 74LS125) carries no pins of its own
+    — they live on the parent. If this block has none, recurse into the parent so
+    net_pin/pin_at/pin_named can wire derived symbols too (mirrors pin_numbers)."""
     path, name = SRC[lib_id]
     blk = extract(path, name)
-    return [dict(number=m.group(6), name=m.group(5),
-                 x=float(m.group(1)), y=float(m.group(2)),
-                 angle=int(float(m.group(3))), length=float(m.group(4)))
-            for m in _PIN_RE.finditer(blk)]
+    out = [dict(number=m.group(6), name=m.group(5),
+                x=float(m.group(1)), y=float(m.group(2)),
+                angle=int(float(m.group(3))), length=float(m.group(4)))
+           for m in _PIN_RE.finditer(blk)]
+    if not out:
+        parent = _extends_of(blk)
+        if parent:
+            plid = f"{lib_id.split(':')[0]}:{parent}"
+            SRC.setdefault(plid, (path, parent))
+            return pin_geom(plid)
+    return out
 
 
 # outward (away-from-body) unit direction of a pin, in SHEET coords (+Y down).

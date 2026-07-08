@@ -84,6 +84,16 @@ impl Float {
         unsafe { ffi::mpfr_signbit(&self.raw) != 0 }
     }
 
+    /// Strictly less than zero (excludes -0, NaN).
+    pub fn is_negative(&self) -> bool {
+        !self.is_zero() && !self.is_nan() && self.is_sign_negative()
+    }
+
+    /// Sign of `self - v` (like `cmp`): negative / 0 / positive.
+    pub fn cmp_si(&self, v: i64) -> i32 {
+        unsafe { ffi::mpfr_cmp_si(&self.raw, v as c_long) as i32 }
+    }
+
     /// Convert to an integer with the given direction (NaN/Inf are the caller's
     /// problem — check first).
     fn to_integer_rnd(&self, rnd: c_int) -> Integer {

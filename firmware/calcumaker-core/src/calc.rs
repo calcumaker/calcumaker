@@ -773,17 +773,17 @@ impl Calc {
             "sin" => self.circ(Circ::Sin),
             "cos" => self.circ(Circ::Cos),
             "tan" => self.circ(Circ::Tan),
-            "ln" => self.unary_real(|x| x.ln()),
-            "exp" => self.unary_real(|x| x.exp()),
-            "inv" => self.unary_real(|x| x.recip()),
+            "ln" => self.cunary(Float::is_negative, |z| z.ln(), |x| x.ln()),
+            "exp" => self.cunary(|_| false, |z| z.exp(), |x| x.exp()),
+            "inv" => self.cunary(|_| false, |z| z.recip(), |x| x.recip()),
             "sq" => self.sq(),
             "asin" => self.inv_circ(InvCirc::Asin),
             "acos" => self.inv_circ(InvCirc::Acos),
             "atan" => self.inv_circ(InvCirc::Atan),
-            "sinh" => self.unary_real(|x| x.sinh()),
-            "cosh" => self.unary_real(|x| x.cosh()),
-            "tanh" => self.unary_real(|x| x.tanh()),
-            "log" => self.unary_real(|x| x.log10()),
+            "sinh" => self.cunary(|_| false, |z| z.sinh(), |x| x.sinh()),
+            "cosh" => self.cunary(|_| false, |z| z.cosh(), |x| x.cosh()),
+            "tanh" => self.cunary(|_| false, |z| z.tanh(), |x| x.tanh()),
+            "log" => self.cunary(Float::is_negative, |z| z.log10(), |x| x.log10()),
             "exp10" => self.exp10_op(),
             "abs" => self.abs_op(),
             "pow" => self.pow_op(),
@@ -1614,16 +1614,60 @@ impl Calc {
         Ok(())
     }
 
-    fn unary_real(&mut self, f: impl FnOnce(Float) -> Float) -> Result<(), CalcError> {
+    /// Complex-aware unary function (HP-42S): a **complex** X → `cx`; a **real**
+    /// X for which `goes_complex` holds, under **CPXRES**, is promoted to complex
+    /// → `cx`; otherwise the real function `re`. Integers take the real path
+    /// (`goes_complex` is only consulted for reals) — matching "float it first"
+    /// for e.g. `√` of a negative integer.
+    fn cunary(
+        &mut self,
+        goes_complex: impl FnOnce(&Float) -> bool,
+        cx: impl FnOnce(&Complex) -> Complex,
+        re: impl FnOnce(Float) -> Float,
+    ) -> Result<(), CalcError> {
         self.need(1)?;
-        let x = self.pop_x().to_real(self.prec);
-        self.stack.push(Value::Real(f(x)));
+        enum Path {
+            Cx,
+            Promote,
+            Re,
+        }
+        let path = match self.stack.last().expect("validated") {
+            Value::Complex(_) => Path::Cx,
+            Value::Real(f) if self.cpxres && goes_complex(f) => Path::Promote,
+            _ => Path::Re,
+        };
+        match path {
+            Path::Cx => {
+                let Value::Complex(z) = self.pop_x() else { unreachable!() };
+                self.stack.push(Value::Complex(cx(&z)));
+            }
+            Path::Promote => {
+                let z = self.pop_x().to_complex(self.prec);
+                self.stack.push(Value::Complex(cx(&z)));
+            }
+            Path::Re => {
+                let x = self.pop_x().to_real(self.prec);
+                self.stack.push(Value::Real(re(x)));
+            }
+        }
         Ok(())
     }
 
     // ---- circular trig (angle-mode aware) ------------------------------------
     fn circ(&mut self, kind: Circ) -> Result<(), CalcError> {
         self.need(1)?;
+        // Complex argument → complex trig (in radians; the angle mode applies to
+        // real trig only, a refinement noted for later).
+        if self.stack.last().map(Value::is_complex).unwrap_or(false) {
+            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let r = match kind {
+                Circ::Sin => z.sin(),
+                Circ::Cos => z.cos(),
+                Circ::Tan => z.tan(),
+            };
+            self.stack.push(Value::Complex(r));
+            return Ok(());
+        }
         let x = self.pop_x().to_real(self.prec);
         let v = self.circ_value(kind, x);
         self.stack.push(Value::Real(v));
@@ -1721,6 +1765,31 @@ impl Calc {
 
     fn inv_circ(&mut self, kind: InvCirc) -> Result<(), CalcError> {
         self.need(1)?;
+        // Complex argument → complex inverse trig (radians).
+        if self.stack.last().map(Value::is_complex).unwrap_or(false) {
+            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let r = match kind {
+                InvCirc::Asin => z.asin(),
+                InvCirc::Acos => z.acos(),
+                InvCirc::Atan => z.atan(),
+            };
+            self.stack.push(Value::Complex(r));
+            return Ok(());
+        }
+        // CPXRES: asin/acos of a real with |x| > 1 → complex.
+        let promote = self.cpxres
+            && matches!(kind, InvCirc::Asin | InvCirc::Acos)
+            && matches!(self.stack.last(), Some(Value::Real(f)) if f.clone().abs().cmp_si(1) > 0);
+        if promote {
+            let z = self.pop_x().to_complex(self.prec);
+            let r = match kind {
+                InvCirc::Asin => z.asin(),
+                InvCirc::Acos => z.acos(),
+                InvCirc::Atan => unreachable!(),
+            };
+            self.stack.push(Value::Complex(r));
+            return Ok(());
+        }
         let x = self.pop_x().to_real(self.prec);
         let v = self.inv_circ_value(kind, x);
         self.stack.push(Value::Real(v));
@@ -1867,9 +1936,27 @@ impl Calc {
             }
             Some(Err(e)) => Err(e),
             None => {
-                let x = self.pop_x().to_real(self.prec);
-                let y = self.stack.pop().expect("validated").to_real(self.prec);
-                self.stack.push(Value::Real(y.pow(x)));
+                let (yv, xv) = (&self.stack[len - 2], &self.stack[len - 1]);
+                let neg_base = match yv {
+                    Value::Int(i) => i.is_negative(),
+                    Value::Real(f) => f.is_negative(),
+                    Value::Complex(_) => false,
+                };
+                let frac_exp = matches!(xv, Value::Real(f) if !f.clone().frac().is_zero());
+                // Complex when either operand is complex, or (CPXRES) a negative
+                // base raised to a non-integer exponent, e.g. (-8)^(1/3).
+                let complex = yv.is_complex()
+                    || xv.is_complex()
+                    || (self.cpxres && neg_base && frac_exp);
+                if complex {
+                    let x = self.pop_x().to_complex(self.prec);
+                    let y = self.stack.pop().expect("validated").to_complex(self.prec);
+                    self.stack.push(Value::Complex(y.pow(&x)));
+                } else {
+                    let x = self.pop_x().to_real(self.prec);
+                    let y = self.stack.pop().expect("validated").to_real(self.prec);
+                    self.stack.push(Value::Real(y.pow(x)));
+                }
                 Ok(())
             }
         }
@@ -1881,7 +1968,9 @@ impl Calc {
     fn sqrt_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
         if !matches!(self.stack.last(), Some(Value::Int(_))) {
-            return self.unary_real(|x| x.sqrt());
+            // Real/Complex: complex input → complex sqrt; a negative real under
+            // CPXRES → complex (√-4 = 2i); else real sqrt.
+            return self.cunary(Float::is_negative, |z| z.sqrt(), |x| x.sqrt());
         }
         if matches!(self.stack.last(), Some(Value::Int(x)) if x.is_negative()) {
             return Err(e_domain("sqrt of a negative integer (float it for nan)"));
@@ -1925,7 +2014,11 @@ impl Calc {
                 return Ok(());
             }
         }
-        self.unary_real(|x| x.exp10())
+        self.cunary(
+            |_| false,
+            |z| Complex::from_i64(z.prec(), 10, 0).pow(z),
+            |x| x.exp10(),
+        )
     }
 
     /// Y idiv X — EXPLICIT truncating integer division (the old silent `/`

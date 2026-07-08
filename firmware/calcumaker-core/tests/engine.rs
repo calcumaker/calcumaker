@@ -1017,8 +1017,11 @@ fn real_div_zero_is_inf() {
 }
 
 #[test]
-fn sqrt_of_negative_real_is_nan() {
-    assert_eq!(run(64, &["-1.0", "sqrt"]), "nan");
+fn sqrt_of_negative_real() {
+    // CPXRES (HP-42S default): a negative real promotes to complex.
+    assert_eq!(run(64, &["-1.0", "sqrt"]), "0+1i"); // √-1 = i
+    // REALRES: real-only, so it's a NaN.
+    assert_eq!(run(64, &["realres", "-1.0", "sqrt"]), "nan");
 }
 
 // ---- leading zeros (16C flag 3) ----------------------------------------------
@@ -1950,4 +1953,18 @@ fn complex_polar_display() {
     assert_eq!(run(256, &["0", "1", "complex", "polar", "deg"]), "1 \u{2220} 90");
     // rect toggles back
     assert_eq!(run(256, &["0", "1", "complex", "polar", "rect"]), "0+1i");
+}
+
+#[test]
+fn complex_functions_and_cpxres() {
+    // CPXRES (default): real ops with complex results promote automatically.
+    assert_eq!(run(256, &["float", "4", "chs", "sqrt"]), "0+2i"); // √-4 = 2i
+    assert_eq!(run(256, &["3", "4", "complex", "sqrt"]), "2+1i"); // √(3+4i)
+    assert_eq!(run(256, &["0", "1", "complex", "inv"]), "0-1i"); // 1/i = -i
+    // ln(-1) = iπ
+    assert!(run(256, &["float", "1", "chs", "ln"]).starts_with("0+3.14159265358979"));
+    // (-8)^(1/3) principal root = 1 + i√3
+    assert!(run(256, &["float", "8", "chs", "3", "inv", "pow"]).contains("+1.7320508"));
+    // REALRES: no promotion — √-4 is a real NaN.
+    assert_eq!(run(256, &["realres", "float", "4", "chs", "sqrt"]), "nan");
 }

@@ -255,13 +255,6 @@ async fn amain(spawner: Spawner) {
     exercise_ops(&mut app);
     exercise_keys(&mut app);
 
-    // MPC link smoke: complex sqrt(-4) = 2i — keeps libmpc referenced on-target
-    // until Value::Complex wires complex into the engine (HP-42S support).
-    {
-        let z = calcumaker_core::Complex::from_i64(256, -4, 0).sqrt();
-        core::hint::black_box(z.imag(256).is_zero());
-    }
-
     // Display / format / 7-seg encoding paths.
     core::hint::black_box(app.seg_rows());
     core::hint::black_box(app.text_rows());

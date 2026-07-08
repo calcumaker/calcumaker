@@ -61,6 +61,10 @@ const CASES: &[Case] = &[
     Case { name: "sin0",      radix: Radix::Dec, tokens: &["0", "sin"],         expect: "0" },
     Case { name: "exp0",      radix: Radix::Dec, tokens: &["0", "exp"],         expect: "1" },
     Case { name: "ln1",       radix: Radix::Dec, tokens: &["1", "ln"],          expect: "0" },
+    // Complex (MPC): CPXRES promotion + complex sqrt (HP-42S).
+    Case { name: "sqrt_neg",  radix: Radix::Dec, tokens: &["float", "4", "chs", "sqrt"], expect: "0+2i" },
+    Case { name: "cplx_sqrt", radix: Radix::Dec, tokens: &["3", "4", "complex", "sqrt"], expect: "2+1i" },
+    Case { name: "one_over_i",radix: Radix::Dec, tokens: &["0", "1", "complex", "inv"],  expect: "0-1i" },
 ];
 
 fn run(case: &Case) -> String {

@@ -116,6 +116,33 @@ impl Complex {
     pub fn tan(&self) -> Complex {
         self.unary(ffi::mpc_tan)
     }
+    pub fn sinh(&self) -> Complex {
+        self.unary(ffi::mpc_sinh)
+    }
+    pub fn cosh(&self) -> Complex {
+        self.unary(ffi::mpc_cosh)
+    }
+    pub fn tanh(&self) -> Complex {
+        self.unary(ffi::mpc_tanh)
+    }
+    pub fn asin(&self) -> Complex {
+        self.unary(ffi::mpc_asin)
+    }
+    pub fn acos(&self) -> Complex {
+        self.unary(ffi::mpc_acos)
+    }
+    pub fn atan(&self) -> Complex {
+        self.unary(ffi::mpc_atan)
+    }
+    pub fn log10(&self) -> Complex {
+        self.unary(ffi::mpc_log10)
+    }
+    /// 1/z.
+    pub fn recip(&self) -> Complex {
+        let mut r = Complex::new(self.prec());
+        unsafe { ffi::mpc_ui_div(&mut r.raw, 1, &self.raw, MPC_RNDNN) };
+        r
+    }
 }
 
 impl Clone for Complex {

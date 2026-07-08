@@ -106,6 +106,8 @@ pub fn label(k: Key) -> &'static str {
         Key::Sq => "x^2",
         Key::Pow => "y^x",
         Key::Recip => "1/x",
+        Key::Complex => "CPLX",
+        Key::CplxDisp => "R<>P",
         Key::Pi => "PI",
         Key::Fact => "x!",
         Key::Pct => "%",

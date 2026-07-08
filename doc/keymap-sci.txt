@@ -7,7 +7,7 @@ Each key:   f (gold) shift function
             g (blue) shift function
 
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-| SINH   | COSH   | TANH   | PREC   | x^2    |        |        | PI     | LSTx   | STATUS |
+| SINH   | COSH   | TANH   | PREC   | x^2    | R<>P   | CPLX   | PI     | LSTx   | STATUS |
 | SIN    | COS    | TAN    | LN     | SQRT   | y^x    | 1/x    | EEX    | BSP    | CLX    |
 |        |        |        |        |        |        |        |        |        | SETUP  |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+

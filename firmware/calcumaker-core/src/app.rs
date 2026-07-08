@@ -866,6 +866,8 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::Pow => "pow",
         Key::Recip => "inv",
         Key::Pi => "pi",
+        Key::Complex => "complex",
+        Key::CplxDisp => "cplxdisp",
         Key::Fact => "fact",
         _ => return None,
     })

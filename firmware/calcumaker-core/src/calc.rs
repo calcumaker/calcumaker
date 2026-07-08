@@ -758,6 +758,10 @@ impl Calc {
                 self.polar = true;
                 Ok(())
             }
+            "cplxdisp" => {
+                self.polar = !self.polar; // toggle rect <-> polar (for a key)
+                Ok(())
+            }
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())

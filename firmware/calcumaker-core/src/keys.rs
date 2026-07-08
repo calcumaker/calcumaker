@@ -39,6 +39,8 @@ pub enum Key {
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
+    // complex (HP-42S): COMPLEX merges/splits re+im; CplxDisp toggles RECT/POLAR
+    Complex, CplxDisp,
     // real display format (X = digit count; FmtAuto = %g-style)
     Fix, Sci, Eng, FmtAuto,
     // angle unit for circular trig (cycles RAD → DEG → GRAD)
@@ -142,7 +144,8 @@ pub const SCI_BASE: [[Key; COLS]; ROWS] = [
 
 /// SCI f (gold) layer — hyperbolics, regression, precision.
 pub const SCI_LAYER_F: [[Key; COLS]; ROWS] = [
-    [Sinh,   Cosh,   Tanh, Prec, Sq,       Nop,  Nop,    Pi,   LastX, Status],
+    // f+P (col 5) = RECT/POLAR toggle, f+I (col 6) = COMPLEX (i = imaginary)
+    [Sinh,   Cosh,   Tanh, Prec, Sq,       CplxDisp, Complex, Pi, LastX, Status],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Lr,     Yhat,   Corr, ClStat, Nop,    Nop,  Nop,    Nop,  Nop,   Nop],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Float,Nop,    Nop,  Nop,   Nop],

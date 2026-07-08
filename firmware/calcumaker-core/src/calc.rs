@@ -484,6 +484,11 @@ impl Calc {
     pub fn cpxres(&self) -> bool {
         self.cpxres
     }
+    /// Enable complex results (CPXRES) or restrict to reals (REALRES). Set by the
+    /// personality defaults + the SETUP menu; off on the 16C (period-correct).
+    pub fn set_cpxres(&mut self, on: bool) {
+        self.cpxres = on;
+    }
     /// 16C flag 3: pad hex/oct/bin display with leading zeros to the word width.
     pub fn leading_zeros(&self) -> bool {
         self.leading_zeros

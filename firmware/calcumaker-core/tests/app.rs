@@ -461,8 +461,9 @@ fn setup_stack_and_pers_items() {
     assert_eq!(app.message(), Some("top 4 kept"));
     assert_eq!(app.calc().stack().len(), 4);
 
-    app.press_key(Key::RollDn);
-    assert_eq!(app.text_rows()[1].trim_end(), "6 PErS");
+    app.press_key(Key::RollDn); // -> CPLX (item 6)
+    app.press_key(Key::RollDn); // -> PErS (item 7)
+    assert_eq!(app.text_rows()[1].trim_end(), "7 PErS");
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
     app.press_key(Key::Enter); // cycles to SCI…
     assert_eq!(app.keymap().name, "SCI");
@@ -508,8 +509,8 @@ fn pers_cycles_to_sci_and_back() {
     use calcumaker_core::{AngleMode, FloatFmt};
     let mut app = App::new(128);
     app.press_key(Key::Setup);
-    for _ in 0..5 {
-        app.press_key(Key::RollDn); // item 6: PErS
+    for _ in 0..6 {
+        app.press_key(Key::RollDn); // item 7: PErS
     }
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
     app.press_key(Key::Enter);
@@ -560,10 +561,10 @@ fn sci_division_is_real() {
     // EntrY item exists in SETUP (index 7)
     app.set_keymap(&calcumaker_core::keys::HP16C);
     app.press_key(Key::Setup);
-    for _ in 0..6 {
+    for _ in 0..7 {
         app.press_key(Key::RollDn);
     }
-    assert_eq!(app.text_rows()[1].trim_end(), "7 tYPE");
+    assert_eq!(app.text_rows()[1].trim_end(), "8 tYPE");
     assert_eq!(app.text_rows()[2].trim_end(), "FLE");
     app.press_key(Key::Enter);
     assert_eq!(app.text_rows()[2].trim_end(), "Int");
@@ -612,8 +613,8 @@ fn fin_keymap_positions() {
 fn pers_cycles_three_ways() {
     let mut app = App::new(128);
     app.press_key(Key::Setup);
-    for _ in 0..5 {
-        app.press_key(Key::RollDn);
+    for _ in 0..6 {
+        app.press_key(Key::RollDn); // item 7: PErS (CPLX now sits at item 6)
     }
     app.press_key(Key::Enter);
     assert_eq!(app.keymap().name, "SCI");
@@ -698,12 +699,12 @@ fn aux_oled_lines() {
     app.press_key(Key::ClrX);
     press_all(&mut app, &[Key::Digit(7), Key::Enter]);
     assert_eq!(app.aux_lines()[2], "7");
-    // SETUP > OLEd (item 8) toggles the flags header off -> all body
+    // SETUP > OLEd (item 9) toggles the flags header off -> all body
     app.press_key(Key::Setup);
-    for _ in 0..7 {
+    for _ in 0..8 {
         app.press_key(Key::RollDn);
     }
-    assert_eq!(app.text_rows()[1].trim_end(), "8 OLEd");
+    assert_eq!(app.text_rows()[1].trim_end(), "9 OLEd");
     assert_eq!(app.text_rows()[2].trim_end(), "FLAG");
     app.press_key(Key::Enter);
     assert_eq!(app.text_rows()[2].trim_end(), "oFF");

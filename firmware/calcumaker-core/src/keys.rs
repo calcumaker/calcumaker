@@ -113,6 +113,7 @@ fn defaults_16c(c: &mut crate::calc::Calc) {
     c.set_angle_mode(crate::calc::AngleMode::Rad);
     c.set_float_fmt(crate::calc::FloatFmt::Auto);
     c.set_real_entry(false); // exact-integer entry: the programmer identity
+    c.set_cpxres(false); // period-correct: the 16C has no complex — √-1 = Error 0
 }
 
 fn defaults_sci(c: &mut crate::calc::Calc) {
@@ -121,6 +122,7 @@ fn defaults_sci(c: &mut crate::calc::Calc) {
     c.set_float_fmt(crate::calc::FloatFmt::Fix(4));
     c.set_radix(crate::calc::Radix::Dec);
     c.set_real_entry(true);
+    c.set_cpxres(true); // scientific: real ops go complex (√-1 = i)
 }
 
 /// The default personality — the tables above.
@@ -206,6 +208,7 @@ fn defaults_fin(c: &mut crate::calc::Calc) {
     c.set_float_fmt(crate::calc::FloatFmt::Fix(2));
     c.set_radix(crate::calc::Radix::Dec);
     c.set_real_entry(true);
+    c.set_cpxres(true);
 }
 
 /// The financial personality (12C-flavored; bonds deferred — see

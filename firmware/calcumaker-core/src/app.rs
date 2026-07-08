@@ -39,17 +39,19 @@ enum SetupItem {
     Angle,
     Sign,
     Stack,
+    Cplx,
     Pers,
     Entry,
     Aux,
 }
 
-const SETUP_ITEMS: [SetupItem; 8] = [
+const SETUP_ITEMS: [SetupItem; 9] = [
     SetupItem::Suffix,
     SetupItem::LeadZeros,
     SetupItem::Angle,
     SetupItem::Sign,
     SetupItem::Stack,
+    SetupItem::Cplx,
     SetupItem::Pers,
     SetupItem::Entry,
     SetupItem::Aux,
@@ -63,6 +65,7 @@ impl SetupItem {
             SetupItem::Angle => "AnGLE",
             SetupItem::Sign => "SIGn",
             SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
+            SetupItem::Cplx => "CPLX",     // complex results: on / oFF (√-1 = i / Error 0)
             SetupItem::Pers => "PErS",     // personality (keymap) selector
             SetupItem::Entry => "tYPE",    // FLE (safe) / Int (16C) / rEAL
             SetupItem::Aux => "OLEd",      // aux OLED: show the flags header
@@ -84,6 +87,7 @@ impl SetupItem {
                 crate::calc::SignMode::Ones => "1S",
                 crate::calc::SignMode::Unsigned => "UnS",
             },
+            SetupItem::Cplx => onoff(c.cpxres()),
             SetupItem::Stack => match c.stack_model() {
                 StackModel::Unbounded => "FrEE",
                 StackModel::Classic4 => "HP4",
@@ -116,6 +120,7 @@ impl SetupItem {
                 StackModel::Unbounded => StackModel::Classic4,
                 StackModel::Classic4 => StackModel::Unbounded,
             }),
+            SetupItem::Cplx => c.set_cpxres(!c.cpxres()),
             SetupItem::Pers => {} // handled by the App (keymap lives there)
             SetupItem::Entry => c.set_num_mode(match c.num_mode() {
                 crate::calc::NumMode::Flex => crate::calc::NumMode::Int,
@@ -151,7 +156,7 @@ pub struct App {
 impl App {
     /// New calculator app at `prec` bits of MPFR working precision.
     pub fn new(prec: u32) -> Self {
-        Self {
+        let mut app = Self {
             calc: Calc::new(prec),
             keymap: &HP16C,
             shift: Shift::None,
@@ -163,7 +168,11 @@ impl App {
             glass_err: None,
             aux_flags: true,
             msg: None,
-        }
+        };
+        // Apply the default personality's conventions (e.g. the 16C is a
+        // programmer machine with complex off — √-1 = Error 0).
+        (HP16C.apply_defaults)(&mut app.calc);
+        app
     }
 
     // ---- state for annunciators --------------------------------------------

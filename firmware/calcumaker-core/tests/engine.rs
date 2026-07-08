@@ -1968,3 +1968,11 @@ fn complex_functions_and_cpxres() {
     // REALRES: no promotion — √-4 is a real NaN.
     assert_eq!(run(256, &["realres", "float", "4", "chs", "sqrt"]), "nan");
 }
+
+#[test]
+fn complex_trig_honors_angle_mode() {
+    // Complex trig interprets/returns angles in the current unit (like real trig).
+    assert_eq!(run(256, &["deg", "90", "0", "complex", "sin"]), "1+0i");
+    assert_eq!(run(256, &["deg", "1", "0", "complex", "asin"]), "90+0i");
+    assert_eq!(run(256, &["grad", "1", "0", "complex", "asin"]), "100+0i");
+}

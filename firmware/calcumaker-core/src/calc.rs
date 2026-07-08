@@ -1654,12 +1654,37 @@ impl Calc {
     }
 
     // ---- circular trig (angle-mode aware) ------------------------------------
+    /// Multiply a complex by a real scalar.
+    fn cplx_scale(&self, z: &Complex, f: Float) -> Complex {
+        let zero = Float::from_i64(self.prec, 0);
+        z.mul(&Complex::from_reals(self.prec, &f, &zero))
+    }
+    /// A complex "angle" in the current unit → radians (complex trig input).
+    fn cplx_angle_in(&self, z: &Complex) -> Complex {
+        let p = self.prec;
+        match self.angle_mode {
+            AngleMode::Rad => z.clone(),
+            AngleMode::Deg => self.cplx_scale(z, Float::pi(p) / Float::from_i64(p, 180)),
+            AngleMode::Grad => self.cplx_scale(z, Float::pi(p) / Float::from_i64(p, 200)),
+        }
+    }
+    /// A complex angle result in radians → the current unit (complex inv trig).
+    fn cplx_angle_out(&self, z: &Complex) -> Complex {
+        let p = self.prec;
+        match self.angle_mode {
+            AngleMode::Rad => z.clone(),
+            AngleMode::Deg => self.cplx_scale(z, Float::from_i64(p, 180) / Float::pi(p)),
+            AngleMode::Grad => self.cplx_scale(z, Float::from_i64(p, 200) / Float::pi(p)),
+        }
+    }
+
     fn circ(&mut self, kind: Circ) -> Result<(), CalcError> {
         self.need(1)?;
-        // Complex argument → complex trig (in radians; the angle mode applies to
-        // real trig only, a refinement noted for later).
+        // Complex argument → complex trig; the argument is interpreted in the
+        // current angle unit (converted to radians for MPC), like real trig.
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
             let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let z = self.cplx_angle_in(&z);
             let r = match kind {
                 Circ::Sin => z.sin(),
                 Circ::Cos => z.cos(),
@@ -1765,7 +1790,8 @@ impl Calc {
 
     fn inv_circ(&mut self, kind: InvCirc) -> Result<(), CalcError> {
         self.need(1)?;
-        // Complex argument → complex inverse trig (radians).
+        // Complex argument → complex inverse trig; the radian result is returned
+        // in the current angle unit, like real inverse trig.
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
             let Value::Complex(z) = self.pop_x() else { unreachable!() };
             let r = match kind {
@@ -1773,7 +1799,7 @@ impl Calc {
                 InvCirc::Acos => z.acos(),
                 InvCirc::Atan => z.atan(),
             };
-            self.stack.push(Value::Complex(r));
+            self.stack.push(Value::Complex(self.cplx_angle_out(&r)));
             return Ok(());
         }
         // CPXRES: asin/acos of a real with |x| > 1 → complex.
@@ -1787,7 +1813,7 @@ impl Calc {
                 InvCirc::Acos => z.acos(),
                 InvCirc::Atan => unreachable!(),
             };
-            self.stack.push(Value::Complex(r));
+            self.stack.push(Value::Complex(self.cplx_angle_out(&r)));
             return Ok(());
         }
         let x = self.pop_x().to_real(self.prec);

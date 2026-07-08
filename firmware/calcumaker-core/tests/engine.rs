@@ -2000,3 +2000,29 @@ fn coord_conversion_p_r() {
     // Round-trip →P→R recovers the x-coordinate exactly.
     assert_eq!(run(256, &["deg", "4", "3", "topolar", "torect"]), "3"); // X = x
 }
+
+#[test]
+fn matrix_ops() {
+    // literal round-trips; element-wise + and product.
+    assert_eq!(run(128, &["[1,2;3,4]"]), "[1,2;3,4]");
+    assert_eq!(run(128, &["[1,2;3,4]", "[1,2;3,4]", "+"]), "[2,4;6,8]");
+    assert_eq!(run(128, &["[1,2;3,4]", "[5,6;7,8]", "*"]), "[19,22;43,50]");
+    assert_eq!(run(128, &["[1,2;3,4]", "2", "*"]), "[2,4;6,8]"); // scalar
+    assert_eq!(run(128, &["[1,2,3;4,5,6]", "transpose"]), "[1,4;2,5;3,6]");
+    assert_eq!(run(128, &["[1,2;3,4]", "chs"]), "[-1,-2;-3,-4]");
+    // determinant of a diagonal matrix is exact.
+    assert_eq!(run(128, &["[2,0;0,3]", "det"]), "6");
+    // A·A⁻¹ = I; a diagonal solve is exact.
+    assert_eq!(run(128, &["[2,1;1,3]", "[2,1;1,3]", "minv", "*"]), "[1,0;0,1]");
+    assert_eq!(run(128, &["[2,0;0,2]", "[4;6]", "matsolve"]), "[2;3]"); // Y=A, X=B
+}
+
+#[test]
+fn matrix_shape_error_preserves_stack() {
+    // Adding mismatched shapes errors and leaves the stack intact.
+    let mut c = Calc::new(128);
+    c.input("[1,2;3,4]").unwrap();
+    c.input("[1,2,3]").unwrap();
+    assert!(c.input("+").is_err());
+    assert_eq!(c.display(), "[1,2,3]"); // X unchanged
+}

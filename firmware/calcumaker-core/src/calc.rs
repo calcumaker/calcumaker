@@ -19,6 +19,7 @@ use alloc::vec::Vec;
 
 use gmp_mpfr_nostd::{Complex, Float, Integer};
 
+use crate::matrix::Matrix;
 use crate::value::Value;
 
 /// Integer display / entry radix (HP-16C programmer modes).
@@ -633,6 +634,16 @@ impl Calc {
         if t.is_empty() {
             return Ok(());
         }
+        // Matrix literal: [a,b;c,d] (rows by ';', elements by ',').
+        if t.starts_with('[') {
+            return match self.try_parse_matrix(t) {
+                Some(m) => {
+                    self.push_entry(Value::Matrix(m));
+                    Ok(())
+                }
+                None => Err(CalcError::Parse(t.to_string())),
+            };
+        }
         let lower = t.to_ascii_lowercase();
         if let Some(i) = reg_index(&lower, "sto") {
             self.sto(i)?;
@@ -657,6 +668,24 @@ impl Calc {
             }
         }
         self.push_number(t)
+    }
+
+    /// Parse a `[a,b;c,d]` matrix literal (rows by `;`, elements by `,`); each
+    /// element is an MPFR real. `None` on any malformed element or ragged rows.
+    fn try_parse_matrix(&self, t: &str) -> Option<Matrix> {
+        let inner = t.strip_prefix('[')?.strip_suffix(']')?.trim();
+        if inner.is_empty() {
+            return None;
+        }
+        let mut rows: Vec<Vec<Float>> = Vec::new();
+        for row in inner.split(';') {
+            let mut r: Vec<Float> = Vec::new();
+            for elem in row.split(',') {
+                r.push(Float::from_str(self.prec, elem.trim())?);
+            }
+            rows.push(r);
+        }
+        Matrix::from_rows(self.prec, &rows)
     }
 
     /// Push a NUMBER, bypassing command matching entirely — the door the
@@ -774,6 +803,10 @@ impl Calc {
             "reim" => self.reim_op(),
             "topolar" => self.to_polar_op(),
             "torect" => self.to_rect_op(),
+            "det" => self.det_op(),
+            "transpose" => self.transpose_op(),
+            "minv" => self.minv_op(),
+            "matsolve" => self.matsolve_op(),
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())
@@ -1028,11 +1061,21 @@ impl Calc {
         }
     }
 
+    /// Error (leaving the stack intact) if X is a matrix — for the scalar-only
+    /// ops (abs, sq, frac, transcendentals, …) that would otherwise treat it as
+    /// a bogus real.
+    fn no_matrix(&self, what: &'static str) -> Result<(), CalcError> {
+        if self.stack.last().map(Value::is_matrix).unwrap_or(false) {
+            return Err(e_domain(what));
+        }
+        Ok(())
+    }
+
     /// Operand at `depth` (0 = X) as an integer, or a TypeError.
     fn peek_int(&self, depth: usize, what: &'static str) -> Result<&Integer, CalcError> {
         match &self.stack[self.stack.len() - 1 - depth] {
             Value::Int(i) => Ok(i),
-            Value::Real(_) | Value::Complex(_) => Err(e_domain(what)),
+            Value::Real(_) | Value::Complex(_) | Value::Matrix(_) => Err(e_domain(what)),
         }
     }
 
@@ -1048,7 +1091,7 @@ impl Calc {
                     Err(e_domain(what))
                 }
             }
-            Value::Complex(_) => Err(e_domain(what)),
+            Value::Complex(_) | Value::Matrix(_) => Err(e_domain(what)),
         }
     }
 
@@ -1176,6 +1219,8 @@ impl Calc {
             };
             let v = self.canon_flagged(exact);
             self.stack.push(Value::Int(v));
+        } else if self.stack[len - 1].is_matrix() || self.stack[len - 2].is_matrix() {
+            return self.matrix_arith(op);
         } else if self.stack[len - 1].is_complex() || self.stack[len - 2].is_complex() {
             // Complex arithmetic (HP-42S: the result stays a single complex
             // object even when the imaginary part is zero).
@@ -1201,6 +1246,108 @@ impl Calc {
             };
             self.stack.push(Value::Real(r));
         }
+        Ok(())
+    }
+
+    /// Matrix arithmetic (HP-15C, modernized onto the stack). Supports
+    /// matrix±matrix (equal shape), matrix×matrix (conformable), scalar×matrix /
+    /// matrix×scalar, and matrix÷scalar. Matrix÷matrix and scalar÷matrix are
+    /// ambiguous — use `matsolve` / `minv`. Operands are restored on error.
+    fn matrix_arith(&mut self, op: char) -> Result<(), CalcError> {
+        let b = self.pop_x();
+        let a = self.stack.pop().expect("validated");
+        let r: Result<Value, CalcError> = match (&a, &b, op) {
+            (Value::Matrix(m), Value::Matrix(n), '+') => m
+                .add(n)
+                .map(Value::Matrix)
+                .ok_or(e_domain("matrix + needs equal shapes")),
+            (Value::Matrix(m), Value::Matrix(n), '-') => m
+                .sub(n)
+                .map(Value::Matrix)
+                .ok_or(e_domain("matrix - needs equal shapes")),
+            (Value::Matrix(m), Value::Matrix(n), '*') => m
+                .mul(n)
+                .map(Value::Matrix)
+                .ok_or(e_domain("matrix * shapes not conformable")),
+            // matrix × scalar / scalar × matrix
+            (Value::Matrix(m), _, '*') => Ok(Value::Matrix(m.scalar_mul(&b.to_real(self.prec)))),
+            (_, Value::Matrix(n), '*') => Ok(Value::Matrix(n.scalar_mul(&a.to_real(self.prec)))),
+            // matrix ÷ scalar
+            (Value::Matrix(m), _, '/') => {
+                let s = b.to_real(self.prec);
+                if s.is_zero() {
+                    Err(CalcError::DivZero)
+                } else {
+                    Ok(Value::Matrix(m.scalar_mul(&s.recip())))
+                }
+            }
+            _ => Err(e_domain("matrix op unsupported (try matsolve / minv)")),
+        };
+        match r {
+            Ok(v) => {
+                self.stack.push(v);
+                Ok(())
+            }
+            Err(e) => {
+                self.stack.push(a);
+                self.stack.push(b);
+                Err(e)
+            }
+        }
+    }
+
+    /// Determinant of a square matrix X → a real.
+    fn det_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let Some(Value::Matrix(m)) = self.stack.last() else {
+            return Err(e_domain("det needs a matrix"));
+        };
+        let d = m.determinant().ok_or(e_domain("det needs a square matrix"))?;
+        let _ = self.pop_x();
+        self.stack.push(Value::Real(d));
+        Ok(())
+    }
+
+    /// Transpose of matrix X.
+    fn transpose_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let Some(Value::Matrix(m)) = self.stack.last() else {
+            return Err(e_domain("transpose needs a matrix"));
+        };
+        let t = m.transpose();
+        let _ = self.pop_x();
+        self.stack.push(Value::Matrix(t));
+        Ok(())
+    }
+
+    /// Inverse of a square, non-singular matrix X.
+    fn minv_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let Some(Value::Matrix(m)) = self.stack.last() else {
+            return Err(e_domain("minv needs a matrix"));
+        };
+        let inv = m.inverse().ok_or(e_domain("matrix is singular or not square"))?;
+        let _ = self.pop_x();
+        self.stack.push(Value::Matrix(inv));
+        Ok(())
+    }
+
+    /// Solve A·Z = B for Z, with Y = A (coefficients) and X = B (right-hand
+    /// side); both replaced by Z.
+    fn matsolve_op(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let len = self.stack.len();
+        let (Value::Matrix(a), Value::Matrix(b)) =
+            (&self.stack[len - 2], &self.stack[len - 1])
+        else {
+            return Err(e_domain("matsolve needs two matrices (Y=A, X=B)"));
+        };
+        let z = a
+            .solve(b)
+            .ok_or(e_domain("matsolve: A singular or shapes mismatch"))?;
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        self.stack.push(Value::Matrix(z));
         Ok(())
     }
 
@@ -1709,6 +1856,8 @@ impl Calc {
             Value::Int(x) => Value::Int(self.canon_flagged(-x)),
             Value::Real(f) => Value::Real(-f),
             Value::Complex(z) => Value::Complex(z.neg()),
+            // CHS on a matrix negates every element.
+            Value::Matrix(m) => Value::Matrix(m.scalar_mul(&Float::from_i64(self.prec, -1))),
         };
         self.stack.push(v);
         Ok(())
@@ -2037,11 +2186,13 @@ impl Calc {
     /// |X| — preserves the integer/real kind.
     fn abs_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
+        self.no_matrix("abs undefined for a matrix (use det/norm)")?;
         let v = match self.pop_x() {
             Value::Int(x) => Value::Int(self.canon_flagged(x.abs())),
             Value::Real(f) => Value::Real(f.abs()),
             // |z| — the magnitude, a real (HP-42S).
             Value::Complex(z) => Value::Real(z.abs(self.prec)),
+            Value::Matrix(_) => unreachable!("guarded"),
         };
         self.stack.push(v);
         Ok(())
@@ -2054,6 +2205,9 @@ impl Calc {
     fn pow_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
         let len = self.stack.len();
+        if self.stack[len - 1].is_matrix() || self.stack[len - 2].is_matrix() {
+            return Err(e_domain("y^x undefined for a matrix"));
+        }
         let exact = match (&self.stack[len - 2], &self.stack[len - 1]) {
             (Value::Int(base), Value::Int(e)) if !e.is_negative() => {
                 let one = Integer::from_i64(1);
@@ -2095,7 +2249,7 @@ impl Calc {
                 let neg_base = match yv {
                     Value::Int(i) => i.is_negative(),
                     Value::Real(f) => f.is_negative(),
-                    Value::Complex(_) => false,
+                    Value::Complex(_) | Value::Matrix(_) => false,
                 };
                 let frac_exp = matches!(xv, Value::Real(f) if !f.clone().frac().is_zero());
                 // Complex when either operand is complex, or (CPXRES) a negative
@@ -2143,6 +2297,13 @@ impl Calc {
     /// x² — exact for integers, real otherwise.
     fn sq(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
+        // A square matrix squares to M·M.
+        if let Some(Value::Matrix(m)) = self.stack.last() {
+            let p = m.mul(m).ok_or(e_domain("x^2 needs a square matrix"))?;
+            let _ = self.pop_x();
+            self.stack.push(Value::Matrix(p));
+            return Ok(());
+        }
         let v = match self.pop_x() {
             Value::Int(x) => {
                 let v = self.canon_flagged(x.clone() * x);
@@ -2153,6 +2314,7 @@ impl Calc {
                 Value::Real(f * g)
             }
             Value::Complex(z) => Value::Complex(z.mul(&z)),
+            Value::Matrix(_) => unreachable!("handled above"),
         };
         self.stack.push(v);
         Ok(())
@@ -2238,6 +2400,7 @@ impl Calc {
         match self.stack.last().expect("validated") {
             Value::Int(_) => Ok(()),
             Value::Complex(_) => Err(e_domain("cannot convert a complex to an integer")),
+            Value::Matrix(_) => Err(e_domain("cannot convert a matrix to an integer")),
             Value::Real(f) => {
                 if f.is_nan() || f.is_inf() {
                     return Err(e_domain("cannot convert nan/inf to an integer"));
@@ -2256,10 +2419,11 @@ impl Calc {
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
             return Err(e_domain("frac undefined for a complex"));
         }
+        self.no_matrix("frac undefined for a matrix")?;
         let v = match self.pop_x() {
             Value::Int(_) => Value::Int(Integer::new()),
             Value::Real(f) => Value::Real(f.frac()),
-            Value::Complex(_) => unreachable!("guarded above"),
+            Value::Complex(_) | Value::Matrix(_) => unreachable!("guarded above"),
         };
         self.stack.push(v);
         Ok(())

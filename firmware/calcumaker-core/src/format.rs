@@ -9,7 +9,27 @@ use alloc::string::{String, ToString};
 use gmp_mpfr_nostd::{Complex, Float};
 
 use crate::calc::{encode_bits, AngleMode, Calc, FloatFmt, Radix};
+use crate::matrix::Matrix;
 use crate::value::Value;
+
+/// Render a matrix as `[a,b;c,d]` — rows by `;`, elements by `,` (the REPL /
+/// emulator readout; the 7-seg shows the descriptor via [`format_fit`]).
+fn format_matrix(m: &Matrix, c: &Calc) -> String {
+    let mut s = String::from("[");
+    for i in 0..m.rows() {
+        if i > 0 {
+            s.push(';');
+        }
+        for j in 0..m.cols() {
+            if j > 0 {
+                s.push(',');
+            }
+            s += &format_real(m.get(i, j), c.prec(), c.float_fmt());
+        }
+    }
+    s.push(']');
+    s
+}
 
 /// Decimal significant digits worth showing for a given binary precision.
 fn dec_digits(prec: u32) -> usize {
@@ -55,6 +75,7 @@ pub(crate) fn format_radix(v: &Value, c: &Calc, radix: Radix) -> String {
         }
         Value::Real(f) => format_real(f, c.prec(), c.float_fmt()),
         Value::Complex(z) => format_complex(z, c),
+        Value::Matrix(m) => format_matrix(m, c),
     }
 }
 

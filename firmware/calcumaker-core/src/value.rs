@@ -4,6 +4,8 @@
 
 use gmp_mpfr_nostd::{Complex, Float, Integer};
 
+use crate::matrix::Matrix;
+
 #[derive(Clone)]
 pub enum Value {
     /// Arbitrary-precision integer (GMP `mpz`).
@@ -12,6 +14,8 @@ pub enum Value {
     Real(Float),
     /// Arbitrary-precision complex (MPC) — one stack object (HP-42S model).
     Complex(Complex),
+    /// A dense MPFR matrix on the stack (HP-15C matrices, modernized).
+    Matrix(Matrix),
 }
 
 impl Value {
@@ -23,6 +27,8 @@ impl Value {
             Value::Int(i) => Float::from_integer(prec, i),
             Value::Real(f) => Float::with_prec(prec, f),
             Value::Complex(z) => z.real(prec),
+            // A matrix is not a scalar — callers guard first; NaN as a fallback.
+            Value::Matrix(_) => Float::new(prec),
         }
     }
 
@@ -44,6 +50,16 @@ impl Value {
 
     pub fn is_complex(&self) -> bool {
         matches!(self, Value::Complex(_))
+    }
+
+    pub fn is_matrix(&self) -> bool {
+        matches!(self, Value::Matrix(_))
+    }
+}
+
+impl From<Matrix> for Value {
+    fn from(m: Matrix) -> Self {
+        Value::Matrix(m)
     }
 }
 

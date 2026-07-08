@@ -22,6 +22,7 @@ extern crate alloc;
 mod app;
 mod calc;
 mod format;
+mod matrix;
 pub mod keydoc;
 pub mod keys;
 pub mod seg7;
@@ -30,6 +31,7 @@ mod value;
 pub use app::App;
 pub use calc::{AngleMode, Calc, CalcError, FloatFmt, NumMode, Radix, SignMode, StackModel};
 pub use keys::Key;
+pub use matrix::Matrix;
 pub use value::Value;
 
 /// Arbitrary-precision complex (MPC) — re-exported for the frontends until it is

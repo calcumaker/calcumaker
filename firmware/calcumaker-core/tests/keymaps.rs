@@ -5,8 +5,9 @@ use calcumaker_core::{keydoc, keys};
 
 #[test]
 fn keymap_docs_are_fresh() {
-    let committed: [(&keys::Keymap, &str); 3] = [
+    let committed: [(&keys::Keymap, &str); 4] = [
         (&keys::HP16C, include_str!("../../../doc/keymap-16c.txt")),
+        (&keys::C15, include_str!("../../../doc/keymap-15c.txt")),
         (&keys::SCI, include_str!("../../../doc/keymap-sci.txt")),
         (&keys::FIN, include_str!("../../../doc/keymap-fin.txt")),
     ];

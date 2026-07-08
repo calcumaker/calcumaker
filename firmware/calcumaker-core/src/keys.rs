@@ -173,6 +173,18 @@ pub static SCI: Keymap = Keymap {
     apply_defaults: defaults_sci,
 };
 
+/// HP-15C "Advanced Scientific" — the classic complex-capable RPN, and the one
+/// that actually had complex (via flag 8). Shares the scientific key layout
+/// (incl. the f+I COMPLEX and f+P R<>P keys); complex results are ON by default.
+/// Matrices / SOLVE / ∫ are future work.
+pub static C15: Keymap = Keymap {
+    name: "15C",
+    base: SCI_BASE,
+    f: SCI_LAYER_F,
+    g: SCI_LAYER_G,
+    apply_defaults: defaults_15c,
+};
+
 // ---- FIN personality (HP-12C-flavored financial) -----------------------------
 // Same invariants as SCI: digits, ENTER, shifts, arithmetic, STATUS (f-CLx)
 // and SETUP (g-CLx) at the 16C positions. The 12C's famous TVM row lands on
@@ -203,6 +215,16 @@ pub const FIN_LAYER_G: [[Key; COLS]; ROWS] = [
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
 ];
 
+fn defaults_15c(c: &mut crate::calc::Calc) {
+    // HP-15C "Advanced Scientific": a FLOAT machine with complex. Radians (the
+    // mathematician's default), FIX 4, decimal, complex results on.
+    c.set_angle_mode(crate::calc::AngleMode::Rad);
+    c.set_float_fmt(crate::calc::FloatFmt::Fix(4));
+    c.set_radix(crate::calc::Radix::Dec);
+    c.set_real_entry(true);
+    c.set_cpxres(true);
+}
+
 fn defaults_fin(c: &mut crate::calc::Calc) {
     // 12C conventions: FIX 2, decimal, float machine (angle left alone).
     c.set_float_fmt(crate::calc::FloatFmt::Fix(2));
@@ -222,7 +244,7 @@ pub static FIN: Keymap = Keymap {
 };
 
 /// Installed personalities, in `PErS`-menu cycle order.
-pub static PERSONALITIES: &[&Keymap] = &[&HP16C, &SCI, &FIN];
+pub static PERSONALITIES: &[&Keymap] = &[&HP16C, &C15, &SCI, &FIN];
 
 /// Pending shift modifier (f = gold, g = blue). Press toggles; any resolved key
 /// clears it (HP-Voyager behaviour).

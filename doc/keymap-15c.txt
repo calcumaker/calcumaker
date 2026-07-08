@@ -1,0 +1,29 @@
+CALCUMAKER 16 - PERSONALITY: 15C
+GENERATED from firmware/calcumaker-core/src/keys.rs - do not edit.
+Regenerate: cargo run --example keymaps   (in firmware/calcumaker-core)
+
+Each key:   f (gold) shift function
+            KEY FACE
+            g (blue) shift function
+
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| SINH   | COSH   | TANH   | PREC   | x^2    | R<>P   | CPLX   | PI     | LSTx   | STATUS |
+| SIN    | COS    | TAN    | LN     | SQRT   | y^x    | 1/x    | EEX    | BSP    | CLX    |
+|        |        |        |        |        |        |        |        |        | SETUP  |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+|        |        |        |        |        |        |        |        |        |        |
+| ASIN   | ACOS   | ATAN   | LOG    | e^x    | 10^x   | 7      | 8      | 9      | /      |
+|        |        |        |        |        |        |        |        |        |        |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| L.R.   | YHAT   | CORR   | CLSUM  |        |        |        |        |        |        |
+| S+     | S-     | MEAN   | SDEV   | x!     | %      | 4      | 5      | 6      | *      |
+| nCr    | nPr    | RAN#   | SEED   | <WIN   | WIN>   |        |        | RND    |        |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+|        |        |        |        |        | FLOAT  |        |        |        |        |
+| FIX    | SCI    | ENG    | AUTO   | ANGLE  | x<>y   | 1      | 2      | 3      | -      |
+|        |        |        |        |        |        |        |        |        |        |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
+| f      | g      | CLREG  |        | R^     |        | OFF    |        | EEX    |        |
+| f      | g      | STO    | RCL    | Rv     | ENTER  | 0      | .      | CHS    | +      |
+| f      | g      |        |        |        |        |        |        |        |        |
++--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+

@@ -465,7 +465,9 @@ fn setup_stack_and_pers_items() {
     app.press_key(Key::RollDn); // -> PErS (item 7)
     assert_eq!(app.text_rows()[1].trim_end(), "7 PErS");
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
-    app.press_key(Key::Enter); // cycles to SCI…
+    app.press_key(Key::Enter); // cycles to 15C…
+    assert_eq!(app.keymap().name, "15C");
+    app.press_key(Key::Enter); // …SCI…
     assert_eq!(app.keymap().name, "SCI");
     app.press_key(Key::Enter); // …then FIN…
     assert_eq!(app.keymap().name, "FIN");
@@ -513,6 +515,8 @@ fn pers_cycles_to_sci_and_back() {
         app.press_key(Key::RollDn); // item 7: PErS
     }
     assert_eq!(app.text_rows()[2].trim_end(), "16C");
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "15C"); // 16C -> 15C first
     app.press_key(Key::Enter);
     assert_eq!(app.keymap().name, "SCI");
     assert_eq!(app.text_rows()[2].trim_end(), "SCI");
@@ -616,6 +620,8 @@ fn pers_cycles_three_ways() {
     for _ in 0..6 {
         app.press_key(Key::RollDn); // item 7: PErS (CPLX now sits at item 6)
     }
+    app.press_key(Key::Enter);
+    assert_eq!(app.keymap().name, "15C");
     app.press_key(Key::Enter);
     assert_eq!(app.keymap().name, "SCI");
     app.press_key(Key::Enter);

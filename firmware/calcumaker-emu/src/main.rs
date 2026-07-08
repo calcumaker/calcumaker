@@ -193,7 +193,7 @@ fn help_text(app: &App) -> String {
     out += &border;
     out += "\nF/G = gold/blue shifts. STO/RCL: m or r, then a digit 0-f = the register.\n\
 G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
---personality 16C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n";
+--personality 16C|15C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n";
     out
 }
 
@@ -402,12 +402,12 @@ fn main() -> io::Result<()> {
                         .iter()
                         .find(|km| km.name.eq_ignore_ascii_case(&name))
                         .copied()
-                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, SCI, FIN)"))),
+                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, 15C, SCI, FIN)"))),
                 );
             }
             "--help" | "-h" => {
                 println!(
-                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|SCI|FIN]\n"
+                    "calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|15C|SCI|FIN]\n"
                 );
                 let app = App::new(256);
                 println!("{}", help_text(&app));
@@ -436,7 +436,7 @@ fn main() -> io::Result<()> {
 
 fn usage(msg: &str) -> ! {
     eprintln!(
-        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|SCI|FIN]"
+        "calcumaker-emu: {msg}\nusage: calcumaker-emu [--prec <bits>] [--press <keys>] [--ascii] [--no-suffix] [--no-oled] [--personality 16C|15C|SCI|FIN]"
     );
     std::process::exit(2);
 }

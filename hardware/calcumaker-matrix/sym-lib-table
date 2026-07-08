@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "calcumaker")(type "KiCad")(uri "${KIPRJMOD}/../lib/symbols/calcumaker.kicad_sym")(options "")(descr "calcumaker project-specific symbols (TM1640 driver, FJ5161AH single-digit 7-seg)"))
+)

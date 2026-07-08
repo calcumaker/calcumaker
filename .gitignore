@@ -7,9 +7,10 @@ _autosave-*
 *.lck
 ~*.kicad_*
 
-# JLCPCB fab packages (regenerated via make jlc)
+# JLCPCB fab packages + BOM (regenerated via make jlc / make bom-<board>)
 hardware/*/jlcpcb/
 hardware/*/*-jlcpcb.zip
+hardware/*/jlcpcb_bom.csv
 
 # Generated SVGs (regenerated via make docs)
 hardware/*/docs/images/*.svg

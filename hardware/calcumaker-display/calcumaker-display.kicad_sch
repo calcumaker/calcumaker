@@ -31,7 +31,7 @@
 		(pin "DIN" input
 			(at 71.1200 40.6400 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "a24da2f7-5fed-42c6-814f-75f03042ca18")
+			(uuid "11bf09f4-561b-46ee-acde-b7ee81667324")
 		)
 	)
 	(sheet
@@ -52,7 +52,7 @@
 		(pin "DIN" input
 			(at 71.1200 71.1200 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "f58def0c-7d54-41e0-aade-95756018f938")
+			(uuid "e124027b-c4a2-4169-a43f-aa9fa21005f0")
 		)
 	)
 	(sheet
@@ -73,7 +73,7 @@
 		(pin "DIN" input
 			(at 71.1200 101.6000 180)
 			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "8c66b27d-ab58-469c-aea7-f639b33a7f2d")
+			(uuid "8df8c49a-c08e-40f2-a18d-14f9030bebc3")
 		)
 	)
 	(sheet
@@ -108,44 +108,76 @@
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)
+	(sheet
+		(at 162.5600 91.4400)
+		(size 50.8000 20.3200)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "ca1c0000-0000-4000-8000-0000000d1540")
+		(property "Sheetname" "DispMCU"
+			(at 162.5600 90.1700 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "disp_mcu.kicad_sch"
+			(at 162.5600 113.0300 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
+	(sheet
+		(at 162.5600 121.9200)
+		(size 50.8000 20.3200)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "ca1c0000-0000-4000-8000-0000000d1550")
+		(property "Sheetname" "DispPower"
+			(at 162.5600 120.6500 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
+		)
+		(property "Sheetfile" "disp_power.kicad_sch"
+			(at 162.5600 143.5100 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
+		)
+	)
 	(wire (pts (xy 71.1200 40.6400) (xy 63.5000 40.6400))
 		(stroke (width 0) (type default))
-		(uuid "ece002fc-53a0-47af-ba6c-ec6c4fff5086")
+		(uuid "44ef9e47-12a4-4274-843d-34063a14769c")
 	)
 	(global_label "DIN1"
 		(shape output)
 		(at 63.5000 40.6400 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "866f578a-7f9c-419f-84ec-bc54a588190e")
+		(uuid "3f180465-9bfa-4681-8ccf-249c34f6a301")
 	)
 	(wire (pts (xy 71.1200 71.1200) (xy 63.5000 71.1200))
 		(stroke (width 0) (type default))
-		(uuid "ab73624f-b063-459a-819d-e18c187879d9")
+		(uuid "54e180ce-2dc1-4e33-a505-1ae25ed9d12e")
 	)
 	(global_label "DIN2"
 		(shape output)
 		(at 63.5000 71.1200 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "d03213b5-faeb-4d74-81fb-1958cd1704ca")
+		(uuid "af1fc260-48ad-4c07-9a13-d8136464f19e")
 	)
 	(wire (pts (xy 71.1200 101.6000) (xy 63.5000 101.6000))
 		(stroke (width 0) (type default))
-		(uuid "614c635e-82d7-4c8d-b6bb-7e8b0601bd3a")
+		(uuid "9ac8f098-be65-4267-83ca-d5a50a1f77d6")
 	)
 	(global_label "DIN3"
 		(shape output)
 		(at 63.5000 101.6000 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "dacb7a2e-a22f-442b-9bba-2f83a4416591")
+		(uuid "9d247ab9-c545-4071-b33e-225474847c3f")
 	)
 	(text "Calcumaker 16 — Display (MULTI-CHANNEL). Row1/2/3 are three instances of ONE reusable sheet (display_row.kicad_sch). Shared bus is carried on global nets +5V / GND / DISP_CLK; each row's serial data DIN is a hierarchical pin fed by DIN1/DIN2/DIN3 from the interconnect. Top row (Row3 / U3 / DS33-48) is optional -> 2- or 3-row build."
 		(exclude_from_sim no)
 		(at 20.00 105.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "c4357c3e-56d8-4a6d-86d9-218be29ce79b")
+		(uuid "db142845-da5f-4a32-b0c5-c5c1140d5458")
 	)
 	(sheet_instances
 		(path "/"

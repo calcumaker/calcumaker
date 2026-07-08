@@ -5,653 +5,12 @@
 	(uuid "66273e88-92ab-499d-8908-57ce43e17319")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — MCU — Display 5V rail (TPS61022) + 74HCT125 level shifter + interconnect")
+		(title "Calcumaker 16 — MCU — Unified display-module interface (SPI FFC J3 + VSYS outlet J7)")
 		(date "2026-07-06")
 		(rev "0.3")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "Converter_DCDC:TPS61022"
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "U"
-			(at 0 7.62 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TPS61022"
-			(at 7.62 -7.62 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm"
-			(at 0 -22.86 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps61022.pdf"
-			(at 0 -25.4 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "8A Boost Converter, 0.5-5.5 V input, 2.2-5.5V output, Texas RWU0007A VQFN-7"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "step-up"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "Texas*RWU0007A*VQFN*2x2mm*P0.5mm*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "TPS61022_1_1"
-			(rectangle
-				(start -7.62 5.08)
-				(end 7.62 -5.08)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-			(pin power_in line
-				(at 0 -7.62 90)
-				(length 2.54)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at 5.08 7.62 270)
-				(length 2.54)
-				(name "SW"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_out line
-				(at 10.16 0 180)
-				(length 2.54)
-				(name "VOUT"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "3"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at 10.16 -2.54 180)
-				(length 2.54)
-				(name "FB"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "4"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -10.16 0 0)
-				(length 2.54)
-				(name "EN"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "5"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -10.16 -2.54 0)
-				(length 2.54)
-				(name "MODE"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "6"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at -5.08 7.62 270)
-				(length 2.54)
-				(name "VIN"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "7"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
-	(symbol "74xx:74AHCT125"
-		(pin_names
-			(offset 1.016)
-		)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "U"
-			(at 0 1.27 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "74LS125"
-			(at 0 -1.27 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "http://www.ti.com/lit/gpn/sn74LS125"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Quad buffer 3-State outputs"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_locked" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "TTL buffer 3State"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "DIP*W7.62mm*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "74AHCT125_1_0"
-			(polyline
-				(pts
-					(xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81)
-				)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-			(pin input inverted
-				(at 0 -6.35 90)
-				(length 4.445)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -7.62 0 0)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin tri_state line
-				(at 7.62 0 180)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "3"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(symbol "74AHCT125_2_0"
-			(polyline
-				(pts
-					(xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81)
-				)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-			(pin input inverted
-				(at 0 -6.35 90)
-				(length 4.445)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "4"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -7.62 0 0)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "5"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin tri_state line
-				(at 7.62 0 180)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "6"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(symbol "74AHCT125_3_0"
-			(polyline
-				(pts
-					(xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81)
-				)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-			(pin tri_state line
-				(at 7.62 0 180)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "8"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -7.62 0 0)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "9"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input inverted
-				(at 0 -6.35 90)
-				(length 4.445)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "10"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(symbol "74AHCT125_4_0"
-			(polyline
-				(pts
-					(xy -3.81 3.81) (xy -3.81 -3.81) (xy 3.81 0) (xy -3.81 3.81)
-				)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-			(pin tri_state line
-				(at 7.62 0 180)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "11"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -7.62 0 0)
-				(length 3.81)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "12"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input inverted
-				(at 0 -6.35 90)
-				(length 4.445)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "13"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(symbol "74AHCT125_5_0"
-			(pin power_in line
-				(at 0 -12.7 90)
-				(length 5.08)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "7"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 0 12.7 270)
-				(length 5.08)
-				(name "VCC"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "14"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(symbol "74AHCT125_5_1"
-			(rectangle
-				(start -5.08 7.62)
-				(end 5.08 -7.62)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
 	(symbol "Connector_Generic:Conn_01x12"
 		(pin_names
 			(offset 1.016)
@@ -1100,10 +459,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "Device:L"
-		(pin_numbers
-			(hide yes)
-		)
+	(symbol "Connector_Generic:Conn_01x02"
 		(pin_names
 			(offset 1.016)
 			(hide yes)
@@ -1113,8 +469,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "L"
-			(at -1.27 0 90)
+		(property "Reference" "J"
+			(at 0 2.54 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1123,8 +479,8 @@
 				)
 			)
 		)
-		(property "Value" "L"
-			(at 1.905 0 90)
+		(property "Value" "Conn_01x02"
+			(at 0 -5.08 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1155,7 +511,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1166,7 +522,7 @@
 				)
 			)
 		)
-		(property "ki_keywords" "inductor choke coil reactor magnetic"
+		(property "ki_keywords" "connector"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1177,7 +533,7 @@
 				)
 			)
 		)
-		(property "ki_fp_filters" "Choke_* *Coil* Inductor_* L_*"
+		(property "ki_fp_filters" "Connector*:*_1x??_*"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1188,356 +544,44 @@
 				)
 			)
 		)
-		(symbol "L_0_1"
-			(arc
-				(start 0 2.54)
-				(mid 0.6323 1.905)
-				(end 0 1.27)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(arc
-				(start 0 1.27)
-				(mid 0.6323 0.635)
-				(end 0 0)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(arc
-				(start 0 0)
-				(mid 0.6323 -0.635)
-				(end 0 -1.27)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(arc
-				(start 0 -1.27)
-				(mid 0.6323 -1.905)
-				(end 0 -2.54)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "L_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 1.27)
-				(name "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 1.27)
-				(name "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
-	(symbol "Device:C"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.254)
-		)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "C"
-			(at 0.635 2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "C"
-			(at 0.635 -2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 0.9652 -3.81 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "cap capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "C_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "C_0_1"
-			(polyline
-				(pts
-					(xy -2.032 0.762) (xy 2.032 0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy -2.032 -0.762) (xy 2.032 -0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "C_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
-	(symbol "Device:R"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0)
-		)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "R"
-			(at 2.032 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "R"
-			(at 0 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at -1.778 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "R res resistor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "R_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "R_0_1"
+		(symbol "Conn_01x02_1_1"
 			(rectangle
-				(start -1.016 -2.54)
-				(end 1.016 2.54)
+				(start -1.27 1.27)
+				(end 1.27 -3.81)
 				(stroke
 					(width 0.254)
 					(type default)
 				)
 				(fill
+					(type background)
+				)
+			)
+			(rectangle
+				(start -1.27 0.127)
+				(end 0 -0.127)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
 					(type none)
 				)
 			)
-		)
-		(symbol "R_1_1"
+			(rectangle
+				(start -1.27 -2.413)
+				(end 0 -2.667)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
 			(pin passive line
-				(at 0 3.81 270)
-				(length 1.27)
-				(name ""
+				(at -5.08 0 0)
+				(length 3.81)
+				(name "Pin_1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1553,9 +597,9 @@
 				)
 			)
 			(pin passive line
-				(at 0 -3.81 90)
-				(length 1.27)
-				(name ""
+				(at -5.08 -2.54 0)
+				(length 3.81)
+				(name "Pin_2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -1575,167 +619,54 @@
 	)
 	)
 	(symbol
-		(lib_id "Converter_DCDC:TPS61022")
+		(lib_id "Connector_Generic:Conn_01x12")
 		(at 45.7200 55.8800 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "be08365e-4244-4387-9703-4b9ed4e3c001")
-		(property "Reference" "U5"
+		(uuid "8c825672-3720-4e39-a675-73d519ec538f")
+		(property "Reference" "J3"
 			(at 49.5300 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "TPS61022RWUR"
+		(property "Value" "TO DISPLAY (unified SPI FFC)"
 			(at 49.5300 58.4200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C915088"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "MPN" "TPS61022RWUR"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Manufacturer" "Texas Instruments"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "108f5790-e2ad-4069-9392-964437ecafda"))
-		(pin "2" (uuid "1e6350c1-f913-4000-95d9-c80d40548520"))
-		(pin "3" (uuid "a7c5f41c-2ae4-4914-8313-549ad57498c5"))
-		(pin "4" (uuid "b9f048a5-4ec5-4b04-9198-affbf45268d1"))
-		(pin "5" (uuid "d3482e24-4736-41cf-863d-635401cedd19"))
-		(pin "6" (uuid "bba93bf5-3c48-4284-988f-c91ab026ba92"))
-		(pin "7" (uuid "54124139-5979-44ac-abf7-baae2da34e77"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "U5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "74xx:74AHCT125")
-		(at 142.2400 55.8800 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ae08be1f-e497-4846-8735-98f2753ac40a")
-		(property "Reference" "U6"
-			(at 146.0500 53.3400 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "74HCT125"
-			(at 146.0500 58.4200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 142.2400 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 142.2400 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C352957"
-			(at 142.2400 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "MPN" "SN74HCT125DR"
-			(at 142.2400 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Manufacturer" "Texas Instruments"
-			(at 142.2400 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "cd6aadc4-5452-4c5c-b68a-ca37fd428d70"))
-		(pin "2" (uuid "e8d2dae5-162f-43b3-a136-80a440d5a2ff"))
-		(pin "3" (uuid "e5bce02e-7e4c-41b1-a0b8-e0f2fa8cf711"))
-		(pin "4" (uuid "2dd68c4b-cf21-4901-a2fe-c7989dd6678f"))
-		(pin "5" (uuid "26f7c579-c614-4360-808c-e4ba152c3269"))
-		(pin "6" (uuid "89b9b8c7-90d5-41cb-bdf8-d5535e007f47"))
-		(pin "8" (uuid "df6b430d-7bcc-4f7e-9376-e7822a0a270b"))
-		(pin "9" (uuid "ed56c093-18f9-4fbe-9199-1ee7c654880c"))
-		(pin "10" (uuid "9c9d3a61-f9ce-4ee7-af7b-db398e0a5954"))
-		(pin "11" (uuid "6e44fb83-9928-47f0-b00c-3a30b335abb6"))
-		(pin "12" (uuid "e3a23dec-4b71-47eb-8d53-6c4b0764329a"))
-		(pin "13" (uuid "888c99ae-baa7-4dc6-bc34-805eb1955ad9"))
-		(pin "7" (uuid "072f47c8-a426-4901-b019-b0a72a342ee1"))
-		(pin "14" (uuid "17c43182-6c08-49f4-8863-2df320cce9b5"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "U6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_01x12")
-		(at 238.7600 55.8800 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "1af15b9b-1ba0-4954-842f-57db3d22cb35")
-		(property "Reference" "J3"
-			(at 242.5700 53.3400 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "TO DISPLAY (FFC)"
-			(at 242.5700 58.4200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
 		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal"
-			(at 238.7600 55.8800 0)
+			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 238.7600 55.8800 0)
+			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C262661"
-			(at 238.7600 55.8800 0)
+			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "AFC01-S12FCA-00"
-			(at 238.7600 55.8800 0)
+			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "JUSHUO"
-			(at 238.7600 55.8800 0)
+			(at 45.7200 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "ffd6d1a4-3829-4a88-8f4f-4b2e770cf6ee"))
-		(pin "2" (uuid "4e38ce6a-3350-4663-bc58-f66382df2bdd"))
-		(pin "3" (uuid "ebc33122-2c2a-4eea-be8a-df0a48de823c"))
-		(pin "4" (uuid "b8cb1ee3-4283-4797-809f-12867740feb4"))
-		(pin "5" (uuid "079e8046-e6d9-4030-ae80-f486045aea01"))
-		(pin "6" (uuid "9edb56e5-6875-4a3c-bd0b-1c82239fdd60"))
-		(pin "7" (uuid "52cb1e0d-006d-4ca9-b222-c75049767d65"))
-		(pin "8" (uuid "10967d02-726f-420d-8b92-d7d7b68de156"))
-		(pin "9" (uuid "b33313d9-1f0c-44d9-81f6-53c3ccb31700"))
-		(pin "10" (uuid "a3562507-b726-456b-b4e1-9b13b0ab1a81"))
-		(pin "11" (uuid "2c5adf24-10c2-4aee-9f35-947a1aef4816"))
-		(pin "12" (uuid "e9a02250-d29b-46c9-8cf0-fba6905a12f7"))
+		(pin "1" (uuid "6de5794e-99eb-4e81-924c-4dd9f2c7bd25"))
+		(pin "2" (uuid "419db15c-6d8b-485c-a82e-db21ce929dcc"))
+		(pin "3" (uuid "bba3b2c1-0ff9-4c0d-b9c0-ad30f882c572"))
+		(pin "4" (uuid "5f8a050e-09b4-4e03-960c-fe7bcc066bbc"))
+		(pin "5" (uuid "3b921439-38da-4fcd-9c7b-a34339fe3fe0"))
+		(pin "6" (uuid "606a5318-0245-4234-a068-927755416ad7"))
+		(pin "7" (uuid "b7885a9f-9126-4c18-8b57-8bc3550e056b"))
+		(pin "8" (uuid "b4eb9846-0489-4ce6-b1c0-75aca2f0f59e"))
+		(pin "9" (uuid "c74c1d45-39fd-403a-917c-dc1158866aa8"))
+		(pin "10" (uuid "7366c353-5e73-4967-b18f-edca9b286388"))
+		(pin "11" (uuid "df6cd852-2613-48ce-843a-7deec6c513c8"))
+		(pin "12" (uuid "d0d40749-4680-4670-9b87-cd3485223827"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
@@ -1746,362 +677,58 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:L")
-		(at 30.4800 121.9200 0)
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 142.2400 55.8800 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fd428153-cd9e-416f-b824-05b57a23bfbc")
-		(property "Reference" "L2"
-			(at 34.2900 119.3800 0)
+		(uuid "6e130e22-bc50-4238-8b87-bc723309e51a")
+		(property "Reference" "J7"
+			(at 146.0500 53.3400 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Value" "1uH"
-			(at 34.2900 124.4600 0)
+		(property "Value" "VSYS -> matrix LED pwr"
+			(at 146.0500 58.4200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
-		(property "Footprint" "Inductor_SMD:L_0805_2012Metric"
-			(at 30.4800 121.9200 0)
+		(property "Footprint" "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"
+			(at 142.2400 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 30.4800 121.9200 0)
+			(at 142.2400 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "LCSC" "C5832342"
-			(at 30.4800 121.9200 0)
+		(property "LCSC" "C173752"
+			(at 142.2400 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "MPN" "FTC201610S1R0MBCA"
-			(at 30.4800 121.9200 0)
+		(property "MPN" "S2B-PH-K-S"
+			(at 142.2400 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(property "Manufacturer" "Sunlord"
-			(at 30.4800 121.9200 0)
+		(property "Manufacturer" "JST"
+			(at 142.2400 55.8800 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "09b74227-f142-4e32-b656-286c3167d30c"))
-		(pin "2" (uuid "b6367145-48a2-4dc8-8caf-cf1d00e3e764"))
+		(pin "1" (uuid "a7a8e321-6614-412b-a806-8a05e186ec2f"))
+		(pin "2" (uuid "e09e5c2d-7fb3-4e64-9b4f-2e319ac86802"))
 		(instances
 			(project "calcumaker-mcu"
 				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "L2")
+					(reference "J7")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(symbol
-		(lib_id "Device:C")
-		(at 68.5800 121.9200 0)
-		(unit 1)
+	(text "UNIFIED DISPLAY-MODULE INTERFACE\n\nJ3 = 0.5mm 12-pos FFC to the display module (AFC01-S12FCA-00, C262661).\nSAME pinout on BOTH display boards (7-seg + RGB matrix) -> interchangeable.\nTechnology-agnostic: power + SPI 'display intent' + reset/boot. The module\nMCU (STM32G031 on 7-seg / RP2040 on the matrix) is the SPI slave + renders\nlocally; 5V + any level-shifting are generated ON the module now.\n\n  PIN  SIGNAL       PIN  SIGNAL   \n    1  VSYS           7  SPI_MOSI \n    2  VSYS           8  SPI_CS   \n    3  GND            9  DISP_IRQ \n    4  GND           10  DISP_NRST\n    5  +3V3          11  DISP_BOOT\n    6  SPI_SCLK      12  GND\n\nU575: SPI1 SCLK/MOSI/CS + DISP_IRQ (EXTI) + DISP_NRST/DISP_BOOT (reflash\nthe module MCU). +3V3 from the MCU rail; VSYS from the PSU load-share.\n\nJ7 = 2-pin JST-PH VSYS outlet -> the RGB-matrix module's LED inlet (J2):\nthe matrix pulls amps for 2304 LEDs, so its LED current takes this direct\nlead, NOT the signal FFC (the 7-seg module boosts from VSYS on the FFC).\nCABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).\nSee DESIGN.md Unified display-module interface / Power Tree."
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5667b466-7d54-4896-95bb-10c0ffa64ef8")
-		(property "Reference" "C8"
-			(at 72.3900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "10uF"
-			(at 72.3900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 68.5800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 68.5800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "ee9f8c41-f0c3-4c1e-ad7d-7a2252f15a58"))
-		(pin "2" (uuid "10133963-cbc5-4ca3-b198-326fbc5a51da"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "C8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 106.6800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "27f13a6a-749f-4a89-a858-78050724b61d")
-		(property "Reference" "C9"
-			(at 110.4900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "22uF"
-			(at 110.4900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 106.6800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 106.6800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "a7c2e3be-037c-4536-9cdf-87d916ac1d1b"))
-		(pin "2" (uuid "d9475876-3cef-4483-91f9-8df5e193af2f"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "C9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 144.7800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "1d36763a-6f7f-4741-97fb-df35674bcc32")
-		(property "Reference" "C10"
-			(at 148.5900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "22uF"
-			(at 148.5900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 144.7800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 144.7800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "2ec09a47-f27d-4590-99b2-bfc135fc9899"))
-		(pin "2" (uuid "f562c782-fda3-4de0-926a-ca1604db78c8"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "C10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 182.8800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b67cb544-e7be-44d9-bb91-13d0af99ab1f")
-		(property "Reference" "C11"
-			(at 186.6900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "100nF"
-			(at 186.6900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 182.8800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 182.8800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C1525"
-			(at 182.8800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "0cca625a-ba1d-4724-8f24-253a3360e389"))
-		(pin "2" (uuid "31e1c32a-56a2-4177-9a19-7b28cdd48210"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "C11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 220.9800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "0ce600e9-332b-4472-b6c5-6d704be0d419")
-		(property "Reference" "R6"
-			(at 224.7900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "732k"
-			(at 224.7900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 220.9800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 220.9800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "4c824ee6-b426-4395-bda7-853f8a7461cb"))
-		(pin "2" (uuid "d5cf6d96-7565-4e59-97db-b7e9b4bcaa40"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "R6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 259.0800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "cfeed8bd-785c-4592-8d7f-bd0a90fcabb6")
-		(property "Reference" "R7"
-			(at 262.8900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "100k"
-			(at 262.8900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 259.0800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 259.0800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C25741"
-			(at 259.0800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "8a742e35-9c83-4933-b1ce-03f37f63341e"))
-		(pin "2" (uuid "a4cd6491-4aec-4a79-865a-94ac50a3b70d"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "R7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 297.1800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "58ebfb56-c0e6-409c-97c0-5537536c1a71")
-		(property "Reference" "R14"
-			(at 300.9900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "4.7k"
-			(at 300.9900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 297.1800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 297.1800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C25900"
-			(at 297.1800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "ace9711c-9904-48c5-aa7a-a9ee5d9fcc20"))
-		(pin "2" (uuid "266577d2-c13d-440d-9d95-4792ffcf8bda"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 335.2800 121.9200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "705d9647-27b5-4799-85e8-e7bbb1832214")
-		(property "Reference" "R15"
-			(at 339.0900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "4.7k"
-			(at 339.0900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 335.2800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 335.2800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C25900"
-			(at 335.2800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "7c13bfeb-ce74-4bea-9a6c-b2c4e4e2fd8f"))
-		(pin "2" (uuid "70befb70-6a9f-4f6c-947c-ca4a29f75de1"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/ca1c0000-0000-4000-8000-00000000ma01/66273e88-92ab-499d-8908-57ce43e17319"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(text "DISPLAY 5V RAIL + INTERFACE\n\n5V BOOST  U5 TPS61022 (C915088, EN-gated)\n  VIN<-VSYS (3.0-4.7V), L2 1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF\n  FB R6/R7 divider -> +5V (Vref 0.6V);  EN<-MCU DISP_PWR_EN (low in sleep)\nLEVEL SHIFT  U6 74HCT125 @ +5V (VIH=2V accepts 3V3)\n  IN<-MCU CLK,DIN1,DIN2,DIN3 (3V3);  OUT-> J3 @ 5V logic;\n  C11 100nF;  tie all 4 /OE low\n\nJ3 = 0.5mm 12-pos FFC to display (AFC01-S12FCA-00, C262661).\nPinout MUST match calcumaker-display J1:\n\n  PIN  SIGNAL    PIN  SIGNAL\n    1  +5V         7  DIN3  \n    2  +5V         8  GND   \n    3  GND         9  +3V3  \n    4  CLK        10  SDA   \n    5  DIN1       11  SCL   \n    6  DIN2       12  GND\n\n+5V/GND doubled for LED current (a 0.5mm FFC conductor is ~0.4A).\nPins 9-11 = the DNP aux OLED I2C.\nCABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).\nSee DESIGN.md Power Tree / Board Partition."
-		(exclude_from_sim no)
-		(at 15.00 137.92 0)
+		(at 15.00 116.88 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "56e0ff6f-c71b-414e-b2f1-0c506e9ee3c4")
+		(uuid "be0de151-21fc-4125-82bb-346eeaf9558d")
 	)
 	(sheet_instances
 		(path "/"

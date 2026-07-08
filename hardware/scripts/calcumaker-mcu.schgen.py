@@ -131,7 +131,7 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         "  USB   PA11/PA12  -> PSU ESD (U3)",
         "  SWD   PA13/PA14  -> Programming J4  (+ NRST)",
         "  LSE   OSC32      -> Clock Y1",
-        "  DISP  CLK+DIN1-3 + DISP_PWR_EN   -> DisplayIF",
+        "  DISP  SPI1 + DISP_IRQ/NRST/BOOT  -> DisplayIF (unified module bus)",
         "  KBD   I2C+UART+KB_IRQ/NRST/BOOT0 -> KeyboardIF J5",
         "  QSPI  OCTOSPI1 CLK/NCS/IO0-3     -> QSPIFlash U7",
         "",
@@ -275,65 +275,49 @@ KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
         "06-4-T (DigiKey). Stacked build: MCU board under a keyless region /",
         "board edge. Verify lands + 3D clearance at layout.")))
 
-# ===================== Display power + interface sheet =======================
-# The display runs at 5V (TM1640 is 5V-nominal; VIH=0.7*VDD=3.5V > MCU 3.3V).
-# This sheet generates the EN-gated 5V display rail and translates the 4 control
-# lines 3V3->5V, then hands +5V + 5V-logic to the display board via J3.
-#   - U5: TPS61022 EN-gated 5V boost (off in sleep). LCSC C915088, VQFN-7.
-#     Adjustable -> R6/R7 FB divider sets +5V. Symbol: stock Converter_DCDC:TPS61022.
-#   - U6: 74HCT125 quad buffer @5V = 3V3->5V level shift for CLK + DIN1/2/3
-#     (KiCad symbol 74AHCT125 is pin-compatible; value=74HCT125, LCSC C352957).
-#   - J3: 12-position 0.5mm FFC to the display board (pins 9-11 = +3V3 + I2C
-#     for the DNP-optional aux OLED on the display board).
-# The 3V3 TPS63900 (PSU sheet) now feeds only the MCU, so it stays as-is.
+# ===================== Display-module interface sheet ========================
+# Each display is now a self-contained MODULE (7-seg OR RGB matrix) with its OWN
+# MCU, plugging into a UNIFIED SPI connector. So the old EN-gated 5V boost +
+# 74HCT125 shifter MOVED onto the (7-seg) display board, and J3 is technology-
+# agnostic: power + SPI "display intent" + reset/boot. A separate 2-pin VSYS
+# outlet (J7) feeds the RGB-matrix module's LED rail directly from the PSU (amps,
+# kept off the signal FFC). The 3V3 TPS63900 (PSU sheet) still feeds the MCU.
 DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
-    title="Display 5V rail (TPS61022) + 74HCT125 level shifter + interconnect",
+    title="Unified display-module interface (SPI FFC J3 + VSYS outlet J7)",
     page="6",
     big=[
-        # 5V boost TPS61022 (adjustable). Stock KiCad symbol + footprint.
-        dict(ref="U5", lib_id="Converter_DCDC:TPS61022", value="TPS61022RWUR",
-             fp="Package_DFN_QFN:Texas_RWU0007A_VQFN-7_2x2mm_P0.5mm",
-             lcsc="C915088", mpn="TPS61022RWUR", mfr="Texas Instruments"),
-        dict(ref="U6", lib_id="74xx:74AHCT125", value="74HCT125",
-             fp="Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
-             lcsc="C352957", mpn="SN74HCT125DR", mfr="Texas Instruments"),
-        # Display link = 0.5mm 12P FFC (flat flex to the angled display board; the
-        # CABLE = GCT FFC05-TIN 05-12-A-<length>-A-4-06-4-T, a DigiKey accessory,
-        # NOT assembled; length TBD at layout). +5V/GND doubled for
-        # the display LED current.
-        dict(ref="J3", lib_id="Connector_Generic:Conn_01x12", value="TO DISPLAY (FFC)",
+        # Unified 12-pos 0.5mm FFC to the display module. CABLE = GCT FFC05-TIN
+        # 05-12-A-<length>-A-4-06-4-T (DigiKey accessory, NOT assembled; len TBD).
+        dict(ref="J3", lib_id="Connector_Generic:Conn_01x12", value="TO DISPLAY (unified SPI FFC)",
              fp="Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal",
              lcsc="C262661", mpn="AFC01-S12FCA-00", mfr="JUSHUO"),
+        # VSYS outlet -> the RGB-matrix module's LED inlet (its own 2-pin JST).
+        dict(ref="J7", lib_id="Connector_Generic:Conn_01x02", value="VSYS -> matrix LED pwr",
+             fp="Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
+             lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST"),
     ],
-    small=[
-        dict(ref="L2", lib_id="Device:L", value="1uH", fp=L2016,
-             lcsc="C5832342", mpn="FTC201610S1R0MBCA", mfr="Sunlord"),  # 2.0x1.6mm, boost L
-        C("C8", "10uF", C0603), C("C9", "22uF", C0603), C("C10", "22uF", C0603),  # boost in / out (2x22u)
-        C("C11", "100nF"),                                # 74HCT125 VCC(5V) decoupling
-        R("R6", "732k"), R("R7", "100k"),                 # FB divider: Vout=0.6*(1+R6/R7)=~5.0V
-        R("R14", "4.7k"), R("R15", "4.7k"),               # I2C pull-ups for the aux OLED (DNP with it)
-    ],
+    small=[],
     note=(15, 110, K.note_block(
-        "DISPLAY 5V RAIL + INTERFACE",
+        "UNIFIED DISPLAY-MODULE INTERFACE",
         "",
-        "5V BOOST  U5 TPS61022 (C915088, EN-gated)",
-        "  VIN<-VSYS (3.0-4.7V), L2 1uH (C5832342), Cin C8 10uF, Cout C9/C10 2x22uF",
-        "  FB R6/R7 divider -> +5V (Vref 0.6V);  EN<-MCU DISP_PWR_EN (low in sleep)",
-        "LEVEL SHIFT  U6 74HCT125 @ +5V (VIH=2V accepts 3V3)",
-        "  IN<-MCU CLK,DIN1,DIN2,DIN3 (3V3);  OUT-> J3 @ 5V logic;",
-        "  C11 100nF;  tie all 4 /OE low",
+        "J3 = 0.5mm 12-pos FFC to the display module (AFC01-S12FCA-00, C262661).",
+        "SAME pinout on BOTH display boards (7-seg + RGB matrix) -> interchangeable.",
+        "Technology-agnostic: power + SPI 'display intent' + reset/boot. The module",
+        "MCU (STM32G031 on 7-seg / RP2040 on the matrix) is the SPI slave + renders",
+        "locally; 5V + any level-shifting are generated ON the module now.",
         "",
-        "J3 = 0.5mm 12-pos FFC to display (AFC01-S12FCA-00, C262661).",
-        "Pinout MUST match calcumaker-display J1:",
+        K.pin_table([(1, "VSYS"), (2, "VSYS"), (3, "GND"), (4, "GND"), (5, "+3V3"),
+                     (6, "SPI_SCLK"), (7, "SPI_MOSI"), (8, "SPI_CS"), (9, "DISP_IRQ"),
+                     (10, "DISP_NRST"), (11, "DISP_BOOT"), (12, "GND")]),
         "",
-        K.pin_table([(1, "+5V"), (2, "+5V"), (3, "GND"), (4, "CLK"), (5, "DIN1"),
-                     (6, "DIN2"), (7, "DIN3"), (8, "GND"), (9, "+3V3"), (10, "SDA"),
-                     (11, "SCL"), (12, "GND")]),
+        "U575: SPI1 SCLK/MOSI/CS + DISP_IRQ (EXTI) + DISP_NRST/DISP_BOOT (reflash",
+        "the module MCU). +3V3 from the MCU rail; VSYS from the PSU load-share.",
         "",
-        "+5V/GND doubled for LED current (a 0.5mm FFC conductor is ~0.4A).",
-        "Pins 9-11 = the DNP aux OLED I2C.",
+        "J7 = 2-pin JST-PH VSYS outlet -> the RGB-matrix module's LED inlet (J2):",
+        "the matrix pulls amps for 2304 LEDs, so its LED current takes this direct",
+        "lead, NOT the signal FFC (the 7-seg module boosts from VSYS on the FFC).",
         "CABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).",
-        "See DESIGN.md Power Tree / Board Partition.")))
+        "See DESIGN.md Unified display-module interface / Power Tree.")))
 
 # NOTE: the Keypad (Cherry MX matrix) and Annunciator-LED sheets moved to the
 # separate, stacked **calcumaker-keyboard** board (2026-07-05 split). They reach

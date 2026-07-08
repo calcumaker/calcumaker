@@ -213,18 +213,16 @@ display serial bus** (a handful of signals) cross that connector — instead of
 dozens of segment/digit lines — which is what **simplifies the display wiring**.
 
 - **Display interconnect:** a **0.5 mm 12-conductor FFC** — connector
-  **AFC01-S12FCA-00** (LCSC C262661) on both `calcumaker-mcu:J3` and
-  `calcumaker-display:J1`; the flat-flex **cable is a non-assembled DigiKey
-  accessory** — **GCT FFC05-TIN `05-12-A-<length>-A-4-06-4-T`** (12-position,
-  0.5 mm; **length + contact orientation set at layout**). Pinout `1=+5V, 2=+5V,
-  3=GND, 4=CLK(shared), 5=DIN1, 6=DIN2,
-  7=DIN3, 8=GND, 9=+3V3, 10=SDA, 11=SCL, 12=GND` — the TM1640 driver uses a
-  **2-wire** bus (shared clock + one data line per row driver, not SPI); pins
-  9–11 feed the **DNP-optional aux OLED** (3V3 I²C, unused when unpopulated).
-  **+5V and GND are doubled/tripled** because a 0.5 mm FFC conductor is only
-  ~0.4 A and the 3 multiplexed TM1640s peak ~0.3–0.5 A on +5V (less with
-  brightness capping). `calcumaker-mcu:J3` ↔ `calcumaker-display:J1` must match;
-  verify the FFC contact orientation (top/bottom, same/opposite-end) at layout.
+  **AFC01-S12FCA-00** (LCSC C262661) on both `calcumaker-mcu:J3` and every display
+  board's `J1`; the flat-flex **cable is a non-assembled DigiKey accessory** —
+  **GCT FFC05-TIN `05-12-A-<length>-A-4-06-4-T`**. It is now a **unified,
+  technology-agnostic SPI "display-module" bus** (see the next section), pinout
+  `1=VSYS, 2=VSYS, 3=GND, 4=GND, 5=+3V3, 6=SPI_SCLK, 7=SPI_MOSI, 8=SPI_CS,
+  9=DISP_IRQ, 10=DISP_NRST, 11=DISP_BOOT, 12=GND` — **identical on both the 7-seg
+  and RGB-matrix display boards, so they are interchangeable.** `mcu:J3` ↔
+  `<display>:J1` must match; verify FFC contact orientation at layout. LED current
+  for the RGB matrix does **not** cross this FFC — it takes a dedicated 2-pin VSYS
+  lead (`mcu:J7` → matrix `J2`).
 
 ### Aux display: optional 128×32 OLED (the "DNP-optional aux" pattern)
 
@@ -302,6 +300,38 @@ mapped FJ5161AH to the **4-digit** `Display_Character:CC56-12EWA` /
 came from; the real single-digit part has none. The display board **generates,
 passes the structure check, and is fully wired** (ERC clean apart from the
 expected connector-fed `power_pin_not_driven` on +5V/GND). See `hardware/PARTS.md`.
+
+### Unified display-module interface (SPI; two interchangeable modules)
+
+The display is a **swappable module**. The MCU board exposes ONE technology-
+agnostic connector (`J3`, the 0.5 mm 12-pin FFC above) and speaks ONE protocol, so
+it neither knows nor cares which display is attached. Each display board carries
+its **own MCU** that receives semantic *display intent* over **SPI** and renders it
+locally — mirroring the keyboard's "own-STM32G0-over-a-serial-link" pattern.
+
+Two modules exist today, both on the identical `J1` connector/pinout:
+
+- **`calcumaker-display` (7-seg):** an **STM32G031** (SPI slave) drives the 3
+  TM1640s locally; it makes its own 5 V (TPS61022 boost) and level-shifts
+  CLK+DIN1/2/3 3V3→5V (74HCT125) **on the module** — which is why those parts left
+  the MCU board. Powered by VSYS/+3V3 from the FFC.
+- **`calcumaker-matrix` (RGB dot-matrix):** an **RP2040** (PIO = the ideal WS2812
+  engine) drives **96×24 = 2304× 1 mm** addressable RGB (XL-1010RGBC-2812B-S) in 3
+  chains, built as a **nested multi-channel** design — an 8×8 `led_cluster` ×12 →
+  `led_row` (768 px, one chain) ×3 → board. LED current (amps) comes on a
+  **dedicated VSYS lead** (mcu `J7` → matrix `J2`), never the FFC. It also delivers
+  the full alphanumerics / scrolling / color the 7-seg can't (so the 14-seg idea
+  was dropped — genuine single-digit 14-seg is poorly stocked on LCSC and the
+  matrix covers that need). 4-layer board at ~1.5 mm pitch; firmware caps brightness.
+
+**The SPI "display intent" contract** (firmware, deferred): the U575 is SPI master
+and writes a compact frame — the `App` display rows (text + dp/marker attributes),
+annunciator/flag/mode state, and aux-OLED content. Each module MCU decodes it and
+renders natively (7-seg glyphs via `core::seg7`; a pixel framebuffer + font on the
+RP2040), keeping ONE glyph source-of-truth. `DISP_IRQ` = module→MCU ready/attention;
+`DISP_NRST`/`DISP_BOOT` let the U575 reflash the module MCU (STM32 NRST/BOOT0;
+RP2040 RUN/BOOTSEL). Any future display is a new module — no MCU-board change. See
+`PARTS.md` for the per-board BOMs.
 
 ### Keypad: full-size Cherry MX, wide HP-16C-style layout
 
@@ -603,7 +633,7 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Clock | `clock.kicad_sch` | LSE 32.768 kHz crystal (Y1) + load caps (RTC) |
 | Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
-| DisplayIF | `display_if.kicad_sch` | EN-gated 5V boost (TPS61022) + 74HCT125 level shifter + **J3 (0.5 mm FFC)** → display |
+| DisplayIF | `display_if.kicad_sch` | Unified SPI display-module connector **J3** (0.5 mm FFC) + **J7** VSYS outlet → display module (5V + shifting now live on the module) |
 | KeyboardIF | `keyboard_if.kicad_sch` | Keyboard link, **populate one**: DF40 2×6 stack (J5, DF40B-12DS) **or** 16-pin FFC cable (J6, AFC01-S16FCA-00) — I²C+UART+**VSYS** |
 | QSPIFlash | `qspi_flash.kicad_sch` | 4 MB quad-SPI NOR (U7, W25Q32JVSSIQ) on OCTOSPI1 + CS# pull-up (R9) + decoupling (C26) |
 
@@ -629,9 +659,9 @@ Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`
 
 | Sheet | File | Contents |
 |-------|------|----------|
-| Root | `calcumaker-display.kicad_sch` | Row1/Row2/Row3 + Interconnect + Aux sheet symbols; per-row DIN1/2/3 routing |
+| Root | `calcumaker-display.kicad_sch` | Row1/Row2/Row3 + Interconnect + Aux + **DispMCU** (STM32G031) + **DispPower** (5V boost + shifter) sheet symbols |
 | Row1/2/3 | `display_row.kicad_sch` (reused ×3) | **multi-channel** — 1 TM1640 + 16 single-digit FJ5161AH, fully wired (shared SEG bus + GRID1–16) |
-| Interconnect | `interconnect.kicad_sch` | J1 ← MCU board (pinout matches mcu J3) |
+| Interconnect | `interconnect.kicad_sch` | J1 ← MCU board (unified SPI; pinout matches mcu J3 + matrix J1) |
 | AuxDisplay | `aux.kicad_sch` | DNP-optional SSD1306 OLED socket (J2) |
 
 ---
@@ -779,7 +809,7 @@ per-board BOM source-of-truth is **`hardware/PARTS.md`**.
 | QSPI flash (mcu) | **W25Q32JVSSIQ** 4MB (32Mbit) quad-SPI NOR (SOIC-8) on OCTOSPI1 | ✅ LCSC C179173, ~$0.30 — XIP constants + state/program storage |
 | Display driver (display) ×3 | **TM1640** (16-dig CC, 2-wire) | ✅ LCSC C5337152, ~$0.12 — 1/row |
 | 7-seg digits (display) ×48 | **FJ5161AH** 0.56" **single-digit** CC (**THT**) | ✅ LCSC C8093, ~$0.10 — **16/row** (one digit each) |
-| Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (MCU J3 ↔ display J1) | ✅ LCSC C262661; +5V/GND doubled; **cable = DigiKey accessory** |
+| Display interconnect | **AFC01-S12FCA-00** 0.5mm 12P FFC (mcu J3 ↔ any display J1) | ✅ C262661; **unified SPI** — the 7-seg + RGB-matrix modules are interchangeable; cable = DigiKey accessory |
 | Aux display | **0.91″ SSD1306 128×32 I2C OLED module** on a 1×4 socket (PZ254V-11-04P, C2691448) | ✅ DNP-optional; display board `AuxDisplay` sheet |
 | Keyboard scanner MCU | **STM32G031K8U6** (UFQFPN-32) on the keyboard board | ✅ LCSC C432207, ~$0.60 — scans matrix + drives LEDs + I²C/UART to U575 |
 | Keyboard link — stack option ×2 | **Hirose DF40 0.4mm 2×6 (12-pin)** 1.5mm: DF40B-12DS (mcu J5) + DF40C-12DP (kbd J1) | ✅ LCSC C3641147 / C6224952; compact rigid stack; DNP if using the FFC |

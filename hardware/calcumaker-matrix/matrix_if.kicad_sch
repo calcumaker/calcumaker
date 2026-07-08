@@ -2,12 +2,12 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "ca1c0000-0000-4000-8000-0000000d1520")
+	(uuid "ca1c0000-0000-4000-8000-0000000d3220")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — Display — MCU board interconnect (0.5mm FFC)")
-		(date "2026-07-04")
-		(rev "0.2")
+		(title "Calcumaker 16 — RGB Matrix — Unified SPI display-module connector (0.5mm FFC)")
+		(date "2026-07-07")
+		(rev "0.1")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
@@ -459,423 +459,206 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "Device:C"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.254)
-		)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "C"
-			(at 0.635 2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "C"
-			(at 0.635 -2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 0.9652 -3.81 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "cap capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "C_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "C_0_1"
-			(polyline
-				(pts
-					(xy -2.032 0.762) (xy 2.032 0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy -2.032 -0.762) (xy 2.032 -0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "C_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x12")
-		(at 71.1200 71.1200 0)
+		(at 71.1200 76.2000 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e1f9d59d-1bee-4439-8716-edf824905a88")
+		(uuid "02802760-c963-48bf-8b68-5099d3345af3")
 		(property "Reference" "J1"
-			(at 74.9300 68.5800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "TO MCU (unified SPI FFC)"
 			(at 74.9300 73.6600 0)
 			(effects (font (size 1.27 1.27)) (justify left))
 		)
+		(property "Value" "TO MCU (unified SPI FFC)"
+			(at 74.9300 78.7400 0)
+			(effects (font (size 1.27 1.27)) (justify left))
+		)
 		(property "Footprint" "Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal"
-			(at 71.1200 71.1200 0)
+			(at 71.1200 76.2000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Datasheet" "~"
-			(at 71.1200 71.1200 0)
+			(at 71.1200 76.2000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "LCSC" "C262661"
-			(at 71.1200 71.1200 0)
+			(at 71.1200 76.2000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "MPN" "AFC01-S12FCA-00"
-			(at 71.1200 71.1200 0)
+			(at 71.1200 76.2000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
 		(property "Manufacturer" "JUSHUO"
-			(at 71.1200 71.1200 0)
+			(at 71.1200 76.2000 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "53e5e3fe-5ea0-40b5-8396-50958e960cb7"))
-		(pin "2" (uuid "85591c70-46eb-4e51-b713-a335d33c6ada"))
-		(pin "3" (uuid "d348702d-1ea0-4a12-925f-a66239eff2d8"))
-		(pin "4" (uuid "238a1de1-638e-4e35-b94c-3cc6d21531bc"))
-		(pin "5" (uuid "f23f233f-f7a4-4064-803d-c5031bc19717"))
-		(pin "6" (uuid "b1f3fd0f-77c1-4740-af80-41d1dab6eb67"))
-		(pin "7" (uuid "df8ad01b-c6da-4b75-a1c9-1a319fed3a94"))
-		(pin "8" (uuid "1c65aecc-374b-40f0-ae82-4fd4ed184ec6"))
-		(pin "9" (uuid "9048138e-8104-40e3-9a52-93127e17ec6c"))
-		(pin "10" (uuid "5b937dae-dc16-475e-ba0b-b2d2f4aec02f"))
-		(pin "11" (uuid "958ed661-1efd-4e50-86be-830adb84a6e7"))
-		(pin "12" (uuid "418e5e66-7aed-437e-b5b1-1616a9767d06"))
+		(pin "1" (uuid "353d86a6-8528-454c-bbd6-1f76c66f65a7"))
+		(pin "2" (uuid "f8c655a3-56f2-4ffa-889f-38267d979db5"))
+		(pin "3" (uuid "0ca761a6-67ce-469d-b80c-eff4337dccad"))
+		(pin "4" (uuid "9cc801b7-eb19-4885-8e92-4f1f2d599c19"))
+		(pin "5" (uuid "57e65f2a-8f4d-456d-9e08-f1efe642492c"))
+		(pin "6" (uuid "6f339676-84dd-4b9c-83a6-a9d62a87fcea"))
+		(pin "7" (uuid "8a70652b-2a52-4938-9cb6-fe57918d2259"))
+		(pin "8" (uuid "7c527a99-df57-4616-b3c6-b57c1e979c17"))
+		(pin "9" (uuid "ee782d5b-2670-46ec-a8a1-ab6e3500b7ac"))
+		(pin "10" (uuid "f763c72e-8b1c-470d-a8f4-e6e296a588d3"))
+		(pin "11" (uuid "83ed1085-2b6a-4505-b247-b36e0a1d22c1"))
+		(pin "12" (uuid "568fcfab-cf4c-481a-b019-99e7ac84de3f"))
 		(instances
-			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/ca1c0000-0000-4000-8000-0000000d1520"
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3220"
 					(reference "J1")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(symbol
-		(lib_id "Device:C")
-		(at 121.9200 71.1200 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5ababb03-ee52-41b7-ab38-8b91934eb9cd")
-		(property "Reference" "C7"
-			(at 125.7300 68.5800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Value" "10uF"
-			(at 125.7300 73.6600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 121.9200 71.1200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "Datasheet" "~"
-			(at 121.9200 71.1200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(property "LCSC" "C15850"
-			(at 121.9200 71.1200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
-		)
-		(pin "1" (uuid "51ef5da5-ba22-4243-8a89-90d44df6ba0e"))
-		(pin "2" (uuid "edc87960-e998-4031-9cb8-a134c589d60c"))
-		(instances
-			(project "calcumaker-display"
-				(path "/ca1c0000-0000-4000-8000-0000000d1501/ca1c0000-0000-4000-8000-0000000d1520"
-					(reference "C7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire (pts (xy 66.0400 58.4200) (xy 63.5000 58.4200))
-		(stroke (width 0) (type default))
-		(uuid "c5a3c5f9-79d9-4e04-a19c-e735175940f4")
-	)
-	(global_label "VSYS"
-		(shape input)
-		(at 63.5000 58.4200 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "c2a0aa74-e3ad-4420-9897-3f04ab01882c")
-	)
-	(wire (pts (xy 66.0400 60.9600) (xy 63.5000 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "72e83d91-4922-4905-bed1-bd9e314cad93")
-	)
-	(global_label "VSYS"
-		(shape input)
-		(at 63.5000 60.9600 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "ca80e9a3-1967-4f6f-9fcf-50fb3dbd94c8")
-	)
 	(wire (pts (xy 66.0400 63.5000) (xy 63.5000 63.5000))
 		(stroke (width 0) (type default))
-		(uuid "a8b5c514-b03b-4670-afc8-aa18aa18b5eb")
+		(uuid "e7bd893c-60fc-4469-94be-ae7ecd13a81c")
 	)
-	(global_label "GND"
+	(global_label "VSYS"
 		(shape input)
 		(at 63.5000 63.5000 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "5a87feb5-00b2-47f2-a076-27454ab59aa9")
+		(uuid "26e31762-453d-478e-9365-21551b8cf6af")
 	)
 	(wire (pts (xy 66.0400 66.0400) (xy 63.5000 66.0400))
 		(stroke (width 0) (type default))
-		(uuid "118ef52a-8acc-48c4-ba1f-a5c5eea24935")
+		(uuid "4d89fb04-abce-4df9-b466-85b51fe4c7b6")
 	)
-	(global_label "GND"
+	(global_label "VSYS"
 		(shape input)
 		(at 63.5000 66.0400 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "c89130bc-82f4-41bb-b11b-8702f8ef8501")
+		(uuid "a9eb1f54-fd1f-4c13-a938-511c93d6d8a2")
 	)
 	(wire (pts (xy 66.0400 68.5800) (xy 63.5000 68.5800))
 		(stroke (width 0) (type default))
-		(uuid "96a80d35-050b-4312-9bdb-20ad1355afa8")
+		(uuid "8e0043d0-9cca-4e48-961d-8def29dd80d9")
 	)
-	(global_label "+3V3"
+	(global_label "GND"
 		(shape input)
 		(at 63.5000 68.5800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "e9fa5311-b840-4e8b-87a4-2ccc6f852f70")
+		(uuid "5a176f70-2f87-496a-8fc2-93374837694d")
 	)
 	(wire (pts (xy 66.0400 71.1200) (xy 63.5000 71.1200))
 		(stroke (width 0) (type default))
-		(uuid "bce6efbd-a071-491d-bcf9-4b41021d7672")
+		(uuid "bff20e3a-cb68-4318-be5b-aecfc67b64dd")
 	)
-	(global_label "SPI_SCLK"
+	(global_label "GND"
 		(shape input)
 		(at 63.5000 71.1200 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "918f08f8-edeb-48fa-84c7-569b9149c9fb")
+		(uuid "844a5855-36df-483c-adbf-2e40d43f67b8")
 	)
 	(wire (pts (xy 66.0400 73.6600) (xy 63.5000 73.6600))
 		(stroke (width 0) (type default))
-		(uuid "b0d82ece-444c-4387-9fec-7b2dba128185")
+		(uuid "0ccdcb5c-7259-4405-83de-9652323afcac")
 	)
-	(global_label "SPI_MOSI"
+	(global_label "+3V3"
 		(shape input)
 		(at 63.5000 73.6600 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "2c5a13bd-8659-45dd-9f90-d15dfb7828cc")
+		(uuid "9f7f2627-975c-435a-926c-99639a5ea0b3")
 	)
 	(wire (pts (xy 66.0400 76.2000) (xy 63.5000 76.2000))
 		(stroke (width 0) (type default))
-		(uuid "edb6cb28-0ae7-4d06-b61e-e5605153cbb4")
+		(uuid "890234f3-458a-43e1-bdb0-6edef0cc6731")
 	)
-	(global_label "SPI_CS"
+	(global_label "SPI_SCLK"
 		(shape input)
 		(at 63.5000 76.2000 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "63df1668-b93a-4451-9514-967f0c4d8e4d")
+		(uuid "cfa42124-0776-401a-a220-b7c9a01c24fe")
 	)
 	(wire (pts (xy 66.0400 78.7400) (xy 63.5000 78.7400))
 		(stroke (width 0) (type default))
-		(uuid "d197d0b7-06a1-4036-871c-06fde73dfaec")
+		(uuid "a17bfe69-d36b-4325-996b-0618b77ece9f")
 	)
-	(global_label "DISP_IRQ"
+	(global_label "SPI_MOSI"
 		(shape input)
 		(at 63.5000 78.7400 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "f0a77768-4a59-458f-b81f-0f6e73e47b33")
+		(uuid "57951b8f-829e-4758-8eab-037f33621a19")
 	)
 	(wire (pts (xy 66.0400 81.2800) (xy 63.5000 81.2800))
 		(stroke (width 0) (type default))
-		(uuid "ecb74c1e-9a62-499b-856c-3da22205fa44")
+		(uuid "6d46fd97-ec87-4262-897b-eb1d21520153")
 	)
-	(global_label "DISP_NRST"
+	(global_label "SPI_CS"
 		(shape input)
 		(at 63.5000 81.2800 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "d5abc8ba-a1bf-4ac0-8d3e-987a8bd85793")
+		(uuid "44cc85c0-7374-4591-ad8f-576fd5e7e931")
 	)
 	(wire (pts (xy 66.0400 83.8200) (xy 63.5000 83.8200))
 		(stroke (width 0) (type default))
-		(uuid "1db19262-5ade-4583-b127-e7d982b03c59")
+		(uuid "4d49a426-a57d-4f2b-aa1e-183253048bcb")
 	)
-	(global_label "DISP_BOOT"
+	(global_label "DISP_IRQ"
 		(shape input)
 		(at 63.5000 83.8200 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "71914298-2f13-46be-a19b-8b3b3c7cbe00")
+		(uuid "8b91c48d-39da-4663-aebd-5f0d3ec1a894")
 	)
 	(wire (pts (xy 66.0400 86.3600) (xy 63.5000 86.3600))
 		(stroke (width 0) (type default))
-		(uuid "9931681a-bfb0-45dc-9dba-9b469a1da041")
+		(uuid "6104dd3f-ee41-4d74-a73b-49ccd230e69a")
 	)
-	(global_label "GND"
+	(global_label "DISP_NRST"
 		(shape input)
 		(at 63.5000 86.3600 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "0b99fc74-e27b-4c2f-85da-68717e18196e")
+		(uuid "a120da04-b8d6-4138-987b-99bcbd434357")
 	)
-	(wire (pts (xy 121.9200 67.3100) (xy 121.9200 64.7700))
+	(wire (pts (xy 66.0400 88.9000) (xy 63.5000 88.9000))
 		(stroke (width 0) (type default))
-		(uuid "b2a9b18a-e8fa-43ee-9b54-96d5146706d0")
+		(uuid "7618408e-4d5e-4194-93a9-644e80b2423b")
 	)
-	(global_label "VSYS"
+	(global_label "DISP_BOOT"
 		(shape input)
-		(at 121.9200 64.7700 270)
+		(at 63.5000 88.9000 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "2b645b62-59f1-4b00-9018-22ad9b05c759")
+		(uuid "a1415f23-ab29-49f1-a2c4-da372ed523c5")
 	)
-	(wire (pts (xy 121.9200 74.9300) (xy 121.9200 77.4700))
+	(wire (pts (xy 66.0400 91.4400) (xy 63.5000 91.4400))
 		(stroke (width 0) (type default))
-		(uuid "b5de34f4-7452-46e3-97af-6f1cde02f996")
+		(uuid "ef80549c-9a16-4285-9340-4b4c422fc373")
 	)
 	(global_label "GND"
 		(shape input)
-		(at 121.9200 77.4700 90)
+		(at 63.5000 91.4400 180)
 		(fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "091c6a29-ea1e-484c-9d1f-199356d00fe9")
+		(uuid "7187c310-1b07-41e8-b45a-b120b02170f6")
 	)
-	(text "UNIFIED DISPLAY-MODULE CONNECTOR  -  J1  AFC01-S12FCA-00  (LCSC C262661)\n0.5mm 12-pos FFC to the MCU board. SAME connector + pinout as the RGB-\nmatrix board's J1 and mcu J3 -> the display modules are INTERCHANGEABLE.\n\n  PIN  SIGNAL                  PIN  SIGNAL              \n    1  VSYS                      7  SPI_MOSI            \n    2  VSYS                      8  SPI_CS              \n    3  GND                       9  DISP_IRQ            \n    4  GND                      10  DISP_NRST (G0 NRST) \n    5  +3V3                     11  DISP_BOOT (G0 BOOT0)\n    6  SPI_SCLK                 12  GND\n\nVSYS -> the local 5V boost (DispPower); +3V3 -> the module G0. SPI = the\nmain MCU writes display intent; the G0 renders to the 3 TM1640s. No I2C /\nno CLK/DIN on the FFC anymore (all local). DISP_IRQ = module ready.\nCABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD)."
+	(text "UNIFIED DISPLAY-MODULE CONNECTOR  -  J1  AFC01-S12FCA-00  (LCSC C262661)\n0.5mm 12-pos FFC to the MCU board. SAME connector + pinout as the 7-seg\nboard's J1 and mcu J3 -> the two display modules are INTERCHANGEABLE.\nTechnology-agnostic: power + SPI 'display intent' + reset/boot (no I2C,\nno display-specific lines). Distinct pinout from the old CLK/DIN display\nFFC and from the 16-pin keyboard link (can't cross-plug).\n\n  PIN  SIGNAL                        PIN  SIGNAL                    \n    1  VSYS                            7  SPI_MOSI                  \n    2  VSYS                            8  SPI_CS                    \n    3  GND                             9  DISP_IRQ                  \n    4  GND                            10  DISP_NRST (RP2040 RUN)    \n    5  +3V3                           11  DISP_BOOT (RP2040 BOOTSEL)\n    6  SPI_SCLK                       12  GND\n\nVSYS here powers module logic only (LED current uses the separate J2 inlet).\n+3V3 -> RP2040. SPI = main MCU writes display intent; DISP_IRQ = module\nready/attention. CABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T."
 		(exclude_from_sim no)
-		(at 20.00 120.00 0)
+		(at 20.00 130.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "3928f637-ab04-46f3-a285-3f23ad5ddfc1")
+		(uuid "3c1512e5-f04b-4e4f-bfa6-8528e9bcda32")
 	)
 	(sheet_instances
 		(path "/"
-			(page "6")
+			(page "5")
 		)
 	)
 	(embedded_fonts no)

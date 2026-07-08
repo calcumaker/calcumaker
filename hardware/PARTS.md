@@ -30,7 +30,9 @@ LCSC/MPN/Manufacturer are set as KiCad symbol fields when parts are placed, so
 | Level shifter | **SN74HCT125DR** (quad, VCC=5V, 3V3→5V) | **C352957** | SOIC-14 | ✅ ~$0.20; KiCad symbol = `74AHCT125` |
 | Battery conn | JST S2B-PH-K-S | C173752 | PH 2.0 | ✅ |
 | RTC xtal | Epson 32.768 kHz | C32346 | SMD 3215 2-pin | ✅ LSE (Clock sheet) + 2× 12pF load caps |
-| Display interconnect (J3) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ FFC to display; +5V/GND doubled for LED current (0.5mm ≈ 0.4A/cond). **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM; length TBD).** |
+| Display interconnect (J3) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ **Unified SPI module bus** — identical pinout on BOTH display boards (7-seg + RGB matrix) → **interchangeable**. Carries VSYS + 3V3 + SPI "display intent" + reset/boot (no CLK/DIN, no I2C). **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM).** |
+| Matrix LED-power outlet (J7) | JST **S2B-PH-K-S** 2-pin | **C173752** | PH 2.0 | ✅ VSYS lead → the RGB-matrix module's LED inlet (amps for 2304 LEDs, kept **off** the signal FFC). DNP for a 7-seg-only build. |
+| 5V boost / 74HCT125 shifter | — | — | — | ⬦ **MOVED to the 7-seg display board** (the unified FFC is now technology-agnostic); the module generates 5V + shifting locally. |
 | I2C pull-ups | 4.7k 0402 ×2 (R14/R15) | C25900 | 0402 | ✅ DNP — populate with the aux OLED |
 | Keyboard link — **stack** (J5) | **Hirose DF40B-12DS-0.4V** 2×6 0.4mm B2B | **C3641147** | `Connector_Hirose_DF40:…DF40B-12DS-0.4V_2x06` | ⬦ **populate for a stacked build** (else DNP); ~1.5mm; mates kbd J1 DF40C-12DP. (DF40C-12DS unstocked → DF40B; same 1.5mm — suffix sets height, not B/C) |
 | Keyboard link — **cable** (J6) | **AFC01-S16FCA-00** 16-pin 0.5mm FFC | **C262665** | `Connector_FFC-FPC:Hirose_FH12-16S-0.5SH_1x16` | ⬦ **populate for a cabled build** (else DNP) → MCU board mounts freely; 16-pin ≠ 12-pin display FFC; VSYS×2+GND×3; same 12 nets as J5 |
@@ -61,22 +63,62 @@ and talks to the U575 over I²C/UART (keyscanning is off the MCU board).*
 | MCU link — **stack** (J1) | **Hirose DF40C-12DP-0.4V** 2×6 0.4mm B2B | **C6224952** | `Connector_Hirose_DF40:…DF40C-12DP-0.4V_2x06` | ⬦ **populate for a stacked build** (else DNP); mates mcu J5 DF40B-12DS; ~1.5mm; pinout MUST match |
 | MCU link — **cable** (J3) | **AFC01-S16FCA-00** 16-pin 0.5mm FFC | **C262665** | `Connector_FFC-FPC:Hirose_FH12-16S-0.5SH_1x16` | ⬦ **populate for a cabled build** (else DNP) → to mcu J6; same 12 nets; the recommended default (frees the crowded keyboard bottom) |
 
-## calcumaker-display (7-seg stack + drivers + interconnect)
+## calcumaker-display (7-seg **smart module**: G0 + drivers + local 5V + unified SPI)
+
+*A self-contained display **module** — its own STM32G031 (U4) receives "display
+intent" over the unified SPI connector and renders it to the 3 TM1640s. Plugs into
+the same connector as, and is **interchangeable** with, the RGB-matrix module.*
 
 | Block | Part | LCSC | Pkg / footprint | Status |
 |-------|------|------|-----------------|--------|
+| **Module MCU (U4)** | **STM32G031K8U6** | **C432207** | UFQFPN-32 | ✅ SPI-slave frame receiver (same part as the keyboard scanner); drives the TM1640s locally |
 | Driver ×3 | TM1640 | C5337152 | SOP-28 | ✅ ~$0.12 — 1 chip = 1 row of 16 CC digits |
-| Digits ×48 | FJ5161AH (0.56" **single-digit**, **common-cathode**) | C8093 | **THROUGH-HOLE** | ✅ ~$0.10 — **16 per row** (single digit, NOT a 4-up module) |
-| Interconnect (J1) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ FFC ← MCU board (mcu J3); +5V/GND doubled for LED current. **Cable = GCT FFC05-TIN `05-12-A-<len>-A-4-06-4-T`, DigiKey (non-BOM; length TBD).** |
-| Aux OLED socket | PZ254V-11-04P (1×4 2.54mm, J2) | C2691448 | header THT | ✅ DNP — receives a 0.91″ SSD1306 128×32 I2C module (sourced separately, not in the JLC library) |
+| Digits ×48 | FJ5161AH (0.56" **single-digit**, **common-cathode**) | C8093 | **THROUGH-HOLE** | ✅ ~$0.10 — **16 per row** |
+| Local 5V boost (U5) | **TPS61022RWUR** | **C915088** | VQFN-7 | ✅ VSYS→5V (moved off the MCU board); FB R2 732k / R3 100k |
+| 5V boost inductor (L1) | FTC201610S1R0MBCA 1µH | **C5832342** | 2.0×1.6mm | ✅ |
+| Level shifter (U6) | **SN74HCT125DR** | **C352957** | SOIC-14 | ✅ G0 3V3 → 5V for CLK+DIN1/2/3 to the TM1640s |
+| Interconnect (J1) | **AFC01-S12FCA-00** 0.5mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ **Unified SPI** ← MCU board (mcu J3); identical pinout to the matrix J1. **Cable = GCT FFC05-TIN, DigiKey (non-BOM).** |
+| SWD (J3) | Tag-Connect TC2030-NL | — | pogo pad | ✅ program U4 |
+| Aux OLED socket (J2) | PZ254V-11-04P (1×4 2.54mm) | C2691448 | header THT | ✅ DNP — 0.91″ SSD1306 128×32, now driven **locally** by U4's I2C |
 
-**Topology:** 3 rows × 16 digits = **48 single digits**. Each row = 1× TM1640
-driving **16× FJ5161AH** over a 2-wire bus (shared **CLK/DISP_CLK** + per-row
-**DIN1/2/3**); segments a–g,dp = the shared **SEG1–8** bus, each digit's cathode
-= one of **GRID1–16**. The **top row (U3 / DS33–48) is optional** → builds as a
-2- or 3-row display. This repeats identically per row, so the schematic is a
-**KiCad multi-channel** design: one reusable `display_row.kicad_sch` instantiated
-3× (Row1→U1/DS1–16, Row2→U2/DS17–32, Row3→U3/DS33–48).
+**Topology:** 3 rows × 16 digits = **48 single digits**, driven by 3× TM1640
+(reusable `display_row.kicad_sch` ×3: Row1→U1/DS1–16, Row2→U2/DS17–32,
+Row3→U3/DS33–48; top row optional). The module **STM32G031 (U4)** is the SPI
+slave — it receives display intent from the U575 over the unified connector and
+bit-bangs the TM1640s locally (CLK+DIN1/2/3 level-shifted 3V3→5V by U6, 5V from
+the local U5 boost). So the driver protocol never crosses the FFC, which is why
+the connector is identical to the RGB-matrix module's and the two swap freely.
+
+## calcumaker-matrix (RGB dot-matrix **smart module**: RP2040 + 1 mm WS2812 + unified SPI)
+
+*The alternative display module — a full-color **96×24** addressable-RGB dot
+matrix. Its **RP2040** (PIO = ideal WS2812 engine) receives "display intent" over
+the same unified SPI connector and renders it. Interchangeable with the 7-seg
+module. Also delivers the full-alphanumeric / scrolling / color the 7-seg can't.*
+
+| Block | Part | LCSC | Pkg / footprint | Status |
+|-------|------|------|-----------------|--------|
+| **Pixels ×2304 (D1–D2304)** | **XL-1010RGBC-2812B-S** (1×1 mm addressable RGB, WS2812/SK6812, 3.5–5.5 V) | **C51900942** | `calcumaker:LED_XL1010RGBC_1.0x1.0mm` (authored) | ✅ ~$0.034 — 96×24 grid; symbol = stock `LED:SK6812` (overridden). **VERIFY 1010 land vs datasheet + get a JLC fine-placement quote (2304 parts).** |
+| **Module MCU (U1)** | **RP2040** | **C2040** | QFN-56 (stock KiCad sym + fp) | ✅ PIO drives 3 WS2812 chains; SPI slave; needs U2 flash; embassy-rp fw |
+| Boot flash (U2) | W25Q32JVSSIQ | **C179173** | SOIC-8 | ✅ RP2040 QSPI code flash (same part the MCU board stocks) |
+| USB ESD (U3) | USBLC6-2SC6 | C2687116 | SOT-23-6 | ✅ on the BOOTSEL USB-C |
+| Data shifter (U4) | **74LVC125** quad | **C460512** | SOIC-14 | ✅ 3V3 → VLED for the 3 chains (3 of 4 buffers) |
+| LED load switch | AO3401A (Q1) + 2N7002 (Q2) | C15127 / C8545 | SOT-23 | ✅ high-side VSYS→VLED gate; `LED_EN` off in sleep |
+| LED-power inlet (J2) | JST S2B-PH-K-S 2-pin | C173752 | PH 2.0 | ✅ VSYS from the MCU board (mcu **J7**) — LED amps, kept **off** the FFC |
+| Interconnect (J1) | **AFC01-S12FCA-00** 0.5 mm 12P FFC | **C262661** | `Hirose_FH12-12S-0.5SH` | ✅ **Unified SPI** ← MCU board (mcu J3); identical pinout to the 7-seg J1 |
+| USB-C prog (J4) | GCT USB4105 | C2927039 | 16P TopMnt | ✅ BOOTSEL/DFU (drag-drop UF2) |
+| Crystal (Y1) | 12 MHz | TBD | SMD 3225 2-pin | ⬦ pick LCSC at BOM |
+| BOOTSEL button (SW1) | tactile SMD | TBD | SMD | ⬦ pick LCSC at BOM |
+| Aux OLED socket (J3) | PZ254V-11-04P (1×4) | C2691448 | header THT | ✅ DNP; driven locally by U1's I2C |
+
+**Topology (nested multi-channel: cluster → row → board).** An 8×8 = 64-LED
+**cluster** (`led_cluster.kicad_sch`) is instantiated **12×** into a **row**
+(`led_row.kicad_sch` = 96×8 = 768 px = one WS2812 chain), and the row is
+instantiated **3×** at the root = **96×24 = 2304 px** (D1–D2304). Each stack row is
+one data chain off an RP2040 PIO line via the quad shifter. Pixels ≈ **$78** +
+placement; **4-layer** board (VLED + GND planes) at ~1.5 mm pitch. LED current
+takes the dedicated VSYS inlet (J2), **not** the signal FFC; firmware **must** cap
+total brightness. `-S` pixel = 3.5 V floor → gate/dim on a VBAT sense when low.
 
 ## Non-BOM accessories (ordered separately, not JLCPCB-assembled)
 
@@ -108,6 +150,15 @@ single-digit displays — more parts).
   ⚠ **The earlier `Display_Character:CC56-12EWA` / `CC56-12GWA` mapping was WRONG**
   — that's a **4-digit** symbol/footprint/3D, which is where the phantom "clock
   colon" came from. There is no colon on the real single-digit part.
+- **RGB-matrix pixel (XL-1010RGBC-2812B-S):** symbol = **stock `LED:SK6812`**
+  (value/fp/lcsc overridden — kschgen doesn't resolve `extends`); the 1×1 mm 4-pad
+  land is **authored** as `calcumaker:LED_XL1010RGBC_1.0x1.0mm` (pads 1=VSS 2=DIN
+  3=VDD 4=DOUT, matching the SK6812 symbol). *Verify the 1010 land + net-to-corner
+  mapping vs the XINGLIGHT datasheet before fab.*
+- **RP2040 + support (matrix):** all **stock** KiCad — `MCU_RaspberryPi:RP2040`
+  (QFN-56), `Memory_Flash:W25Q32JVSS`, `74xx:74LVC125`, `Transistor_FET:Q_PMOS/NMOS_GSD`,
+  `Power_Protection:USBLC6-2SC6`. So the only authored part on the matrix board is
+  the 1010 land above.
 - **Driver (TM1640):** not in KiCad — **authored** from the datasheet pinout in
   `lib/symbols/calcumaker.kicad_sym` (28-pin SOP-28: GRID12–16=1–5, VSS=6, DIN=7,
   SCLK=8, SEG1–8=9–16, VDD=17, GRID1–11=18–28), registered via `register_lib` in

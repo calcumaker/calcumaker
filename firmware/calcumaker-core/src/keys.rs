@@ -39,8 +39,10 @@ pub enum Key {
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
-    // complex (HP-42S): COMPLEX merges/splits re+im; CplxDisp toggles RECT/POLAR
-    Complex, CplxDisp,
+    // complex (HP-42S / 15C): COMPLEX merges/splits re+im; CplxDisp toggles
+    // RECT/POLAR; then the 15C's part ops — conjugate, argument, real/imag
+    // extraction, and Re<>Im swap.
+    Complex, CplxDisp, Conj, Arg, Re, Im, ReIm,
     // real display format (X = digit count; FmtAuto = %g-style)
     Fix, Sci, Eng, FmtAuto,
     // angle unit for circular trig (cycles RAD → DEG → GRAD)
@@ -173,15 +175,28 @@ pub static SCI: Keymap = Keymap {
     apply_defaults: defaults_sci,
 };
 
+// The 15C wears the scientific base + f-layer (with f+I COMPLEX and f+P R<>P),
+// but its **g-layer is the complex faceplate**: the part ops the 15C is known for
+// live on the top row over SIN/COS/TAN/LN/√ — g+SIN=Re, g+COS=Im, g+TAN=Re<>Im,
+// g+LN=CONJ, g+√=ARG. Stats stay on g-row 2, SETUP on g-CLx. This is what sets
+// the 15C apart from the plain SCI personality.
+pub const C15_LAYER_G: [[Key; COLS]; ROWS] = [
+    [Re,     Im,     ReIm, Conj, Arg,      Nop,  Nop,    Nop,  Nop,   Setup],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+];
+
 /// HP-15C "Advanced Scientific" — the classic complex-capable RPN, and the one
-/// that actually had complex (via flag 8). Shares the scientific key layout
-/// (incl. the f+I COMPLEX and f+P R<>P keys); complex results are ON by default.
+/// that actually had complex (via flag 8). Scientific base + f-layer, plus its
+/// own **complex g-layer** ([`C15_LAYER_G`]); complex results ON by default.
 /// Matrices / SOLVE / ∫ are future work.
 pub static C15: Keymap = Keymap {
     name: "15C",
     base: SCI_BASE,
     f: SCI_LAYER_F,
-    g: SCI_LAYER_G,
+    g: C15_LAYER_G,
     apply_defaults: defaults_15c,
 };
 

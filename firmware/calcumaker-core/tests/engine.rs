@@ -1980,3 +1980,13 @@ fn complex_trig_honors_angle_mode() {
     assert_eq!(run(256, &["deg", "1", "0", "complex", "asin"]), "90+0i");
     assert_eq!(run(256, &["grad", "1", "0", "complex", "asin"]), "100+0i");
 }
+
+#[test]
+fn complex_part_ops() {
+    assert_eq!(run(256, &["3", "4", "complex", "conj"]), "3-4i");
+    assert_eq!(run(256, &["3", "4", "complex", "re"]), "3");
+    assert_eq!(run(256, &["3", "4", "complex", "im"]), "4");
+    assert_eq!(run(256, &["3", "4", "complex", "reim"]), "4+3i"); // Re<>Im
+    assert_eq!(run(256, &["deg", "1", "1", "complex", "arg"]), "45"); // phase
+    assert_eq!(run(256, &["float", "5", "reim"]), "0+5i"); // real -> pure imaginary
+}

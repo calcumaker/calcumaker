@@ -767,6 +767,11 @@ impl Calc {
                 self.polar = !self.polar; // toggle rect <-> polar (for a key)
                 Ok(())
             }
+            "conj" => self.conj_op(),
+            "arg" => self.arg_op(),
+            "re" => self.re_op(),
+            "im" => self.im_op(),
+            "reim" => self.reim_op(),
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())
@@ -1212,6 +1217,68 @@ impl Calc {
             self.stack
                 .push(Value::Complex(Complex::from_reals(self.prec, &re, &im)));
         }
+        Ok(())
+    }
+
+    /// Radians → the current angle unit (for `arg` and complex θ readouts).
+    fn angle_from_rad(&self, rad: Float) -> Float {
+        if self.angle_mode == AngleMode::Rad {
+            return rad;
+        }
+        let half = self.angle_mode.half_turn();
+        rad * Float::from_i64(self.prec, half) / Float::pi(self.prec)
+    }
+
+    /// Complex conjugate (a+bi → a−bi); a real/integer is unchanged.
+    fn conj_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Complex(z) => Value::Complex(z.conj()),
+            other => other,
+        };
+        self.stack.push(v);
+        Ok(())
+    }
+
+    /// Argument / phase of X (atan2(im, re)) in the current angle unit. A real is
+    /// 0 (≥0) or ±π (a half turn, <0).
+    fn arg_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let rad = self.pop_x().to_complex(self.prec).arg(self.prec);
+        self.stack.push(Value::Real(self.angle_from_rad(rad)));
+        Ok(())
+    }
+
+    /// Real part of X (a complex → its real part; a real/integer → itself).
+    fn re_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Complex(z) => Value::Real(z.real(self.prec)),
+            other => other,
+        };
+        self.stack.push(v);
+        Ok(())
+    }
+
+    /// Imaginary part of X as a real (a real/integer → 0).
+    fn im_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let v = match self.pop_x() {
+            Value::Complex(z) => Value::Real(z.imag(self.prec)),
+            _ => Value::Real(Float::from_i64(self.prec, 0)),
+        };
+        self.stack.push(v);
+        Ok(())
+    }
+
+    /// HP-15C Re≷Im — swap the real and imaginary parts of X. A real `a` becomes
+    /// the pure imaginary `a·i` (activates complex, like the 15C).
+    fn reim_op(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let z = self.pop_x().to_complex(self.prec);
+        let (re, im) = (z.real(self.prec), z.imag(self.prec));
+        self.stack
+            .push(Value::Complex(Complex::from_reals(self.prec, &im, &re)));
         Ok(())
     }
 

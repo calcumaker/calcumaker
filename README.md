@@ -4,12 +4,16 @@
 
 A wide-format, full-size **Cherry MX** **programmer's / technical RPN
 calculator**. It carries the HP-16C tradition — hexadecimal / octal / binary /
-decimal entry, bitwise operators, and selectable word sizes — and extends it
-with **arbitrary-precision** math: **GNU MP** for big integers and **MPFR** for
-correctly-rounded floating-point and transcendental functions. The top of the
-RPN stack is shown live on a **multi-row 7-segment display** (2–3 rows) that
-mounts on its **own angled PCB**. Battery + USB-C powered; a low-power STM32
-keeps it alive between keystrokes.
+decimal entry, bitwise operators, and selectable word sizes — and extends it far
+past what any single Voyager could do, with **arbitrary-precision** math: **GNU
+MP** for big integers, **MPFR** for correctly-rounded floating-point and
+transcendentals, and **MPC** for complex numbers. The 16C is the grounding
+default (a faithful programmer's machine — `√-1` is `Error 0`, just like the
+real one); switchable **personalities** (16C / 15C / SCI / FIN) and a SETUP menu
+turn on the scientific and complex features on top. The top of the RPN stack is
+shown live on a **multi-row 7-segment display** (2–3 rows) that mounts on its
+**own angled PCB**. Battery + USB-C powered; a low-power STM32 keeps it alive
+between keystrokes.
 
 > Real keyswitches, a real stack you can see, and answers that are correct to as
 > many digits as you ask for.
@@ -23,9 +27,19 @@ keeps it alive between keystrokes.
   - **GNU MP (libgmp)** — unbounded integers (huge hex/decimal, exact bitwise).
   - **MPFR (libmpfr)** — correctly-rounded floating point + transcendentals
     (sin/cos/exp/ln/…) at user-selectable precision.
+  - **MPC (libmpc)** — arbitrary-precision **complex numbers** (HP-42S/15C model:
+    one stack object, rectangular `a+bi` or polar `r∠θ`, complex-aware functions,
+    CPXRES auto-promotion so `√-4 → 2i`). Off on the 16C, on for the scientific
+    personalities and toggleable in SETUP.
   - Packaged as the **`calcumaker-core`** library (`no_std`) over our own
     **`gmp-mpfr-nostd`** FFI bindings — host-testable and runnable today
     (`cargo test`, `cargo run --example repl`).
+- **Switchable personalities:** **16C** (programmer, the grounding default),
+  **15C** (advanced scientific — the one that natively had complex), **SCI**
+  (general scientific), **FIN** (HP-12C-style financial) — one keyboard, chosen
+  in SETUP, each just a keymap + defaults over the same superset engine.
+- **Field updates over USB-C:** flash new firmware with `dfu-util` via the STM32
+  ROM DFU bootloader (`make dfu`) — no ST-Link needed; BOOT0 is the backup.
 - **Host emulator:** `calcumaker-emu` runs the whole device UI — keymap, f/g
   shifts, digit entry, the multi-row 7-seg display rendered from the real
   TM1640 segment bytes — on a standard terminal (`cargo run`).

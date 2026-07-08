@@ -285,6 +285,9 @@ pub struct Calc {
     /// xorshift64 PRNG state for `ran` (deterministic; `seed` re-seeds —
     /// firmware seeds from hardware entropy at boot). Never zero.
     rng: u64,
+    /// The user function for SOLVE: an RPN token list with `x` as the variable
+    /// (set via `fn:tok,tok,…`). Evaluated on a scratch engine at each step.
+    func: Option<Vec<String>>,
 }
 
 // ---- word-size helpers (shared with the formatter) --------------------------
@@ -406,6 +409,7 @@ impl Calc {
             tvm: None,
             cfs: Vec::new(),
             rng: 0x9E37_79B9_7F4A_7C15,
+            func: None,
         }
     }
 
@@ -634,6 +638,11 @@ impl Calc {
         if t.is_empty() {
             return Ok(());
         }
+        // SOLVE function definition: fn:tok,tok,… — an RPN expression in `x`.
+        if let Some(spec) = t.strip_prefix("fn:") {
+            self.func = Some(spec.split(',').map(|s| s.trim().to_string()).collect());
+            return Ok(());
+        }
         // Matrix literal: [a,b;c,d] (rows by ';', elements by ',').
         if t.starts_with('[') {
             return match self.try_parse_matrix(t) {
@@ -807,6 +816,7 @@ impl Calc {
             "transpose" => self.transpose_op(),
             "minv" => self.minv_op(),
             "matsolve" => self.matsolve_op(),
+            "solve" => self.solve_op(),
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())
@@ -1349,6 +1359,76 @@ impl Calc {
         let _ = self.stack.pop();
         self.stack.push(Value::Matrix(z));
         Ok(())
+    }
+
+    /// Evaluate the stored SOLVE function at `x` on a *scratch* engine — so the
+    /// full command set is available inside `f(x)`. Returns the resulting X as a
+    /// real, or `None` if the expression errors or yields a non-real.
+    fn eval_func(&self, tokens: &[String], x: &Float) -> Option<Float> {
+        let mut tmp = Calc::new(self.prec);
+        tmp.angle_mode = self.angle_mode;
+        tmp.cpxres = self.cpxres;
+        tmp.num_mode = NumMode::Real; // f(x) lives in the real/float world
+        for tok in tokens {
+            if tok.eq_ignore_ascii_case("x") {
+                tmp.push_entry(Value::Real(Float::with_prec(self.prec, x)));
+            } else {
+                tmp.input(tok).ok()?;
+            }
+        }
+        let v = tmp.stack.last()?;
+        if v.is_complex() || v.is_matrix() {
+            return None;
+        }
+        Some(v.to_real(self.prec))
+    }
+
+    /// Secant root-finder for the stored function, from two initial guesses.
+    /// Converges when a step rounds away at the working precision.
+    fn find_root(&self, tokens: &[String], mut a: Float, mut b: Float) -> Option<Float> {
+        let mut fa = self.eval_func(tokens, &a)?;
+        let mut fb = self.eval_func(tokens, &b)?;
+        for _ in 0..200 {
+            if fb.is_zero() {
+                return Some(b);
+            }
+            let denom = fb.clone() - fa.clone();
+            if denom.is_zero() {
+                break; // flat secant — give up, return best
+            }
+            let step = fb.clone() * (b.clone() - a.clone()) / denom;
+            a = b.clone();
+            fa = fb.clone();
+            b = b.clone() - step.clone();
+            fb = self.eval_func(tokens, &b)?;
+            if step.is_zero() {
+                break; // converged at working precision
+            }
+        }
+        Some(b)
+    }
+
+    /// HP-15C SOLVE: find a root of the stored `fn:` function between the two
+    /// guesses in Y and X. Guesses restored if it can't be evaluated.
+    fn solve_op(&mut self) -> Result<(), CalcError> {
+        let tokens = self
+            .func
+            .clone()
+            .ok_or(e_domain("no function — set one with fn:tok,tok,…"))?;
+        self.need(2)?;
+        let b = self.pop_x().to_real(self.prec);
+        let a = self.stack.pop().expect("validated").to_real(self.prec);
+        match self.find_root(&tokens, a.clone(), b.clone()) {
+            Some(root) => {
+                self.stack.push(Value::Real(root));
+                Ok(())
+            }
+            None => {
+                self.stack.push(Value::Real(a));
+                self.stack.push(Value::Real(b));
+                Err(e_domain("solve: could not evaluate f(x)"))
+            }
+        }
     }
 
     /// HP-42S COMPLEX: merge Y (real) + X (imaginary) into one complex; applied

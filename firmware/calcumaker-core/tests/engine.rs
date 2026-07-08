@@ -2026,3 +2026,14 @@ fn matrix_shape_error_preserves_stack() {
     assert!(c.input("+").is_err());
     assert_eq!(c.display(), "[1,2,3]"); // X unchanged
 }
+
+#[test]
+fn solve_roots() {
+    // Linear 3x − 12 = 0 → exactly 4.
+    assert_eq!(run(256, &["fn:3,x,*,12,-", "0", "10", "solve"]), "4");
+    // x² − 2 → √2 (both branches by the guess bracket).
+    assert!(run(256, &["fn:x,sq,2,-", "1", "2", "solve"]).starts_with("1.41421356237309"));
+    assert!(run(256, &["fn:x,sq,2,-", "-2", "-1", "solve"]).starts_with("-1.41421356237309"));
+    // cos(x) − x = 0 → the Dottie number (radians).
+    assert!(run(256, &["rad", "fn:x,cos,x,-", "0", "1", "solve"]).starts_with("0.73908513321516"));
+}

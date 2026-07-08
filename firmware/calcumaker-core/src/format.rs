@@ -78,6 +78,25 @@ fn format_complex(z: &Complex, c: &Calc) -> String {
     }
 }
 
+/// The two 7-seg rows for a complex X: `[top, bottom]`. Rectangular → real part
+/// on top, imaginary (with a trailing `i` cell) on the bottom; polar → magnitude
+/// on top, angle θ on the bottom (the POLAR annunciator signals the mode). Each
+/// part is windowed to `cells`.
+pub(crate) fn complex_rows(z: &Complex, c: &Calc, cells: usize) -> [String; 2] {
+    let prec = c.prec();
+    if c.polar() {
+        let r = format_fit(&Value::Real(z.abs(prec)), c, cells);
+        let theta = format_fit(&Value::Real(angle_out(z.arg(prec), c.angle_mode(), prec)), c, cells);
+        [r, theta]
+    } else {
+        let re = format_fit(&Value::Real(z.real(prec)), c, cells);
+        // Reserve two cells for the trailing " i" indicator.
+        let mut im = format_fit(&Value::Real(z.imag(prec)), c, cells.saturating_sub(2));
+        im.push_str(" i");
+        [re, im]
+    }
+}
+
 /// Convert an angle in radians to the display angle unit (polar θ / complex).
 fn angle_out(rad: Float, mode: AngleMode, prec: u32) -> Float {
     match mode {

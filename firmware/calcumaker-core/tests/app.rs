@@ -719,3 +719,19 @@ fn aux_oled_lines() {
     assert_eq!(l[0], "register select cance");
     assert_eq!(l[1], "lled");
 }
+
+#[test]
+fn complex_spans_two_rows() {
+    use calcumaker_core::App;
+    let mut a = App::new(256);
+    for t in ["3", "4", "complex"] { a.calc_mut().input(t).unwrap(); } // X = 3+4i
+    let r = a.text_rows();
+    assert_eq!(r[1].trim(), "3"); // real part
+    assert_eq!(r[2].trim(), "4 i"); // imaginary part with indicator
+    // polar: magnitude / angle
+    a.calc_mut().input("polar").unwrap();
+    a.calc_mut().input("deg").unwrap();
+    let p = a.text_rows();
+    assert_eq!(p[1].trim(), "5"); // |3+4i| = 5
+    assert!(p[2].trim().starts_with("53.13")); // arg in degrees
+}

@@ -668,12 +668,18 @@ impl App {
         if self.status_view {
             return self.status_rows();
         }
-        let mut items: Vec<String> = self
-            .calc
-            .stack()
-            .iter()
-            .map(|v| crate::format::format_fit(v, &self.calc, DIGITS_PER_ROW))
-            .collect();
+        // Each stack value is one row, except a complex, which spans two rows
+        // (real/imag or r/θ) — the multi-row glass shows both parts (HP-42S).
+        let mut items: Vec<String> = Vec::new();
+        for v in self.calc.stack() {
+            if let crate::Value::Complex(z) = v {
+                let [top, bottom] = crate::format::complex_rows(z, &self.calc, DIGITS_PER_ROW);
+                items.push(top);
+                items.push(bottom);
+            } else {
+                items.push(crate::format::format_fit(v, &self.calc, DIGITS_PER_ROW));
+            }
+        }
         // 16C radix letter on the X readout — the only base indicator the
         // glass has (hardware carries no radix lamps). Non-decimal integers
         // get " h"/" o"/" b"; a bare number is decimal (deviation from the

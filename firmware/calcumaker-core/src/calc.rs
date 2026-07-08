@@ -1631,9 +1631,18 @@ impl Calc {
             Promote,
             Re,
         }
+        // A real OR integer X (outside word/programmer mode, where complex has no
+        // meaning) whose real function goes complex — promote under CPXRES. This
+        // is what makes `√-1 = i` for the default (integer) -1, not just floats.
         let path = match self.stack.last().expect("validated") {
             Value::Complex(_) => Path::Cx,
-            Value::Real(f) if self.cpxres && goes_complex(f) => Path::Promote,
+            v if self.cpxres
+                && self.word_bits.is_none()
+                && !v.is_complex()
+                && goes_complex(&v.to_real(self.prec)) =>
+            {
+                Path::Promote
+            }
             _ => Path::Re,
         };
         match path {
@@ -1802,10 +1811,16 @@ impl Calc {
             self.stack.push(Value::Complex(self.cplx_angle_out(&r)));
             return Ok(());
         }
-        // CPXRES: asin/acos of a real with |x| > 1 → complex.
+        // CPXRES: asin/acos of a real or integer with |x| > 1 → complex
+        // (outside word/programmer mode).
         let promote = self.cpxres
+            && self.word_bits.is_none()
             && matches!(kind, InvCirc::Asin | InvCirc::Acos)
-            && matches!(self.stack.last(), Some(Value::Real(f)) if f.clone().abs().cmp_si(1) > 0);
+            && match self.stack.last() {
+                Some(Value::Real(f)) => f.clone().abs().cmp_si(1) > 0,
+                Some(Value::Int(i)) => Float::from_integer(self.prec, i).abs().cmp_si(1) > 0,
+                _ => false,
+            };
         if promote {
             let z = self.pop_x().to_complex(self.prec);
             let r = match kind {
@@ -1993,12 +2008,16 @@ impl Calc {
     /// with a decimal point) for the real root. Reals stay MPFR.
     fn sqrt_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
-        if !matches!(self.stack.last(), Some(Value::Int(_))) {
-            // Real/Complex: complex input → complex sqrt; a negative real under
-            // CPXRES → complex (√-4 = 2i); else real sqrt.
+        let neg_int = matches!(self.stack.last(), Some(Value::Int(x)) if x.is_negative());
+        // Real/Complex, or a negative integer that CPXRES will promote (√-1 = i):
+        // let cunary handle the complex path. A non-negative integer keeps the
+        // exact isqrt below.
+        if !matches!(self.stack.last(), Some(Value::Int(_)))
+            || (neg_int && self.cpxres && self.word_bits.is_none())
+        {
             return self.cunary(Float::is_negative, |z| z.sqrt(), |x| x.sqrt());
         }
-        if matches!(self.stack.last(), Some(Value::Int(x)) if x.is_negative()) {
+        if neg_int {
             return Err(e_domain("sqrt of a negative integer (float it for nan)"));
         }
         let Value::Int(x) = self.pop_x() else { unreachable!() };

@@ -230,8 +230,12 @@ fn isqrt_zero() {
 }
 
 #[test]
-fn sqrt_negative_int_errors_and_preserves_stack() {
+fn sqrt_negative_int() {
+    // CPXRES (default): a negative integer promotes to complex — √-9 = 3i.
+    assert_eq!(run(64, &["-9", "sqrt"]), "0+3i");
+    // REALRES: errors and preserves the stack.
     let mut c = Calc::new(64);
+    c.input("realres").unwrap();
     c.input("-9").unwrap();
     assert!(c.input("sqrt").is_err());
     assert_eq!(c.display(), "-9"); // untouched

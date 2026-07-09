@@ -624,36 +624,39 @@ USB-C ──VBUS──┬── ESD (USBLC6) ──► D+/D- ──► STM32 USB
         │                                            │   (TPS63900, ULP, low-Iq,
  1S Li-ion (JST-PH)                                  │    always on — light load)
                                                      │
-                                                     └── 5V boost (EN-gated) ──► +5V
-                                                         (TBD part)         │
-                                                              ▲ DISP_PWR_EN │ ──► display
-                                                                (MCU GPIO,  │     (TM1640
-                                                                 off=sleep) │      + LEDs)
-   MCU 3V3 ─► 74HCT125 (VCC=+5V) ─► CLK/DIN1/2/3 at 5V logic ─────────────► display
+                                                     ├──► J3 FFC pins 1–2 ──► display module
+                                                     │      (+3V3 on pin 5)    (boosts its own 5V)
+                                                     │
+                                                     └──► J7 2-pin JST-PH ──► RGB-matrix LED inlet
+                                                            (LED amps only, off the signal FFC)
 ```
 
-- **Two rails.** The MCU runs on the ultra-low-Iq 3V3 buck-boost (always on, so
-  sleep current stays tiny). The display's LED load lives on a **separate 5V
-  boost gated by `DISP_PWR_EN`** — fully off in sleep. This keeps the low-power
-  story intact while giving the TM1640 its 5V (and the LEDs more Vf headroom).
-- The 4 control lines (CLK + DIN1/2/3) are translated 3V3→5V by a **74HCT125**
-  (VIH=2V at VCC=5V) so the 3.3V MCU drives the 5V TM1640 inputs in spec.
+- **The MCU board generates one rail: +3V3.** The MCU runs on the ultra-low-Iq
+  3V3 buck-boost (TPS63900, always on, so sleep current stays tiny). **VSYS is
+  passed through raw** to the display module — on the FFC (`J3` pins 1–2) and,
+  for the RGB matrix's LED current, over the dedicated 2-pin `J7` lead.
+- **5V and level shifting live on the display module, not here.** The 7-seg
+  module boosts VSYS→5V (TPS61022) and level-shifts CLK+DIN1/2/3 3V3→5V
+  (74HCT125) for its own TM1640s. The MCU board only speaks the 3V3 SPI
+  display-module bus. There is **no 5V boost, no 74HCT125 and no `DISP_PWR_EN`
+  on the MCU board** — display power-down is a module-side concern, commanded
+  over the SPI bus (or via `DISP_NRST`).
 - Battery feeds VSYS only when USB is absent (load-share); USB present → run from
   USB, charger tops up the cell. VSYS (3.0–4.7V) is always < 5V → a boost works.
-- **Display current budget** (3× TM1640 × 16 CC digits) sizes the **5V boost**,
-  not the 3V3 rail. Boost part + level shifter chosen by availability (research).
+- **Display current budget** (3× TM1640 × 16 CC digits) sizes the **module's**
+  boost and the `J7` VSYS lead, not the MCU board's 3V3 rail.
 
 ---
 
 ## Pin Budget
 
-MCU is **STM32U575RGT6** (LQFP-64). Fill a pin table (package pin → function →
-AF) here once the layout is fixed. Expected peripheral use (all on the MCU board
+MCU is **STM32U575RGT6** (LQFP-64). Expected peripheral use (all on the MCU board
 — the key matrix + annunciators moved to the keyboard board):
 
-- **Display bus** → 4 GPIOs: TM1640 2-wire (shared CLK + DIN1/DIN2/DIN3),
-  bit-banged at 3V3 → 74HCT125 → 5V → FFC. Plus **DISP_PWR_EN** GPIO → 5V-boost
-  EN (display off in sleep).
+- **Display bus** → **SPI1** master (SCK + MOSI + CS) to the display module's own
+  MCU, plus **DISP_IRQ** / **DISP_NRST** / **DISP_BOOT**. No MISO — the 12-pin FFC
+  doesn't carry one. (Was a bit-banged TM1640 2-wire bus; those parts moved to the
+  module.)
 - **Keyboard link** (mezzanine to the keyboard G0) → **I²C** (SDA/SCL) + **UART**
   (TX/RX) + **KB_IRQ** (on a WKUP pin — keypress wake from Stop) + KB_NRST +
   KB_BOOT0.
@@ -663,8 +666,44 @@ AF) here once the layout is fixed. Expected peripheral use (all on the MCU board
 - **LSE 32.768 kHz** crystal → RTC (sleep timing).
 - **ADC** → battery voltage sense.
 
-Rough count ~26 signal GPIO — comfortably inside LQFP-64 (~50 I/O); verify
-**OCTOSPI1 has a valid pin mapping on LQFP-64** at layout.
+Rough count ~26 signal GPIO — comfortably inside LQFP-64 (~50 I/O).
+
+### Committed pin map
+
+**OCTOSPI1 does have a valid LQFP-64 mapping** (open question closed). On U5 the
+OCTOSPI GPIOs belong to the **OCTOSPI I/O manager**, so the AF signals are named
+`OCTOSPIM_P1_*`; OCTOSPIM routes OCTOSPI1 → Port 1 (straight-through). **LQFP-64
+bonds out no Port-2 bus** (ports E/F/G are absent — the only P2 signal present is
+`P2_NCS`), so Port 1 is mandatory. On this package **IO0–IO3 have exactly one pin
+each**; only CLK (PA3 | PB10) and NCS (PA2 | PA4 | PC11) offered a choice.
+
+| Function | Signal | Pin | AF | Pkg | Note |
+|---|---|---|---|---|---|
+| OCTOSPI1 → U7 | CLK | PB10 | AF10 | 29 | PA3 (p17) is the only alt — too far from the IOs |
+| | NCS | PA4 | AF3 | 20 | costs SPI1_NSS + WKUP2 |
+| | IO0 | PB1 | AF10 | 27 | forced |
+| | IO1 | PB0 | AF10 | 26 | forced |
+| | IO2 | PA7 | AF10 | 23 | forced |
+| | IO3 | PA6 | AF10 | 22 | forced |
+| SPI1 → display J3 | SCK | PA5 | AF5 | 21 | PA6/PA7 are QSPI now |
+| | MOSI | PB5 | AF5 | 57 | |
+| | CS | PA15 | AF5 | 50 | or any GPIO |
+| USART2 → keyboard | TX | PA2 | AF7 | 16 | pair kept intact by choosing PA4 for NCS |
+| | RX | PA3 | AF7 | 17 | |
+| I²C1 → keyboard | SCL | PB6 | AF4 | 58 | |
+| | SDA | PB7 | AF4 | 59 | PB3 is SWO — don't use it for SDA |
+| USB FS | DM/DP | PA11/PA12 | | 44/45 | |
+| SWD | SWDIO/SWCLK/SWO | PA13/PA14/PB3 | | 46/49/55 | |
+| LSE | OSC32_IN/OUT | PC14/PC15 | | 3/4 | |
+
+Choosing **CLK=PB10 + NCS=PA4** keeps the whole quad bus in a contiguous
+**pin 20–29** cluster (short, length-matchable at ≥50 MHz) *and* leaves PA2/PA3
+whole as the USART2 TX/RX pair for the keyboard link. Verified against the ST
+CubeMX pin database for `STM32U575RGTx` / LQFP-64.
+
+Still open: **KB_IRQ must land on a WKUP pin** (keypress wake from Stop) — e.g.
+PA0/PB2 (WKUP1), PC13 (WKUP2), PB6 (WKUP3, conflicts with I²C1 SCL above).
+Battery-sense ADC pin also unassigned.
 
 ---
 
@@ -680,11 +719,8 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Sheet | File | Contents |
 |-------|------|----------|
 | Root | `calcumaker-mcu.kicad_sch` | sheet symbols + title block |
-| MCU | `mcu.kicad_sch` | STM32U575RGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 |
-| Clock | `clock.kicad_sch` | LSE 32.768 kHz crystal (Y1) + load caps (RTC) |
-| Programming | `prog.kicad_sch` | SWD Tag-Connect TC2030-NL (J4) |
+| MCU | `mcu.kicad_sch` | STM32U575RGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 + the **committed pin map**. Also absorbs the three former one-off sheets: LSE crystal (Y1 + C24/C25), SWD Tag-Connect TC2030-NL (J4), and the unified SPI display-module interface — connector **J3** (0.5 mm 12-pin FFC) + **J7** VSYS outlet (5V + level shifting live on the module) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + charger + load-share + 3V3 buck-boost (MCU) + battery conn |
-| DisplayIF | `display_if.kicad_sch` | Unified SPI display-module connector **J3** (0.5 mm FFC) + **J7** VSYS outlet → display module (5V + shifting now live on the module) |
 | KeyboardIF | `keyboard_if.kicad_sch` | Keyboard link, **populate one**: DF40 2×6 stack (J5, DF40B-12DS) **or** 16-pin FFC cable (J6, AFC01-S16FCA-00) — I²C+UART+**VSYS** |
 | QSPIFlash | `qspi_flash.kicad_sch` | 4 MB quad-SPI NOR (U7, W25Q32JVSSIQ) on OCTOSPI1 + CS# pull-up (R9) + decoupling (C26) |
 
@@ -838,7 +874,8 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    (**key_row ×5 multi-channel** / Annunciators / KbdMCU / RGBPower / MainIF, 178
    comp — matrix + 50 per-key RGB wired as one reusable 10-key row), which
    mezzanine-stacks (I²C+UART+VSYS) above **`calcumaker-mcu`**
-   (MCU / Clock / Programming / PSU / DisplayIF / KeyboardIF / QSPIFlash, 55 comp). All symbols stock except the authored
+   (MCU / PSU / KeyboardIF / QSPIFlash, 46 comp — Clock, Programming and DisplayIF
+   were merged into the MCU sheet). All symbols stock except the authored
    TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
    refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the
    STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); verify the DF40

@@ -2,7 +2,7 @@
 	(version 20260306)
 	(generator "eeschema")
 	(generator_version "10.0")
-	(uuid "ca1c0000-0000-4000-8000-00000000ma01")
+	(uuid "4528e592-e2a3-4b1b-b9d6-fa4a0915a29b")
 	(paper "A3")
 	(title_block
 		(title "Calcumaker 16 — MCU")
@@ -14,115 +14,159 @@
 	)
 	(lib_symbols)
 	(sheet
-		(at 40.64 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "77d1e065-260c-4e9e-b78f-2ca7ebacff25")
-		(property "Sheetname" "MCU"
-			(at 40.64 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "mcu.kicad_sch"
-			(at 40.64 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 96.52 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "b734f1a0-165b-4dbe-8a4e-b7ae065fd64e")
-		(property "Sheetname" "Clock"
-			(at 96.52 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "clock.kicad_sch"
-			(at 96.52 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 152.40 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "3f222ff3-c1f9-44c6-a6b5-77b65f093143")
-		(property "Sheetname" "Programming"
-			(at 152.40 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "prog.kicad_sch"
-			(at 152.40 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 208.28 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "eb68b384-3231-4c3a-becc-31213731c008")
-		(property "Sheetname" "PSU"
-			(at 208.28 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "psu.kicad_sch"
-			(at 208.28 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 264.16 40.64)
-		(size 36.00 22.00)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "66273e88-92ab-499d-8908-57ce43e17319")
-		(property "Sheetname" "DisplayIF"
-			(at 264.16 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "display_if.kicad_sch"
-			(at 264.16 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
 		(at 320.04 40.64)
-		(size 36.00 22.00)
+		(size 36 22)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "32aa4625-0e65-45ea-b771-87030b782539")
 		(property "Sheetname" "KeyboardIF"
 			(at 320.04 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "keyboard_if.kicad_sch"
 			(at 320.04 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+	)
+	(sheet
+		(at 40.64 40.64)
+		(size 36 22)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "77d1e065-260c-4e9e-b78f-2ca7ebacff25")
+		(property "Sheetname" "MCU"
+			(at 40.64 39.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "mcu.kicad_sch"
+			(at 40.64 63.91 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
 	)
 	(sheet
 		(at 375.92 40.64)
-		(size 36.00 22.00)
+		(size 36 22)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef")
 		(property "Sheetname" "QSPIFlash"
 			(at 375.92 39.37 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "qspi_flash.kicad_sch"
 			(at 375.92 63.91 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+	)
+	(sheet
+		(at 208.28 40.64)
+		(size 36 22)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "eb68b384-3231-4c3a-becc-31213731c008")
+		(property "Sheetname" "PSU"
+			(at 208.28 39.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "psu.kicad_sch"
+			(at 208.28 63.91 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
 	)
 	(sheet_instances

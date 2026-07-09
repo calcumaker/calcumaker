@@ -258,7 +258,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "0.1"
+      "sch_revision": "0.3"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -690,36 +690,26 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "calcumaker-mcu.kicad_sch"
+        "filename": "calcumaker-mcu.kicad_sch",
+        "name": "",
+        "uuid": "2affe0ff-5aed-46d5-ab6c-fc432de9528d"
       }
     ],
-    "used_designators": "",
+    "used_designators": "C24-25,J3-4,J7,Y1,#PWR2-7",
     "variants": []
   },
   "sheets": [
     [
-      "ca1c0000-0000-4000-8000-00000000ma01",
-      "calcumaker-mcu"
+      "2affe0ff-5aed-46d5-ab6c-fc432de9528d",
+      ""
     ],
     [
       "77d1e065-260c-4e9e-b78f-2ca7ebacff25",
       "MCU"
     ],
     [
-      "b734f1a0-165b-4dbe-8a4e-b7ae065fd64e",
-      "Clock"
-    ],
-    [
-      "3f222ff3-c1f9-44c6-a6b5-77b65f093143",
-      "Programming"
-    ],
-    [
       "eb68b384-3231-4c3a-becc-31213731c008",
       "PSU"
-    ],
-    [
-      "66273e88-92ab-499d-8908-57ce43e17319",
-      "DisplayIF"
     ],
     [
       "32aa4625-0e65-45ea-b771-87030b782539",

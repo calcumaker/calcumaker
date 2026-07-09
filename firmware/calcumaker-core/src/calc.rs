@@ -427,7 +427,7 @@ impl Calc {
             stack: Vec::new(),
             stack_model: StackModel::Unbounded,
             lift: true,
-            prec: prec.max(2),
+            prec: prec.clamp(2, MAX_PREC_BITS),
             radix: Radix::Dec,
             word_bits: None,
             sign_mode: SignMode::Twos,
@@ -463,6 +463,15 @@ impl Calc {
     pub fn set_prec(&mut self, prec: u32) {
         let p = prec.clamp(2, MAX_PREC_BITS);
         self.prec = p;
+        for value in &mut self.stack {
+            value.set_prec(p);
+        }
+        for value in self.regs.iter_mut().flatten() {
+            value.set_prec(p);
+        }
+        if let Some(value) = &mut self.last_x {
+            value.set_prec(p);
+        }
         let re = |f: &mut Float| *f = Float::with_prec(p, f);
         if let Some(st) = &mut self.stats {
             re(&mut st.sx);
@@ -488,11 +497,15 @@ impl Calc {
     pub fn set_radix(&mut self, r: Radix) {
         self.radix = r;
     }
-    /// Word size in bits for the programmer modes; `None` = unbounded (GMP).
-    /// Stack integers are reinterpreted bit-pattern-preserving (HP behaviour).
+    /// Word size in bits for the programmer modes; `None` or zero = unbounded
+    /// (GMP). Oversized values clamp to the device-safe maximum. Stack integers
+    /// are reinterpreted bit-pattern-preserving (HP behaviour).
     pub fn set_word_bits(&mut self, bits: Option<u32>) {
         let old = (self.word_bits, self.sign_mode);
-        self.word_bits = bits;
+        self.word_bits = match bits {
+            Some(0) | None => None,
+            Some(n) => Some(n.min(MAX_WORD_BITS)),
+        };
         self.renormalize(old);
     }
     pub fn word_bits(&self) -> Option<u32> {
@@ -512,7 +525,13 @@ impl Calc {
         self.float_fmt
     }
     pub fn set_float_fmt(&mut self, f: FloatFmt) {
-        self.float_fmt = f;
+        let limit = MAX_FMT_DIGITS as u8;
+        self.float_fmt = match f {
+            FloatFmt::Auto => FloatFmt::Auto,
+            FloatFmt::Fix(d) => FloatFmt::Fix(d.min(limit)),
+            FloatFmt::Sci(d) => FloatFmt::Sci(d.min(limit)),
+            FloatFmt::Eng(d) => FloatFmt::Eng(d.min(limit)),
+        };
     }
     pub fn angle_mode(&self) -> AngleMode {
         self.angle_mode
@@ -640,30 +659,22 @@ impl Calc {
         if new == (old_bits, old_mode) {
             return;
         }
-        for v in &mut self.stack {
-            if let Value::Int(i) = v {
-                let bits = match old_bits {
-                    Some(n) => encode_bits(i, old_mode, n),
-                    None => i.clone(), // unbounded → take the value as-is
-                };
-                *i = match self.word_bits {
-                    Some(n) => {
-                        let pattern = if bits.is_negative() {
-                            // negative unbounded value entering a word: wrap
-                            euclid_mod(bits, &pow2(n))
-                        } else {
-                            euclid_mod(bits, &pow2(n))
-                        };
-                        decode_bits(pattern, self.sign_mode, n)
+        for value in &mut self.stack {
+            if let Value::Int(i) = value {
+                *i = match (old_bits, self.word_bits) {
+                    // An unbounded value has no raw word pattern. Preserve its
+                    // signed numeric value and wrap it in the destination mode.
+                    (None, Some(n)) => wrap(i.clone(), self.sign_mode, n).0,
+                    // Between word modes preserve the old raw bit pattern,
+                    // narrowing from the least-significant end when necessary.
+                    (Some(old_n), Some(new_n)) => {
+                        let bits = encode_bits(i, old_mode, old_n);
+                        let pattern = euclid_mod(bits, &pow2(new_n));
+                        decode_bits(pattern, self.sign_mode, new_n)
                     }
-                    None => {
-                        if old_bits.is_some() {
-                            // leaving word mode: keep the signed value
-                            decode_bits_back(bits, old_mode, old_bits.unwrap())
-                        } else {
-                            bits
-                        }
-                    }
+                    // Outside word mode the canonical signed value is already
+                    // the representation we want to retain.
+                    (Some(_), None) | (None, None) => i.clone(),
                 };
             }
         }
@@ -849,8 +860,8 @@ impl Calc {
             "re" => self.re_op(),
             "im" => self.im_op(),
             "reim" => self.reim_op(),
-            "topolar" => self.to_polar_op(),
-            "torect" => self.to_rect_op(),
+            "topolar" => self.polar_coords_op(),
+            "torect" => self.rect_coords_op(),
             "det" => self.det_op(),
             "transpose" => self.transpose_op(),
             "minv" => self.minv_op(),
@@ -933,7 +944,7 @@ impl Calc {
             "maskr" => self.mask_op(false),
             "popcnt" => self.popcnt(),
             "fact" | "!" => self.fact(),
-            "float" => self.to_float(),
+            "float" => self.float_op(),
             // RND = round to the DISPLAYED precision (HP). `round` = round to the
             // nearest integer (the INT key). Two different operations.
             "rnd" => self.rnd_display(),
@@ -1487,7 +1498,12 @@ impl Calc {
         if v.is_complex() || v.is_matrix() {
             return None;
         }
-        Some(v.to_real(self.prec))
+        let result = v.to_real(self.prec);
+        if result.is_nan() || result.is_inf() {
+            None
+        } else {
+            Some(result)
+        }
     }
 
     /// Secant root-finder for the stored function, from two initial guesses.
@@ -1501,24 +1517,40 @@ impl Calc {
     ) -> Option<Float> {
         let mut fa = self.eval_func(scratch, tokens, &a)?;
         let mut fb = self.eval_func(scratch, tokens, &b)?;
+        let mut scale = fa.clone().abs();
+        let fb_scale = fb.clone().abs();
+        if (scale.clone() - fb_scale.clone()).is_sign_negative() {
+            scale = fb_scale;
+        }
+        if scale.cmp_si(1) < 0 {
+            scale = Float::from_i64(self.prec, 1);
+        }
+        let digits = (self.prec as usize) * 3 / 10;
+        let epsilon = Float::from_str(
+            self.prec,
+            &alloc::format!("1e-{}", digits.saturating_sub(2).max(6)),
+        )?;
+        let residual_tolerance = scale * epsilon;
         for _ in 0..200 {
             if fb.is_zero() {
                 return Some(b);
             }
             let denom = fb.clone() - fa.clone();
             if denom.is_zero() {
-                break; // flat secant — give up, return best
+                return None; // flat secant: no evidence that either guess is a root
             }
             let step = fb.clone() * (b.clone() - a.clone()) / denom;
+            let next = b.clone() - step;
+            if next.equals(&b) {
+                let residual = fb.clone().abs() - residual_tolerance.clone();
+                return (residual.is_zero() || residual.is_sign_negative()).then_some(b);
+            }
             a = b.clone();
             fa = fb.clone();
-            b = b.clone() - step.clone();
+            b = next;
             fb = self.eval_func(scratch, tokens, &b)?;
-            if step.is_zero() {
-                break; // converged at working precision
-            }
         }
-        Some(b)
+        None
     }
 
     /// HP-15C SOLVE: find a root of the stored `fn:` function between the two
@@ -1540,7 +1572,7 @@ impl Calc {
             None => {
                 self.stack.push(Value::Real(a));
                 self.stack.push(Value::Real(b));
-                Err(e_domain("solve: could not evaluate f(x)"))
+                Err(e_nosol("solve: no root found"))
             }
         }
     }
@@ -1754,7 +1786,7 @@ impl Calc {
     /// HP →P: rectangular (X = x, Y = y) → polar (X = r, Y = θ in the angle
     /// unit). Two *reals* — the classic coordinate conversion, distinct from a
     /// complex value; r = |x+yi|, θ = arg, computed via the complex helpers.
-    fn to_polar_op(&mut self) -> Result<(), CalcError> {
+    fn polar_coords_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
         let x = self.pop_x().to_real(self.prec);
         let y = self.stack.pop().expect("validated").to_real(self.prec);
@@ -1766,7 +1798,7 @@ impl Calc {
     }
 
     /// HP →R: polar (X = r, Y = θ) → rectangular (X = x, Y = y).
-    fn to_rect_op(&mut self) -> Result<(), CalcError> {
+    fn rect_coords_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
         let r = self.pop_x().to_real(self.prec);
         let theta = self.stack.pop().expect("validated").to_real(self.prec);
@@ -2748,7 +2780,7 @@ impl Calc {
 
     /// FLOAT — enter Real mode (the 16C's FLOAT-mode switch), converting an
     /// integer X on the way in (also 16C). Radix keys return to Int mode.
-    fn to_float(&mut self) -> Result<(), CalcError> {
+    fn float_op(&mut self) -> Result<(), CalcError> {
         self.num_mode = NumMode::Real;
         if matches!(self.stack.last(), Some(Value::Int(_))) {
             let Value::Int(x) = self.pop_x() else {
@@ -2955,7 +2987,7 @@ impl Calc {
     /// goes to LASTx, the stack depth is unchanged.
     fn sigma(&mut self, add: bool) -> Result<(), CalcError> {
         self.need(1)?;
-        if !add && self.stats.as_ref().map_or(true, |s| s.n == 0) {
+        if !add && self.stats.as_ref().is_none_or(|s| s.n == 0) {
             return Err(e_stats("no data accumulated"));
         }
         let prec = self.prec;
@@ -3655,17 +3687,6 @@ enum BitOp {
     Set,
     Clear,
     Test,
-}
-
-/// Leaving word mode: a pattern-domain value back to signed (helper for
-/// [`Calc::renormalize`]).
-fn decode_bits_back(bits: Integer, mode: SignMode, n: u32) -> Integer {
-    if bits.is_negative() {
-        // encode of a canonical value is never negative; belt and braces
-        bits
-    } else {
-        decode_bits(bits, mode, n)
-    }
 }
 
 /// Bracketed bisection for a rate p > −1: scan a fixed candidate grid for a

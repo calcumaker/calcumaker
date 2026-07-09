@@ -225,8 +225,8 @@ pub fn render(km: &Keymap) -> String {
     for r in 0..ROWS {
         out += &border(Some(r));
         for layer in [&km.f, &km.base, &km.g] {
-            for c in 0..COLS {
-                out += &format!("| {:<w$} ", label(layer[r][c]));
+            for &key in &layer[r] {
+                out += &format!("| {:<w$} ", label(key));
             }
             out += "|\n";
         }

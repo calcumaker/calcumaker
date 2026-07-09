@@ -36,12 +36,22 @@ impl Value {
     /// imaginary part).
     pub fn to_complex(&self, prec: u32) -> Complex {
         match self {
-            Value::Complex(z) => z.clone(),
+            Value::Complex(z) => Complex::with_prec(prec, z),
             _ => {
                 let zero = Float::from_i64(prec, 0);
                 Complex::from_reals(prec, &self.to_real(prec), &zero)
             }
         }
+    }
+
+    /// Round the value to a new working precision; integers are exact.
+    pub(crate) fn set_prec(&mut self, prec: u32) {
+        *self = match self {
+            Value::Int(_) => return,
+            Value::Real(f) => Value::Real(Float::with_prec(prec, f)),
+            Value::Complex(z) => Value::Complex(Complex::with_prec(prec, z)),
+            Value::Matrix(m) => Value::Matrix(m.with_prec(prec)),
+        };
     }
 
     pub fn is_int(&self) -> bool {

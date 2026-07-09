@@ -70,6 +70,19 @@ impl Matrix {
     pub fn prec(&self) -> u32 {
         self.prec
     }
+    /// Copy the matrix and round every element to `prec` bits.
+    pub fn with_prec(&self, prec: u32) -> Matrix {
+        Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            prec,
+            data: self
+                .data
+                .iter()
+                .map(|v| Float::with_prec(prec, v))
+                .collect(),
+        }
+    }
     pub fn is_square(&self) -> bool {
         self.rows == self.cols
     }
@@ -228,8 +241,8 @@ impl Matrix {
                 }
                 y[i] = y[i].clone() / lu.get(i, i).clone();
             }
-            for i in 0..n {
-                x.set(i, col, y[i].clone());
+            for (i, value) in y.iter().enumerate() {
+                x.set(i, col, value.clone());
             }
         }
         Some(x)

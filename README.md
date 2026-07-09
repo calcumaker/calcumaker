@@ -1,5 +1,7 @@
 # Calcumaker 16
 
+[![CI](https://github.com/calcumaker/calcumaker/actions/workflows/ci.yml/badge.svg)](https://github.com/calcumaker/calcumaker/actions/workflows/ci.yml)
+
 > Repo: `calcumaker` · Product: **Calcumaker 16** (see [`NAMING.md`](NAMING.md))
 
 A wide-format, full-size **Cherry MX** **programmer's / technical RPN

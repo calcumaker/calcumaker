@@ -33,8 +33,7 @@ fn format_matrix(m: &Matrix, c: &Calc) -> String {
 
 /// Decimal significant digits worth showing for a given binary precision.
 fn dec_digits(prec: u32) -> usize {
-    // log10(2) ≈ 0.30103; keep at least a few.
-    ((prec as f64) * 0.30103) as usize + 1
+    ((prec as f64) * core::f64::consts::LOG10_2) as usize + 1
 }
 
 pub fn format(v: &Value, c: &Calc) -> String {
@@ -356,6 +355,11 @@ fn cells_of(s: &str) -> usize {
 /// Integers and explicit FIX/SCI/ENG are shown as configured (the 7-seg
 /// overflow marker handles what still doesn't fit).
 pub(crate) fn format_fit(v: &Value, c: &Calc, max_cells: usize) -> String {
+    if let Value::Matrix(m) = v {
+        // The aux/REPL retain the full matrix; the digits-only glass gets a
+        // compact, entirely 7-segment-renderable shape descriptor.
+        return format!("{}r{}c", m.rows(), m.cols());
+    }
     let full = format(v, c);
     if cells_of(&full) <= max_cells {
         return full;

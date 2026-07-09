@@ -1,7 +1,7 @@
 //! App-layer tests — key presses (matrix + logical) through to display rows
 //! and segment bytes, on the real GMP/MPFR path.
 
-use calcumaker_core::keys::{BASE, COLS, LAYER_F, ROWS};
+use calcumaker_core::keys::{BASE, LAYER_F};
 use calcumaker_core::seg7::{self, DIGITS_PER_ROW};
 use calcumaker_core::{App, Key};
 
@@ -14,9 +14,9 @@ fn press_all(app: &mut App, keys: &[Key]) {
 
 /// Matrix position of a key in the base layer (tests drive real (row,col)).
 fn pos(k: Key) -> (usize, usize) {
-    for r in 0..ROWS {
-        for c in 0..COLS {
-            if BASE[r][c] == k {
+    for (r, row) in BASE.iter().enumerate() {
+        for (c, &key) in row.iter().enumerate() {
+            if key == k {
                 return (r, c);
             }
         }
@@ -472,6 +472,33 @@ fn both_display_modules_agree_on_the_windowed_row() {
         app.seg_rows()[seg7::DISPLAY_ROWS - 1],
         seg7::encode_row(&scrolled)
     );
+}
+
+#[test]
+fn long_upper_rows_are_fitted_for_every_display_module() {
+    let mut app = App::new(256);
+    for t in ["22", "fact", "1"] {
+        app.calc_mut().input(t).unwrap();
+    }
+    let rows = app.text_rows();
+    assert!(rows[1].ends_with('>'), "Y row = {:?}", rows[1]);
+    assert_eq!(seg7::encode_cells(&rows[1]).len(), DIGITS_PER_ROW);
+    for (text, segments) in rows.iter().zip(app.seg_rows()) {
+        assert_eq!(seg7::encode_row(text), segments);
+    }
+}
+
+#[test]
+fn matrix_glass_uses_a_renderable_shape_descriptor() {
+    let mut app = App::new(128);
+    app.calc_mut().input("[1,2;3,4]").unwrap();
+    assert_eq!(x_row(&app), "2r2c");
+    assert!(x_row(&app).chars().all(|ch| seg7::encode(ch).is_some()));
+    assert_eq!(
+        app.seg_rows()[seg7::DISPLAY_ROWS - 1],
+        seg7::encode_row("2r2c")
+    );
+    assert_eq!(app.x_full(), "[1,2;3,4]");
 }
 
 /// A value that fits is untouched: no marker, no padding, no window.

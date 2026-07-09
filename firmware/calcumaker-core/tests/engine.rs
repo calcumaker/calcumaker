@@ -1,6 +1,6 @@
 //! Engine tests — exercise the real GMP/MPFR path on the host.
 
-use calcumaker_core::{Calc, Radix};
+use calcumaker_core::{Calc, FloatFmt, Radix, SignMode, Value};
 
 fn run(prec: u32, toks: &[&str]) -> String {
     let mut c = Calc::new(prec);
@@ -125,9 +125,7 @@ fn real_entry_mode() {
 #[test]
 fn fractional_counts_still_error() {
     let mut c = Calc::new(128);
-    for t in ["2.5"] {
-        c.input(t).unwrap();
-    }
+    c.input("2.5").unwrap();
     assert!(c.input("fact").is_err());
     assert_eq!(c.display(), "2.5");
 }
@@ -671,9 +669,7 @@ fn rlc_and_lj_need_word_size() {
 #[test]
 fn rotate_needs_word_size() {
     let mut c = Calc::new(64);
-    for t in ["5"] {
-        c.input(t).unwrap();
-    }
+    c.input("5").unwrap();
     assert!(c.input("rl").is_err());
     assert_eq!(c.stack().len(), 1); // operand preserved on error
 }
@@ -1683,9 +1679,7 @@ fn classic4_pads_zeros_beneath() {
     assert_eq!(c.stack().len(), 4); // [0,0,0,5]
     c.input("rollup").unwrap();
     assert_eq!(c.display(), "0"); // a padded zero rose to X
-    for t in ["rolldn"] {
-        c.input(t).unwrap();
-    }
+    c.input("rolldn").unwrap();
     assert_eq!(c.display(), "5");
 }
 
@@ -1766,9 +1760,7 @@ fn review_resource_guards() {
     assert!(c.input("prec").is_err());
     assert_eq!(c.prec(), 64); // untouched
     c.input("drop").unwrap();
-    for t in ["100000000"] {
-        c.input(t).unwrap();
-    }
+    c.input("100000000").unwrap();
     assert!(c.input("fact").is_err());
     c.input("drop").unwrap();
     for t in ["1", "2000000"] {
@@ -1780,6 +1772,59 @@ fn review_resource_guards() {
     }
     assert!(c.input("maskr").is_err());
     assert!(c.input("bset").is_err());
+}
+
+#[test]
+fn public_mode_apis_enforce_resource_guards() {
+    let mut c = Calc::new(u32::MAX);
+    assert_eq!(c.prec(), 16_384);
+
+    c.set_word_bits(Some(0));
+    assert_eq!(c.word_bits(), None);
+    c.set_word_bits(Some(u32::MAX));
+    assert_eq!(c.word_bits(), Some(16_384));
+
+    c.set_float_fmt(FloatFmt::Eng(u8::MAX));
+    assert_eq!(c.float_fmt(), FloatFmt::Eng(32));
+}
+
+#[test]
+fn unbounded_negative_enters_ones_complement_by_value() {
+    let mut c = Calc::new(64);
+    c.input("-1").unwrap();
+    c.set_sign_mode(SignMode::Ones);
+    c.set_word_bits(Some(8));
+    assert_eq!(c.display(), "-1");
+    c.set_radix(Radix::Hex);
+    assert_eq!(c.display(), "FE");
+}
+
+#[test]
+fn precision_change_updates_complex_and_matrix_values() {
+    let mut c = Calc::new(16);
+    for t in ["1", "1", "complex"] {
+        c.input(t).unwrap();
+    }
+    c.set_prec(256);
+    assert!(matches!(c.stack().last(), Some(Value::Complex(z)) if z.prec() == 256));
+    c.input("sqrt").unwrap();
+    let sqrt = c.display();
+    assert!(
+        sqrt.starts_with("1.098684113467809966039801")
+            && sqrt.contains("+0.455089860562227341304357"),
+        "sqrt(1+i) = {sqrt}"
+    );
+
+    let mut m = Calc::new(16);
+    m.input("[1,2;3,4]").unwrap();
+    m.set_prec(256);
+    assert!(matches!(m.stack().last(), Some(Value::Matrix(v)) if v.prec() == 256));
+    m.input("minv").unwrap();
+    assert!(
+        m.display().starts_with("[-2,1;1.5"),
+        "inverse = {}",
+        m.display()
+    );
 }
 
 /// Σ+ disables stack lift in the classic stack (15C): the n left in X is
@@ -2082,6 +2127,25 @@ fn solve_roots() {
     assert!(run(256, &["fn:x,sq,2,-", "-2", "-1", "solve"]).starts_with("-1.41421356237309"));
     // cos(x) − x = 0 → the Dottie number (radians).
     assert!(run(256, &["rad", "fn:x,cos,x,-", "0", "1", "solve"]).starts_with("0.73908513321516"));
+}
+
+#[test]
+fn solve_rejects_non_roots_and_preserves_guesses() {
+    let mut c = Calc::new(256);
+    for t in ["fn:x,sq,1,+", "-1", "1"] {
+        c.input(t).unwrap();
+    }
+    let err = c.input("solve").unwrap_err();
+    assert_eq!(err.code(), 5);
+    assert_eq!(c.stack().len(), 2);
+    assert_eq!(c.display(), "1");
+
+    let mut flat = Calc::new(256);
+    for t in ["fn:1", "0", "10"] {
+        flat.input(t).unwrap();
+    }
+    assert_eq!(flat.input("solve").unwrap_err().code(), 5);
+    assert_eq!(flat.display(), "10");
 }
 
 #[test]

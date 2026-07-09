@@ -45,6 +45,13 @@ impl Complex {
         z
     }
 
+    /// Copy `value` into a complex with a new working precision.
+    pub fn with_prec(prec: u32, value: &Complex) -> Self {
+        let mut z = Self::new(prec);
+        unsafe { ffi::mpc_set(&mut z.raw, &value.raw, MPC_RNDNN) };
+        z
+    }
+
     /// Working precision (bits) of the real part (both parts share it).
     pub fn prec(&self) -> u32 {
         unsafe { ffi::mpfr_get_prec(&self.raw.re) as u32 }

@@ -658,8 +658,10 @@ impl App {
     /// continues off the right edge — see [`App::seg_rows`] and [`App::window`].
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
         let mut rows = self.rows_unwindowed();
-        let (x, _) = window_row(&rows[DISPLAY_ROWS - 1], self.win);
-        rows[DISPLAY_ROWS - 1] = x;
+        for (i, row) in rows.iter_mut().enumerate() {
+            let win = if i == DISPLAY_ROWS - 1 { self.win } else { 0 };
+            *row = window_row(row, win).0;
+        }
         rows
     }
 

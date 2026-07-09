@@ -48,9 +48,9 @@ fn cell_for(ch: char) -> Option<(usize, usize)> {
     if ch == NO_KEY {
         return None; // never resolve to a cell that has no switch
     }
-    for r in 0..ROWS {
-        for c in 0..COLS {
-            if HOST_KEYS[r][c] == ch {
+    for (r, row) in HOST_KEYS.iter().enumerate() {
+        for (c, &key) in row.iter().enumerate() {
+            if key == ch {
                 return Some((r, c));
             }
         }
@@ -194,12 +194,12 @@ fn help_text(app: &App) -> String {
         s.push('\n');
         s
     };
-    for r in 0..ROWS {
+    for (r, host_row) in HOST_KEYS.iter().enumerate() {
         out += &border(Some(r));
         // host key line (a cell with no switch has no key to press)
-        for c in 0..COLS {
+        for (c, &host_key) in host_row.iter().enumerate() {
             let cell = if calcumaker_core::keys::cell_has_switch(r, c) {
-                format!("[{}]", host_key_name(HOST_KEYS[r][c]))
+                format!("[{}]", host_key_name(host_key))
             } else {
                 String::new()
             };
@@ -207,8 +207,8 @@ fn help_text(app: &App) -> String {
         }
         out += "|\n";
         for layer in [&km.f, &km.base, &km.g] {
-            for c in 0..COLS {
-                out += &format!("| {:<w$} ", label(layer[r][c]));
+            for &key in &layer[r] {
+                out += &format!("| {:<w$} ", label(key));
             }
             out += "|\n";
         }

@@ -817,6 +817,7 @@ impl Calc {
             "minv" => self.minv_op(),
             "matsolve" => self.matsolve_op(),
             "solve" => self.solve_op(),
+            "integ" => self.integ_op(),
             "cpxres" => {
                 self.cpxres = true;
                 Ok(())
@@ -1361,22 +1362,30 @@ impl Calc {
         Ok(())
     }
 
-    /// Evaluate the stored SOLVE function at `x` on a *scratch* engine — so the
-    /// full command set is available inside `f(x)`. Returns the resulting X as a
-    /// real, or `None` if the expression errors or yields a non-real.
-    fn eval_func(&self, tokens: &[String], x: &Float) -> Option<Float> {
-        let mut tmp = Calc::new(self.prec);
-        tmp.angle_mode = self.angle_mode;
-        tmp.cpxres = self.cpxres;
-        tmp.num_mode = NumMode::Real; // f(x) lives in the real/float world
+    /// A fresh scratch engine for evaluating a `fn:` expression (real/float
+    /// world, inheriting the angle + complex modes). Built once per solve/integ
+    /// and reused across every f(x) — spinning one up per call is far too slow.
+    fn make_scratch(&self) -> Calc {
+        let mut s = Calc::new(self.prec);
+        s.angle_mode = self.angle_mode;
+        s.cpxres = self.cpxres;
+        s.num_mode = NumMode::Real;
+        s
+    }
+
+    /// Evaluate the stored function at `x` on the `scratch` engine (cleared
+    /// first) — so the full command set is available inside `f(x)`. Returns X as
+    /// a real, or `None` if the expression errors or yields a non-real.
+    fn eval_func(&self, scratch: &mut Calc, tokens: &[String], x: &Float) -> Option<Float> {
+        scratch.stack.clear();
         for tok in tokens {
             if tok.eq_ignore_ascii_case("x") {
-                tmp.push_entry(Value::Real(Float::with_prec(self.prec, x)));
+                scratch.push_entry(Value::Real(Float::with_prec(self.prec, x)));
             } else {
-                tmp.input(tok).ok()?;
+                scratch.input(tok).ok()?;
             }
         }
-        let v = tmp.stack.last()?;
+        let v = scratch.stack.last()?;
         if v.is_complex() || v.is_matrix() {
             return None;
         }
@@ -1385,9 +1394,15 @@ impl Calc {
 
     /// Secant root-finder for the stored function, from two initial guesses.
     /// Converges when a step rounds away at the working precision.
-    fn find_root(&self, tokens: &[String], mut a: Float, mut b: Float) -> Option<Float> {
-        let mut fa = self.eval_func(tokens, &a)?;
-        let mut fb = self.eval_func(tokens, &b)?;
+    fn find_root(
+        &self,
+        scratch: &mut Calc,
+        tokens: &[String],
+        mut a: Float,
+        mut b: Float,
+    ) -> Option<Float> {
+        let mut fa = self.eval_func(scratch, tokens, &a)?;
+        let mut fb = self.eval_func(scratch, tokens, &b)?;
         for _ in 0..200 {
             if fb.is_zero() {
                 return Some(b);
@@ -1400,7 +1415,7 @@ impl Calc {
             a = b.clone();
             fa = fb.clone();
             b = b.clone() - step.clone();
-            fb = self.eval_func(tokens, &b)?;
+            fb = self.eval_func(scratch, tokens, &b)?;
             if step.is_zero() {
                 break; // converged at working precision
             }
@@ -1418,7 +1433,8 @@ impl Calc {
         self.need(2)?;
         let b = self.pop_x().to_real(self.prec);
         let a = self.stack.pop().expect("validated").to_real(self.prec);
-        match self.find_root(&tokens, a.clone(), b.clone()) {
+        let mut scratch = self.make_scratch();
+        match self.find_root(&mut scratch, &tokens, a.clone(), b.clone()) {
             Some(root) => {
                 self.stack.push(Value::Real(root));
                 Ok(())
@@ -1427,6 +1443,98 @@ impl Calc {
                 self.stack.push(Value::Real(a));
                 self.stack.push(Value::Real(b));
                 Err(e_domain("solve: could not evaluate f(x)"))
+            }
+        }
+    }
+
+    /// Simpson estimate over `[a,b]` given the endpoint and midpoint values:
+    /// `(b−a)/6·(fa + 4·fmid + fb)`.
+    fn simpson(&self, a: &Float, fa: &Float, b: &Float, fb: &Float, fmid: &Float) -> Float {
+        let p = self.prec;
+        (b.clone() - a.clone()) / Float::from_i64(p, 6)
+            * (fa.clone() + Float::from_i64(p, 4) * fmid.clone() + fb.clone())
+    }
+
+    /// Adaptive Simpson recursion: refine `[a,b]` until the Richardson error
+    /// estimate is within `eps`, or the depth runs out.
+    #[allow(clippy::too_many_arguments)]
+    fn asr(
+        &self,
+        scratch: &mut Calc,
+        toks: &[String],
+        a: &Float,
+        fa: &Float,
+        b: &Float,
+        fb: &Float,
+        fmid: &Float,
+        whole: &Float,
+        eps: &Float,
+        depth: u32,
+    ) -> Option<Float> {
+        let p = self.prec;
+        let two = Float::from_i64(p, 2);
+        let m = (a.clone() + b.clone()) / two.clone();
+        let lm = (a.clone() + m.clone()) / two.clone();
+        let rm = (m.clone() + b.clone()) / two.clone();
+        let flm = self.eval_func(scratch, toks, &lm)?;
+        let frm = self.eval_func(scratch, toks, &rm)?;
+        let left = self.simpson(a, fa, &m, fmid, &flm);
+        let right = self.simpson(&m, fmid, b, fb, &frm);
+        let sum = left.clone() + right.clone();
+        let err = sum.clone() - whole.clone();
+        // |err| ≤ 15·eps ? (or out of depth) → accept with the Richardson term.
+        let bound = eps.clone() * Float::from_i64(p, 15);
+        let d = err.clone().abs() - bound;
+        if depth == 0 || d.is_sign_negative() || d.is_zero() {
+            return Some(sum + err / Float::from_i64(p, 15));
+        }
+        let he = eps.clone() / two;
+        let l = self.asr(scratch, toks, a, fa, &m, fmid, &flm, &left, &he, depth - 1)?;
+        let r = self.asr(scratch, toks, &m, fmid, b, fb, &frm, &right, &he, depth - 1)?;
+        Some(l + r)
+    }
+
+    /// HP-15C ∫: definite integral of the stored `fn:` function over `[Y, X]`,
+    /// by adaptive Simpson at the working precision. Bounds restored on error.
+    fn integ_op(&mut self) -> Result<(), CalcError> {
+        let toks = self
+            .func
+            .clone()
+            .ok_or(e_domain("no function — set one with fn:tok,tok,…"))?;
+        self.need(2)?;
+        let p = self.prec;
+        let b = self.pop_x().to_real(p);
+        let a = self.stack.pop().expect("validated").to_real(p);
+        let restore = |s: &mut Self| {
+            s.stack.push(Value::Real(a.clone()));
+            s.stack.push(Value::Real(b.clone()));
+        };
+        let mut scratch = self.make_scratch();
+        let (Some(fa), Some(fb)) = (
+            self.eval_func(&mut scratch, &toks, &a),
+            self.eval_func(&mut scratch, &toks, &b),
+        ) else {
+            restore(self);
+            return Err(e_domain("integ: could not evaluate f(x)"));
+        };
+        let m = (a.clone() + b.clone()) / Float::from_i64(p, 2);
+        let Some(fm) = self.eval_func(&mut scratch, &toks, &m) else {
+            restore(self);
+            return Err(e_domain("integ: could not evaluate f(x)"));
+        };
+        let whole = self.simpson(&a, &fa, &b, &fb, &fm);
+        // Adaptive Simpson converges polynomially, so full precision is
+        // infeasible — target ~15 digits (display class, like the 15C's ∫), with
+        // a depth cap as a hard backstop against a non-converging integrand.
+        let eps = Float::from_str(p, "1e-15").expect("eps literal");
+        match self.asr(&mut scratch, &toks, &a, &fa, &b, &fb, &fm, &whole, &eps, 24) {
+            Some(v) => {
+                self.stack.push(Value::Real(v));
+                Ok(())
+            }
+            None => {
+                restore(self);
+                Err(e_domain("integ: could not evaluate f(x)"))
             }
         }
     }

@@ -2049,3 +2049,16 @@ fn integrate_definite() {
     // ∫sin over [0,π] = 2.
     assert!(run(256, &["rad", "fn:x,sin", "0", "pi", "integ"]).starts_with("1.9999999999"));
 }
+
+#[test]
+fn matrix_keyboard_entry() {
+    // 2×2 via mnew/mset (the keyboard flow, no [..] literal).
+    let build = &["2", "2", "mnew", "1", "mset", "2", "mset", "3", "mset", "4", "mset"];
+    assert_eq!(run(128, build), "[1,2;3,4]");
+    // partial fill keeps the rest zero.
+    assert_eq!(run(128, &["2", "2", "mnew", "5", "mset"]), "[5,0;0,0]");
+    // mset without mnew errors.
+    let mut c = Calc::new(128);
+    c.input("7").unwrap();
+    assert!(c.input("mset").is_err());
+}

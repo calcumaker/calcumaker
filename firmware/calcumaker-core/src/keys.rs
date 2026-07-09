@@ -45,6 +45,9 @@ pub enum Key {
     Complex, CplxDisp, Conj, Arg, Re, Im, ReIm,
     // 15C coordinate conversion (two reals): →P rectangular→polar, →R the inverse
     ToPolar, ToRect,
+    // 15C matrices: MatNew (DIM + open fill), MatSet (store next cell), then the
+    // operations — determinant, transpose, inverse, and A⁻¹B solve.
+    MatNew, MatSet, Det, Transpose, Minv, Matsolve,
     // real display format (X = digit count; FmtAuto = %g-style)
     Fix, Sci, Eng, FmtAuto,
     // angle unit for circular trig (cycles RAD → DEG → GRAD)
@@ -177,7 +180,21 @@ pub static SCI: Keymap = Keymap {
     apply_defaults: defaults_sci,
 };
 
-// The 15C wears the scientific base + f-layer (with f+I COMPLEX and f+P R<>P),
+// The 15C's f-layer = the scientific gold layer, but its empty row 1 (over
+// ASIN..EXP10) becomes the **matrix row**: f+ASIN=MDIM (dimension + open fill),
+// f+ACOS=MSTO (store next cell), f+ATAN=DET, f+LOG=transpose, f+e^x=1/M
+// (inverse), f+10^x=M/ (A⁻¹B solve). The rest matches SCI (hyperbolics, COMPLEX,
+// R<>P, PREC, PI, LSTx, STATUS, FLOAT).
+pub const C15_LAYER_F: [[Key; COLS]; ROWS] = [
+    [Sinh,   Cosh,   Tanh,  Prec,      Sq,    CplxDisp, Complex, Pi,   LastX, Status],
+    [MatNew, MatSet, Det,   Transpose, Minv,  Matsolve, Nop,     Nop,  Nop,   Nop],
+    [Lr,     Yhat,   Corr,  ClStat,    Nop,   Nop,      Nop,     Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,   Nop,       Nop,   Float,    Nop,     Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, Nop,      RollUp, Nop,     Off,     Nop,  Eex,   Nop],
+];
+
+// The 15C wears the scientific base + its own f-layer (with f+I COMPLEX, f+P
+// R<>P, and the matrix row),
 // but its **g-layer is the complex faceplate**: the part ops the 15C is known for
 // live on the top row over SIN/COS/TAN/LN/√ — g+SIN=Re, g+COS=Im, g+TAN=Re<>Im,
 // g+LN=CONJ, g+√=ARG — plus the coordinate conversions g+y^x=→P, g+1/x=→R. Stats
@@ -197,7 +214,7 @@ pub const C15_LAYER_G: [[Key; COLS]; ROWS] = [
 pub static C15: Keymap = Keymap {
     name: "15C",
     base: SCI_BASE,
-    f: SCI_LAYER_F,
+    f: C15_LAYER_F,
     g: C15_LAYER_G,
     apply_defaults: defaults_15c,
 };

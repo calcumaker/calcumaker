@@ -288,6 +288,10 @@ pub struct Calc {
     /// The user function for SOLVE: an RPN token list with `x` as the variable
     /// (set via `fn:tok,tok,…`). Evaluated on a scratch engine at each step.
     func: Option<Vec<String>>,
+    /// Row-major fill index into the matrix on top of the stack while entering
+    /// one from the keyboard (`mnew` opens it, `mset` advances; `None` when not
+    /// filling). Lets the 50-key matrix build a matrix without a `[…]` literal.
+    mat_cursor: Option<usize>,
 }
 
 // ---- word-size helpers (shared with the formatter) --------------------------
@@ -410,6 +414,7 @@ impl Calc {
             cfs: Vec::new(),
             rng: 0x9E37_79B9_7F4A_7C15,
             func: None,
+            mat_cursor: None,
         }
     }
 
@@ -816,6 +821,8 @@ impl Calc {
             "transpose" => self.transpose_op(),
             "minv" => self.minv_op(),
             "matsolve" => self.matsolve_op(),
+            "mnew" => self.mnew_op(),
+            "mset" => self.mset_op(),
             "solve" => self.solve_op(),
             "integ" => self.integ_op(),
             "cpxres" => {
@@ -1359,6 +1366,47 @@ impl Calc {
         let _ = self.pop_x();
         let _ = self.stack.pop();
         self.stack.push(Value::Matrix(z));
+        Ok(())
+    }
+
+    /// Open keyboard matrix entry: Y = rows, X = cols → a zero matrix on the
+    /// stack with the fill cursor at (0,0). Fill it with `mset`.
+    fn mnew_op(&mut self) -> Result<(), CalcError> {
+        self.need(2)?;
+        let cols = self.peek_integral(0, "matrix cols")?;
+        let rows = self.peek_integral(1, "matrix rows")?;
+        let (rows, cols) = match (rows.to_u32(), cols.to_u32()) {
+            (Some(r), Some(c)) if r >= 1 && c >= 1 && r <= 16 && c <= 16 => (r as usize, c as usize),
+            _ => return Err(e_domain("matrix dims must be 1..=16")),
+        };
+        let _ = self.pop_x();
+        let _ = self.stack.pop();
+        self.stack
+            .push(Value::Matrix(Matrix::zeros(rows, cols, self.prec)));
+        self.mat_cursor = Some(0);
+        Ok(())
+    }
+
+    /// Store the entered value X into the next cell (row-major) of the matrix
+    /// being filled (below it), advancing the cursor; closes entry at the last
+    /// cell. Requires an open `mnew` and a matrix under the value.
+    fn mset_op(&mut self) -> Result<(), CalcError> {
+        let cursor = self
+            .mat_cursor
+            .ok_or(e_domain("not filling a matrix — use mnew first"))?;
+        self.need(2)?;
+        if !self.stack[self.stack.len() - 2].is_matrix() {
+            return Err(e_domain("mset: the matrix must be under the value"));
+        }
+        let val = self.pop_x().to_real(self.prec);
+        let len = self.stack.len();
+        let Value::Matrix(m) = &mut self.stack[len - 1] else {
+            unreachable!("checked above")
+        };
+        let cols = m.cols();
+        let total = m.rows() * cols;
+        m.set(cursor / cols, cursor % cols, val);
+        self.mat_cursor = if cursor + 1 >= total { None } else { Some(cursor + 1) };
         Ok(())
     }
 

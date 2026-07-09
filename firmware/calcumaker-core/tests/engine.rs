@@ -2040,14 +2040,13 @@ fn solve_roots() {
 
 #[test]
 fn integrate_definite() {
-    // ∫x² over [0,1] = 1/3 (Simpson is exact for polynomials).
-    assert!(run(256, &["fn:x,sq", "0", "1", "integ"]).starts_with("0.333333333333333"));
-    // ∫1/x over [1,2] = ln 2.
-    assert!(run(256, &["fn:x,inv", "1", "2", "integ"]).starts_with("0.693147180559945"));
-    // ∫4/(1+x²) over [0,1] = π.
-    assert!(run(256, &["fn:4,1,x,sq,+,/", "0", "1", "integ"]).starts_with("3.14159265358979"));
-    // ∫sin over [0,π] = 2.
-    assert!(run(256, &["rad", "fn:x,sin", "0", "pi", "integ"]).starts_with("1.9999999999"));
+    // tanh-sinh reaches full precision: these match the exact constants exactly.
+    assert_eq!(run(256, &["fn:x,inv", "1", "2", "integ"]), run(256, &["2", "ln"])); // ∫1/x = ln2
+    assert_eq!(run(256, &["fn:4,1,x,sq,+,/", "0", "1", "integ"]), run(256, &["pi"])); // = π
+    assert_eq!(run(256, &["rad", "fn:x,sin", "0", "pi", "integ"]), "2"); // ∫sin[0,π] = 2
+    // ∫x²[0,1] = 1/3.
+    assert!(run(256, &["fn:x,sq", "0", "1", "integ"])
+        .starts_with("0.3333333333333333333333333333333333333"));
 }
 
 #[test]

@@ -1495,55 +1495,85 @@ impl Calc {
         }
     }
 
-    /// Simpson estimate over `[a,b]` given the endpoint and midpoint values:
-    /// `(b−a)/6·(fa + 4·fmid + fb)`.
-    fn simpson(&self, a: &Float, fa: &Float, b: &Float, fb: &Float, fmid: &Float) -> Float {
-        let p = self.prec;
-        (b.clone() - a.clone()) / Float::from_i64(p, 6)
-            * (fa.clone() + Float::from_i64(p, 4) * fmid.clone() + fb.clone())
-    }
-
-    /// Adaptive Simpson recursion: refine `[a,b]` until the Richardson error
-    /// estimate is within `eps`, or the depth runs out.
-    #[allow(clippy::too_many_arguments)]
-    fn asr(
+    /// One tanh-sinh node contribution at parameter `t`: the transformed
+    /// abscissa `x = mid + half·tanh((π/2)·sinh t)` mapped back into `[a,b]`,
+    /// times the node weight `(π/2)·cosh t / cosh²((π/2)·sinh t)`, times `f(x)`.
+    /// `wp` is the (guard-padded) working precision.
+    fn ts_node(
         &self,
         scratch: &mut Calc,
         toks: &[String],
-        a: &Float,
-        fa: &Float,
-        b: &Float,
-        fb: &Float,
-        fmid: &Float,
-        whole: &Float,
-        eps: &Float,
-        depth: u32,
+        t: &Float,
+        pi_half: &Float,
+        mid: &Float,
+        half: &Float,
     ) -> Option<Float> {
-        let p = self.prec;
-        let two = Float::from_i64(p, 2);
-        let m = (a.clone() + b.clone()) / two.clone();
-        let lm = (a.clone() + m.clone()) / two.clone();
-        let rm = (m.clone() + b.clone()) / two.clone();
-        let flm = self.eval_func(scratch, toks, &lm)?;
-        let frm = self.eval_func(scratch, toks, &rm)?;
-        let left = self.simpson(a, fa, &m, fmid, &flm);
-        let right = self.simpson(&m, fmid, b, fb, &frm);
-        let sum = left.clone() + right.clone();
-        let err = sum.clone() - whole.clone();
-        // |err| ≤ 15·eps ? (or out of depth) → accept with the Richardson term.
-        let bound = eps.clone() * Float::from_i64(p, 15);
-        let d = err.clone().abs() - bound;
-        if depth == 0 || d.is_sign_negative() || d.is_zero() {
-            return Some(sum + err / Float::from_i64(p, 15));
+        let s = pi_half.clone() * t.clone().sinh(); // (π/2)·sinh t
+        let u = s.clone().tanh(); // abscissa in (−1,1)
+        let ch = s.cosh();
+        let w = pi_half.clone() * t.clone().cosh() / (ch.clone() * ch);
+        let x = mid.clone() + half.clone() * u;
+        Some(w * self.eval_func(scratch, toks, &x)?)
+    }
+
+    /// HP-15C ∫ by **tanh-sinh (double-exponential) quadrature** — the DE change
+    /// of variable makes the integrand decay double-exponentially, so the
+    /// trapezoidal rule converges to (near) full precision for smooth integrands
+    /// in a handful of node-halving levels. Computed with guard bits.
+    fn tanh_sinh(&self, scratch: &mut Calc, toks: &[String], a: &Float, b: &Float) -> Option<Float> {
+        let wp = self.prec + 32; // guard bits
+        let two = Float::from_i64(wp, 2);
+        let pi_half = Float::pi(wp) / two.clone();
+        let aw = Float::with_prec(wp, a);
+        let bw = Float::with_prec(wp, b);
+        let mid = (aw.clone() + bw.clone()) / two.clone();
+        let half = (bw - aw) / two.clone();
+        let dec = (self.prec as usize) * 3 / 10; // ~ decimal digits
+        let eps = Float::from_str(wp, &alloc::format!("1e-{}", dec.saturating_sub(2).max(10)))?;
+        let node_eps = Float::from_str(wp, &alloc::format!("1e-{}", dec + 6))?;
+        let negligible = |v: &Float| (v.clone().abs() - node_eps.clone()).is_sign_negative();
+
+        // Running Σ over all node contributions g(jh); start at t=0.
+        let mut total = self.ts_node(scratch, toks, &Float::from_i64(wp, 0), &pi_half, &mid, &half)?;
+        let mut h = Float::from_i64(wp, 1); // h₀ = 1
+        let node = |slf: &Self, scr: &mut Calc, j: i64, h: &Float| {
+            let t = Float::from_i64(wp, j) * h.clone();
+            slf.ts_node(scr, toks, &t, &pi_half, &mid, &half)
+        };
+        // Level 0: symmetric integer-multiple nodes until they vanish.
+        let mut k = 1;
+        loop {
+            let (cp, cm) = (node(self, scratch, k, &h)?, node(self, scratch, -k, &h)?);
+            total = total + cp.clone() + cm.clone();
+            if (negligible(&cp) && negligible(&cm)) || k > 2000 {
+                break;
+            }
+            k += 1;
         }
-        let he = eps.clone() / two;
-        let l = self.asr(scratch, toks, a, fa, &m, fmid, &flm, &left, &he, depth - 1)?;
-        let r = self.asr(scratch, toks, &m, fmid, b, fb, &frm, &right, &he, depth - 1)?;
-        Some(l + r)
+        let mut est = half.clone() * h.clone() * total.clone();
+        // Halve h; add the new odd-multiple nodes; stop when the estimate settles.
+        for _ in 0..10 {
+            h = h.clone() / two.clone();
+            let mut j = 1;
+            loop {
+                let (cp, cm) = (node(self, scratch, j, &h)?, node(self, scratch, -j, &h)?);
+                total = total + cp.clone() + cm.clone();
+                if (negligible(&cp) && negligible(&cm)) || j > 8000 {
+                    break;
+                }
+                j += 2;
+            }
+            let next = half.clone() * h.clone() * total.clone();
+            if ((next.clone() - est.clone()).abs() - eps.clone()).is_sign_negative() {
+                return Some(Float::with_prec(self.prec, &next));
+            }
+            est = next;
+        }
+        Some(Float::with_prec(self.prec, &est))
     }
 
     /// HP-15C ∫: definite integral of the stored `fn:` function over `[Y, X]`,
-    /// by adaptive Simpson at the working precision. Bounds restored on error.
+    /// by tanh-sinh quadrature. Bounds restored on error.
     fn integ_op(&mut self) -> Result<(), CalcError> {
         let toks = self
             .func
@@ -1553,35 +1583,15 @@ impl Calc {
         let p = self.prec;
         let b = self.pop_x().to_real(p);
         let a = self.stack.pop().expect("validated").to_real(p);
-        let restore = |s: &mut Self| {
-            s.stack.push(Value::Real(a.clone()));
-            s.stack.push(Value::Real(b.clone()));
-        };
         let mut scratch = self.make_scratch();
-        let (Some(fa), Some(fb)) = (
-            self.eval_func(&mut scratch, &toks, &a),
-            self.eval_func(&mut scratch, &toks, &b),
-        ) else {
-            restore(self);
-            return Err(e_domain("integ: could not evaluate f(x)"));
-        };
-        let m = (a.clone() + b.clone()) / Float::from_i64(p, 2);
-        let Some(fm) = self.eval_func(&mut scratch, &toks, &m) else {
-            restore(self);
-            return Err(e_domain("integ: could not evaluate f(x)"));
-        };
-        let whole = self.simpson(&a, &fa, &b, &fb, &fm);
-        // Adaptive Simpson converges polynomially, so full precision is
-        // infeasible — target ~15 digits (display class, like the 15C's ∫), with
-        // a depth cap as a hard backstop against a non-converging integrand.
-        let eps = Float::from_str(p, "1e-15").expect("eps literal");
-        match self.asr(&mut scratch, &toks, &a, &fa, &b, &fb, &fm, &whole, &eps, 24) {
+        match self.tanh_sinh(&mut scratch, &toks, &a, &b) {
             Some(v) => {
                 self.stack.push(Value::Real(v));
                 Ok(())
             }
             None => {
-                restore(self);
+                self.stack.push(Value::Real(a));
+                self.stack.push(Value::Real(b));
                 Err(e_domain("integ: could not evaluate f(x)"))
             }
         }

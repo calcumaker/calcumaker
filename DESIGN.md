@@ -117,10 +117,37 @@ MCU board):
 
   **The 2U ENTER.** ENTER is a **double-height (2U) keycap**, like every HP
   Voyager. It occupies two cells of the 5×10 grid — rows 3 and 4 of column 5
-  (0-based) — but has a **single switch, in the lower cell**, so ENTER keeps its
-  matrix position and the firmware scan is unchanged. The upper cell carries a 2U
-  stabilizer and **no switch, diode, or RGB LED**: the grid is 50 cells but the
-  board is **49 keys / 49 LEDs**.
+  (0-based) — but has a **single switch**, wired to the **lower cell's row line**
+  (`KB_ROW5` × `COL6`), so ENTER keeps its matrix position and the firmware scan
+  is unchanged. The other cell gets **no switch, diode, or RGB LED**: the grid is
+  50 cells but the board is **49 keys / 49 LEDs**.
+
+  *Physical placement (≠ the logical cell).* A 2U keycap's stem is **centered on
+  the key**, so the switch body — and its RGB LED, which shines up through the
+  switch's north window — sits on the **boundary between the two rows**, i.e.
+  9.525 mm (½U) from either 1U cell center, at the column-5 x. The row/col
+  assignment above is a *net* assignment, not a coordinate; the layout must place
+  this one switch off the 1U grid.
+
+  **Stabilizer.** A 2U key wants a stabilizer or it rocks. Two options, and the
+  choice decides whether the PCB changes at all:
+  - **Plate-mount (recommended)** — the stab clips into the switch plate we
+    already need for the hot-swap sockets. KiCad's `SW_Cherry_MX_2.00u_Vertical_Plate`
+    has *exactly the same pads as the 1u plate footprint* — **no PCB holes**. So
+    the existing `calcumaker:SW_MX_HS_CPG151101S11_1u` footprint is reused as-is
+    for ENTER; only the plate cutout and the keycap change. Keep the area under
+    the stab wire clear (our SK6812s are reverse-mounted on the bottom, so it is).
+  - **PCB-mount** — needs four NPTH holes, symmetric about the switch center at
+    **y = ±11.90 mm** (23.8 mm stab spacing), each wing a **3.05 mm** hole at
+    x = −7.00 mm and a **4.00 mm** hole at x = +8.24 mm (15.24 mm apart). Stock
+    `Button_Switch_Keyboard:SW_Cherry_MX_2.00u_Vertical_PCB` has this pattern but
+    is **solder-in**, so a hot-swap 2U variant would have to be derived by adding
+    those four holes to our vendored `SW_MX_HS_CPG151101S11_1u` (whose origin is
+    already the switch center).
+
+  The stabilizer itself is **mechanical hardware** (Cherry/Durock 2U, plate- or
+  PCB-mount), not a schematic symbol — it carries no net and appears only in the
+  layout + the mechanical BOM.
   - Firmware: `keys.rs` marks that cell `Key::Absent` (≠ `Key::Nop`, a real key
     with no function) in every layer of every personality; `ENTER_SWITCH_CELL` /
     `ENTER_SPAN_CELL` / `cell_has_switch()` are the source of truth, pinned by the

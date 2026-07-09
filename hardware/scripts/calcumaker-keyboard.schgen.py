@@ -20,10 +20,12 @@ propagates to every row that uses it. Shared buses (COL1..10, VLED, GND) are glo
 nets; each row's ROW line + RGB DIN/DOUT are hierarchical pins wired at the root.
 
 **The 2U ENTER row variant.** ENTER is a double-height (2U) keycap spanning Row4
-and Row5 of COL6, with its single switch in Row5 (firmware ``keys.rs``:
+and Row5 of COL6, with its single switch wired to Row5 (firmware ``keys.rs``:
 ``ENTER_SWITCH_CELL = (4,5)``, ``ENTER_SPAN_CELL = (3,5)``, 0-based). So the
-**Row4/COL6 cell carries no switch, no diode, and no RGB LED** -- a 2U stabilizer
-sits there instead. Multi-channel instances must be identical, so Row4 gets its own
+**Row4/COL6 cell carries no switch, no diode, and no RGB LED**. NOTE the switch
+body is physically centered on the 2U cap (on the Row4/Row5 boundary, 9.525mm from
+either 1U cell center) -- the Row5 assignment is a NET, not a coordinate. The 2U
+stabilizer is plate-mount (no PCB holes); see DESIGN.md "The 2U ENTER". Multi-channel instances must be identical, so Row4 gets its own
 **9-key** sheet (``key_row_9.kicad_sch``); Row1/2/3/5 still share the reusable
 10-key sheet. Row4's RGB daisy-chain is re-stitched around the gap (LED5 -> LED7),
 and the global reference numbering keeps its hole (no SW36 / D36 / D91). The board

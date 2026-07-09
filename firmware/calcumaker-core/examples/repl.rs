@@ -15,6 +15,13 @@ use calcumaker_core::Calc;
 
 fn main() {
     let mut calc = Calc::new(256);
+    // Seed RAN# from host entropy so it varies between runs (SEED still repeats).
+    calc.reseed(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos() as u64)
+            .unwrap_or(1),
+    );
     println!("Calcumaker 16 — RPN engine (GMP + MPFR), {}-bit precision.", calc.prec());
     println!("arith : + - * / chs abs pow  inv sq sqrt  fact mod pct");
     println!("trig  : sin cos tan asin acos atan  sinh cosh tanh");

@@ -282,8 +282,10 @@ pub struct Calc {
     /// Grouped cash flows for NPV/IRR: (amount, repeat count); index 0 is
     /// the time-0 flow (CF₀).
     cfs: Vec<(Float, u32)>,
-    /// xorshift64 PRNG state for `ran` (deterministic; `seed` re-seeds —
-    /// firmware seeds from hardware entropy at boot). Never zero.
+    /// xorshift64 PRNG state for `ran`. Starts from a fixed constant so a bare
+    /// `Calc` is reproducible; frontends call [`Calc::reseed`] at startup (host:
+    /// wall-clock; firmware: device UID) so `ran` varies, and `seed` re-seeds on
+    /// demand. Never zero.
     rng: u64,
     /// The user function for SOLVE: an RPN token list with `x` as the variable
     /// (set via `fn:tok,tok,…`). Evaluated on a scratch engine at each step.
@@ -2916,16 +2918,23 @@ impl Calc {
         num / den
     }
 
-    /// Pop X as the PRNG seed (splitmix64-expanded so nearby seeds diverge).
-    fn seed_cmd(&mut self) -> Result<(), CalcError> {
-        self.need(1)?;
-        let s = self.peek_u32("seed must be a small non-negative integer")?;
-        let _ = self.pop_x();
-        let mut z = (s as u64).wrapping_add(0x9E37_79B9_7F4A_7C15);
+    /// Seed the PRNG from a host entropy source (splitmix64-expanded so nearby
+    /// seeds diverge). Frontends call this at startup so `ran` isn't the same
+    /// sequence every launch — the core can't reach entropy itself (`no_std`).
+    pub fn reseed(&mut self, s: u64) {
+        let mut z = s.wrapping_add(0x9E37_79B9_7F4A_7C15);
         z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
         z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
         z ^= z >> 31;
         self.rng = if z == 0 { 1 } else { z };
+    }
+
+    /// Pop X as the PRNG seed (reproducible runs — SEED key).
+    fn seed_cmd(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        let s = self.peek_u32("seed must be a small non-negative integer")?;
+        let _ = self.pop_x();
+        self.reseed(s as u64);
         Ok(())
     }
 

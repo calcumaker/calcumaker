@@ -252,6 +252,19 @@ async fn amain(spawner: Spawner) {
     // Exercise the full engine so the linker keeps every operation + the GMP /
     // MPFR code they reach (this is the "does the whole stack link" image).
     let mut app = App::new(256);
+    // Seed RAN# so it isn't the same sequence every unit/boot: the 96-bit device
+    // UID (unique per chip) mixed with the boot tick. The hardware RNG is the
+    // production upgrade for true per-boot entropy.
+    {
+        let uid = embassy_stm32::uid::uid();
+        let mut s = t0.elapsed().as_ticks();
+        for w in uid.chunks(8) {
+            let mut b = [0u8; 8];
+            b[..w.len()].copy_from_slice(w);
+            s ^= u64::from_le_bytes(b);
+        }
+        app.calc_mut().reseed(s);
+    }
     exercise_ops(&mut app);
     exercise_keys(&mut app);
 

@@ -418,6 +418,14 @@ fn main() -> io::Result<()> {
     }
 
     let mut app = App::new(prec);
+    // Seed RAN# from host entropy so it isn't the same sequence every launch
+    // (the no_std core can't reach entropy itself). SEED still gives repeatable
+    // runs on demand.
+    let seed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(1);
+    app.calc_mut().reseed(seed);
     if let Some(km) = personality {
         app.set_keymap(km);
     }

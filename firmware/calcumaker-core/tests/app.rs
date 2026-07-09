@@ -304,30 +304,36 @@ fn seg_rows_encode_x() {
     assert_eq!(bottom[DIGITS_PER_ROW - 1], 0x6D);
 }
 
-/// 16C window keys: scroll a value wider than the row through 16-cell chunks.
+/// 16C window keys: scroll a value wider than the row. Every window that has
+/// more value to its right spends its last cell on the overflow marker.
 #[test]
 fn window_keys_scroll_long_values() {
     let mut app = App::new(256);
-    // 10^70: a '1' + 70 zeros = 71 cells → 5 windows
+    // 10^70: a '1' + 70 zeros = 71 cells → 15 content cells per marked window
     press_all(&mut app, &[Key::Digit(7), Key::Digit(0), Key::Exp10]);
     assert_eq!(app.window(), (0, 5));
-    // default view: overflow marker in the last cell
+    // default view: 15 content cells, then the overflow marker
     assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1][DIGITS_PER_ROW - 1], seg7::OVERFLOW);
 
     app.press_key(Key::WinR);
     assert_eq!(app.window(), (1, 5));
-    // window 1 starts at cell 15 — exactly where the marker cut off
+    // window 1 picks up where the marker cut off, and still has more to its right
     let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
-    assert!(row.iter().all(|&c| c == 0x3F), "window 1 is all zeros: {row:?}");
+    assert!(
+        row[..DIGITS_PER_ROW - 1].iter().all(|&c| c == 0x3F),
+        "window 1 content is all zeros: {row:?}"
+    );
+    assert_eq!(row[DIGITS_PER_ROW - 1], seg7::OVERFLOW, "still more to the right");
 
     for _ in 0..10 {
         app.press_key(Key::WinR); // clamps at the last window
     }
     assert_eq!(app.window(), (4, 5));
     let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
-    // 71 cells: window 4 shows cells 63..71 = 8 cells, then blanks
-    assert_eq!(row[7], 0x3F);
-    assert_eq!(row[8], 0x00);
+    // 71 cells, windows start at 0/15/30/45/60 → window 4 shows 11 cells, then blanks
+    assert_eq!(row[10], 0x3F);
+    assert_eq!(row[11], 0x00, "blank-padded, left-aligned");
+    assert_ne!(row[DIGITS_PER_ROW - 1], seg7::OVERFLOW, "last window: nothing to the right");
 
     app.press_key(Key::WinL);
     assert_eq!(app.window(), (3, 5));
@@ -337,23 +343,67 @@ fn window_keys_scroll_long_values() {
     assert_eq!(app.window().0, 0);
 }
 
-/// Reassembling window 0 (its 15 content cells) plus every scrolled window
-/// must reproduce the full value — no digit may fall between windows.
+/// The dot-matrix module renders `text_rows`, the glass renders `seg_rows`.
+/// They must show the same thing: `seg_rows` is just `text_rows` encoded, so the
+/// overflow marker and the window both reach every module.
+#[test]
+fn both_display_modules_agree_on_the_windowed_row() {
+    let mut app = App::new(256);
+    press_all(&mut app, &[Key::Digit(2), Key::Digit(2), Key::Fact]); // 22! = 22 digits
+
+    let text = app.text_rows()[seg7::DISPLAY_ROWS - 1].clone();
+    assert!(text.ends_with('>'), "matrix sees the overflow marker too: {text:?}");
+    assert_eq!(seg7::encode_cells(&text).len(), DIGITS_PER_ROW, "windowed to the row");
+    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1], seg7::encode_row(&text));
+
+    // …and the window keys move the matrix's text, not just the glass.
+    app.press_key(Key::WinR);
+    let scrolled = app.text_rows()[seg7::DISPLAY_ROWS - 1].clone();
+    assert_ne!(scrolled, text, "the matrix scrolls with the glass");
+    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1], seg7::encode_row(&scrolled));
+}
+
+/// A value that fits is untouched: no marker, no padding, no window.
+#[test]
+fn a_fitting_value_carries_no_marker() {
+    let mut app = App::new(256);
+    press_all(&mut app, &[Key::Digit(4), Key::Digit(2)]);
+    app.press_key(Key::Enter);
+    assert_eq!(app.window(), (0, 1));
+    let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
+    assert_ne!(row[DIGITS_PER_ROW - 1], seg7::OVERFLOW);
+    assert!(!app.text_rows()[seg7::DISPLAY_ROWS - 1].contains('>'));
+}
+
+/// Concatenating each window's *content* cells (everything but an overflow
+/// marker) must reproduce the full value — no digit may fall between windows,
+/// and none may be shown twice.
+///
+/// `text_rows` is windowed, so the full value comes from `x_full`.
 #[test]
 fn every_cell_is_reachable_across_windows() {
     let mut app = App::new(256);
     press_all(&mut app, &[Key::Digit(2), Key::Digit(2), Key::Fact]); // 22! = 22 digits
-    let full = seg7::encode_cells(&app.text_rows()[seg7::DISPLAY_ROWS - 1]);
+    let full = seg7::encode_cells(&app.x_full());
     let (_, total) = app.window();
     assert!(total > 1);
+
     let mut seen: Vec<u8> = Vec::new();
-    seen.extend_from_slice(&app.seg_rows()[seg7::DISPLAY_ROWS - 1][..DIGITS_PER_ROW - 1]);
-    for _ in 1..total {
-        app.press_key(Key::WinR);
-        seen.extend_from_slice(&app.seg_rows()[seg7::DISPLAY_ROWS - 1]);
+    for w in 0..total {
+        if w > 0 {
+            app.press_key(Key::WinR);
+        }
+        let row = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
+        // a marked window carries 15 content cells; the last one carries the rest
+        let content = if row[DIGITS_PER_ROW - 1] == seg7::OVERFLOW {
+            &row[..DIGITS_PER_ROW - 1]
+        } else {
+            &row[..]
+        };
+        seen.extend_from_slice(content);
     }
-    seen.truncate(full.len());
-    assert_eq!(seen, full);
+    seen.truncate(full.len()); // the final window is blank-padded
+    assert_eq!(seen, full, "windows must tile the value exactly");
 }
 
 /// f-STATUS: the glass shows the mode summary until the next key (16C).

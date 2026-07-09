@@ -649,7 +649,18 @@ impl App {
     /// AUTO-mode reals are display-rounded to the row width (HP behaviour —
     /// the stored value keeps full precision, see [`App::x_full`]). With the
     /// STATUS view active, the rows are the mode summary instead.
+    ///
+    /// The X row is **windowed** to the row width, with `>` where the value
+    /// continues off the right edge — see [`App::seg_rows`] and [`App::window`].
     pub fn text_rows(&self) -> [String; DISPLAY_ROWS] {
+        let mut rows = self.rows_unwindowed();
+        let (x, _) = window_row(&rows[DISPLAY_ROWS - 1], self.win);
+        rows[DISPLAY_ROWS - 1] = x;
+        rows
+    }
+
+    /// The rows before the X row is windowed — the full, untruncated text.
+    fn rows_unwindowed(&self) -> [String; DISPLAY_ROWS] {
         if let Some(i) = self.setup {
             let item = SETUP_ITEMS[i];
             let value = match item {
@@ -734,41 +745,99 @@ impl App {
     }
 
     /// The display rows as TM1640 segment bytes, index 0 = top — exactly what
-    /// the hardware shows (the emulator renders these same bytes). With a
-    /// window selected (16C `<`/`>`), the X row scrolls: window 0 is the
-    /// fitted view (15 cells + the overflow marker), and window k ≥ 1 picks
-    /// up **exactly where the marker cut off** (cell 15 + 16·(k−1)),
-    /// left-aligned — every digit is reachable.
+    /// the hardware shows (the emulator renders these same bytes).
+    ///
+    /// This is simply [`App::text_rows`] encoded: the X row is already windowed
+    /// and already carries its `>` marker, so the glass and the dot-matrix module
+    /// can never disagree about what is on screen.
     pub fn seg_rows(&self) -> [[u8; DIGITS_PER_ROW]; DISPLAY_ROWS] {
-        let texts = self.text_rows();
         let mut rows = [[0u8; DIGITS_PER_ROW]; DISPLAY_ROWS];
-        for (i, t) in texts.iter().enumerate() {
+        for (i, t) in self.text_rows().iter().enumerate() {
             rows[i] = seg7::encode_row(t);
-        }
-        if self.win > 0 {
-            let cells = seg7::encode_cells(&texts[DISPLAY_ROWS - 1]);
-            let start = DIGITS_PER_ROW * self.win - 1;
-            let mut row = [0u8; DIGITS_PER_ROW];
-            for (i, c) in cells.iter().skip(start).take(DIGITS_PER_ROW).enumerate() {
-                row[i] = *c;
-            }
-            rows[DISPLAY_ROWS - 1] = row;
         }
         rows
     }
 
     /// Display window position: `(current, total)` — total > 1 means X is
-    /// wider than the row and the window keys will scroll it.
+    /// wider than the row and the window keys (16C `<`/`>`) will scroll it.
     pub fn window(&self) -> (usize, usize) {
-        let len = seg7::encode_cells(&self.text_rows()[DISPLAY_ROWS - 1]).len();
-        let total = if len <= DIGITS_PER_ROW {
-            1
-        } else {
-            // window 0 shows 15 cells (+ marker); the rest come in 16s
-            1 + (len - (DIGITS_PER_ROW - 1)).div_ceil(DIGITS_PER_ROW)
-        };
+        let (_, total) = window_row(&self.rows_unwindowed()[DISPLAY_ROWS - 1], self.win);
         (self.win.min(total - 1), total)
     }
+}
+
+/// Split a row's text into display **cells**: a `.` folds into the preceding
+/// cell (standard 7-seg practice), so a row holds cells, not chars. Mirrors
+/// [`seg7::encode_cells`] but keeps the text, so any display module can measure
+/// a row the way the glass does.
+fn row_cells(text: &str) -> Vec<String> {
+    let mut cells: Vec<String> = Vec::new();
+    for ch in text.chars() {
+        if ch == '.' {
+            if let Some(last) = cells.last_mut() {
+                // a cell carries at most one dp; a second dot gets its own cell
+                if !last.ends_with('.') {
+                    last.push('.');
+                    continue;
+                }
+            }
+        }
+        let mut cell = String::new();
+        cell.push(ch);
+        cells.push(cell);
+    }
+    cells
+}
+
+/// The X row as it is actually *displayed*: at most [`DIGITS_PER_ROW`] cells of
+/// `text` starting at window `win`, with a trailing `>` ([`seg7::OVERFLOW`]) when
+/// the value continues past the right edge. Returns the row and how many windows
+/// the value spans.
+///
+/// The marker costs a cell, so an overflowing window carries `DIGITS_PER_ROW - 1`
+/// cells of value and the next window picks up **exactly where the marker cut
+/// off** — no digit is skipped or repeated. The final window has no marker and is
+/// blank-padded, so it stays left-aligned like the others.
+///
+/// There is no left-hand marker (see [`seg7::OVERFLOW`]), so a scrolled row looks
+/// like any other; the frontends surface the position via [`App::window`].
+///
+/// Both display modules render this text, so the 7-segment glass and the dot
+/// matrix always agree about what the calculator is showing.
+fn window_row(text: &str, win: usize) -> (String, usize) {
+    const W: usize = DIGITS_PER_ROW;
+    let cells = row_cells(text);
+    if cells.len() <= W {
+        return (text.to_string(), 1);
+    }
+
+    // Walk the windows: each one that overflows spends its last cell on `>`.
+    let mut starts: Vec<usize> = Vec::new();
+    let mut pos = 0usize;
+    while pos < cells.len() {
+        starts.push(pos);
+        let remaining = cells.len() - pos;
+        pos += if remaining <= W { remaining } else { W - 1 };
+    }
+
+    let total = starts.len();
+    let start = starts[win.min(total - 1)];
+    let remaining = cells.len() - start;
+    let (body, more) = if remaining <= W { (remaining, false) } else { (W - 1, true) };
+
+    let mut out = String::new();
+    for c in cells.iter().skip(start).take(body) {
+        out.push_str(c);
+    }
+    if more {
+        out.push('>');
+    } else {
+        // pad so `seg7::encode_row`'s right-alignment leaves the view left-aligned
+        for _ in body..W {
+            out.push(' ');
+        }
+    }
+    (out, total)
 }
 
 /// Engine token for a logical key; `None` = not a calculator function

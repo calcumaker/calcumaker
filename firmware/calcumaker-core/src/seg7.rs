@@ -19,7 +19,14 @@ pub const DIGITS_PER_ROW: usize = 16;
 /// Decimal-point bit, folded into the preceding digit cell.
 pub const DP: u8 = 0x80;
 
-/// Rightmost-cell marker when a value doesn't fit the row (renders `]`-like).
+/// Marker for "the value continues to the **right**" — segments a+b+c+d, which
+/// renders `]`-like. Written as `>` in a row's text, so every display module
+/// (7-seg, dot matrix) shows it. No hex digit shares this pattern, so it can
+/// never be mistaken for a value.
+///
+/// There is deliberately no left-hand counterpart: the natural mirror (a+f+e+d)
+/// is exactly the `C` glyph, and a leading hex `C` would be indistinguishable
+/// from a scroll indicator.
 pub const OVERFLOW: u8 = 0x0F;
 
 /// Segment pattern for one character; `None` if it has no 7-seg rendering.

@@ -257,7 +257,7 @@ impl App {
                     item => item.cycle(&mut self.calc),
                 },
                 Key::Setup | Key::ClrX | Key::Back => self.setup = None,
-                Key::ShiftF | Key::ShiftG | Key::Nop => {}
+                Key::ShiftF | Key::ShiftG | Key::Nop | Key::Absent => {}
                 _ => self.msg = Some("SEtUP: R-dn/up moves, ENTER changes, CLx exits".into()),
             }
             return;
@@ -345,7 +345,8 @@ impl App {
             Key::ShowOct => self.show(Radix::Oct),
             Key::ShowBin => self.show(Radix::Bin),
             Key::Off => self.msg = Some("off".into()),
-            Key::Nop | Key::ShiftF | Key::ShiftG => {}
+            // Absent = no switch at that cell (2U ENTER's upper half): never acts.
+            Key::Nop | Key::Absent | Key::ShiftF | Key::ShiftG => {}
             other => match token_for(other) {
                 Some(tok) => {
                     self.flush();

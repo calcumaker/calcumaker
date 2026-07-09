@@ -69,37 +69,64 @@ pub enum Key {
     Prec,
     // system / modifiers (ShiftF/ShiftG are handled, not emitted)
     ShiftF, ShiftG, Off, Nop,
+    /// **No switch at this matrix cell.** Distinct from [`Key::Nop`] (a real key
+    /// with no function): `Absent` is the upper half of the 2U ENTER keycap —
+    /// the cell carries no switch, diode, or RGB LED on the PCB, so the scan can
+    /// never emit it. See [`ENTER_SWITCH_CELL`] / [`ENTER_SPAN_CELL`].
+    Absent,
 }
 
 use Key::*;
 const fn d(n: u8) -> Key { Digit(n) }
 
-/// Base (unshifted) layer — the printed key faces.
+/// ENTER is a **2U (double-height) key** spanning rows 3–4 of column 5. Its
+/// single switch sits in the lower cell, so ENTER keeps its matrix position and
+/// the firmware scan is unchanged; the upper cell has no switch (a 2U
+/// stabilizer sits there instead) and is [`Key::Absent`] in every layer of every
+/// personality. That makes the keyboard 49 keys, and row 3 a **9-key row
+/// variant** on the PCB (one switch + diode + RGB LED removed, matrix and RGB
+/// daisy-chain re-stitched around the gap).
+pub const ENTER_SWITCH_CELL: (usize, usize) = (4, 5);
+/// The unswitched upper half of the 2U ENTER keycap (see [`ENTER_SWITCH_CELL`]).
+pub const ENTER_SPAN_CELL: (usize, usize) = (3, 5);
+
+/// Matrix cells that carry no switch (see [`Key::Absent`]).
+pub const ABSENT_CELLS: &[(usize, usize)] = &[ENTER_SPAN_CELL];
+
+/// Does this matrix cell physically have a switch?
+pub fn cell_has_switch(row: usize, col: usize) -> bool {
+    !ABSENT_CELLS.contains(&(row, col))
+}
+
+/// Base (unshifted) layer — the printed key faces. Column 5 of rows 3–4 is the
+/// 2U ENTER: `Absent` (no switch) above, `Enter` below.
 pub const BASE: [[Key; COLS]; ROWS] = [
     [Sin,    Cos,    Tan,  Ln,   Sqrt,     Pow,  Recip,  Eex,  Back, ClrX],
     [d(10),  d(11),  d(12),d(13),d(14),    d(15),d(7),   d(8), d(9),  Div],
     [And,    Or,     Xor,  Not,  Shl,      Shr,  d(4),   d(5), d(6),  Mul],
-    [Hex,    Dec,    Oct,  Bin,  WordSize, Swap, d(1),   d(2), d(3),  Sub],
+    [Hex,    Dec,    Oct,  Bin,  Swap,     Absent, d(1), d(2), d(3),  Sub],
     [ShiftF, ShiftG, Sto,  Rcl,  RollDn,   Enter,d(0),   Dot,  Chs,   Add],
 ];
 
 /// f (gold) layer — inverse / advanced / set. (Nop = unassigned, refine later.)
+/// WSIZE moved to f+ENTER when the 2U ENTER took its base cell.
 pub const LAYER_F: [[Key; COLS]; ROWS] = [
     [Asin,   Acos,   Atan, Exp,  Sq,       Nop,  Prec,   Pi,   LastX, Status],
     [BitSet, BitClr, BitTest, MaskL, MaskR, BitCount, Lj, Sf,  Cf,    Ftest],
     [Rotl,   Rotr,   Asr,  Rmd,  Rlc,      Rrc,  DblMul, DblDiv, DblRem, Nop],
-    [ShowHex,ShowDec,ShowOct,ShowBin,SignMode, Float, Nop, Nop, Nop,  Nop],
-    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  Nop,  Off,    Nop,  Eex,   Nop],
+    [ShowHex,ShowDec,ShowOct,ShowBin,SignMode, Absent, Nop, Nop, Nop,  Nop],
+    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  WordSize, Off, Nop, Eex,   Nop],
 ];
 
 /// g (blue) layer — hyperbolic / secondary. (FIX/SCI/ENG/auto sit over the
-/// radix keys — display format over display base; angle mode over WSIZE.)
+/// radix keys — display format over display base; angle mode over x<>y.)
+/// FLOAT moved to g+ENTER when the 2U ENTER took the cell it sat on.
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Lz,     Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Pct,  Round, Nop],
-    [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Nop, Nop, Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Absent, Nop, Nop, Nop, Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
 
 /// A **personality**: a named set of the three shift layers (see
@@ -147,7 +174,7 @@ pub const SCI_BASE: [[Key; COLS]; ROWS] = [
     [Sin,    Cos,    Tan,  Ln,   Sqrt,     Pow,  Recip,  Eex,  Back, ClrX],
     [Asin,   Acos,   Atan, Log10,Exp,      Exp10,d(7),   d(8), d(9),  Div],
     [SigmaPlus, SigmaMinus, Mean, Sdev,    Fact, Pct,  d(4),   d(5), d(6),  Mul],
-    [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Swap, d(1), d(2), d(3), Sub],
+    [Fix,    Sci,    Eng,  FmtAuto, Swap, Absent, d(1), d(2), d(3),  Sub],
     [ShiftF, ShiftG, Sto,  Rcl,  RollDn,   Enter,d(0),   Dot,  Chs,   Add],
 ];
 
@@ -157,8 +184,8 @@ pub const SCI_LAYER_F: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Prec, Sq,       CplxDisp, Complex, Pi, LastX, Status],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Lr,     Yhat,   Corr, ClStat, Nop,    Nop,  Nop,    Nop,  Nop,   Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Float,Nop,    Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  Nop,  Off,    Nop,  Eex,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, Nop, RollUp,  AngleMode, Off, Nop, Eex,  Nop],
 ];
 
 /// SCI g (blue) layer — combinatorics, random, display windows, SETUP.
@@ -166,8 +193,8 @@ pub const SCI_LAYER_G: [[Key; COLS]; ROWS] = [
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
 
 /// The scientific personality (15C-flavored; decimal machine — defaults set
@@ -189,8 +216,8 @@ pub const C15_LAYER_F: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh,  Prec,      Sq,    CplxDisp, Complex, Pi,   LastX, Status],
     [MatNew, MatSet, Det,   Transpose, Minv,  Matsolve, Nop,     Nop,  Nop,   Nop],
     [Lr,     Yhat,   Corr,  ClStat,    Nop,   Nop,      Nop,     Nop,  Nop,   Nop],
-    [Nop,    Nop,    Nop,   Nop,       Nop,   Float,    Nop,     Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, ClrReg, Nop,      RollUp, Nop,     Off,     Nop,  Eex,   Nop],
+    [Nop,    Nop,    Nop,   Nop,       Nop,   Absent,   Nop,     Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, Nop,      RollUp, AngleMode, Off,   Nop,  Eex,   Nop],
 ];
 
 // The 15C wears the scientific base + its own f-layer (with f+I COMPLEX, f+P
@@ -203,8 +230,8 @@ pub const C15_LAYER_G: [[Key; COLS]; ROWS] = [
     [Re,     Im,     ReIm, Conj, Arg,      ToPolar, ToRect, Nop, Nop,  Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
     [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
 
 /// HP-15C "Advanced Scientific" — the classic complex-capable RPN, and the one
@@ -229,7 +256,7 @@ pub const FIN_BASE: [[Key; COLS]; ROWS] = [
     [Sin,    Cos,    Tan,  Ln,   Sqrt,     Pow,  Recip,  Eex,  Back, ClrX],
     [TvmN,   TvmI,   TvmPv,TvmPmt,TvmFv,   Pct,  d(7),   d(8), d(9),  Div],
     [Cf0,    Cfj,    NjKey,Npv,  Irr,      PctChg, d(4), d(5), d(6),  Mul],
-    [Fix,    Sci,    Eng,  FmtAuto, PctT,  Swap, d(1),   d(2), d(3),  Sub],
+    [Fix,    Sci,    Eng,  FmtAuto, Swap, Absent, d(1),  d(2), d(3),  Sub],
     [ShiftF, ShiftG, Sto,  Rcl,  RollDn,   Enter,d(0),   Dot,  Chs,   Add],
 ];
 
@@ -237,16 +264,16 @@ pub const FIN_LAYER_F: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Prec, Sq,       Nop,  Nop,    Pi,   LastX, Status],
     [X12Mul, X12Div, Nop,  Nop,  Nop,      Nop,  DepSl,  DepSoyd, DepDb, Nop],
     [Ddays,  DateAdd,Dow,  Wmean, Nop,     Nop,  Nop,    Nop,  Nop,   Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Float,Nop,    Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, ClrReg, ClFin, RollUp, Nop, Off,    Nop,  Eex,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, ClrReg, ClFin, RollUp, PctT, Off,   Nop,  Eex,   Nop],
 ];
 
 pub const FIN_LAYER_G: [[Key; COLS]; ROWS] = [
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  BegKey, EndKey, Nop,  Nop,    Nop,  Nop,   Nop],
     [ClCf,   Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Nop,  Round, Nop],
-    [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
+    [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
+    [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
 
 fn defaults_15c(c: &mut crate::calc::Calc) {
@@ -303,7 +330,9 @@ impl Shift {
         match k {
             ShiftF => { *self = if *self == Shift::F { Shift::None } else { Shift::F }; None }
             ShiftG => { *self = if *self == Shift::G { Shift::None } else { Shift::G }; None }
-            Nop => { *self = Shift::None; None }
+            // Nop = a key with no function here; Absent = no switch at all (the
+            // 2U ENTER's upper half). Neither emits.
+            Nop | Absent => { *self = Shift::None; None }
             other => { *self = Shift::None; Some(other) }
         }
     }

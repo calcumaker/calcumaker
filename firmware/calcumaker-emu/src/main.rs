@@ -26,6 +26,9 @@ use crossterm::{cursor, event, execute, terminal};
 /// are reached through `F` / `G` exactly like the device). `\x08` = Backspace,
 /// `\n` = Enter.
 #[rustfmt::skip]
+/// Matrix cells with no switch (the 2U ENTER's upper half) get no host key.
+const NO_KEY: char = '\0';
+
 const HOST_KEYS: [[char; COLS]; ROWS] = [
     // sin  cos  tan  ln   sqrt y^x  1/x  EEX  back clx
     ['S',  'C', 'T', 'L', 'Q', 'P', 'I', 'E', '\x08', 'X'],
@@ -33,8 +36,8 @@ const HOST_KEYS: [[char; COLS]; ROWS] = [
     ['a',  'b', 'c', 'd', 'e', 'f', '7', '8', '9', '/'],
     // and  or   xor  not  shl  shr  4    5    6    ×
     ['&',  '|', '^', '~', '<', '>', '4', '5', '6', '*'],
-    // hex  dec  oct  bin  wsiz swap 1    2    3    −
-    ['H',  'D', 'O', 'B', 'W', 'x', '1', '2', '3', '-'],
+    // hex  dec  oct  bin  x<>y (2U ENTER's upper half: no switch)  1  2  3  −
+    ['H',  'D', 'O', 'B', 'x', NO_KEY, '1', '2', '3', '-'],
     // f    g    sto  rcl  R↓   ENT  0    .    chs  +
     ['F',  'G', 'm', 'r', 'v', '\n', '0', '.', 'n', '+'],
 ];
@@ -42,6 +45,9 @@ const HOST_KEYS: [[char; COLS]; ROWS] = [
 /// Matrix cell for a host key. `;` doubles as ENTER for shell-friendly scripts.
 fn cell_for(ch: char) -> Option<(usize, usize)> {
     let ch = if ch == ';' { '\n' } else { ch };
+    if ch == NO_KEY {
+        return None; // never resolve to a cell that has no switch
+    }
     for r in 0..ROWS {
         for c in 0..COLS {
             if HOST_KEYS[r][c] == ch {
@@ -170,17 +176,30 @@ fn help_text(app: &App) -> String {
         "PERSONALITY: {}   (each box: [key you press] / f gold / KEY FACE / g blue)\n\n",
         km.name
     );
-    let mut border = String::new();
-    for _ in 0..COLS {
-        border += "+";
-        border += &"-".repeat(w + 2);
-    }
-    border += "+\n";
-    for r in 0..ROWS {
-        out += &border;
-        // host key line
+    // A cell whose neighbour above has no switch merges into it — that's the 2U
+    // ENTER, drawn as one tall box.
+    let border = |below: Option<usize>| {
+        let mut s = String::new();
         for c in 0..COLS {
-            out += &format!("| {:<w$} ", format!("[{}]", host_key_name(HOST_KEYS[r][c])));
+            s.push('+');
+            let merged = matches!(below, Some(r) if r > 0
+                && !calcumaker_core::keys::cell_has_switch(r - 1, c));
+            s += &(if merged { " " } else { "-" }).repeat(w + 2);
+        }
+        s.push('+');
+        s.push('\n');
+        s
+    };
+    for r in 0..ROWS {
+        out += &border(Some(r));
+        // host key line (a cell with no switch has no key to press)
+        for c in 0..COLS {
+            let cell = if calcumaker_core::keys::cell_has_switch(r, c) {
+                format!("[{}]", host_key_name(HOST_KEYS[r][c]))
+            } else {
+                String::new()
+            };
+            out += &format!("| {cell:<w$} ");
         }
         out += "|\n";
         for layer in [&km.f, &km.base, &km.g] {
@@ -190,7 +209,7 @@ fn help_text(app: &App) -> String {
             out += "|\n";
         }
     }
-    out += &border;
+    out += &border(None);
     out += "\nF/G = gold/blue shifts. STO/RCL: m or r, then a digit 0-f = the register.\n\
 G+X = SETUP menu, F+X = STATUS view. Esc clears a pending shift.\n\
 --personality 16C|15C|SCI|FIN (or SETUP > PErS). ? = help. Ctrl-C quits.\n";

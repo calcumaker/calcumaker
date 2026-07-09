@@ -6,6 +6,9 @@ Each key:   f (gold) shift function
             KEY FACE
             g (blue) shift function
 
+ENTER is a 2U (double-height) key: one switch in its lower cell, the
+cell above carries no switch (drawn as the merged box).
+
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 | ASIN   | ACOS   | ATAN   | e^x    | x^2    |        | PREC   | PI     | LSTx   | STATUS |
 | SIN    | COS    | TAN    | LN     | SQRT   | y^x    | 1/x    | EEX    | BSP    | CLX    |
@@ -19,11 +22,11 @@ Each key:   f (gold) shift function
 | AND    | OR     | XOR    | NOT    | SL     | SR     | 4      | 5      | 6      | *      |
 | LZ     |        |        |        | <WIN   | WIN>   | x!     | %      | RND    |        |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-| SHOWh  | SHOWd  | SHOWo  | SHOWb  | SGN    | FLOAT  |        |        |        |        |
-| HEX    | DEC    | OCT    | BIN    | WSIZE  | x<>y   | 1      | 2      | 3      | -      |
+| SHOWh  | SHOWd  | SHOWo  | SHOWb  | SGN    |        |        |        |        |        |
+| HEX    | DEC    | OCT    | BIN    | x<>y   |        | 1      | 2      | 3      | -      |
 | FIX    | SCI    | ENG    | AUTO   | ANGLE  |        |        |        |        |        |
-+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
-| f      | g      | CLREG  |        | R^     |        | OFF    |        | EEX    |        |
++--------+--------+--------+--------+--------+        +--------+--------+--------+--------+
+| f      | g      | CLREG  |        | R^     | WSIZE  | OFF    |        | EEX    |        |
 | f      | g      | STO    | RCL    | Rv     | ENTER  | 0      | .      | CHS    | +      |
-| f      | g      |        |        |        |        |        |        |        |        |
+| f      | g      |        |        |        | FLOAT  |        |        |        |        |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+

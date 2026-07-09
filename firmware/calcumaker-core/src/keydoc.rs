@@ -175,6 +175,9 @@ pub fn label(k: Key) -> &'static str {
         Key::ShiftG => "g",
         Key::Off => "OFF",
         Key::Nop => "",
+        // No switch here — the upper half of the 2U ENTER cap. Drawn as a gap
+        // merged into the ENTER box below (see `render`).
+        Key::Absent => "",
     }
 }
 
@@ -199,16 +202,27 @@ pub fn render(km: &Keymap) -> String {
     out += "            KEY FACE\n";
     out += "            g (blue) shift function\n";
     out += "\n";
+    out += "ENTER is a 2U (double-height) key: one switch in its lower cell, the\n";
+    out += "cell above carries no switch (drawn as the merged box).\n";
+    out += "\n";
 
-    let mut border = String::new();
-    for _ in 0..COLS {
-        border += "+";
-        border += &"-".repeat(w + 2);
-    }
-    border += "+\n";
+    // The border above row `r`; a cell whose neighbour above is Absent renders as
+    // a gap, merging the two cells into one tall key box. `None` = bottom edge.
+    let border = |below: Option<usize>| {
+        let mut s = String::new();
+        for c in 0..COLS {
+            s.push('+');
+            let merged =
+                matches!(below, Some(r) if r > 0 && matches!(km.base[r - 1][c], Key::Absent));
+            s += &(if merged { " " } else { "-" }).repeat(w + 2);
+        }
+        s.push('+');
+        s.push('\n');
+        s
+    };
 
     for r in 0..ROWS {
-        out += &border;
+        out += &border(Some(r));
         for layer in [&km.f, &km.base, &km.g] {
             for c in 0..COLS {
                 out += &format!("| {:<w$} ", label(layer[r][c]));
@@ -216,6 +230,6 @@ pub fn render(km: &Keymap) -> String {
             out += "|\n";
         }
     }
-    out += &border;
+    out += &border(None);
     out
 }

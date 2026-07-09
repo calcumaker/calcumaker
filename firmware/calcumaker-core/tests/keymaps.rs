@@ -31,3 +31,36 @@ fn keymap_docs_are_ascii() {
         assert!(keydoc::render(km).is_ascii(), "{} diagram contains non-ASCII", km.name);
     }
 }
+
+/// The 2U ENTER: one switch in the lower cell, no switch in the cell above, in
+/// every personality and every layer. Guards the PCB's 9-key row variant too —
+/// if this drifts, the keyboard schematic and the firmware scan disagree.
+#[test]
+fn enter_is_2u_in_every_personality() {
+    use calcumaker_core::keys::{cell_has_switch, ENTER_SPAN_CELL, ENTER_SWITCH_CELL};
+    use calcumaker_core::Key;
+
+    let (sr, sc) = ENTER_SWITCH_CELL;
+    let (ar, ac) = ENTER_SPAN_CELL;
+    assert!(cell_has_switch(sr, sc), "ENTER's switch cell must have a switch");
+    assert!(!cell_has_switch(ar, ac), "the spanned cell must have no switch");
+
+    for km in keys::PERSONALITIES {
+        assert!(matches!(km.base[sr][sc], Key::Enter), "{}: ENTER left its cell", km.name);
+        for (name, layer) in [("base", &km.base), ("f", &km.f), ("g", &km.g)] {
+            assert!(
+                matches!(layer[ar][ac], Key::Absent),
+                "{}: {name} layer must be Absent at the spanned cell",
+                km.name
+            );
+            // Absent must appear nowhere else — it means "no switch".
+            for (r, row) in layer.iter().enumerate() {
+                for (c, k) in row.iter().enumerate() {
+                    if matches!(k, Key::Absent) {
+                        assert_eq!((r, c), (ar, ac), "{}: stray Absent in {name}", km.name);
+                    }
+                }
+            }
+        }
+    }
+}

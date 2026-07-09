@@ -131,6 +131,21 @@ fn angle_out(rad: Float, mode: AngleMode, prec: u32) -> Float {
 /// "doesn't fit" escape; the 7-seg row is 16 digits anyway).
 const FIX_MAX_EXP: i64 = 40;
 
+/// If `f` sits within a few of the last significant digits of an integer — the
+/// signature of working-precision roundoff, not a real fractional part — return
+/// that integer, so e.g. a determinant of −1.999…8 reads −2. AUTO only; the tight
+/// relative tolerance (`|f|·10^-(digits-2)`) leaves genuine values untouched.
+fn snap_near_int(f: &Float, prec: u32) -> Option<Float> {
+    let ni = Float::from_integer(prec, &f.round_to_int());
+    let diff = (f.clone() - ni.clone()).abs();
+    if diff.is_zero() {
+        return None; // already an exact integer — nothing to do
+    }
+    let tol_exp = dec_digits(prec).saturating_sub(2);
+    let tol = f.clone().abs() * Float::from_str(prec, &alloc::format!("1e-{tol_exp}"))?;
+    (diff - tol).is_sign_negative().then_some(ni)
+}
+
 fn format_real(f: &Float, prec: u32, fmt: FloatFmt) -> String {
     if f.is_nan() {
         return "nan".to_string();
@@ -142,7 +157,10 @@ fn format_real(f: &Float, prec: u32, fmt: FloatFmt) -> String {
         return zero_str(fmt);
     }
     match fmt {
-        FloatFmt::Auto => reformat(&f.to_string_radix(10, dec_digits(prec))),
+        FloatFmt::Auto => {
+            let snapped = snap_near_int(f, prec);
+            reformat(&snapped.as_ref().unwrap_or(f).to_string_radix(10, dec_digits(prec)))
+        }
         FloatFmt::Fix(d) => fix(f, d as i64),
         FloatFmt::Sci(d) => sci_n(f, d as usize),
         FloatFmt::Eng(d) => eng(f, d as usize),

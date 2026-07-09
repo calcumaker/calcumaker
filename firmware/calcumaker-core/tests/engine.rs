@@ -2061,3 +2061,13 @@ fn matrix_keyboard_entry() {
     c.input("7").unwrap();
     assert!(c.input("mset").is_err());
 }
+
+#[test]
+fn near_integer_snap() {
+    // Working-precision roundoff snaps to the integer in AUTO display.
+    assert_eq!(run(128, &["[1,2;3,4]", "det"]), "-2"); // was −1.999…8
+    assert_eq!(run(128, &["float", "2", "sqrt", "sq"]), "2"); // (√2)² 
+    // Genuine non-integers are left alone.
+    assert_eq!(run(128, &["float", "3", "2", "/"]), "1.5");
+    assert_eq!(run(128, &["float", "2.0000001"]), "2.0000001");
+}

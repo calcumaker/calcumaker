@@ -6,6 +6,11 @@ name: notify-web
 #
 # Only fires for paths the web build actually consumes — hardware and docs commits
 # don't need a rebuild.
+#
+# This is the *optional, instant* half. It is a cross-repo call, so it needs a PAT
+# in WEB_DISPATCH_TOKEN; without one this job warns and skips. calcumaker-web also
+# runs `engine-watch.yml` hourly, which pulls the same change with no secret at
+# all — so the pin never goes stale whether or not this token exists.
 
 on:
   push:

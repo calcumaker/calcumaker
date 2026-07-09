@@ -902,6 +902,9 @@ impl Calc {
             "popcnt" => self.popcnt(),
             "fact" | "!" => self.fact(),
             "float" => self.to_float(),
+            // RND = round to the DISPLAYED precision (HP). `round` = round to the
+            // nearest integer (the INT key). Two different operations.
+            "rnd" => self.rnd_display(),
             "round" => self.real_to_int(|f| f.round_to_int()),
             "trunc" => self.real_to_int(|f| f.trunc_to_int()),
             "floor" => self.real_to_int(|f| f.floor_to_int()),
@@ -2639,6 +2642,81 @@ impl Calc {
             let f = Float::from_integer(self.prec, &x);
             self.stack.push(Value::Real(f));
         }
+        Ok(())
+    }
+
+    /// Round `f` to `decimals` places after the point (negative = round to a
+    /// power of ten above the point), at guard precision so we don't double-round.
+    fn round_decimals(&self, f: Float, decimals: i64) -> Float {
+        let p = self.prec;
+        if f.is_nan() || f.is_inf() || f.is_zero() || decimals.abs() > 10_000 {
+            return f;
+        }
+        let wp = p + 32;
+        let scale = Float::from_i64(wp, 10).pow(Float::from_i64(wp, decimals));
+        if scale.is_zero() || scale.is_inf() {
+            return f;
+        }
+        let scaled = Float::with_prec(wp, &f) * scale.clone();
+        if scaled.is_inf() {
+            return f;
+        }
+        let n = Float::from_integer(wp, &scaled.round_to_int());
+        Float::with_prec(p, &(n / scale))
+    }
+
+    /// `floor(log10(|f|))` — the decimal exponent. Verified against 10^e so a
+    /// hair of log10 rounding at an exact power of ten can't shift it.
+    fn decimal_exponent(&self, f: &Float) -> Option<i64> {
+        let wp = self.prec + 32;
+        let mag = Float::with_prec(wp, f).abs();
+        let mut e = mag.clone().log10().floor_to_int().to_i64()?;
+        let ten = Float::from_i64(wp, 10);
+        // |f| must lie in [10^e, 10^(e+1)); nudge at most one step either way.
+        if (mag.clone() - ten.clone().pow(Float::from_i64(wp, e))).is_sign_negative() {
+            e -= 1;
+        } else if !(mag - ten.pow(Float::from_i64(wp, e + 1))).is_sign_negative() {
+            e += 1;
+        }
+        Some(e)
+    }
+
+    /// Round a real to whatever the current display format actually shows.
+    fn round_to_display(&self, f: Float) -> Float {
+        match self.float_fmt {
+            // AUTO already shows full working precision — nothing is hidden.
+            FloatFmt::Auto => f,
+            FloatFmt::Fix(d) => self.round_decimals(f, d as i64),
+            // SCI/ENG d show d+1 significant digits.
+            FloatFmt::Sci(d) | FloatFmt::Eng(d) => match self.decimal_exponent(&f) {
+                Some(e) => self.round_decimals(f, d as i64 - e),
+                None => f,
+            },
+        }
+    }
+
+    /// **RND** (HP-15C/12C): round X to the *displayed* precision, so the stored
+    /// value matches what the glass shows — the classic "kill the guard digits
+    /// before comparing / before a money total drifts". Type-preserving: a real
+    /// stays a real (an integer is already exact, so it is a no-op), and a
+    /// complex rounds both parts. AUTO shows full precision, so it too is a no-op.
+    /// Round-*to-integer* is the separate `round` command (the INT key).
+    fn rnd_display(&mut self) -> Result<(), CalcError> {
+        self.need(1)?;
+        self.no_matrix("rnd undefined for a matrix")?;
+        if matches!(self.stack.last(), Some(Value::Int(_))) {
+            return Ok(()); // exact already
+        }
+        let v = match self.pop_x() {
+            Value::Real(f) => Value::Real(self.round_to_display(f)),
+            Value::Complex(z) => {
+                let re = self.round_to_display(z.real(self.prec));
+                let im = self.round_to_display(z.imag(self.prec));
+                Value::Complex(Complex::from_reals(self.prec, &re, &im))
+            }
+            other => other,
+        };
+        self.stack.push(v);
         Ok(())
     }
 

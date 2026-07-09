@@ -819,7 +819,8 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::BitCount => "popcnt",
         Key::Rmd => "mod",
         Key::Pct => "pct",
-        Key::Round => "round",
+        Key::Round => "rnd",       // HP RND: round to the DISPLAYED precision
+        Key::IntPart => "trunc",   // HP INT: integer part (toward zero)
         Key::Fix => "fix",
         Key::Sci => "sci",
         Key::Eng => "eng",

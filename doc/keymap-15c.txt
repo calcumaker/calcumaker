@@ -20,7 +20,7 @@ cell above carries no switch (drawn as the merged box).
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 | L.R.   | YHAT   | CORR   | CLSUM  |        |        |        |        |        |        |
 | S+     | S-     | MEAN   | SDEV   | x!     | %      | 4      | 5      | 6      | *      |
-| nCr    | nPr    | RAN#   | SEED   | <WIN   | WIN>   |        |        | RND    |        |
+| nCr    | nPr    | RAN#   | SEED   | <WIN   | WIN>   |        |        | RND    | INT    |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 |        |        |        |        |        |        |        |        |        |        |
 | FIX    | SCI    | ENG    | AUTO   | x<>y   |        | 1      | 2      | 3      | -      |

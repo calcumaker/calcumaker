@@ -2071,3 +2071,24 @@ fn near_integer_snap() {
     assert_eq!(run(128, &["float", "3", "2", "/"]), "1.5");
     assert_eq!(run(128, &["float", "2.0000001"]), "2.0000001");
 }
+
+#[test]
+fn rnd_rounds_to_displayed_precision() {
+    // HP RND: make the STORED value match what the glass shows. (`std` = AUTO)
+    assert_eq!(run(128, &["float", "2", "fix", "3.14159", "rnd", "std"]), "3.14");
+    // SCI d shows d+1 significant digits.
+    assert_eq!(run(128, &["float", "3", "sci", "1234.5", "rnd", "std"]), "1234");
+    assert_eq!(run(128, &["float", "2", "sci", "1234.5", "rnd", "std"]), "1230");
+    assert_eq!(run(128, &["float", "2", "sci", "0.0012345", "rnd", "std"]), "0.00123");
+    // AUTO already shows full precision, and integers are exact -> no-ops.
+    assert_eq!(run(128, &["float", "3.14159", "rnd"]), "3.14159");
+    assert_eq!(run(128, &["42", "rnd"]), "42");
+    // Type-preserving, and a complex rounds both parts.
+    assert_eq!(
+        run(128, &["float", "2", "fix", "3.14159", "2.71828", "complex", "rnd", "std"]),
+        "3.14+2.72i"
+    );
+    // RND is NOT round-to-integer: those stay their own ops (INT key = trunc).
+    assert_eq!(run(128, &["float", "3.7", "trunc"]), "3"); // INT key
+    assert_eq!(run(128, &["float", "3.7", "round"]), "4"); // round-to-nearest
+}

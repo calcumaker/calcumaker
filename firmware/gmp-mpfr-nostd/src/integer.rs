@@ -72,6 +72,14 @@ impl Integer {
         unsafe { ffi::__gmpz_cmp_si(&self.raw, 0) == 0 }
     }
 
+    /// Value as `i64` if it fits in a C `long` (used for decimal exponents).
+    pub fn to_i64(&self) -> Option<i64> {
+        if unsafe { ffi::__gmpz_fits_slong_p(&self.raw) } == 0 {
+            return None;
+        }
+        Some(unsafe { ffi::__gmpz_get_si(&self.raw) } as i64)
+    }
+
     /// Value as `u32` if it is non-negative and fits.
     pub fn to_u32(&self) -> Option<u32> {
         if unsafe { ffi::__gmpz_fits_ulong_p(&self.raw) } == 0 {

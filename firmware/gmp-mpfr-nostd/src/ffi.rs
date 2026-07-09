@@ -84,6 +84,8 @@ extern "C" {
     pub fn __gmpz_perfect_square_p(a: *const mpz_struct) -> c_int;
     pub fn __gmpz_fits_ulong_p(a: *const mpz_struct) -> c_int;
     pub fn __gmpz_get_ui(a: *const mpz_struct) -> c_ulong;
+    pub fn __gmpz_fits_slong_p(a: *const mpz_struct) -> c_int;
+    pub fn __gmpz_get_si(a: *const mpz_struct) -> c_long;
 
     // ---- MPFR -------------------------------------------------------------
     pub fn mpfr_init2(x: *mut mpfr_struct, prec: mpfr_prec_t);

@@ -1,5 +1,5 @@
 //! The Calcumaker 16 keymap — wide HP-16C-style layout, 5 rows × 10 cols =
-//! 50 keys, with HP-Voyager-style f (gold) / g (blue) shifts (3 functions per
+//! 49 keys (ENTER is 2U), with HP-Voyager-style f (gold) / g (blue) shifts (3 functions per
 //! key). **Design source of truth** for the key legends (mirror in DESIGN.md).
 //!
 //! This is the device-independent half of the keypad: logical keys, the three
@@ -39,6 +39,9 @@ pub enum Key {
     // scientific (MPFR)
     Sin, Cos, Tan, Asin, Acos, Atan, Sinh, Cosh, Tanh,
     Ln, Exp, Log10, Exp10, Sqrt, Sq, Pow, Recip, Pi, Fact, Pct, Round,
+    /// INT — the integer part (truncate toward zero), HP's `INT`. Distinct from
+    /// [`Key::Round`], which is HP **RND**: round X to the *displayed* precision.
+    IntPart,
     // complex (HP-42S / 15C): COMPLEX merges/splits re+im; CplxDisp toggles
     // RECT/POLAR; then the 15C's part ops — conjugate, argument, real/imag
     // extraction, and Re<>Im swap.
@@ -124,7 +127,7 @@ pub const LAYER_F: [[Key; COLS]; ROWS] = [
 pub const LAYER_G: [[Key; COLS]; ROWS] = [
     [Sinh,   Cosh,   Tanh, Log10,Exp10,    Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [Lz,     Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Pct,  Round, Nop],
+    [Lz,     Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Pct,  Round, IntPart],
     [Fix,    Sci,    Eng,  FmtAuto, AngleMode, Absent, Nop, Nop, Nop, Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
@@ -192,7 +195,7 @@ pub const SCI_LAYER_F: [[Key; COLS]; ROWS] = [
 pub const SCI_LAYER_G: [[Key; COLS]; ROWS] = [
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
+    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, IntPart],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
@@ -229,7 +232,7 @@ pub const C15_LAYER_F: [[Key; COLS]; ROWS] = [
 pub const C15_LAYER_G: [[Key; COLS]; ROWS] = [
     [Re,     Im,     ReIm, Conj, Arg,      ToPolar, ToRect, Nop, Nop,  Setup],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Nop],
-    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, Nop],
+    [Ncr,    Npr,    Ran,  Seed, WinL,     WinR, Nop,    Nop,  Round, IntPart],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];
@@ -271,7 +274,7 @@ pub const FIN_LAYER_F: [[Key; COLS]; ROWS] = [
 pub const FIN_LAYER_G: [[Key; COLS]; ROWS] = [
     [Nop,    Nop,    Nop,  Nop,  Nop,      Nop,  Nop,    Nop,  Nop,   Setup],
     [Nop,    Nop,    Nop,  BegKey, EndKey, Nop,  Nop,    Nop,  Nop,   Nop],
-    [ClCf,   Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Nop,  Round, Nop],
+    [ClCf,   Nop,    Nop,  Nop,  WinL,     WinR, Fact,   Nop,  Round, IntPart],
     [Nop,    Nop,    Nop,  Nop,  Nop,      Absent, Nop,  Nop,  Nop,   Nop],
     [ShiftF, ShiftG, Nop,  Nop,  Nop,      Float, Nop,   Nop,  Nop,   Nop],
 ];

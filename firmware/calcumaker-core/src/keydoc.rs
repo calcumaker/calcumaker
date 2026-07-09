@@ -125,6 +125,7 @@ pub fn label(k: Key) -> &'static str {
         Key::Fact => "x!",
         Key::Pct => "%",
         Key::Round => "RND",
+        Key::IntPart => "INT",
         Key::Fix => "FIX",
         Key::Sci => "SCI",
         Key::Eng => "ENG",

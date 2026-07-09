@@ -20,7 +20,7 @@ cell above carries no switch (drawn as the merged box).
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 | RL     | RR     | ASR    | RMD    | RLC    | RRC    | DBLx   | DBL/   | DBLR   |        |
 | AND    | OR     | XOR    | NOT    | SL     | SR     | 4      | 5      | 6      | *      |
-| LZ     |        |        |        | <WIN   | WIN>   | x!     | %      | RND    |        |
+| LZ     |        |        |        | <WIN   | WIN>   | x!     | %      | RND    | INT    |
 +--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+
 | SHOWh  | SHOWd  | SHOWo  | SHOWb  | SGN    |        |        |        |        |        |
 | HEX    | DEC    | OCT    | BIN    | x<>y   |        | 1      | 2      | 3      | -      |

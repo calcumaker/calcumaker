@@ -1,0 +1,41 @@
+name: notify-web
+
+# The browser emulator (calcumaker/calcumaker-web) builds this repo's engine as a
+# path dependency and pins the SHA in its engine.lock. Tell it when the engine
+# moves, so it can rebuild, run its gates, and adopt the commit if they pass.
+#
+# Only fires for paths the web build actually consumes — hardware and docs commits
+# don't need a rebuild.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "firmware/calcumaker-core/**"
+      - "firmware/gmp-mpfr-nostd/**"
+      - "firmware/calcumaker-matrix-fw/src/font.rs" # calcumaker-web pins font parity
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tell calcumaker-web to rebuild against this engine
+        env:
+          # PAT (or app token) with `actions: write` / `contents: write` on
+          # calcumaker-web. Without it we warn rather than fail: an engine commit
+          # shouldn't go red because a downstream notification couldn't be sent.
+          GH_TOKEN: ${{ secrets.WEB_DISPATCH_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::warning::WEB_DISPATCH_TOKEN is not set — calcumaker-web will not rebuild."
+            exit 0
+          fi
+          gh api repos/calcumaker/calcumaker-web/dispatches \
+            --method POST --input - <<JSON
+          {"event_type": "engine-updated", "client_payload": {"sha": "${SHA}"}}
+          JSON
+          echo "dispatched engine-updated for ${SHA}"

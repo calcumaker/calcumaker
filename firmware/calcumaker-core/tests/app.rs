@@ -41,7 +41,10 @@ fn digit_entry_shows_cursor_then_pushes() {
 #[test]
 fn op_flushes_pending_entry() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(2), Key::Enter, Key::Digit(3), Key::Add]);
+    press_all(
+        &mut app,
+        &[Key::Digit(2), Key::Enter, Key::Digit(3), Key::Add],
+    );
     assert_eq!(x_row(&app), "5");
 }
 
@@ -67,14 +70,27 @@ fn matrix_presses_resolve_layers() {
 #[test]
 fn dot_and_eex_build_reals() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Eex, Key::Digit(3), Key::Enter]);
+    press_all(
+        &mut app,
+        &[
+            Key::Digit(1),
+            Key::Dot,
+            Key::Digit(5),
+            Key::Eex,
+            Key::Digit(3),
+            Key::Enter,
+        ],
+    );
     assert_eq!(x_row(&app), "1500");
 }
 
 #[test]
 fn chs_flips_exponent_sign_during_entry() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(2), Key::Eex, Key::Digit(2), Key::Chs, Key::Enter]);
+    press_all(
+        &mut app,
+        &[Key::Digit(2), Key::Eex, Key::Digit(2), Key::Chs, Key::Enter],
+    );
     assert_eq!(x_row(&app), "0.02");
 }
 
@@ -98,7 +114,10 @@ fn backspace_edits_and_cancels_entry() {
 #[test]
 fn clrx_cancels_entry_then_drops_x() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(5), Key::Enter, Key::Digit(9), Key::ClrX]);
+    press_all(
+        &mut app,
+        &[Key::Digit(5), Key::Enter, Key::Digit(9), Key::ClrX],
+    );
     assert_eq!(x_row(&app), "5"); // entry gone, X intact
     app.press_key(Key::ClrX);
     assert!(app.calc().stack().is_empty());
@@ -117,7 +136,15 @@ fn hex_entry_and_bitwise() {
     let mut app = App::new(128);
     press_all(
         &mut app,
-        &[Key::Hex, Key::Digit(15), Key::Digit(15), Key::Enter, Key::Digit(0), Key::Digit(15), Key::And],
+        &[
+            Key::Hex,
+            Key::Digit(15),
+            Key::Digit(15),
+            Key::Enter,
+            Key::Digit(0),
+            Key::Digit(15),
+            Key::And,
+        ],
     );
     assert_eq!(x_row(&app), "F h"); // 16C radix letter on the glass
 }
@@ -127,7 +154,10 @@ fn wsize_key_sets_word_from_x() {
     let mut app = App::new(128);
     press_all(&mut app, &[Key::Digit(8), Key::WordSize]);
     assert_eq!(app.calc().word_bits(), Some(8));
-    press_all(&mut app, &[Key::Hex, Key::Digit(0), Key::Digit(15), Key::Not]);
+    press_all(
+        &mut app,
+        &[Key::Hex, Key::Digit(0), Key::Digit(15), Key::Not],
+    );
     assert_eq!(x_row(&app), "F0 h");
 }
 
@@ -175,7 +205,16 @@ fn radix_suffix_letter() {
 fn radix_suffix_skipped_when_it_cannot_fit() {
     let mut app = App::new(128);
     // 15-digit binary value + suffix (2 cells) would exceed the row: bare
-    press_all(&mut app, &[Key::Digit(2), Key::Digit(0), Key::WordSize, Key::Bin, Key::Digit(1)]);
+    press_all(
+        &mut app,
+        &[
+            Key::Digit(2),
+            Key::Digit(0),
+            Key::WordSize,
+            Key::Bin,
+            Key::Digit(1),
+        ],
+    );
     for _ in 0..14 {
         app.press_key(Key::Digit(0));
     }
@@ -199,14 +238,20 @@ fn radix_suffix_is_tunable() {
 #[test]
 fn radix_suffix_not_on_reals() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Enter]);
+    press_all(
+        &mut app,
+        &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Enter],
+    );
     assert_eq!(x_row(&app), "1.5");
 }
 
 #[test]
 fn prec_key_sets_precision_from_x() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(5), Key::Digit(1), Key::Digit(2), Key::Prec]);
+    press_all(
+        &mut app,
+        &[Key::Digit(5), Key::Digit(1), Key::Digit(2), Key::Prec],
+    );
     assert_eq!(app.calc().prec(), 512);
 }
 
@@ -233,7 +278,15 @@ fn pending_register_cancelled_by_non_digit() {
 #[test]
 fn three_rows_show_stack_top() {
     let mut app = App::new(128);
-    for k in [Key::Digit(1), Key::Enter, Key::Digit(2), Key::Enter, Key::Digit(3), Key::Enter, Key::Digit(4)] {
+    for k in [
+        Key::Digit(1),
+        Key::Enter,
+        Key::Digit(2),
+        Key::Enter,
+        Key::Digit(3),
+        Key::Enter,
+        Key::Digit(4),
+    ] {
         app.press_key(k);
     }
     let rows = app.text_rows();
@@ -249,7 +302,14 @@ fn glass_rounds_auto_reals_to_the_window() {
     let mut app = App::new(256);
     press_all(
         &mut app,
-        &[Key::Digit(3), Key::Digit(8), Key::Digit(2), Key::Dot, Key::Digit(1), Key::Enter],
+        &[
+            Key::Digit(3),
+            Key::Digit(8),
+            Key::Digit(2),
+            Key::Dot,
+            Key::Digit(1),
+            Key::Enter,
+        ],
     );
     assert_eq!(x_row(&app), "382.1");
     // …while the register keeps full precision (the X:/SHOW view).
@@ -270,7 +330,18 @@ fn glass_forces_sci_when_plain_is_too_wide() {
     let mut app = App::new(256);
     press_all(
         &mut app,
-        &[Key::Digit(1), Key::Dot, Key::Digit(2), Key::Digit(3), Key::Digit(4), Key::Digit(5), Key::Eex, Key::Digit(1), Key::Digit(7), Key::Enter],
+        &[
+            Key::Digit(1),
+            Key::Dot,
+            Key::Digit(2),
+            Key::Digit(3),
+            Key::Digit(4),
+            Key::Digit(5),
+            Key::Eex,
+            Key::Digit(1),
+            Key::Digit(7),
+            Key::Enter,
+        ],
     );
     assert_eq!(x_row(&app), "1.2345e17");
 }
@@ -279,7 +350,10 @@ fn glass_forces_sci_when_plain_is_too_wide() {
 #[test]
 fn show_base_is_a_transient_message() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(2), Key::Digit(5), Key::Digit(5), Key::ShowHex]);
+    press_all(
+        &mut app,
+        &[Key::Digit(2), Key::Digit(5), Key::Digit(5), Key::ShowHex],
+    );
     assert_eq!(app.message(), Some("hex: FF"));
     assert_eq!(x_row(&app), "255"); // display radix unchanged
     app.press_key(Key::Enter);
@@ -289,14 +363,27 @@ fn show_base_is_a_transient_message() {
 #[test]
 fn clrreg_key_wipes_registers() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(7), Key::Sto, Key::Digit(2), Key::ClrReg, Key::Rcl, Key::Digit(2)]);
+    press_all(
+        &mut app,
+        &[
+            Key::Digit(7),
+            Key::Sto,
+            Key::Digit(2),
+            Key::ClrReg,
+            Key::Rcl,
+            Key::Digit(2),
+        ],
+    );
     assert_eq!(app.message(), Some("empty register"));
 }
 
 #[test]
 fn seg_rows_encode_x() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Enter]);
+    press_all(
+        &mut app,
+        &[Key::Digit(1), Key::Dot, Key::Digit(5), Key::Enter],
+    );
     let rows = app.seg_rows();
     let bottom = rows[seg7::DISPLAY_ROWS - 1];
     // "1.5" folds the dot into the '1' cell: [... , '1'+dp, '5']
@@ -313,7 +400,10 @@ fn window_keys_scroll_long_values() {
     press_all(&mut app, &[Key::Digit(7), Key::Digit(0), Key::Exp10]);
     assert_eq!(app.window(), (0, 5));
     // default view: 15 content cells, then the overflow marker
-    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1][DIGITS_PER_ROW - 1], seg7::OVERFLOW);
+    assert_eq!(
+        app.seg_rows()[seg7::DISPLAY_ROWS - 1][DIGITS_PER_ROW - 1],
+        seg7::OVERFLOW
+    );
 
     app.press_key(Key::WinR);
     assert_eq!(app.window(), (1, 5));
@@ -323,7 +413,11 @@ fn window_keys_scroll_long_values() {
         row[..DIGITS_PER_ROW - 1].iter().all(|&c| c == 0x3F),
         "window 1 content is all zeros: {row:?}"
     );
-    assert_eq!(row[DIGITS_PER_ROW - 1], seg7::OVERFLOW, "still more to the right");
+    assert_eq!(
+        row[DIGITS_PER_ROW - 1],
+        seg7::OVERFLOW,
+        "still more to the right"
+    );
 
     for _ in 0..10 {
         app.press_key(Key::WinR); // clamps at the last window
@@ -333,7 +427,11 @@ fn window_keys_scroll_long_values() {
     // 71 cells, windows start at 0/15/30/45/60 → window 4 shows 11 cells, then blanks
     assert_eq!(row[10], 0x3F);
     assert_eq!(row[11], 0x00, "blank-padded, left-aligned");
-    assert_ne!(row[DIGITS_PER_ROW - 1], seg7::OVERFLOW, "last window: nothing to the right");
+    assert_ne!(
+        row[DIGITS_PER_ROW - 1],
+        seg7::OVERFLOW,
+        "last window: nothing to the right"
+    );
 
     app.press_key(Key::WinL);
     assert_eq!(app.window(), (3, 5));
@@ -352,15 +450,28 @@ fn both_display_modules_agree_on_the_windowed_row() {
     press_all(&mut app, &[Key::Digit(2), Key::Digit(2), Key::Fact]); // 22! = 22 digits
 
     let text = app.text_rows()[seg7::DISPLAY_ROWS - 1].clone();
-    assert!(text.ends_with('>'), "matrix sees the overflow marker too: {text:?}");
-    assert_eq!(seg7::encode_cells(&text).len(), DIGITS_PER_ROW, "windowed to the row");
-    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1], seg7::encode_row(&text));
+    assert!(
+        text.ends_with('>'),
+        "matrix sees the overflow marker too: {text:?}"
+    );
+    assert_eq!(
+        seg7::encode_cells(&text).len(),
+        DIGITS_PER_ROW,
+        "windowed to the row"
+    );
+    assert_eq!(
+        app.seg_rows()[seg7::DISPLAY_ROWS - 1],
+        seg7::encode_row(&text)
+    );
 
     // …and the window keys move the matrix's text, not just the glass.
     app.press_key(Key::WinR);
     let scrolled = app.text_rows()[seg7::DISPLAY_ROWS - 1].clone();
     assert_ne!(scrolled, text, "the matrix scrolls with the glass");
-    assert_eq!(app.seg_rows()[seg7::DISPLAY_ROWS - 1], seg7::encode_row(&scrolled));
+    assert_eq!(
+        app.seg_rows()[seg7::DISPLAY_ROWS - 1],
+        seg7::encode_row(&scrolled)
+    );
 }
 
 /// A value that fits is untouched: no marker, no padding, no window.
@@ -412,14 +523,22 @@ fn status_view_shows_modes_then_restores() {
     let mut app = App::new(256);
     press_all(
         &mut app,
-        &[Key::Hex, Key::Digit(8), Key::WordSize, Key::Digit(4), Key::Fix, Key::Digit(1), Key::Sf],
+        &[
+            Key::Hex,
+            Key::Digit(8),
+            Key::WordSize,
+            Key::Digit(4),
+            Key::Fix,
+            Key::Digit(1),
+            Key::Sf,
+        ],
     );
     app.press_key(Key::Status);
     let rows = app.text_rows();
     assert_eq!(rows[0].trim_end(), "bASE 16 2S rAd");
     assert_eq!(rows[1].trim_end(), "P256 b8");
     assert_eq!(rows[2].trim_end(), "FI 4 000010"); // flags 543210: F1 set
-    // every character must be 7-seg renderable
+                                                   // every character must be 7-seg renderable
     for r in &rows {
         for ch in r.chars() {
             assert!(
@@ -437,7 +556,16 @@ fn status_view_shows_modes_then_restores() {
 fn status_reflects_carry_and_word_flags() {
     let mut app = App::new(128);
     // 8-bit word, inexact isqrt sets carry (flag 4)
-    press_all(&mut app, &[Key::Digit(8), Key::WordSize, Key::Digit(1), Key::Digit(7), Key::Sqrt]);
+    press_all(
+        &mut app,
+        &[
+            Key::Digit(8),
+            Key::WordSize,
+            Key::Digit(1),
+            Key::Digit(7),
+            Key::Sqrt,
+        ],
+    );
     app.press_key(Key::Status);
     let rows = app.text_rows();
     assert_eq!(rows[2].trim_end(), "AUtO 010000");
@@ -577,7 +705,7 @@ fn pers_cycles_to_sci_and_back() {
     assert_eq!(app.keymap().name, "16C");
     assert_eq!(app.calc().angle_mode(), AngleMode::Rad);
     app.press_key(Key::ClrX); // exit menu
-    // SCI again via API: the matrix now resolves SCI faces
+                              // SCI again via API: the matrix now resolves SCI faces
     app.set_keymap(&calcumaker_core::keys::SCI);
     app.press(0, 0); // Sin in both — but at (2,0) SCI has Σ+
     let _ = app.calc();
@@ -597,8 +725,11 @@ fn sci_keymap_positions() {
     app.press(3, 6); // 1
     app.press(2, 0); // Σ+
     assert_eq!(x_row(&app), "1"); // n = 1 (FIX shows ints plain)
-    // g-shifted nCr on the same key
-    press_all(&mut app, &[Key::ClrX, Key::Digit(5), Key::Enter, Key::Digit(2)]);
+                                  // g-shifted nCr on the same key
+    press_all(
+        &mut app,
+        &[Key::ClrX, Key::Digit(5), Key::Enter, Key::Digit(2)],
+    );
     app.press(4, 1); // g shift
     app.press(2, 0); // nCr
     assert_eq!(x_row(&app), "10"); // C(5,2)
@@ -610,9 +741,12 @@ fn sci_keymap_positions() {
 fn sci_division_is_real() {
     let mut app = App::new(128);
     app.set_keymap(&calcumaker_core::keys::SCI);
-    press_all(&mut app, &[Key::Digit(3), Key::Enter, Key::Digit(2), Key::Div]);
+    press_all(
+        &mut app,
+        &[Key::Digit(3), Key::Enter, Key::Digit(2), Key::Div],
+    );
     assert_eq!(x_row(&app), "1.5000"); // FIX 4 default
-    // EntrY item exists in SETUP (index 7)
+                                       // EntrY item exists in SETUP (index 7)
     app.set_keymap(&calcumaker_core::keys::HP16C);
     app.press_key(Key::Setup);
     for _ in 0..7 {
@@ -632,9 +766,15 @@ fn sci_division_is_real() {
 fn fin_tvm_keys_store_then_solve() {
     let mut app = App::new(256);
     app.set_keymap(&calcumaker_core::keys::FIN); // applies FIX 2
-    // 360 n | 0.5 i | 100000 PV | 0 FV | PMT (bare = solve)
-    press_all(&mut app, &[Key::Digit(3), Key::Digit(6), Key::Digit(0), Key::TvmN]);
-    press_all(&mut app, &[Key::Digit(0), Key::Dot, Key::Digit(5), Key::TvmI]);
+                                                 // 360 n | 0.5 i | 100000 PV | 0 FV | PMT (bare = solve)
+    press_all(
+        &mut app,
+        &[Key::Digit(3), Key::Digit(6), Key::Digit(0), Key::TvmN],
+    );
+    press_all(
+        &mut app,
+        &[Key::Digit(0), Key::Dot, Key::Digit(5), Key::TvmI],
+    );
     for d in [1, 0, 0, 0, 0, 0] {
         app.press_key(Key::Digit(d));
     }
@@ -686,7 +826,8 @@ fn pers_cycles_three_ways() {
 #[test]
 fn classic4_app_enter_duplicates() {
     let mut app = App::new(128);
-    app.calc_mut().set_stack_model(calcumaker_core::StackModel::Classic4);
+    app.calc_mut()
+        .set_stack_model(calcumaker_core::StackModel::Classic4);
     press_all(&mut app, &[Key::Digit(3), Key::Enter, Key::Add]);
     assert_eq!(x_row(&app), "6");
 }
@@ -714,7 +855,16 @@ fn window_is_single_for_short_values() {
 #[test]
 fn overflow_marks_last_cell() {
     let mut app = App::new(256);
-    press_all(&mut app, &[Key::Digit(2), Key::Digit(0), Key::Fact, Key::Digit(3), Key::Mul]);
+    press_all(
+        &mut app,
+        &[
+            Key::Digit(2),
+            Key::Digit(0),
+            Key::Fact,
+            Key::Digit(3),
+            Key::Mul,
+        ],
+    );
     // 20! * 3 = 7298712478720819200000 → 22 digits, > 16 cells
     let bottom = app.seg_rows()[seg7::DISPLAY_ROWS - 1];
     assert_eq!(bottom[DIGITS_PER_ROW - 1], seg7::OVERFLOW);
@@ -726,7 +876,10 @@ fn overflow_marks_last_cell() {
 #[test]
 fn glass_shows_error_code() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div]);
+    press_all(
+        &mut app,
+        &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div],
+    );
     assert_eq!(x_row(&app), "Error 0");
     assert_eq!(app.message(), Some("divide by zero"));
     // renderable on the 7-seg
@@ -745,7 +898,10 @@ fn glass_shows_error_code() {
 #[test]
 fn aux_oled_lines() {
     let mut app = App::new(128);
-    press_all(&mut app, &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div]);
+    press_all(
+        &mut app,
+        &[Key::Digit(5), Key::Enter, Key::Digit(0), Key::Div],
+    );
     let l = app.aux_lines();
     assert_eq!(l[0], "16C DEC RAD FLEX");
     assert_eq!(l[1], "P128");
@@ -767,9 +923,12 @@ fn aux_oled_lines() {
     app.press_key(Key::ClrX);
     assert!(!app.aux_shows_flags());
     assert_eq!(app.aux_lines()[0], "7"); // body starts at line 0 now
-    // long errors wrap across the full width
+                                         // long errors wrap across the full width
     app.calc_mut().set_num_mode(calcumaker_core::NumMode::Flex);
-    press_all(&mut app, &[Key::Digit(2), Key::Dot, Key::Digit(5), Key::Enter]);
+    press_all(
+        &mut app,
+        &[Key::Digit(2), Key::Dot, Key::Digit(5), Key::Enter],
+    );
     app.press_key(Key::Sto);
     app.press_key(Key::Add); // "register select cancelled"
     let l = app.aux_lines();
@@ -781,11 +940,13 @@ fn aux_oled_lines() {
 fn complex_spans_two_rows() {
     use calcumaker_core::App;
     let mut a = App::new(256);
-    for t in ["3", "4", "complex"] { a.calc_mut().input(t).unwrap(); } // X = 3+4i
+    for t in ["3", "4", "complex"] {
+        a.calc_mut().input(t).unwrap();
+    } // X = 3+4i
     let r = a.text_rows();
     assert_eq!(r[1].trim(), "3"); // real part
     assert_eq!(r[2].trim(), "4 i"); // imaginary part with indicator
-    // polar: magnitude / angle
+                                    // polar: magnitude / angle
     a.calc_mut().input("polar").unwrap();
     a.calc_mut().input("deg").unwrap();
     let p = a.text_rows();

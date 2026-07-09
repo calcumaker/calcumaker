@@ -112,7 +112,11 @@ pub fn run_all() -> Report {
     if failed == 0 {
         log_info!("SELF-TEST PASS: {=u32}/{=u32}", passed, passed);
     } else {
-        log_error!("SELF-TEST FAIL: {=u32} passed, {=u32} failed", passed, failed);
+        log_error!(
+            "SELF-TEST FAIL: {=u32} passed, {=u32} failed",
+            passed,
+            failed
+        );
     }
     Report { passed, failed }
 }

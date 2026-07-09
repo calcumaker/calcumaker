@@ -10,8 +10,8 @@
 //!   production board sources its USB clock (DESIGN.md → USB FS).
 
 use embassy_stm32::rcc::{
-    Hsi48Config, LsConfig, Pll, PllDiv, PllMul, PllPreDiv, PllSource, RtcClockSource, Sysclk,
-    VoltageScale, mux,
+    mux, Hsi48Config, LsConfig, Pll, PllDiv, PllMul, PllPreDiv, PllSource, RtcClockSource, Sysclk,
+    VoltageScale,
 };
 use embassy_stm32::Config;
 
@@ -22,9 +22,9 @@ pub fn config() -> Config {
     // 16 MHz HSI as the PLL1 reference.
     rcc.hsi = true;
     rcc.pll1 = Some(Pll {
-        source: PllSource::HSI,   // 16 MHz
-        prediv: PllPreDiv::DIV1,  // PLL input 16 MHz
-        mul: PllMul::MUL10,       // VCO 160 MHz
+        source: PllSource::HSI,  // 16 MHz
+        prediv: PllPreDiv::DIV1, // PLL input 16 MHz
+        mul: PllMul::MUL10,      // VCO 160 MHz
         divp: None,
         divq: None,
         divr: Some(PllDiv::DIV1), // PLL1-R = 160 MHz → SYSCLK
@@ -33,7 +33,9 @@ pub fn config() -> Config {
     rcc.voltage_range = VoltageScale::RANGE1; // required for SYSCLK > 110 MHz
 
     // 48 MHz USB clock: HSI48, CRS-synced to the USB frame start.
-    rcc.hsi48 = Some(Hsi48Config { sync_from_usb: true });
+    rcc.hsi48 = Some(Hsi48Config {
+        sync_from_usb: true,
+    });
     rcc.mux.iclksel = mux::Iclksel::HSI48;
 
     // Low-power timing substrate: enable LSI (~32 kHz) and clock the RTC from it.

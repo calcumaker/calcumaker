@@ -107,7 +107,11 @@ pub(crate) fn complex_rows(z: &Complex, c: &Calc, cells: usize) -> [String; 2] {
     let prec = c.prec();
     if c.polar() {
         let r = format_fit(&Value::Real(z.abs(prec)), c, cells);
-        let theta = format_fit(&Value::Real(angle_out(z.arg(prec), c.angle_mode(), prec)), c, cells);
+        let theta = format_fit(
+            &Value::Real(angle_out(z.arg(prec), c.angle_mode(), prec)),
+            c,
+            cells,
+        );
         [r, theta]
     } else {
         let re = format_fit(&Value::Real(z.real(prec)), c, cells);
@@ -159,7 +163,12 @@ fn format_real(f: &Float, prec: u32, fmt: FloatFmt) -> String {
     match fmt {
         FloatFmt::Auto => {
             let snapped = snap_near_int(f, prec);
-            reformat(&snapped.as_ref().unwrap_or(f).to_string_radix(10, dec_digits(prec)))
+            reformat(
+                &snapped
+                    .as_ref()
+                    .unwrap_or(f)
+                    .to_string_radix(10, dec_digits(prec)),
+            )
         }
         FloatFmt::Fix(d) => fix(f, d as i64),
         FloatFmt::Sci(d) => sci_n(f, d as usize),

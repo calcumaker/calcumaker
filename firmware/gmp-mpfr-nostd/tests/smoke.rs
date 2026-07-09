@@ -15,7 +15,8 @@ fn int_arith_and_clone() {
 fn int_div_truncates_and_bitwise() {
     let q = Integer::from_i64(7) / Integer::from_i64(2);
     assert_eq!(q.to_string_radix(10), "3");
-    let and = Integer::from_str_radix("ff", 16).unwrap() & Integer::from_str_radix("0f", 16).unwrap();
+    let and =
+        Integer::from_str_radix("ff", 16).unwrap() & Integer::from_str_radix("0f", 16).unwrap();
     assert_eq!(and.to_string_radix(16), "f");
     let shifted = Integer::from_i64(1) << 64u32;
     assert_eq!(shifted.to_string_radix(10), "18446744073709551616");
@@ -23,7 +24,10 @@ fn int_div_truncates_and_bitwise() {
 
 #[test]
 fn factorial_and_to_u32() {
-    assert_eq!(Integer::factorial(20).to_string_radix(10), "2432902008176640000");
+    assert_eq!(
+        Integer::factorial(20).to_string_radix(10),
+        "2432902008176640000"
+    );
     assert_eq!(Integer::from_i64(42).to_u32(), Some(42));
     assert_eq!(Integer::from_i64(-1).to_u32(), None);
 }
@@ -40,16 +44,25 @@ fn float_pi_and_ops() {
     assert!(pi.to_string_radix(10, 20).starts_with("3.1415926535897932"));
     // (1/2) as a float
     let half = Float::from_i64(64, 1) / Float::from_i64(64, 2);
-    assert!(half.to_string_radix(10, 5).starts_with("5"), "0.5 normalized form"); // 5.0e-1
+    assert!(
+        half.to_string_radix(10, 5).starts_with("5"),
+        "0.5 normalized form"
+    ); // 5.0e-1
 }
 
 #[test]
 fn float_from_integer_and_str() {
     let big = Integer::factorial(30);
     let f = Float::from_integer(256, &big);
-    assert!(f.to_string_radix(10, 12).starts_with("2.65252859812"), "30! as float");
+    assert!(
+        f.to_string_radix(10, 12).starts_with("2.65252859812"),
+        "30! as float"
+    );
     let x = Float::from_str(64, "0.25").unwrap();
-    assert!(x.to_string_radix(10, 4).starts_with("2.5"), "0.25 -> 2.5e-1");
+    assert!(
+        x.to_string_radix(10, 4).starts_with("2.5"),
+        "0.25 -> 2.5e-1"
+    );
 }
 
 /// 32-bit-target regression: from_i64 must not truncate through c_long

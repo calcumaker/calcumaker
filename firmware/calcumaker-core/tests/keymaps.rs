@@ -12,7 +12,11 @@ fn keymap_docs_are_fresh() {
         (&keys::FIN, include_str!("../../../doc/keymap-fin.txt")),
     ];
     // Also guards against a personality being added without its diagram.
-    assert_eq!(committed.len(), keys::PERSONALITIES.len(), "add the new personality's diagram");
+    assert_eq!(
+        committed.len(),
+        keys::PERSONALITIES.len(),
+        "add the new personality's diagram"
+    );
     for (km, file) in committed {
         assert_eq!(
             keydoc::render(km),
@@ -28,7 +32,11 @@ fn keymap_docs_are_fresh() {
 #[test]
 fn keymap_docs_are_ascii() {
     for km in keys::PERSONALITIES {
-        assert!(keydoc::render(km).is_ascii(), "{} diagram contains non-ASCII", km.name);
+        assert!(
+            keydoc::render(km).is_ascii(),
+            "{} diagram contains non-ASCII",
+            km.name
+        );
     }
 }
 
@@ -42,11 +50,21 @@ fn enter_is_2u_in_every_personality() {
 
     let (sr, sc) = ENTER_SWITCH_CELL;
     let (ar, ac) = ENTER_SPAN_CELL;
-    assert!(cell_has_switch(sr, sc), "ENTER's switch cell must have a switch");
-    assert!(!cell_has_switch(ar, ac), "the spanned cell must have no switch");
+    assert!(
+        cell_has_switch(sr, sc),
+        "ENTER's switch cell must have a switch"
+    );
+    assert!(
+        !cell_has_switch(ar, ac),
+        "the spanned cell must have no switch"
+    );
 
     for km in keys::PERSONALITIES {
-        assert!(matches!(km.base[sr][sc], Key::Enter), "{}: ENTER left its cell", km.name);
+        assert!(
+            matches!(km.base[sr][sc], Key::Enter),
+            "{}: ENTER left its cell",
+            km.name
+        );
         for (name, layer) in [("base", &km.base), ("f", &km.f), ("g", &km.g)] {
             assert!(
                 matches!(layer[ar][ac], Key::Absent),

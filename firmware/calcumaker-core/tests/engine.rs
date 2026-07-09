@@ -141,7 +141,10 @@ fn factorial_20_exact() {
 fn factorial_100_is_a_bignum() {
     let s = run(64, &["100", "fact"]);
     assert!(s.len() > 150, "100! should be ~158 digits, got {}", s.len());
-    assert!(s.ends_with("000000000000000000000000"), "100! ends in 24 zeros: {s}");
+    assert!(
+        s.ends_with("000000000000000000000000"),
+        "100! ends in 24 zeros: {s}"
+    );
 }
 
 #[test]
@@ -778,7 +781,7 @@ fn dbldiv_overflowing_quotient_errors_non_destructively() {
     }
     assert!(c.input("dbl/").is_err());
     assert_eq!(c.stack().len(), 3); // untouched
-    // …but the remainder of the same division fits
+                                    // …but the remainder of the same division fits
     c.input("dblr").unwrap();
     assert_eq!(c.display(), "0");
 }
@@ -1024,7 +1027,7 @@ fn real_div_zero_is_inf() {
 fn sqrt_of_negative_real() {
     // CPXRES (HP-42S default): a negative real promotes to complex.
     assert_eq!(run(64, &["-1.0", "sqrt"]), "0+1i"); // √-1 = i
-    // REALRES: real-only, so it's a NaN.
+                                                    // REALRES: real-only, so it's a NaN.
     assert_eq!(run(64, &["realres", "-1.0", "sqrt"]), "nan");
 }
 
@@ -1179,7 +1182,9 @@ fn hyperbolics_ignore_angle_mode() {
 #[test]
 fn tvm_mortgage_payment() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "360", ">n", "6", "12/", "100000", ">pv", "0", ">fv", "pmt?"] {
+    for t in [
+        "2", "fix", "360", ">n", "6", "12/", "100000", ">pv", "0", ">fv", "pmt?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "-599.55");
@@ -1189,7 +1194,9 @@ fn tvm_mortgage_payment() {
 #[test]
 fn tvm_future_value_of_savings() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "120", ">n", "0.5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?"] {
+    for t in [
+        "2", "fix", "120", ">n", "0.5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "16387.93");
@@ -1199,7 +1206,9 @@ fn tvm_future_value_of_savings() {
 #[test]
 fn tvm_solve_n() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "1", ">i", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "n?"] {
+    for t in [
+        "2", "fix", "1", ">i", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "n?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "69.66");
@@ -1209,7 +1218,9 @@ fn tvm_solve_n() {
 #[test]
 fn tvm_solve_i_compound() {
     let mut c = Calc::new(256);
-    for t in ["4", "fix", "10", ">n", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "i?"] {
+    for t in [
+        "4", "fix", "10", ">n", "1000", "chs", ">pv", "0", ">pmt", "2000", ">fv", "i?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "7.1773");
@@ -1231,7 +1242,9 @@ fn tvm_solve_i_annuity() {
 #[test]
 fn tvm_begin_mode() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "10", ">n", "5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?"] {
+    for t in [
+        "2", "fix", "10", ">n", "5", ">i", "0", ">pv", "100", "chs", ">pmt", "fv?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "1257.79"); // END
@@ -1246,7 +1259,9 @@ fn tvm_begin_mode() {
 #[test]
 fn tvm_zero_interest() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "10", ">n", "0", ">i", "1000", "chs", ">pv", "100", ">pmt", "fv?"] {
+    for t in [
+        "2", "fix", "10", ">n", "0", ">i", "1000", "chs", ">pv", "100", ">pmt", "fv?",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "0.00");
@@ -1256,7 +1271,9 @@ fn tvm_zero_interest() {
 #[test]
 fn tvm_solve_stores_and_recalls() {
     let mut c = Calc::new(256);
-    for t in ["2", "fix", "360", ">n", "0.5", ">i", "100000", ">pv", "0", ">fv", "pmt?", "drop", "rclpmt"] {
+    for t in [
+        "2", "fix", "360", ">n", "0.5", ">i", "100000", ">pv", "0", ">fv", "pmt?", "drop", "rclpmt",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "-599.55");
@@ -1313,7 +1330,9 @@ fn percent_change_and_of_total() {
 fn weighted_mean_from_sigma() {
     let mut c = Calc::new(128);
     // (x=10, w=2), (x=20, w=3) → (20+60)/5 = 16
-    for t in ["2", "10", "s+", "drop", "drop", "3", "20", "s+", "drop", "drop", "wmean"] {
+    for t in [
+        "2", "10", "s+", "drop", "drop", "3", "20", "s+", "drop", "drop", "wmean",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "16");
@@ -1391,7 +1410,7 @@ fn dateadd_and_day_of_week() {
     assert_eq!(c.display(), "10.142005");
     c.input("dow").unwrap();
     assert_eq!(c.display(), "5"); // 2005-10-14 was a Friday
-    // leap handling: Feb 28 2024 + 1 = Feb 29
+                                  // leap handling: Feb 28 2024 + 1 = Feb 29
     let mut c = Calc::new(256);
     for t in ["6", "fix", "2.282024", "1", "dateadd"] {
         c.input(t).unwrap();
@@ -1514,7 +1533,9 @@ fn stats_linear_regression_and_estimate() {
 #[test]
 fn sigma_minus_removes_a_point() {
     let mut c = Calc::new(128);
-    for t in ["1", "s+", "drop", "2", "s+", "drop", "9", "s+", "drop", "9", "s-"] {
+    for t in [
+        "1", "s+", "drop", "2", "s+", "drop", "9", "s+", "drop", "9", "s-",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.display(), "2"); // n back to 2
@@ -1527,7 +1548,9 @@ fn sigma_minus_removes_a_point() {
 fn lr_degenerate_data_errors() {
     let mut c = Calc::new(128);
     // two points with identical x
-    for t in ["1", "5", "s+", "drop", "drop", "2", "5", "s+", "drop", "drop"] {
+    for t in [
+        "1", "5", "s+", "drop", "drop", "2", "5", "s+", "drop", "drop",
+    ] {
         c.input(t).unwrap();
     }
     assert!(c.input("lr").is_err());
@@ -1577,7 +1600,7 @@ fn ran_is_deterministic_and_in_range() {
     assert_eq!(a.display(), b.display()); // same default seed
     a.input("floor").unwrap();
     assert_eq!(a.display(), "0"); // 0 ≤ ran < 1
-    // re-seeding changes the stream
+                                  // re-seeding changes the stream
     let mut c = Calc::new(128);
     for t in ["42", "seed", "ran"] {
         c.input(t).unwrap();
@@ -1812,7 +1835,10 @@ fn review_prec_change_rerounds_registers() {
     }
     // 7/3 at ~full 256-bit precision: many correct digits, not 19
     let s = c.display();
-    assert!(s.starts_with("2.33333333333333333333333333333333333333"), "mean = {s}");
+    assert!(
+        s.starts_with("2.33333333333333333333333333333333333333"),
+        "mean = {s}"
+    );
 }
 
 // ---- errors never consume operands ---------------------------------------------
@@ -1914,7 +1940,9 @@ fn error_codes_by_class() {
         c.input(t).unwrap();
     }
     assert_eq!(c.input("pow").unwrap_err().code(), 4); // too large
-    for t in ["clear", "10", ">n", "1000", ">pv", "100", ">pmt", "1000", ">fv"] {
+    for t in [
+        "clear", "10", ">n", "1000", ">pv", "100", ">pmt", "1000", ">fv",
+    ] {
         c.input(t).unwrap();
     }
     assert_eq!(c.input("i?").unwrap_err().code(), 5); // no solution
@@ -1926,8 +1954,11 @@ fn error_codes_by_class() {
     assert_eq!(c.input("dateadd").unwrap_err().code(), 7); // dates
     c.input("clear").unwrap();
     assert_eq!(c.input("mean").unwrap_err().code(), 8); // statistics
-    // and every error still carries its full text
-    assert_eq!(c.input("mean").unwrap_err().text(), "need more data points (s+)");
+                                                        // and every error still carries its full text
+    assert_eq!(
+        c.input("mean").unwrap_err().text(),
+        "need more data points (s+)"
+    );
 }
 
 // ---- Complex numbers (HP-42S model) ---------------------------------------
@@ -1936,10 +1967,19 @@ fn error_codes_by_class() {
 fn complex_merge_and_arith() {
     assert_eq!(run(256, &["3", "4", "complex"]), "3+4i"); // Y=re, X=im
     assert_eq!(run(256, &["3", "4", "complex", "complex"]), "4"); // split -> X=im
-    assert_eq!(run(256, &["3", "4", "complex", "1", "2", "complex", "+"]), "4+6i");
-    assert_eq!(run(256, &["3", "4", "complex", "1", "2", "complex", "*"]), "-5+10i");
+    assert_eq!(
+        run(256, &["3", "4", "complex", "1", "2", "complex", "+"]),
+        "4+6i"
+    );
+    assert_eq!(
+        run(256, &["3", "4", "complex", "1", "2", "complex", "*"]),
+        "-5+10i"
+    );
     // i*i stays a single complex object (not demoted to a real)
-    assert_eq!(run(256, &["0", "1", "complex", "0", "1", "complex", "*"]), "-1+0i");
+    assert_eq!(
+        run(256, &["0", "1", "complex", "0", "1", "complex", "*"]),
+        "-1+0i"
+    );
     // a real promotes to complex when the other operand is complex
     assert_eq!(run(256, &["5", "0", "2", "complex", "+"]), "5+2i");
 }
@@ -1954,7 +1994,10 @@ fn complex_chs_abs_sq() {
 #[test]
 fn complex_polar_display() {
     // i in polar/degrees is 1 ∠ 90
-    assert_eq!(run(256, &["0", "1", "complex", "polar", "deg"]), "1 \u{2220} 90");
+    assert_eq!(
+        run(256, &["0", "1", "complex", "polar", "deg"]),
+        "1 \u{2220} 90"
+    );
     // rect toggles back
     assert_eq!(run(256, &["0", "1", "complex", "polar", "rect"]), "0+1i");
 }
@@ -1965,7 +2008,7 @@ fn complex_functions_and_cpxres() {
     assert_eq!(run(256, &["float", "4", "chs", "sqrt"]), "0+2i"); // √-4 = 2i
     assert_eq!(run(256, &["3", "4", "complex", "sqrt"]), "2+1i"); // √(3+4i)
     assert_eq!(run(256, &["0", "1", "complex", "inv"]), "0-1i"); // 1/i = -i
-    // ln(-1) = iπ
+                                                                 // ln(-1) = iπ
     assert!(run(256, &["float", "1", "chs", "ln"]).starts_with("0+3.14159265358979"));
     // (-8)^(1/3) principal root = 1 + i√3
     assert!(run(256, &["float", "8", "chs", "3", "inv", "pow"]).contains("+1.7320508"));
@@ -1995,9 +2038,9 @@ fn complex_part_ops() {
 fn coord_conversion_p_r() {
     // →P: rectangular (X=x, Y=y) → polar (X=r, Y=θ). x=3, y=4 → r=5, θ=53.13°.
     assert_eq!(run(256, &["deg", "4", "3", "topolar"]), "5"); // X = r
-    // →R with θ=0 is exact: r=7, θ=0 → x=7.
+                                                              // →R with θ=0 is exact: r=7, θ=0 → x=7.
     assert_eq!(run(256, &["deg", "0", "7", "torect"]), "7"); // X = x
-    // Round-trip →P→R recovers the x-coordinate exactly.
+                                                             // Round-trip →P→R recovers the x-coordinate exactly.
     assert_eq!(run(256, &["deg", "4", "3", "topolar", "torect"]), "3"); // X = x
 }
 
@@ -2013,7 +2056,10 @@ fn matrix_ops() {
     // determinant of a diagonal matrix is exact.
     assert_eq!(run(128, &["[2,0;0,3]", "det"]), "6");
     // A·A⁻¹ = I; a diagonal solve is exact.
-    assert_eq!(run(128, &["[2,1;1,3]", "[2,1;1,3]", "minv", "*"]), "[1,0;0,1]");
+    assert_eq!(
+        run(128, &["[2,1;1,3]", "[2,1;1,3]", "minv", "*"]),
+        "[1,0;0,1]"
+    );
     assert_eq!(run(128, &["[2,0;0,2]", "[4;6]", "matsolve"]), "[2;3]"); // Y=A, X=B
 }
 
@@ -2041,10 +2087,16 @@ fn solve_roots() {
 #[test]
 fn integrate_definite() {
     // tanh-sinh reaches full precision: these match the exact constants exactly.
-    assert_eq!(run(256, &["fn:x,inv", "1", "2", "integ"]), run(256, &["2", "ln"])); // ∫1/x = ln2
-    assert_eq!(run(256, &["fn:4,1,x,sq,+,/", "0", "1", "integ"]), run(256, &["pi"])); // = π
+    assert_eq!(
+        run(256, &["fn:x,inv", "1", "2", "integ"]),
+        run(256, &["2", "ln"])
+    ); // ∫1/x = ln2
+    assert_eq!(
+        run(256, &["fn:4,1,x,sq,+,/", "0", "1", "integ"]),
+        run(256, &["pi"])
+    ); // = π
     assert_eq!(run(256, &["rad", "fn:x,sin", "0", "pi", "integ"]), "2"); // ∫sin[0,π] = 2
-    // ∫x²[0,1] = 1/3.
+                                                                         // ∫x²[0,1] = 1/3.
     assert!(run(256, &["fn:x,sq", "0", "1", "integ"])
         .starts_with("0.3333333333333333333333333333333333333"));
 }
@@ -2052,7 +2104,9 @@ fn integrate_definite() {
 #[test]
 fn matrix_keyboard_entry() {
     // 2×2 via mnew/mset (the keyboard flow, no [..] literal).
-    let build = &["2", "2", "mnew", "1", "mset", "2", "mset", "3", "mset", "4", "mset"];
+    let build = &[
+        "2", "2", "mnew", "1", "mset", "2", "mset", "3", "mset", "4", "mset",
+    ];
     assert_eq!(run(128, build), "[1,2;3,4]");
     // partial fill keeps the rest zero.
     assert_eq!(run(128, &["2", "2", "mnew", "5", "mset"]), "[5,0;0,0]");
@@ -2066,8 +2120,8 @@ fn matrix_keyboard_entry() {
 fn near_integer_snap() {
     // Working-precision roundoff snaps to the integer in AUTO display.
     assert_eq!(run(128, &["[1,2;3,4]", "det"]), "-2"); // was −1.999…8
-    assert_eq!(run(128, &["float", "2", "sqrt", "sq"]), "2"); // (√2)² 
-    // Genuine non-integers are left alone.
+    assert_eq!(run(128, &["float", "2", "sqrt", "sq"]), "2"); // (√2)²
+                                                              // Genuine non-integers are left alone.
     assert_eq!(run(128, &["float", "3", "2", "/"]), "1.5");
     assert_eq!(run(128, &["float", "2.0000001"]), "2.0000001");
 }
@@ -2075,17 +2129,32 @@ fn near_integer_snap() {
 #[test]
 fn rnd_rounds_to_displayed_precision() {
     // HP RND: make the STORED value match what the glass shows. (`std` = AUTO)
-    assert_eq!(run(128, &["float", "2", "fix", "3.14159", "rnd", "std"]), "3.14");
+    assert_eq!(
+        run(128, &["float", "2", "fix", "3.14159", "rnd", "std"]),
+        "3.14"
+    );
     // SCI d shows d+1 significant digits.
-    assert_eq!(run(128, &["float", "3", "sci", "1234.5", "rnd", "std"]), "1234");
-    assert_eq!(run(128, &["float", "2", "sci", "1234.5", "rnd", "std"]), "1230");
-    assert_eq!(run(128, &["float", "2", "sci", "0.0012345", "rnd", "std"]), "0.00123");
+    assert_eq!(
+        run(128, &["float", "3", "sci", "1234.5", "rnd", "std"]),
+        "1234"
+    );
+    assert_eq!(
+        run(128, &["float", "2", "sci", "1234.5", "rnd", "std"]),
+        "1230"
+    );
+    assert_eq!(
+        run(128, &["float", "2", "sci", "0.0012345", "rnd", "std"]),
+        "0.00123"
+    );
     // AUTO already shows full precision, and integers are exact -> no-ops.
     assert_eq!(run(128, &["float", "3.14159", "rnd"]), "3.14159");
     assert_eq!(run(128, &["42", "rnd"]), "42");
     // Type-preserving, and a complex rounds both parts.
     assert_eq!(
-        run(128, &["float", "2", "fix", "3.14159", "2.71828", "complex", "rnd", "std"]),
+        run(
+            128,
+            &["float", "2", "fix", "3.14159", "2.71828", "complex", "rnd", "std"]
+        ),
         "3.14+2.72i"
     );
     // RND is NOT round-to-integer: those stay their own ops (INT key = trunc).

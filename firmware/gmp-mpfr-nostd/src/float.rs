@@ -15,7 +15,8 @@ pub struct Float {
     pub(crate) raw: ffi::mpfr_struct,
 }
 
-type MpfrUnary = unsafe extern "C" fn(*mut ffi::mpfr_struct, *const ffi::mpfr_struct, c_int) -> c_int;
+type MpfrUnary =
+    unsafe extern "C" fn(*mut ffi::mpfr_struct, *const ffi::mpfr_struct, c_int) -> c_int;
 
 impl Float {
     /// New value of `prec` bits, set to NaN until assigned (we always assign).
@@ -23,7 +24,9 @@ impl Float {
         let mut raw = MaybeUninit::<ffi::mpfr_struct>::uninit();
         unsafe {
             ffi::mpfr_init2(raw.as_mut_ptr(), prec.max(2) as ffi::mpfr_prec_t);
-            Float { raw: raw.assume_init() }
+            Float {
+                raw: raw.assume_init(),
+            }
         }
     }
 
@@ -143,7 +146,14 @@ impl Float {
         let n = ndigits.max(2);
         let mut exp: ffi::mpfr_exp_t = 0;
         let p = unsafe {
-            ffi::mpfr_get_str(core::ptr::null_mut(), &mut exp, base as c_int, n, &self.raw, RNDN)
+            ffi::mpfr_get_str(
+                core::ptr::null_mut(),
+                &mut exp,
+                base as c_int,
+                n,
+                &self.raw,
+                RNDN,
+            )
         };
         if p.is_null() {
             return String::new();
@@ -151,7 +161,9 @@ impl Float {
         // SAFETY: `p` is a NUL-terminated string MPFR allocated; we free it.
         let s = unsafe {
             let cstr = core::ffi::CStr::from_ptr(p);
-            let owned = core::str::from_utf8(cstr.to_bytes()).unwrap_or("").to_string();
+            let owned = core::str::from_utf8(cstr.to_bytes())
+                .unwrap_or("")
+                .to_string();
             ffi::mpfr_free_str(p);
             owned
         };

@@ -35,9 +35,18 @@ fn main() {
         // (gmp<->mpfr<->libc<->libgcc) resolve; `--gc-sections` drops the unused
         // GMP/MPFR functions (the archives were built -ffunction/-fdata-sections).
         let gcc = env::var("ARM_NONE_EABI_GCC").unwrap_or_else(|_| "arm-none-eabi-gcc".into());
-        let arch = ["-mcpu=cortex-m33", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16"];
+        let arch = [
+            "-mcpu=cortex-m33",
+            "-mthumb",
+            "-mfloat-abi=hard",
+            "-mfpu=fpv5-sp-d16",
+        ];
         let dir_of = |args: &[&str]| -> Option<String> {
-            let out = std::process::Command::new(&gcc).args(arch).args(args).output().ok()?;
+            let out = std::process::Command::new(&gcc)
+                .args(arch)
+                .args(args)
+                .output()
+                .ok()?;
             let p = PathBuf::from(String::from_utf8(out.stdout).ok()?.trim());
             if p.is_absolute() {
                 p.parent().map(|d| d.display().to_string())

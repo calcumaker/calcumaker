@@ -9,8 +9,12 @@ use crate::ffi::{self, MPC_RNDNN, RNDN};
 use crate::float::Float;
 
 type McUnary = unsafe extern "C" fn(*mut ffi::mpc_struct, *const ffi::mpc_struct, c_int) -> c_int;
-type McBinary =
-    unsafe extern "C" fn(*mut ffi::mpc_struct, *const ffi::mpc_struct, *const ffi::mpc_struct, c_int) -> c_int;
+type McBinary = unsafe extern "C" fn(
+    *mut ffi::mpc_struct,
+    *const ffi::mpc_struct,
+    *const ffi::mpc_struct,
+    c_int,
+) -> c_int;
 type McToReal = unsafe extern "C" fn(*mut ffi::mpfr_struct, *const ffi::mpc_struct, c_int) -> c_int;
 
 pub struct Complex {
@@ -23,7 +27,9 @@ impl Complex {
         let mut raw = MaybeUninit::<ffi::mpc_struct>::uninit();
         unsafe {
             ffi::mpc_init2(raw.as_mut_ptr(), prec.max(2) as ffi::mpfr_prec_t);
-            Complex { raw: raw.assume_init() }
+            Complex {
+                raw: raw.assume_init(),
+            }
         }
     }
 

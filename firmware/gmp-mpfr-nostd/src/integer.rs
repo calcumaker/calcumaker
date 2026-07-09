@@ -19,7 +19,9 @@ impl Integer {
         // SAFETY: __gmpz_init fully initializes the struct in place.
         unsafe {
             ffi::__gmpz_init(raw.as_mut_ptr());
-            Integer { raw: raw.assume_init() }
+            Integer {
+                raw: raw.assume_init(),
+            }
         }
     }
 
@@ -50,7 +52,8 @@ impl Integer {
     pub fn from_str_radix(s: &str, base: i32) -> Option<Self> {
         let c = crate::cbytes(s);
         let mut x = Self::new();
-        let ok = unsafe { ffi::__gmpz_set_str(&mut x.raw, c.as_ptr() as *const c_char, base as c_int) };
+        let ok =
+            unsafe { ffi::__gmpz_set_str(&mut x.raw, c.as_ptr() as *const c_char, base as c_int) };
         if ok == 0 {
             Some(x)
         } else {
@@ -200,7 +203,9 @@ impl Clone for Integer {
         let mut raw = MaybeUninit::<ffi::mpz_struct>::uninit();
         unsafe {
             ffi::__gmpz_init_set(raw.as_mut_ptr(), &self.raw);
-            Integer { raw: raw.assume_init() }
+            Integer {
+                raw: raw.assume_init(),
+            }
         }
     }
 }

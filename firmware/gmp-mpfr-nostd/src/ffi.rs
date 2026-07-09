@@ -108,16 +108,42 @@ extern "C" {
     pub fn mpfr_frac(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_zero_p(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_equal_p(a: *const mpfr_struct, b: *const mpfr_struct) -> c_int;
-    pub fn mpfr_fmod(r: *mut mpfr_struct, x: *const mpfr_struct, y: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_fmod(
+        r: *mut mpfr_struct,
+        x: *const mpfr_struct,
+        y: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
     pub fn mpfr_nan_p(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_inf_p(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_signbit(a: *const mpfr_struct) -> c_int;
     pub fn mpfr_cmp_si(a: *const mpfr_struct, b: c_long) -> c_int;
-    pub fn mpfr_add(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
-    pub fn mpfr_sub(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
-    pub fn mpfr_mul(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
-    pub fn mpfr_div(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
-    pub fn mpfr_ui_div(r: *mut mpfr_struct, u: c_ulong, a: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_add(
+        r: *mut mpfr_struct,
+        a: *const mpfr_struct,
+        b: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpfr_sub(
+        r: *mut mpfr_struct,
+        a: *const mpfr_struct,
+        b: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpfr_mul(
+        r: *mut mpfr_struct,
+        a: *const mpfr_struct,
+        b: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpfr_div(
+        r: *mut mpfr_struct,
+        a: *const mpfr_struct,
+        b: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpfr_ui_div(r: *mut mpfr_struct, u: c_ulong, a: *const mpfr_struct, rnd: c_int)
+        -> c_int;
     pub fn mpfr_neg(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_sqrt(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_abs(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
@@ -134,7 +160,12 @@ extern "C" {
     pub fn mpfr_log10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_exp(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
     pub fn mpfr_exp10(r: *mut mpfr_struct, a: *const mpfr_struct, rnd: c_int) -> c_int;
-    pub fn mpfr_pow(r: *mut mpfr_struct, a: *const mpfr_struct, b: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpfr_pow(
+        r: *mut mpfr_struct,
+        a: *const mpfr_struct,
+        b: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
     pub fn mpfr_const_pi(r: *mut mpfr_struct, rnd: c_int) -> c_int;
 }
 
@@ -145,21 +176,51 @@ extern "C" {
     pub fn mpc_init2(z: *mut mpc_struct, prec: mpfr_prec_t);
     pub fn mpc_clear(z: *mut mpc_struct);
     pub fn mpc_set(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_set_fr_fr(z: *mut mpc_struct, re: *const mpfr_struct, im: *const mpfr_struct, rnd: c_int) -> c_int;
+    pub fn mpc_set_fr_fr(
+        z: *mut mpc_struct,
+        re: *const mpfr_struct,
+        im: *const mpfr_struct,
+        rnd: c_int,
+    ) -> c_int;
     pub fn mpc_real(re: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_imag(im: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_abs(a: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_arg(a: *mut mpfr_struct, z: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_add(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_sub(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_mul(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_div(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_add(
+        r: *mut mpc_struct,
+        a: *const mpc_struct,
+        b: *const mpc_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpc_sub(
+        r: *mut mpc_struct,
+        a: *const mpc_struct,
+        b: *const mpc_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpc_mul(
+        r: *mut mpc_struct,
+        a: *const mpc_struct,
+        b: *const mpc_struct,
+        rnd: c_int,
+    ) -> c_int;
+    pub fn mpc_div(
+        r: *mut mpc_struct,
+        a: *const mpc_struct,
+        b: *const mpc_struct,
+        rnd: c_int,
+    ) -> c_int;
     pub fn mpc_neg(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_conj(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_sqrt(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_exp(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_log(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
-    pub fn mpc_pow(r: *mut mpc_struct, a: *const mpc_struct, b: *const mpc_struct, rnd: c_int) -> c_int;
+    pub fn mpc_pow(
+        r: *mut mpc_struct,
+        a: *const mpc_struct,
+        b: *const mpc_struct,
+        rnd: c_int,
+    ) -> c_int;
     pub fn mpc_sin(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_cos(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;
     pub fn mpc_tan(r: *mut mpc_struct, a: *const mpc_struct, rnd: c_int) -> c_int;

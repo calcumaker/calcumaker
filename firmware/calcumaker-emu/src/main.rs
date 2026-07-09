@@ -31,15 +31,15 @@ const NO_KEY: char = '\0';
 
 const HOST_KEYS: [[char; COLS]; ROWS] = [
     // sin  cos  tan  ln   sqrt y^x  1/x  EEX  back clx
-    ['S',  'C', 'T', 'L', 'Q', 'P', 'I', 'E', '\x08', 'X'],
+    ['S', 'C', 'T', 'L', 'Q', 'P', 'I', 'E', '\x08', 'X'],
     // A    B    C    D    E    F    7    8    9    ÷
-    ['a',  'b', 'c', 'd', 'e', 'f', '7', '8', '9', '/'],
+    ['a', 'b', 'c', 'd', 'e', 'f', '7', '8', '9', '/'],
     // and  or   xor  not  shl  shr  4    5    6    ×
-    ['&',  '|', '^', '~', '<', '>', '4', '5', '6', '*'],
+    ['&', '|', '^', '~', '<', '>', '4', '5', '6', '*'],
     // hex  dec  oct  bin  x<>y (2U ENTER's upper half: no switch)  1  2  3  −
-    ['H',  'D', 'O', 'B', 'x', NO_KEY, '1', '2', '3', '-'],
+    ['H', 'D', 'O', 'B', 'x', NO_KEY, '1', '2', '3', '-'],
     // f    g    sto  rcl  R↓   ENT  0    .    chs  +
-    ['F',  'G', 'm', 'r', 'v', '\n', '0', '.', 'n', '+'],
+    ['F', 'G', 'm', 'r', 'v', '\n', '0', '.', 'n', '+'],
 ];
 
 /// Matrix cell for a host key. `;` doubles as ENTER for shell-friendly scripts.
@@ -115,7 +115,11 @@ fn seg_art(row: &[u8; DIGITS_PER_ROW], style: Style) -> [String; 3] {
                         ' '
                     }
                 };
-                l[0].push_str(if on(SEG_A) { "▄▄▄▄  " } else { "      " });
+                l[0].push_str(if on(SEG_A) {
+                    "▄▄▄▄  "
+                } else {
+                    "      "
+                });
                 l[1].push(if on(SEG_F) { '█' } else { ' ' });
                 l[1].push_str(bar(SEG_G));
                 l[1].push(if on(SEG_B) { '█' } else { ' ' });
@@ -304,7 +308,10 @@ fn frame(app: &App, help: bool, style: Style, oled: bool) -> String {
         Some(m) => format!("  << {m}"),
         None => String::new(),
     };
-    out.push_str(&format!(" {pers}{radix}  {angle}  {numty}prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n", c.prec()));
+    out.push_str(&format!(
+        " {pers}{radix}  {angle}  {numty}prec {}  {word}{flags}{fmt}{win}{shift}{reg}{msg}\n",
+        c.prec()
+    ));
 
     // The glass rounds to its 16 digits (HP-style); this line is the SHOW
     // view — X at full precision, where the arbitrary precision is visible.
@@ -331,7 +338,13 @@ fn frame(app: &App, help: bool, style: Style, oled: bool) -> String {
     out
 }
 
-fn draw(stdout: &mut impl Write, app: &App, help: bool, style: Style, oled: bool) -> io::Result<()> {
+fn draw(
+    stdout: &mut impl Write,
+    app: &App,
+    help: bool,
+    style: Style,
+    oled: bool,
+) -> io::Result<()> {
     execute!(
         stdout,
         terminal::Clear(terminal::ClearType::All),
@@ -352,14 +365,23 @@ fn interactive(mut app: App, style: Style, oled: bool) -> io::Result<()> {
     let result = (|| -> io::Result<()> {
         draw(&mut stdout, &app, help, style, oled)?;
         loop {
-            let Event::Key(KeyEvent { code, modifiers, kind, .. }) = event::read()? else {
+            let Event::Key(KeyEvent {
+                code,
+                modifiers,
+                kind,
+                ..
+            }) = event::read()?
+            else {
                 continue;
             };
             if kind == KeyEventKind::Release {
                 continue;
             }
             if modifiers.contains(KeyModifiers::CONTROL)
-                && matches!(code, KeyCode::Char('c') | KeyCode::Char('d') | KeyCode::Char('q'))
+                && matches!(
+                    code,
+                    KeyCode::Char('c') | KeyCode::Char('d') | KeyCode::Char('q')
+                )
             {
                 return Ok(());
             }
@@ -409,19 +431,26 @@ fn main() -> io::Result<()> {
                     .unwrap_or_else(|| usage("--prec needs a bit count"))
             }
             "--press" => {
-                script = Some(args.next().unwrap_or_else(|| usage("--press needs a key string")))
+                script = Some(
+                    args.next()
+                        .unwrap_or_else(|| usage("--press needs a key string")),
+                )
             }
             "--ascii" => style = Style::Ascii,
             "--no-suffix" => no_suffix = true,
             "--no-oled" => oled = false,
             "--personality" => {
-                let name = args.next().unwrap_or_else(|| usage("--personality needs a name"));
+                let name = args
+                    .next()
+                    .unwrap_or_else(|| usage("--personality needs a name"));
                 personality = Some(
                     calcumaker_core::keys::PERSONALITIES
                         .iter()
                         .find(|km| km.name.eq_ignore_ascii_case(&name))
                         .copied()
-                        .unwrap_or_else(|| usage(&format!("unknown personality {name} (16C, 15C, SCI, FIN)"))),
+                        .unwrap_or_else(|| {
+                            usage(&format!("unknown personality {name} (16C, 15C, SCI, FIN)"))
+                        }),
                 );
             }
             "--help" | "-h" => {
@@ -481,7 +510,10 @@ mod tests {
         let row = seg7::encode_row("3.89");
         let art = seg_art(&row, Style::Block);
         let bottom: Vec<char> = art[2].chars().collect();
-        let i = bottom.iter().position(|&c| c == '▗').expect("dp glyph rendered");
+        let i = bottom
+            .iter()
+            .position(|&c| c == '▗')
+            .expect("dp glyph rendered");
         assert_eq!(bottom[i + 1], ' ', "gap column after the dp");
     }
 
@@ -491,7 +523,10 @@ mod tests {
         for style in [Style::Block, Style::Ascii] {
             let row = seg7::encode_row("8.8");
             for line in seg_art(&row, style) {
-                assert_eq!(line.chars().count(), seg7::DIGITS_PER_ROW * style.digit_cols());
+                assert_eq!(
+                    line.chars().count(),
+                    seg7::DIGITS_PER_ROW * style.digit_cols()
+                );
             }
         }
     }

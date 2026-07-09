@@ -32,7 +32,10 @@ impl Display {
         din2: Output<'static>,
         din3: Output<'static>,
     ) -> Self {
-        Self { clk, din: [din1, din2, din3] }
+        Self {
+            clk,
+            din: [din1, din2, din3],
+        }
     }
 
     fn start(&mut self, row: usize) {

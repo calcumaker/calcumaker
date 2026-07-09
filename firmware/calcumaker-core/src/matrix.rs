@@ -261,18 +261,34 @@ mod tests {
     fn determinant_2x2_and_3x3() {
         use gmp_mpfr_nostd::Integer;
         // |1 2; 3 4| = -2 (round: LU introduces 2/3, so compare rounded).
-        assert!(m(128, &[&[1, 2], &[3, 4]]).determinant().unwrap().round_to_int() == Integer::from_i64(-2));
+        assert!(
+            m(128, &[&[1, 2], &[3, 4]])
+                .determinant()
+                .unwrap()
+                .round_to_int()
+                == Integer::from_i64(-2)
+        );
         // singular -> exactly 0
         assert!(m(128, &[&[1, 2], &[2, 4]]).determinant().unwrap().is_zero());
         // |2 0 0; 0 3 0; 0 0 4| = 24 (diagonal LU is exact)
-        assert_eq!(m(128, &[&[2, 0, 0], &[0, 3, 0], &[0, 0, 4]]).determinant().unwrap().cmp_si(24), 0);
+        assert_eq!(
+            m(128, &[&[2, 0, 0], &[0, 3, 0], &[0, 0, 4]])
+                .determinant()
+                .unwrap()
+                .cmp_si(24),
+            0
+        );
     }
 
     #[test]
     fn solve_and_inverse_roundtrip() {
         // A x = b : [[2,1],[1,3]] x = [3,5]^T  -> x = [0.8, 1.4]
         let a = m(128, &[&[2, 1], &[1, 3]]);
-        let b = Matrix::from_rows(128, &[vec![Float::from_i64(128, 3)], vec![Float::from_i64(128, 5)]]).unwrap();
+        let b = Matrix::from_rows(
+            128,
+            &[vec![Float::from_i64(128, 3)], vec![Float::from_i64(128, 5)]],
+        )
+        .unwrap();
         let x = a.solve(&b).unwrap();
         // A * x should equal b
         let check = a.mul(&x).unwrap();

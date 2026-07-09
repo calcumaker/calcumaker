@@ -60,15 +60,15 @@ const SETUP_ITEMS: [SetupItem; 9] = [
 impl SetupItem {
     fn name(self) -> &'static str {
         match self {
-            SetupItem::Suffix => "SUFF",   // the h/o/b base letter on the glass
+            SetupItem::Suffix => "SUFF", // the h/o/b base letter on the glass
             SetupItem::LeadZeros => "LEAd 0",
             SetupItem::Angle => "AnGLE",
             SetupItem::Sign => "SIGn",
-            SetupItem::Stack => "StAC",    // FrEE (unbounded) / HP4 (classic)
-            SetupItem::Cplx => "CPLX",     // complex results: on / oFF (√-1 = i / Error 0)
-            SetupItem::Pers => "PErS",     // personality (keymap) selector
-            SetupItem::Entry => "tYPE",    // FLE (safe) / Int (16C) / rEAL
-            SetupItem::Aux => "OLEd",      // aux OLED: show the flags header
+            SetupItem::Stack => "StAC", // FrEE (unbounded) / HP4 (classic)
+            SetupItem::Cplx => "CPLX",  // complex results: on / oFF (√-1 = i / Error 0)
+            SetupItem::Pers => "PErS",  // personality (keymap) selector
+            SetupItem::Entry => "tYPE", // FLE (safe) / Int (16C) / rEAL
+            SetupItem::Aux => "OLEd",   // aux OLED: show the flags header
         }
     }
 
@@ -375,7 +375,9 @@ impl App {
             self.msg = Some("bad digit for radix".into());
             return;
         }
-        let c = char::from_digit(u32::from(n), 16).unwrap().to_ascii_uppercase();
+        let c = char::from_digit(u32::from(n), 16)
+            .unwrap()
+            .to_ascii_uppercase();
         self.entry.get_or_insert_with(String::new).push(c);
     }
 
@@ -454,7 +456,9 @@ impl App {
     /// Push the pending entry onto the stack (no-op without one). An entry cut
     /// short mid-exponent (`3e`, `3e-`) or bare-sign is completed/dropped.
     fn flush(&mut self) {
-        let Some(mut s) = self.entry.take() else { return };
+        let Some(mut s) = self.entry.take() else {
+            return;
+        };
         for suffix in ["e-", "e+", "e", ".", "-"] {
             if let Some(t) = s.strip_suffix(suffix) {
                 s = t.to_string();
@@ -823,7 +827,11 @@ fn window_row(text: &str, win: usize) -> (String, usize) {
     let total = starts.len();
     let start = starts[win.min(total - 1)];
     let remaining = cells.len() - start;
-    let (body, more) = if remaining <= W { (remaining, false) } else { (W - 1, true) };
+    let (body, more) = if remaining <= W {
+        (remaining, false)
+    } else {
+        (W - 1, true)
+    };
 
     let mut out = String::new();
     for c in cells.iter().skip(start).take(body) {
@@ -888,8 +896,8 @@ fn token_for(k: Key) -> Option<&'static str> {
         Key::BitCount => "popcnt",
         Key::Rmd => "mod",
         Key::Pct => "pct",
-        Key::Round => "rnd",       // HP RND: round to the DISPLAYED precision
-        Key::IntPart => "trunc",   // HP INT: integer part (toward zero)
+        Key::Round => "rnd",     // HP RND: round to the DISPLAYED precision
+        Key::IntPart => "trunc", // HP INT: integer part (toward zero)
         Key::Fix => "fix",
         Key::Sci => "sci",
         Key::Eng => "eng",

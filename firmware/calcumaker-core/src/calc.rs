@@ -179,15 +179,33 @@ impl CalcError {
 }
 
 // Class constructors — every operation error picks its glass code at the site.
-const fn e_domain(m: &'static str) -> CalcError { CalcError::Op(0, m) }
-const fn e_reg(m: &'static str) -> CalcError { CalcError::Op(1, m) }
-const fn e_bits(m: &'static str) -> CalcError { CalcError::Op(2, m) }
-const fn e_mode(m: &'static str) -> CalcError { CalcError::Op(3, m) }
-const fn e_big(m: &'static str) -> CalcError { CalcError::Op(4, m) }
-const fn e_nosol(m: &'static str) -> CalcError { CalcError::Op(5, m) }
-const fn e_use(m: &'static str) -> CalcError { CalcError::Op(6, m) }
-const fn e_date(m: &'static str) -> CalcError { CalcError::Op(7, m) }
-const fn e_stats(m: &'static str) -> CalcError { CalcError::Op(8, m) }
+const fn e_domain(m: &'static str) -> CalcError {
+    CalcError::Op(0, m)
+}
+const fn e_reg(m: &'static str) -> CalcError {
+    CalcError::Op(1, m)
+}
+const fn e_bits(m: &'static str) -> CalcError {
+    CalcError::Op(2, m)
+}
+const fn e_mode(m: &'static str) -> CalcError {
+    CalcError::Op(3, m)
+}
+const fn e_big(m: &'static str) -> CalcError {
+    CalcError::Op(4, m)
+}
+const fn e_nosol(m: &'static str) -> CalcError {
+    CalcError::Op(5, m)
+}
+const fn e_use(m: &'static str) -> CalcError {
+    CalcError::Op(6, m)
+}
+const fn e_date(m: &'static str) -> CalcError {
+    CalcError::Op(7, m)
+}
+const fn e_stats(m: &'static str) -> CalcError {
+    CalcError::Op(8, m)
+}
 
 /// STO/RCL register file size (one register per hex digit key, 0–F).
 pub const REGISTERS: usize = 16;
@@ -218,7 +236,14 @@ struct Stats {
 impl Stats {
     fn new(prec: u32) -> Self {
         let z = || Float::from_i64(prec, 0);
-        Stats { n: 0, sx: z(), sxx: z(), sy: z(), syy: z(), sxy: z() }
+        Stats {
+            n: 0,
+            sx: z(),
+            sxx: z(),
+            sy: z(),
+            syy: z(),
+            sxy: z(),
+        }
     }
 }
 
@@ -237,7 +262,14 @@ struct Tvm {
 impl Tvm {
     fn new(prec: u32) -> Self {
         let z = || Float::from_i64(prec, 0);
-        Tvm { n: z(), i: z(), pv: z(), pmt: z(), fv: z(), begin: false }
+        Tvm {
+            n: z(),
+            i: z(),
+            pv: z(),
+            pmt: z(),
+            fv: z(),
+            begin: false,
+        }
     }
 }
 
@@ -1187,8 +1219,12 @@ impl Calc {
                     }
                 }
             }
-            let Value::Int(b) = self.pop_x() else { unreachable!() };
-            let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+            let Value::Int(b) = self.pop_x() else {
+                unreachable!()
+            };
+            let Value::Int(a) = self.stack.pop().expect("validated") else {
+                unreachable!()
+            };
 
             // Carry: computed in the bit domain before the operands move.
             if let Some(n) = self.word_bits {
@@ -1215,8 +1251,8 @@ impl Calc {
             if op == '/' && self.word_bits.is_none() {
                 match self.num_mode {
                     NumMode::Real => {
-                        let q = Float::from_integer(self.prec, &a)
-                            / Float::from_integer(self.prec, &b);
+                        let q =
+                            Float::from_integer(self.prec, &a) / Float::from_integer(self.prec, &b);
                         self.stack.push(Value::Real(q));
                         return Ok(());
                     }
@@ -1325,7 +1361,9 @@ impl Calc {
         let Some(Value::Matrix(m)) = self.stack.last() else {
             return Err(e_domain("det needs a matrix"));
         };
-        let d = m.determinant().ok_or(e_domain("det needs a square matrix"))?;
+        let d = m
+            .determinant()
+            .ok_or(e_domain("det needs a square matrix"))?;
         let _ = self.pop_x();
         self.stack.push(Value::Real(d));
         Ok(())
@@ -1349,7 +1387,9 @@ impl Calc {
         let Some(Value::Matrix(m)) = self.stack.last() else {
             return Err(e_domain("minv needs a matrix"));
         };
-        let inv = m.inverse().ok_or(e_domain("matrix is singular or not square"))?;
+        let inv = m
+            .inverse()
+            .ok_or(e_domain("matrix is singular or not square"))?;
         let _ = self.pop_x();
         self.stack.push(Value::Matrix(inv));
         Ok(())
@@ -1360,8 +1400,7 @@ impl Calc {
     fn matsolve_op(&mut self) -> Result<(), CalcError> {
         self.need(2)?;
         let len = self.stack.len();
-        let (Value::Matrix(a), Value::Matrix(b)) =
-            (&self.stack[len - 2], &self.stack[len - 1])
+        let (Value::Matrix(a), Value::Matrix(b)) = (&self.stack[len - 2], &self.stack[len - 1])
         else {
             return Err(e_domain("matsolve needs two matrices (Y=A, X=B)"));
         };
@@ -1381,7 +1420,9 @@ impl Calc {
         let cols = self.peek_integral(0, "matrix cols")?;
         let rows = self.peek_integral(1, "matrix rows")?;
         let (rows, cols) = match (rows.to_u32(), cols.to_u32()) {
-            (Some(r), Some(c)) if r >= 1 && c >= 1 && r <= 16 && c <= 16 => (r as usize, c as usize),
+            (Some(r), Some(c)) if r >= 1 && c >= 1 && r <= 16 && c <= 16 => {
+                (r as usize, c as usize)
+            }
             _ => return Err(e_domain("matrix dims must be 1..=16")),
         };
         let _ = self.pop_x();
@@ -1411,7 +1452,11 @@ impl Calc {
         let cols = m.cols();
         let total = m.rows() * cols;
         m.set(cursor / cols, cursor % cols, val);
-        self.mat_cursor = if cursor + 1 >= total { None } else { Some(cursor + 1) };
+        self.mat_cursor = if cursor + 1 >= total {
+            None
+        } else {
+            Some(cursor + 1)
+        };
         Ok(())
     }
 
@@ -1525,7 +1570,13 @@ impl Calc {
     /// of variable makes the integrand decay double-exponentially, so the
     /// trapezoidal rule converges to (near) full precision for smooth integrands
     /// in a handful of node-halving levels. Computed with guard bits.
-    fn tanh_sinh(&self, scratch: &mut Calc, toks: &[String], a: &Float, b: &Float) -> Option<Float> {
+    fn tanh_sinh(
+        &self,
+        scratch: &mut Calc,
+        toks: &[String],
+        a: &Float,
+        b: &Float,
+    ) -> Option<Float> {
         let wp = self.prec + 32; // guard bits
         let two = Float::from_i64(wp, 2);
         let pi_half = Float::pi(wp) / two.clone();
@@ -1539,7 +1590,14 @@ impl Calc {
         let negligible = |v: &Float| (v.clone().abs() - node_eps.clone()).is_sign_negative();
 
         // Running Σ over all node contributions g(jh); start at t=0.
-        let mut total = self.ts_node(scratch, toks, &Float::from_i64(wp, 0), &pi_half, &mid, &half)?;
+        let mut total = self.ts_node(
+            scratch,
+            toks,
+            &Float::from_i64(wp, 0),
+            &pi_half,
+            &mid,
+            &half,
+        )?;
         let mut h = Float::from_i64(wp, 1); // h₀ = 1
         let node = |slf: &Self, scr: &mut Calc, j: i64, h: &Float| {
             let t = Float::from_i64(wp, j) * h.clone();
@@ -1607,7 +1665,9 @@ impl Calc {
     fn complex_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
-            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let Value::Complex(z) = self.pop_x() else {
+                unreachable!()
+            };
             self.stack.push(Value::Real(z.real(self.prec)));
             self.stack.push(Value::Real(z.imag(self.prec)));
         } else {
@@ -1722,11 +1782,18 @@ impl Calc {
         self.need(2)?;
         self.peek_int(0, "bitwise needs integers")?;
         self.peek_int(1, "bitwise needs integers")?;
-        let Value::Int(b) = self.pop_x() else { unreachable!() };
-        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let Value::Int(b) = self.pop_x() else {
+            unreachable!()
+        };
+        let Value::Int(a) = self.stack.pop().expect("validated") else {
+            unreachable!()
+        };
         let v = match self.word_bits {
             Some(n) => {
-                let (pa, pb) = (encode_bits(&a, self.sign_mode, n), encode_bits(&b, self.sign_mode, n));
+                let (pa, pb) = (
+                    encode_bits(&a, self.sign_mode, n),
+                    encode_bits(&b, self.sign_mode, n),
+                );
                 let bits = match op {
                     '&' => pa & pb,
                     '|' => pa | pb,
@@ -1750,7 +1817,9 @@ impl Calc {
     fn not_op(&mut self) -> Result<(), CalcError> {
         self.need(1)?;
         self.peek_int(0, "not needs an integer")?;
-        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        let Value::Int(x) = self.pop_x() else {
+            unreachable!()
+        };
         let v = match self.word_bits {
             Some(n) => {
                 let bits = encode_bits(&x, self.sign_mode, n) ^ (pow2(n) - one());
@@ -1793,11 +1862,15 @@ impl Calc {
         // Validated — commit the pops.
         let x = if count_from_x {
             let c = self.pop_x();
-            let Value::Int(v) = self.stack.pop().expect("validated") else { unreachable!() };
+            let Value::Int(v) = self.stack.pop().expect("validated") else {
+                unreachable!()
+            };
             let _ = c;
             v
         } else {
-            let Value::Int(v) = self.pop_x() else { unreachable!() };
+            let Value::Int(v) = self.pop_x() else {
+                unreachable!()
+            };
             v
         };
 
@@ -1876,10 +1949,14 @@ impl Calc {
         // Committed — pop.
         let x = if count_from_x {
             let _ = self.pop_x();
-            let Value::Int(v) = self.stack.pop().expect("validated") else { unreachable!() };
+            let Value::Int(v) = self.stack.pop().expect("validated") else {
+                unreachable!()
+            };
             v
         } else {
-            let Value::Int(v) = self.pop_x() else { unreachable!() };
+            let Value::Int(v) = self.pop_x() else {
+                unreachable!()
+            };
             v
         };
 
@@ -1899,7 +1976,8 @@ impl Calc {
         self.carry = !((t.clone() >> n) & one()).is_zero();
         self.overflow = false;
         let bits = t & (pow2(n) - one());
-        self.stack.push(Value::Int(decode_bits(bits, self.sign_mode, n)));
+        self.stack
+            .push(Value::Int(decode_bits(bits, self.sign_mode, n)));
         Ok(())
     }
 
@@ -1911,12 +1989,19 @@ impl Calc {
         };
         self.need(1)?;
         self.peek_int(0, "lj needs an integer")?;
-        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        let Value::Int(x) = self.pop_x() else {
+            unreachable!()
+        };
         let bits = encode_bits(&x, self.sign_mode, n) & (pow2(n) - one());
-        let shifts = if bits.is_zero() { 0 } else { n as usize - bits.bit_len() };
+        let shifts = if bits.is_zero() {
+            0
+        } else {
+            n as usize - bits.bit_len()
+        };
         let justified = decode_bits(bits << shifts as u32, self.sign_mode, n);
         self.stack.push(Value::Int(justified));
-        self.stack.push(Value::Int(Integer::from_i64(shifts as i64)));
+        self.stack
+            .push(Value::Int(Integer::from_i64(shifts as i64)));
         Ok(())
     }
 
@@ -1936,13 +2021,19 @@ impl Calc {
         self.need(2)?;
         self.peek_int(0, "dbl* needs integers")?;
         self.peek_int(1, "dbl* needs integers")?;
-        let Value::Int(b) = self.pop_x() else { unreachable!() };
-        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let Value::Int(b) = self.pop_x() else {
+            unreachable!()
+        };
+        let Value::Int(a) = self.stack.pop().expect("validated") else {
+            unreachable!()
+        };
         let pattern = euclid_mod(a * b, &pow2(2 * n));
         let high = pattern.clone() >> n;
         let low = pattern & (pow2(n) - one());
-        self.stack.push(Value::Int(decode_bits(high, self.sign_mode, n)));
-        self.stack.push(Value::Int(decode_bits(low, self.sign_mode, n)));
+        self.stack
+            .push(Value::Int(decode_bits(high, self.sign_mode, n)));
+        self.stack
+            .push(Value::Int(decode_bits(low, self.sign_mode, n)));
         self.carry = false;
         self.overflow = false;
         Ok(())
@@ -1968,13 +2059,15 @@ impl Calc {
 
         // Assemble the dividend from peeks — the fit check must not consume.
         let len = self.stack.len();
-        let (Value::Int(x), Value::Int(y_low), Value::Int(z_high)) =
-            (&self.stack[len - 1], &self.stack[len - 2], &self.stack[len - 3])
-        else {
+        let (Value::Int(x), Value::Int(y_low), Value::Int(z_high)) = (
+            &self.stack[len - 1],
+            &self.stack[len - 2],
+            &self.stack[len - 3],
+        ) else {
             unreachable!()
         };
-        let pattern = (encode_bits(z_high, self.sign_mode, n) << n)
-            | encode_bits(y_low, self.sign_mode, n);
+        let pattern =
+            (encode_bits(z_high, self.sign_mode, n) << n) | encode_bits(y_low, self.sign_mode, n);
         let dividend = decode_bits(pattern, self.sign_mode, 2 * n);
         let q = dividend.clone() / x.clone();
         let r = dividend % x.clone();
@@ -2007,12 +2100,8 @@ impl Calc {
     fn bit_index(&self, what: &'static str) -> Result<u32, CalcError> {
         let i = self.peek_u32(what)?;
         match self.word_bits {
-            Some(n) if i >= n => {
-                return Err(e_bits("bit index exceeds the word size"))
-            }
-            None if i as u64 > MAX_POW_BITS => {
-                return Err(e_bits("bit index too large"))
-            }
+            Some(n) if i >= n => return Err(e_bits("bit index exceeds the word size")),
+            None if i as u64 > MAX_POW_BITS => return Err(e_bits("bit index too large")),
             _ => {}
         }
         Ok(i)
@@ -2026,12 +2115,16 @@ impl Calc {
         match op {
             BitOp::Test => {
                 // Y stays put; the 0/1 answer lands in X above it.
-                let Value::Int(y) = self.stack.last().expect("validated") else { unreachable!() };
+                let Value::Int(y) = self.stack.last().expect("validated") else {
+                    unreachable!()
+                };
                 let t = Self::math_bit(y, i);
                 self.push_int_canon(Integer::from_i64(t as i64));
             }
             BitOp::Set | BitOp::Clear => {
-                let Value::Int(y) = self.stack.pop().expect("validated") else { unreachable!() };
+                let Value::Int(y) = self.stack.pop().expect("validated") else {
+                    unreachable!()
+                };
                 let exact = match op {
                     BitOp::Set => y | (one() << i),
                     BitOp::Clear => y & !(one() << i),
@@ -2161,7 +2254,9 @@ impl Calc {
         };
         match path {
             Path::Cx => {
-                let Value::Complex(z) = self.pop_x() else { unreachable!() };
+                let Value::Complex(z) = self.pop_x() else {
+                    unreachable!()
+                };
                 self.stack.push(Value::Complex(cx(&z)));
             }
             Path::Promote => {
@@ -2206,7 +2301,9 @@ impl Calc {
         // Complex argument → complex trig; the argument is interpreted in the
         // current angle unit (converted to radians for MPC), like real trig.
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
-            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let Value::Complex(z) = self.pop_x() else {
+                unreachable!()
+            };
             let z = self.cplx_angle_in(&z);
             let r = match kind {
                 Circ::Sin => z.sin(),
@@ -2259,7 +2356,8 @@ impl Calc {
         let q = half / 2; // a quarter turn: 90° / 100g
         let at = |v: i64| r.equals(&Float::from_i64(self.prec, v));
         let int = |v: i64| Some(Float::from_i64(self.prec, v));
-        let half_of = |sign: i64| Some(Float::from_i64(self.prec, sign) / Float::from_i64(self.prec, 2));
+        let half_of =
+            |sign: i64| Some(Float::from_i64(self.prec, sign) / Float::from_i64(self.prec, 2));
         // tan at a quadrant boundary: ±∞ (1/+0); HP errors here, we show inf.
         let inf = || Some(Float::from_i64(self.prec, 0).recip());
         for k in 0..4i64 {
@@ -2316,7 +2414,9 @@ impl Calc {
         // Complex argument → complex inverse trig; the radian result is returned
         // in the current angle unit, like real inverse trig.
         if self.stack.last().map(Value::is_complex).unwrap_or(false) {
-            let Value::Complex(z) = self.pop_x() else { unreachable!() };
+            let Value::Complex(z) = self.pop_x() else {
+                unreachable!()
+            };
             let r = match kind {
                 InvCirc::Asin => z.asin(),
                 InvCirc::Acos => z.acos(),
@@ -2381,7 +2481,11 @@ impl Calc {
         let int = |v: i64| Some(Float::from_i64(self.prec, v));
         let one_half = Float::from_i64(self.prec, 1) / Float::from_i64(self.prec, 2);
         let eq_half = |sign: i64| {
-            let t = if sign < 0 { -one_half.clone() } else { one_half.clone() };
+            let t = if sign < 0 {
+                -one_half.clone()
+            } else {
+                one_half.clone()
+            };
             x.equals(&t)
         };
         match kind {
@@ -2505,9 +2609,8 @@ impl Calc {
                 let frac_exp = matches!(xv, Value::Real(f) if !f.clone().frac().is_zero());
                 // Complex when either operand is complex, or (CPXRES) a negative
                 // base raised to a non-integer exponent, e.g. (-8)^(1/3).
-                let complex = yv.is_complex()
-                    || xv.is_complex()
-                    || (self.cpxres && neg_base && frac_exp);
+                let complex =
+                    yv.is_complex() || xv.is_complex() || (self.cpxres && neg_base && frac_exp);
                 if complex {
                     let x = self.pop_x().to_complex(self.prec);
                     let y = self.stack.pop().expect("validated").to_complex(self.prec);
@@ -2539,7 +2642,9 @@ impl Calc {
         if neg_int {
             return Err(e_domain("sqrt of a negative integer (float it for nan)"));
         }
-        let Value::Int(x) = self.pop_x() else { unreachable!() };
+        let Value::Int(x) = self.pop_x() else {
+            unreachable!()
+        };
         self.carry = !x.is_perfect_square(); // 16C: C = the root was inexact
         self.stack.push(Value::Int(x.isqrt()));
         Ok(())
@@ -2602,8 +2707,12 @@ impl Calc {
             return Err(CalcError::DivZero);
         }
         self.peek_int(1, "idiv needs integers")?;
-        let Value::Int(b) = self.pop_x() else { unreachable!() };
-        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let Value::Int(b) = self.pop_x() else {
+            unreachable!()
+        };
+        let Value::Int(a) = self.stack.pop().expect("validated") else {
+            unreachable!()
+        };
         let v = self.canon_flagged(a / b);
         self.stack.push(Value::Int(v));
         Ok(())
@@ -2617,8 +2726,12 @@ impl Calc {
             return Err(CalcError::DivZero);
         }
         self.peek_int(1, "mod needs integers")?;
-        let Value::Int(b) = self.pop_x() else { unreachable!() };
-        let Value::Int(a) = self.stack.pop().expect("validated") else { unreachable!() };
+        let Value::Int(b) = self.pop_x() else {
+            unreachable!()
+        };
+        let Value::Int(a) = self.stack.pop().expect("validated") else {
+            unreachable!()
+        };
         self.stack.push(Value::Int(self.canon_silent(a % b)));
         Ok(())
     }
@@ -2638,7 +2751,9 @@ impl Calc {
     fn to_float(&mut self) -> Result<(), CalcError> {
         self.num_mode = NumMode::Real;
         if matches!(self.stack.last(), Some(Value::Int(_))) {
-            let Value::Int(x) = self.pop_x() else { unreachable!() };
+            let Value::Int(x) = self.pop_x() else {
+                unreachable!()
+            };
             let f = Float::from_integer(self.prec, &x);
             self.stack.push(Value::Real(f));
         }
@@ -2731,7 +2846,9 @@ impl Calc {
                 if f.is_nan() || f.is_inf() {
                     return Err(e_domain("cannot convert nan/inf to an integer"));
                 }
-                let Value::Real(f) = self.pop_x() else { unreachable!() };
+                let Value::Real(f) = self.pop_x() else {
+                    unreachable!()
+                };
                 let v = self.canon_silent(conv(&f));
                 self.stack.push(Value::Int(v));
                 Ok(())
@@ -3078,7 +3195,11 @@ impl Calc {
     fn tvm_balance(t: &Tvm, prec: u32, p: &Float) -> Float {
         let one = Float::from_i64(prec, 1);
         let c = (one.clone() + p.clone()).pow(t.n.clone());
-        let k = if t.begin { one + p.clone() } else { Float::from_i64(prec, 1) };
+        let k = if t.begin {
+            one + p.clone()
+        } else {
+            Float::from_i64(prec, 1)
+        };
         let ann = t.pmt.clone() * k * (c.clone() - Float::from_i64(prec, 1)) / p.clone();
         t.pv.clone() * c + ann + t.fv.clone()
     }
@@ -3096,7 +3217,11 @@ impl Calc {
         let hundred = Float::from_i64(prec, 100);
         let p = t.i.clone() / hundred.clone();
         let p_zero = p.is_zero();
-        let k = if t.begin { one.clone() + p.clone() } else { Float::from_i64(prec, 1) };
+        let k = if t.begin {
+            one.clone() + p.clone()
+        } else {
+            Float::from_i64(prec, 1)
+        };
 
         let v = match r {
             TvmReg::Fv => {
@@ -3104,8 +3229,7 @@ impl Calc {
                     -(t.pv.clone() + t.pmt.clone() * t.n.clone())
                 } else {
                     let c = (one.clone() + p.clone()).pow(t.n.clone());
-                    -(t.pv.clone() * c.clone()
-                        + t.pmt.clone() * k * (c - one) / p)
+                    -(t.pv.clone() * c.clone() + t.pmt.clone() * k * (c - one) / p)
                 }
             }
             TvmReg::Pv => {
@@ -3172,8 +3296,7 @@ impl Calc {
     fn tvm_solve_i(&self) -> Result<Float, CalcError> {
         let prec = self.prec;
         let t = self.tvm.as_ref().expect("caller ensured");
-        bisect_rate(prec, |p| Self::tvm_balance(t, prec, p))
-            .ok_or(e_nosol("no i solution found"))
+        bisect_rate(prec, |p| Self::tvm_balance(t, prec, p)).ok_or(e_nosol("no i solution found"))
     }
 
     // ---- cash flows: NPV / IRR (12C) -------------------------------------------
@@ -3249,8 +3372,7 @@ impl Calc {
             return Err(e_use("irr needs cf0 and at least one cfj"));
         }
         let prec = self.prec;
-        let p = bisect_rate(prec, |p| self.npv_at(p))
-            .ok_or(e_nosol("no irr solution found"))?;
+        let p = bisect_rate(prec, |p| self.npv_at(p)).ok_or(e_nosol("no irr solution found"))?;
         let i = p * Float::from_i64(prec, 100);
         self.tvm_mut().i = i.clone();
         self.stack.push(Value::Real(i));
@@ -3271,7 +3393,8 @@ impl Calc {
         let m = v / 1_000_000;
         let d = (v % 1_000_000) / 10_000;
         let y = v % 10_000;
-        if !(1..=12).contains(&m) || !(1583..=9999).contains(&y) || d < 1 || d > days_in_month(y, m) {
+        if !(1..=12).contains(&m) || !(1583..=9999).contains(&y) || d < 1 || d > days_in_month(y, m)
+        {
             return Err(BAD);
         }
         Ok((y, m, d))
@@ -3313,8 +3436,11 @@ impl Calc {
         let prec = self.prec;
         let days = {
             let i = self.peek_integral(0, "day count must be a whole number")?;
-            let mag =
-                i.clone().abs().to_u32().ok_or(e_date("day count out of range"))? as i64;
+            let mag = i
+                .clone()
+                .abs()
+                .to_u32()
+                .ok_or(e_date("day count out of range"))? as i64;
             if i.is_negative() {
                 -mag
             } else {
@@ -3359,7 +3485,10 @@ impl Calc {
             return Err(e_use("year must be a small positive integer"));
         }
         let prec = self.prec;
-        let t = self.tvm.as_ref().ok_or(e_use("set n (life), pv (cost), fv (salvage) first"))?;
+        let t = self
+            .tvm
+            .as_ref()
+            .ok_or(e_use("set n (life), pv (cost), fv (salvage) first"))?;
         let life = t.n.clone();
         if life.is_zero() || life.is_sign_negative() {
             return Err(e_use("life (n) must be positive"));
@@ -3545,8 +3674,20 @@ fn decode_bits_back(bits: Integer, mode: SignMode, n: u32) -> Integer {
 /// user's responsibility. `None` when no bracket exists.
 fn bisect_rate(prec: u32, f: impl Fn(&Float) -> Float) -> Option<Float> {
     const GRID: [&str; 14] = [
-        "-0.999999", "-0.9", "-0.5", "-0.1", "-0.01", "-0.0001", "0.0000001",
-        "0.001", "0.01", "0.05", "0.2", "1", "10", "1000",
+        "-0.999999",
+        "-0.9",
+        "-0.5",
+        "-0.1",
+        "-0.01",
+        "-0.0001",
+        "0.0000001",
+        "0.001",
+        "0.01",
+        "0.05",
+        "0.2",
+        "1",
+        "10",
+        "1000",
     ];
     let mut lo: Option<(Float, bool)> = None;
     let mut bracket = None;
@@ -3636,4 +3777,3 @@ fn reg_index(t: &str, prefix: &str) -> Option<usize> {
     }
     rest.chars().next()?.to_digit(16).map(|d| d as usize)
 }
-

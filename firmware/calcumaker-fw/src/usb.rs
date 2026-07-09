@@ -16,7 +16,9 @@ use embassy_stm32::usb::{Driver, InterruptHandler};
 use embassy_stm32::{bind_interrupts, peripherals, Peri};
 use embassy_time::Timer;
 use embassy_usb::class::cdc_acm::{CdcAcmClass, State as CdcState};
-use embassy_usb::class::hid::{Config as HidConfig, HidBootProtocol, HidSubclass, HidWriter, State as HidState};
+use embassy_usb::class::hid::{
+    Config as HidConfig, HidBootProtocol, HidSubclass, HidWriter, State as HidState,
+};
 use embassy_usb::driver::EndpointError;
 use embassy_usb::{Builder, Config, UsbDevice};
 use static_cell::StaticCell;
@@ -114,8 +116,16 @@ async fn repl(
     hid: &mut HidWriter<'static, MyDriver, 8>,
     calc: &mut Calc,
 ) -> Result<(), EndpointError> {
-    write(acm, b"\r\nCalcumaker 16 RPN - space-separated tokens; ENTER evaluates.\r\n").await?;
-    write(acm, b"  e.g. `2 3 +`  |  `float 2 sqrt`  |  `type` sends X to host over HID\r\n> ").await?;
+    write(
+        acm,
+        b"\r\nCalcumaker 16 RPN - space-separated tokens; ENTER evaluates.\r\n",
+    )
+    .await?;
+    write(
+        acm,
+        b"  e.g. `2 3 +`  |  `float 2 sqrt`  |  `type` sends X to host over HID\r\n> ",
+    )
+    .await?;
 
     let mut line = LineBuf::new();
     let mut buf = [0u8; PKT];
@@ -163,7 +173,11 @@ async fn process(
     }
     if line == "dfu" {
         // Reboot into the STM32 ROM USB-DFU bootloader (dfu-util over USB-C).
-        write(acm, b"entering ROM DFU bootloader (run `make dfu` to reflash)...\r\n").await?;
+        write(
+            acm,
+            b"entering ROM DFU bootloader (run `make dfu` to reflash)...\r\n",
+        )
+        .await?;
         Timer::after(embassy_time::Duration::from_millis(50)).await; // flush the ACM
         crate::bootloader::enter_rom_dfu();
     }
@@ -235,7 +249,10 @@ struct LineBuf {
 
 impl LineBuf {
     fn new() -> Self {
-        Self { buf: [0; 256], len: 0 }
+        Self {
+            buf: [0; 256],
+            len: 0,
+        }
     }
     fn push(&mut self, b: u8) -> bool {
         if self.len < self.buf.len() {

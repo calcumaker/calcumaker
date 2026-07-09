@@ -1106,7 +1106,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2f98ccc4-3d09-4a2e-b531-4e84447d850f")
+		(uuid "cccbd717-fc5a-486b-8565-d66c2befef5d")
 		(property "Reference" "U2"
 			(at 24.1300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1135,11 +1135,11 @@
 			(at 20.3200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "dcc6f8a1-3a57-4a7d-bece-33da34f4b622"))
-		(pin "2" (uuid "972b5480-499d-408d-9d1c-c637f73e7352"))
-		(pin "3" (uuid "344d3cf8-14c7-4814-8a3d-26761c865f60"))
-		(pin "4" (uuid "b70f4853-398b-4ff3-949c-aff0c2c310be"))
-		(pin "5" (uuid "1932bd96-acab-4abb-a9a6-201d92b32721"))
+		(pin "1" (uuid "0bfcf5cc-73d9-4d4c-afed-8aff82e7d508"))
+		(pin "2" (uuid "234d3630-7857-4349-a716-51814bb42dfc"))
+		(pin "3" (uuid "3c85c72a-53b6-46ac-8bc3-3b613989ee25"))
+		(pin "4" (uuid "b8f8727d-01c8-4cdb-ad2c-7eb46586ba77"))
+		(pin "5" (uuid "68508f4a-497f-426f-8abe-c24bb9295ecc"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1157,7 +1157,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bd51b483-52c5-4520-bb5e-e885284eeef1")
+		(uuid "5ecd0729-0c53-4362-90b1-7344bf5858bc")
 		(property "Reference" "Q1"
 			(at 64.7700 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1186,9 +1186,9 @@
 			(at 60.9600 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "1c886567-b928-4fd0-860d-617c9145314f"))
-		(pin "2" (uuid "51420c05-4ce2-453b-8626-a9f42bd0324f"))
-		(pin "3" (uuid "d7bd37c3-5e96-4304-a73e-1de751236359"))
+		(pin "1" (uuid "088e9345-ba8e-4618-93c4-e0609b2e5a34"))
+		(pin "2" (uuid "ab30fc60-7c78-44ac-9517-05413031c401"))
+		(pin "3" (uuid "653a5ae5-aab9-489b-99c5-40590d635f32"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1206,7 +1206,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9f2aa789-b144-4682-bff1-c4d148683056")
+		(uuid "64ec61d9-7042-4fdd-a4f8-3049bd4aae07")
 		(property "Reference" "Q2"
 			(at 105.4100 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1235,9 +1235,9 @@
 			(at 101.6000 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e6986b16-2db6-41c5-8fd3-92d5bfd7240d"))
-		(pin "2" (uuid "92d44531-1912-4203-bf75-83f4b244d4db"))
-		(pin "3" (uuid "72d4c7d4-f7a6-4852-927c-bce802846df8"))
+		(pin "1" (uuid "a6cc63a1-c929-47dc-a3c4-382386ef5670"))
+		(pin "2" (uuid "3a442dbf-30e3-4571-9e55-ee13180c8fc6"))
+		(pin "3" (uuid "c92912ab-9c26-48bd-a3d7-84167a565df5"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1255,7 +1255,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bb83822b-d82d-4896-a73e-70a48c5111a9")
+		(uuid "be2ef452-e3d3-441f-9a60-a7f29a6d5dcb")
 		(property "Reference" "R7"
 			(at 146.0500 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1276,8 +1276,8 @@
 			(at 142.2400 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "eb3fed33-6043-4f04-800a-54cd7dc0eb4f"))
-		(pin "2" (uuid "d6d6ce9b-ef71-4628-99d9-627d0c6e1a1b"))
+		(pin "1" (uuid "0cf977c6-aa19-4220-88a0-172a67cadc6b"))
+		(pin "2" (uuid "4a8d1a4d-0b54-4a1f-a85e-be51aad64ae0"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1295,7 +1295,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4282dea9-87a6-4c6e-9644-84b98c7320c8")
+		(uuid "71344ab1-3fce-49fa-911e-109f6bb9ae7f")
 		(property "Reference" "R8"
 			(at 186.6900 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1316,8 +1316,8 @@
 			(at 182.8800 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "b2362bb5-2cf7-4334-b996-e659942e3936"))
-		(pin "2" (uuid "01896332-fb8a-413e-81a1-08d555b3d5e0"))
+		(pin "1" (uuid "bdbc2a8f-345b-4781-9f1c-366c559652ff"))
+		(pin "2" (uuid "73ff2d5c-3112-4327-aa23-8106ad78b7ae"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1335,7 +1335,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0dd88437-6878-4fff-8379-0449abc0fc10")
+		(uuid "e0072f2c-4f4a-4dd0-9b23-e72a6e0c3f7e")
 		(property "Reference" "R10"
 			(at 227.3300 33.0200 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1356,8 +1356,8 @@
 			(at 223.5200 35.5600 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "a4fa4741-f2ea-4df9-98c7-97cc4a756078"))
-		(pin "2" (uuid "9e879401-c6e4-4e76-a4cd-75b631e80bea"))
+		(pin "1" (uuid "7ba66698-6e1a-4593-9168-47cab207bc3e"))
+		(pin "2" (uuid "dbd64887-4202-46ac-a824-b54855fe5b2a"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1375,7 +1375,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ba917284-aca3-458b-88e5-9456cd67e0cd")
+		(uuid "2aa262c1-c88a-4b7d-949d-f8db760642a2")
 		(property "Reference" "R9"
 			(at 24.1300 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1392,8 +1392,8 @@
 			(at 20.3200 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "9ee1e95a-33de-48b5-a376-8d56a030d4e8"))
-		(pin "2" (uuid "d7fbfa5a-a131-4908-9a70-e5e0bc4af851"))
+		(pin "1" (uuid "0ea929e8-f1f4-47e7-8c42-c80cd1cea4f5"))
+		(pin "2" (uuid "a21dc072-ac22-4c18-a7c7-4dfc2c1be7d5"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1411,7 +1411,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c27929d9-8e03-449a-bf07-c19a0f662924")
+		(uuid "5fd66fc3-fc9a-428c-a401-4fe84a40d9b0")
 		(property "Reference" "C6"
 			(at 64.7700 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1432,8 +1432,8 @@
 			(at 60.9600 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "cda74046-572a-40f4-91b5-fe82432e96a3"))
-		(pin "2" (uuid "6f43ac0f-e358-47b0-94a4-fc0d02860ed4"))
+		(pin "1" (uuid "b3c3b19b-0309-4a5c-8610-647ee536155d"))
+		(pin "2" (uuid "ba7bdeb9-1fe3-4f58-becc-3ba70cc85dce"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1451,7 +1451,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "58c85aa7-a305-4c0e-a602-1cdf12f80e2c")
+		(uuid "fceaffb6-fbd3-4c92-8c45-6e327896b901")
 		(property "Reference" "C7"
 			(at 105.4100 68.5800 0)
 			(effects (font (size 1.27 1.27)) (justify left))
@@ -1468,8 +1468,8 @@
 			(at 101.6000 71.1200 0)
 			(effects (font (size 1.27 1.27))) (hide yes)
 		)
-		(pin "1" (uuid "e09002c7-1c61-4c86-a4cf-d54fb0e7abac"))
-		(pin "2" (uuid "a6b68037-36fb-4200-b8f8-fc26a8fa87d4"))
+		(pin "1" (uuid "e50aaab4-0eae-4f1b-8792-b8e14b227862"))
+		(pin "2" (uuid "da42a78b-04ee-4a0a-9ca0-1a1292fd197d"))
 		(instances
 			(project "calcumaker-keyboard"
 				(path "/ca1c0000-0000-4000-8000-00000000eb01/ca1c0000-0000-4000-8000-00000000eb40"
@@ -1479,11 +1479,11 @@
 			)
 		)
 	)
-	(text "RGB POWER + DATA GATE  -  drives the per-key SK6812MINI-E chain on the rows\nPLACED, not wired.  (The 50 LEDs are on Row1..Row5, sheet key_row.)\n\nDATA   G0 LED_DATA -> U2.A;  U2.Y -> R9 330R -> KB_LED_DATA (-> Row1.DIN,\n       chained Row1..Row5).  U2 74LVC1G125: /OE -> GND; VCC -> VLED.\nGATE   VSYS (mezz pin 11, ~3.7-4.7V) -> Q1 AO3401A P-FET -> VLED (C7 22uF)\n       Q1 gate: R7 100k pull-up to VSYS = OFF default; Q2 2N7002 pulls low\n       G0 LED_EN -> R8 10k -> Q2 gate (R10 100k pulldown = OFF at boot)\n       -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)\n\nCURRENT  firmware MUST cap total brightness: 50x full-white ~0.75A would\n  exceed the DF40 contact + VSYS budget -- hint use lights a few keys."
+	(text "RGB POWER + DATA GATE  -  drives the per-key SK6812MINI-E chain on the rows\nPLACED, not wired.  (The 49 LEDs are on Row1..Row5; Row4 has 9.)\n\nDATA   G0 LED_DATA -> U2.A;  U2.Y -> R9 330R -> KB_LED_DATA (-> Row1.DIN,\n       chained Row1..Row5).  U2 74LVC1G125: /OE -> GND; VCC -> VLED.\nGATE   VSYS (mezz pin 11, ~3.7-4.7V) -> Q1 AO3401A P-FET -> VLED (C7 22uF)\n       Q1 gate: R7 100k pull-up to VSYS = OFF default; Q2 2N7002 pulls low\n       G0 LED_EN -> R8 10k -> Q2 gate (R10 100k pulldown = OFF at boot)\n       -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)\n\nCURRENT  firmware MUST cap total brightness: 49x full-white ~0.74A would\n  exceed the DF40 contact + VSYS budget -- hint use lights a few keys."
 		(exclude_from_sim no)
 		(at 15.00 120.00 0)
 		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "f2e12120-da38-4ae7-a012-61dbe215c685")
+		(uuid "6fe3fc09-0f02-475e-adb0-bf4375ffa0f2")
 	)
 	(sheet_instances
 		(path "/"

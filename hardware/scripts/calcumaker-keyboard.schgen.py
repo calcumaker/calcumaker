@@ -107,6 +107,13 @@ MX_FP = "calcumaker:SW_MX_HS_CPG151101S11_1u"   # VENDORED (marbastlib, CERN-OHL
 #            thru-holes are 0.15mm-ring socket pass-throughs, NOT solder pads, so a switch-only /
 #            solder-in build is NOT possible on this fp (that would be a separate board rev using the
 #            solder-in-only SW_Cherry_MX_1.00u_PCB fp). See DESIGN.md "Hot-swap switches".
+MX_2U_FP = "calcumaker:SW_MX_HS_CPG151101S11_2u_Vertical"   # VENDORED: 1u hot-swap fp + the
+#            four PCB-mount 2U stabilizer holes (y = +/-11.90mm, 23.8mm spacing). UNUSED by default:
+#            we use PLATE-mount stabilizers, which clip into the switch plate the hot-swap sockets
+#            already require and need NO pcb holes -- so the 2U ENTER simply reuses MX_FP. Switching
+#            to PCB-mount stabs means (a) this fp for the ENTER switch and (b) a Row5 VARIANT SHEET,
+#            since ENTER's switch sits on the shared 10-key sheet and multi-channel instances must
+#            share footprints. See DESIGN.md "The 2U ENTER".
 G0_FP = "Package_DFN_QFN:UFQFPN-32-1EP_5x5mm_P0.5mm_EP3.5x3.5mm"
 SWD_FP = "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical"
 MEZZ_HEADER_FP = "Connector_Hirose_DF40:Hirose_DF40C-12DP-0.4V_2x06-1MP_P0.4mm"
@@ -307,7 +314,7 @@ def build_rgb_power():
         "       G0 LED_EN -> R8 10k -> Q2 gate (R10 100k pulldown = OFF at boot)",
         "       -> in Stop, LED_EN low -> LEDs + U2 fully OFF (near-zero leakage)",
         "",
-        "CURRENT  firmware MUST cap total brightness: 50x full-white ~0.75A would",
+        "CURRENT  firmware MUST cap total brightness: 49x full-white ~0.74A would",
         "  exceed the DF40 contact + VSYS budget -- hint use lights a few keys."))
     return dict(uuid=RGB_POWER, file="rgb_power.kicad_sch", page="6",
                 title="RGB power + data gate (level shift + load switch)",

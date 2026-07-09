@@ -141,9 +141,13 @@ MCU board):
     **y = ±11.90 mm** (23.8 mm stab spacing), each wing a **3.05 mm** hole at
     x = −7.00 mm and a **4.00 mm** hole at x = +8.24 mm (15.24 mm apart). Stock
     `Button_Switch_Keyboard:SW_Cherry_MX_2.00u_Vertical_PCB` has this pattern but
-    is **solder-in**, so a hot-swap 2U variant would have to be derived by adding
-    those four holes to our vendored `SW_MX_HS_CPG151101S11_1u` (whose origin is
-    already the switch center).
+    is **solder-in**, so the hot-swap 2U variant is **vendored** as
+    `calcumaker:SW_MX_HS_CPG151101S11_2u_Vertical` (our 1u hot-swap footprint plus
+    those four holes; its origin is already the switch center). Place-on-back is
+    safe: mirroring X maps the stab-hole set onto itself rotated 180°, and a 2U key
+    is symmetric. Choosing PCB-mount would **also** force a **Row5 variant sheet**,
+    since ENTER's switch sits on the shared 10-key sheet and multi-channel instances
+    must share footprints — another reason to prefer plate-mount.
 
   The stabilizer itself is **mechanical hardware** (Cherry/Durock 2U, plate- or
   PCB-mount), not a schematic symbol — it carries no net and appears only in the

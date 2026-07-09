@@ -41,7 +41,7 @@ being Rust.
 | 5 | Firmware language | **Rust, `no_std`** main loop (async via embassy once MCU is pinned). |
 | 6 | Firmware license | **AGPL-3.0** (repo LICENSE) — compatible with LGPLv3 GMP/MPFR. |
 | 7 | MCU | **STM32U575RGT6** (Cortex-M33, **1 MB** / 768 KB, **LQFP-64**, ULP) + **4 MB quad-SPI NOR on OCTOSPI1**. Firmware measured ~323 KB → 1 MB is ample; the matrix scans off-board so LQFP-64 has enough GPIO (smaller/cheaper). Same U575 die (USB FS, OCTOSPI, GMP/MPFR-capable). LCSC C5270980. Target `thumbv8m.main-none-eabihf`. |
-| 8 | Board partition | **Three boards: `calcumaker-mcu` + `calcumaker-keyboard` (DF40 mezzanine-stacked above it) + `calcumaker-display` (angled, 0.5 mm FFC).** Keeps a dense LQFP-64 off the 50-key through-hole matrix. The keyboard has its **own STM32G0 scanner**, so only an **I²C+UART link + power** cross the mezzanine (not the raw matrix); the display bus + power cross the FFC. |
+| 8 | Board partition | **Three boards: `calcumaker-mcu` + `calcumaker-keyboard` (DF40 mezzanine-stacked above it) + `calcumaker-display` (angled, 0.5 mm FFC).** Keeps a dense LQFP-64 off the 49-key through-hole matrix. The keyboard has its **own STM32G0 scanner**, so only an **I²C+UART link + power** cross the mezzanine (not the raw matrix); the display bus + power cross the FFC. |
 | 9 | Hardware license | **CERN-OHL-S v2** (`hardware/LICENSE`) — strongly reciprocal, matches the AGPL copyleft posture. |
 | 10 | Product name | **Calcumaker 16** (see `NAMING.md`). |
 
@@ -111,9 +111,29 @@ MCU board):
 - **`calcumaker-mcu`** — the brain/PSU board: MCU (U575), PSU, clock, SWD, the
   display 5 V rail + level shifter + interconnect, and a **keyboard mezzanine**
   (J5). This is the dense fine-pitch SMT board (LQFP-64). *Bottom of the stack.*
-- **`calcumaker-keyboard`** — the front-panel board: the 50-key Cherry MX matrix
+- **`calcumaker-keyboard`** — the front-panel board: the 49-key Cherry MX matrix (2U ENTER)
   + per-key diodes + the annunciator LEDs + the mating **mezzanine header** (J1).
   A simple 2-layer through-hole board. *Stacks directly above the MCU board.*
+
+  **The 2U ENTER.** ENTER is a **double-height (2U) keycap**, like every HP
+  Voyager. It occupies two cells of the 5×10 grid — rows 3 and 4 of column 5
+  (0-based) — but has a **single switch, in the lower cell**, so ENTER keeps its
+  matrix position and the firmware scan is unchanged. The upper cell carries a 2U
+  stabilizer and **no switch, diode, or RGB LED**: the grid is 50 cells but the
+  board is **49 keys / 49 LEDs**.
+  - Firmware: `keys.rs` marks that cell `Key::Absent` (≠ `Key::Nop`, a real key
+    with no function) in every layer of every personality; `ENTER_SWITCH_CELL` /
+    `ENTER_SPAN_CELL` / `cell_has_switch()` are the source of truth, pinned by the
+    `enter_is_2u_in_every_personality` golden test.
+  - Displaced functions (identical in all four personalities): **x⇄y** moves onto
+    the base layer at (3,4) — it is core RPN and stays unshifted; the mode key it
+    displaced there moves to **f+ENTER** (16C `WSIZE`, SCI/15C `ANGLE`, FIN `%T`);
+    and **FLOAT** moves to **g+ENTER**.
+  - PCB: the matrix is no longer five *identical* rows, so the multi-channel
+    design instantiates the reusable 10-key sheet **four times** (Row1/2/3/5) and a
+    dedicated **9-key variant sheet** (`key_row_9.kicad_sch`) once for **Row4**.
+    Reference numbering keeps a hole (no `SW36` / `D36` / `D91`) rather than
+    renumbering, and Row4's RGB daisy-chain closes over the gap (LED@COL5 → LED@COL7).
 - **`calcumaker-display`** — the multi-row 7-segment stack + its driver ICs + the
   interconnect back to the MCU board. It **mounts at an upward angle** for
   readability, cabled (not stacked).
@@ -479,7 +499,7 @@ calculator logic and math.
 is not a mock: the whole device-independent calculator lives in
 `calcumaker-core` and the emulator hosts it exactly as the firmware will —
 
-- **`keys`** — the 50-key matrix keymap + f/g shift layers + resolution
+- **`keys`** — the 49-key matrix keymap + f/g shift layers + resolution
   (`Shift`), the design source of truth;
 - **`App`** — key handling on top of the engine: HP-style digit-by-digit entry
   (live `_` cursor, backspace, EEX, CHS-in-entry flips the mantissa/exponent
@@ -781,7 +801,7 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    decimal) — a **display tunable** (`suffix` token toggles; on by default;
    emulator `--no-suffix`). Remaining: wire the LED GPIOs on the keyboard board;
    LOWBAT needs the battery ADC/status path.
-5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 (50 keys),
+5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 grid, 49 keys (2U ENTER spans two cells),
    f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
    annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
    (**key_row ×5 multi-channel** / Annunciators / KbdMCU / RGBPower / MainIF, 178

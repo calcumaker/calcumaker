@@ -32,8 +32,8 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   display-IF + a **keyboard mezzanine** (J5). (Renamed from `calcumaker-main`
   2026-07-05 when the keyboard split off.)
 - `hardware/calcumaker-keyboard/` — the front-panel board that **mezzanine-stacks
-  above** the MCU board: the 50-key Cherry MX matrix + per-key diodes + the
-  annunciator LEDs + the mating mezzanine header (J1). A dense LQFP-64 and 50
+  above** the MCU board: the 49-key Cherry MX matrix (2U ENTER) + per-key diodes + the
+  annunciator LEDs + the mating mezzanine header (J1). A dense LQFP-64 and 49
   through-hole keys don't share a PCB.
 - `hardware/calcumaker-display/` — 7-seg stack (2–3 rows) + driver + interconnect
   (angled PCB, cabled to the MCU board; the display bus + power cross the

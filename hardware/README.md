@@ -7,7 +7,7 @@ calculator. **Split design** — three PCBs (two stacked, one cabled):
   charge + buck-boost), clock, SWD, the display 5V rail + level shifter +
   interconnect, and a fine-pitch mezzanine up to the keyboard board. *Bottom of
   the stack.*
-- **`calcumaker-keyboard/`** — the front-panel board: the 50-key Cherry MX matrix
+- **`calcumaker-keyboard/`** — the front-panel board: the 49-key Cherry MX matrix (2U ENTER)
   + per-key diodes + the annunciator LEDs + the mating mezzanine header.
   *Mezzanine-stacks directly above the MCU board* (keeps a dense LQFP-64 off the
   through-hole key matrix).

@@ -61,7 +61,7 @@ Calcumaker 16 is a three-board KiCad 10 design:
 - **`calcumaker-mcu`** is the bottom brain/PSU board: STM32U575, USB-C power and
   charging, the 3V3 rail, the gated 5V display rail, SWD, clocking, the display
   FFC connector, and the keyboard mezzanine.
-- **`calcumaker-keyboard`** is the top/front-panel board: 50 Cherry MX keys,
+- **`calcumaker-keyboard`** is the top/front-panel board: 49 Cherry MX keys (a 2U ENTER),
   per-key diodes, annunciator LEDs, and a small STM32G0 keyboard scanner that
   reports key events to the U575 instead of routing the raw matrix across the
   stack.
@@ -227,7 +227,7 @@ calcumaker/
 |-----------|------|--------|
 | MCU | STM32U575RGT6 (1MB/768KB, M33, ULP, LQFP-64) | ✅ selected — LCSC C5270980, JLCPCB Extended |
 | Display | 3 rows × 16 digits: 3× TM1640 + 48× FJ5161AH 0.56" CC (THT) | ✅ LCSC C5337152 / C8093 |
-| Keys | 5×10 full-size Cherry MX (wide HP-16C-style layout) + keyboard STM32G0 scanner | electrical/keymap decided; physical layout details still TBD |
+| Keys | 5×10 grid, 49 full-size Cherry MX (2U double-height ENTER) + keyboard STM32G0 scanner | electrical/keymap decided; physical layout details still TBD |
 | Display interconnect | 12-position 0.5mm FFC: +5V/GND, CLK + DIN×3, 3V3/I²C aux lines | selected in `DESIGN.md`; verify cable length/orientation at layout |
 | Power | 1S Li-ion + USB-C charge; **3V3 (TPS63900, MCU)** + **EN-gated 5V boost (display)** | 3V3 ✅; 5V boost + 74HCT125 level shifter TBD (research) |
 | Math | GNU MP + MPFR via `calcumaker-core` + own `gmp-mpfr-nostd` (single path) | ✅ no_std, host-tested + REPL + emulator; cross-built + link-verified for the target |

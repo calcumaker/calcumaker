@@ -7,19 +7,28 @@
 *** DRAFT ***
 The keyboard board is the **top board** of the three-board split (DESIGN.md ->
 Board Partition). It stacks ABOVE the MCU board on a fine-pitch mezzanine and
-carries the front-panel: the **50-key Cherry MX matrix**, its **own
+carries the front-panel: the **49-key Cherry MX matrix** (2U ENTER), its **own
 STM32G031K8U6 scanner** (U1), the **annunciator LEDs**, **per-key RGB** hint
 lighting, and the mezzanine header (J1) down to the MCU board.
 
-**Multi-channel structure.** The 5x10 matrix is electrically five identical rows,
-so a row is authored ONCE as a reusable, fully-wired child sheet
-(``key_row.kicad_sch``) and instantiated **five times** at the root (Row1..Row5),
-each annotating to its own reference designators. Each of the 10 keys in a row =
-**MX switch + 1N4148W diode + SK6812MINI-E RGB LED**; the matrix (ROW/COL) and the
-RGB daisy-chain (DIN->DOUT) are wired in the one sheet, so a fix propagates to all
-five rows. This replaces the old FLAT design (100 switch/diode parts on one sheet
-+ 50 flat RGB LEDs). Shared buses (COL1..10, VLED, GND) are global nets; each
-row's ROW line + RGB DIN/DOUT are hierarchical pins wired at the root.
+**Multi-channel structure.** The 5x10 matrix is *almost* five identical rows, so a
+row is authored ONCE as a reusable, fully-wired child sheet (``key_row.kicad_sch``)
+and instantiated at the root, each annotating to its own reference designators.
+Each key = **MX switch + 1N4148W diode + SK6812MINI-E RGB LED**; the matrix
+(ROW/COL) and the RGB daisy-chain (DIN->DOUT) are wired in the one sheet, so a fix
+propagates to every row that uses it. Shared buses (COL1..10, VLED, GND) are global
+nets; each row's ROW line + RGB DIN/DOUT are hierarchical pins wired at the root.
+
+**The 2U ENTER row variant.** ENTER is a double-height (2U) keycap spanning Row4
+and Row5 of COL6, with its single switch in Row5 (firmware ``keys.rs``:
+``ENTER_SWITCH_CELL = (4,5)``, ``ENTER_SPAN_CELL = (3,5)``, 0-based). So the
+**Row4/COL6 cell carries no switch, no diode, and no RGB LED** -- a 2U stabilizer
+sits there instead. Multi-channel instances must be identical, so Row4 gets its own
+**9-key** sheet (``key_row_9.kicad_sch``); Row1/2/3/5 still share the reusable
+10-key sheet. Row4's RGB daisy-chain is re-stitched around the gap (LED5 -> LED7),
+and the global reference numbering keeps its hole (no SW36 / D36 / D91). The board
+is therefore **49 keys / 49 RGB LEDs**, not 50. `enter_is_2u_in_every_personality`
+in calcumaker-core pins this geometry so the schematic and firmware scan agree.
 
 Peripheral one-off sheets (Annunciators, KbdMCU, RGBPower, MainIF) are
 single-instance and PLACED-not-wired -- wire them + the G0 pin assignment
@@ -50,7 +59,17 @@ PAPER_ROW = "A2"          # a 10-key row + its labels wants the bigger sheet
 #      uuids, these seed fresh ones + keep forced-regen diffs readable) --------
 ROOT_UUID = "ca1c0000-0000-4000-8000-00000000eb01"
 ROW_FILE  = "ca1c0000-0000-4000-8000-00000000eb10"   # key_row.kicad_sch file id
+ROW9_FILE = "ca1c0000-0000-4000-8000-00000000eb1a"   # key_row_9.kicad_sch file id
 ROW_INST  = ["ca1c0000-0000-4000-8000-00000000eb1%d" % (n + 1) for n in range(5)]  # Row1..Row5
+
+# ---- 2U ENTER: the one cell with no switch ---------------------------------
+# Mirrors calcumaker-core keys.rs ENTER_SPAN_CELL = (3, 5) (0-based row, col).
+# Schematic rows/cols are 1-based, so that is Row4 / COL6. Row4 is the only row
+# that differs, so it gets a dedicated 9-key sheet; the rest share the 10-key one.
+ENTER_SPAN_ROW  = 4          # 1-based schematic row with the missing switch
+ENTER_SPAN_COL  = 6          # 1-based column of the missing switch
+ROW9_INSTANCE   = ENTER_SPAN_ROW - 1        # index into ROW_INST (Row4 -> 3)
+ROW10_INSTANCES = [i for i in range(5) if i != ROW9_INSTANCE]   # Row1,2,3,5
 ANNUNC    = "ca1c0000-0000-4000-8000-00000000eb20"
 KBD_MCU   = "ca1c0000-0000-4000-8000-00000000eb30"
 RGB_POWER = "ca1c0000-0000-4000-8000-00000000eb40"
@@ -129,14 +148,22 @@ def place1(path, specs, x0=g(8), y0=g(14), dx=g(16), dy=g(14), per=6):
 #   MATRIX  SW.1 -> ROW (hier);  SW.2 -> node KN;  D.A -> KN;  D.K -> COLk (global)
 #           (anode@switch, cathode->COL; per-key diode = n-key rollover)
 #   RGB     DIN -> LED1..LED10 -> DOUT (hier, chained @root);  VDD->VLED, VSS->GND
-def build_key_row():
+def build_key_row(keys, instances, file_uuid, filename, page, title, note_header):
+    """One row sheet. `keys` = 1-based columns present (10-key row: 1..10; the
+    Row4 variant omits ENTER_SPAN_COL). `instances` = ROW_INST indices that share
+    this sheet. Reference numbering stays SW/D = col + 10*row_index, so the
+    omitted key simply leaves a hole (SW36 / D36 / D91) rather than renumbering.
+    The RGB chain is stitched by *position in the row*, so it closes over the gap.
+    """
     comps = []
     wiring = ""
 
-    def pr(fn):   # per-instance (path, reference), i = 0..4
-        return [(f"/{ROOT_UUID}/{ROW_INST[i]}", fn(i)) for i in range(5)]
+    def pr(fn):   # per-instance (path, reference)
+        return [(f"/{ROOT_UUID}/{ROW_INST[i]}", fn(i)) for i in instances]
 
-    for k in range(1, 11):
+    for pos, k in enumerate(keys, start=1):   # pos = index along the RGB chain
+        # x follows the physical column so the sheet stays 1:1 with the panel —
+        # the missing key leaves a visible gap.
         bx = g(6 + (k - 1) * 14)
         # --- switch ---------------------------------------------------------
         sw = dict(lib_id="Switch:SW_Push", value="MX", fp=MX_FP, x=bx, y=g(18))
@@ -155,25 +182,22 @@ def build_key_row():
         comps.append((led, pr(lambda i, kk=k: f"D{55 + kk + 10 * i}")))  # D56-65,66-75,...
         wiring += K.net_pin(led, "VDD", "VLED", kind="glabel")
         wiring += K.net_pin(led, "VSS", "GND", kind="glabel")
-        if k == 1:
+        if pos == 1:
             wiring += K.net_pin(led, "DIN", "DIN", kind="hlabel", shape="input")
         else:
-            wiring += K.net_pin(led, "DIN", f"CH{k}", kind="label")
-        if k == 10:
+            wiring += K.net_pin(led, "DIN", f"CH{pos}", kind="label")
+        if pos == len(keys):
             wiring += K.net_pin(led, "DOUT", "DOUT", kind="hlabel", shape="output")
         else:
-            wiring += K.net_pin(led, "DOUT", f"CH{k + 1}", kind="label")
+            wiring += K.net_pin(led, "DOUT", f"CH{pos + 1}", kind="label")
 
     note = (g(6), g(80), K.note_block(
-        "REUSABLE 10-KEY ROW  (multi-channel: instantiated x5 as Row1..Row5)",
-        "  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)",
-        "  Row2 -> SW11-20 / D11-20  / D66-75      ...",
-        "  Row5 -> SW41-50 / D41-50  / D96-105",
+        *note_header,
         "",
-        "Each of the 10 keys = MX switch + 1N4148W diode + SK6812MINI-E RGB:",
+        "Each key = MX switch + 1N4148W diode + SK6812MINI-E RGB:",
         "  MATRIX  SW.1 -> ROW (hier pin);  SW.2 -> node KNk;  D.A -> KNk;",
         "          D.K -> COLk (global)   [anode@switch, cathode->COL; NKRO]",
-        "  RGB     DIN -> LED1 -> LED2 -> ... -> LED10 -> DOUT (hier, chained",
+        "  RGB     DIN -> LED -> LED -> ... -> DOUT (hier, chained by row",
         "          @root);  LED VDD -> VLED (gated), VSS -> GND",
         "",
         "Shared globals: COL1..COL10, VLED, GND.",
@@ -188,8 +212,7 @@ def build_key_row():
         "  so the socket lands on the bottom + keycaps face up on front; + a plate.",
         "  NOT solderable for a switch-only build (thru-holes are 0.15mm-ring socket",
         "  pass-throughs, not solder pads) -> solder-in = a separate board rev."))
-    return dict(uuid=ROW_FILE, file="key_row.kicad_sch", page="2",
-                title="Reusable 10-key row (MX + diode + SK6812MINI-E RGB)",
+    return dict(uuid=file_uuid, file=filename, page=page, title=title,
                 comps=comps, wiring=wiring, notes=[note], _dir=PROJ_DIR)
 
 
@@ -257,7 +280,7 @@ def build_kbd_mcu():
 
 
 # ===================== RGB power + data gate sheet (single instance) =========
-# Level shifter + high-side load switch. The 50 SK6812MINI-E live on the Row sheets;
+# Level shifter + high-side load switch. The 49 SK6812MINI-E live on the Row sheets;
 # this drives + gates the whole chain.
 def build_rgb_power():
     path = f"/{ROOT_UUID}/{RGB_POWER}"
@@ -273,7 +296,7 @@ def build_rgb_power():
     ]
     note = (15, 120, K.note_block(
         "RGB POWER + DATA GATE  -  drives the per-key SK6812MINI-E chain on the rows",
-        "PLACED, not wired.  (The 50 LEDs are on Row1..Row5, sheet key_row.)",
+        "PLACED, not wired.  (The 49 LEDs are on Row1..Row5; Row4 has 9.)",
         "",
         "DATA   G0 LED_DATA -> U2.A;  U2.Y -> R9 330R -> KB_LED_DATA (-> Row1.DIN,",
         "       chained Row1..Row5).  U2 74LVC1G125: /OE -> GND; VCC -> VLED.",
@@ -337,7 +360,9 @@ def build_root_strings():
         x, y = g(10), g(10 + i * 11)
         w, h = g(26), g(8)
         rpy, dpy, opy = y + g(2), y + g(4), y + g(6)
-        sym += K.w_sheet(name, "key_row.kicad_sch", ROW_INST[i], x, y, w, h,
+        # Row4 has no switch at COL6 (2U ENTER) -> its own 9-key sheet.
+        fname = "key_row_9.kicad_sch" if i == ROW9_INSTANCE else "key_row.kicad_sch"
+        sym += K.w_sheet(name, fname, ROW_INST[i], x, y, w, h,
                          pins=[("ROW", "input", x, rpy, 180),
                                ("DIN", "input", x, dpy, 180),
                                ("DOUT", "output", x + w, opy, 0)])
@@ -356,7 +381,9 @@ def build_root_strings():
         sym += K.w_sheet(nm, fn, uu, g(50), g(yy), g(22), g(8), pins=[])
     wiring += K.text_note(K.note_block(
         "Calcumaker 16 - Keyboard (MULTI-CHANNEL).",
-        "Row1..Row5 = five instances of ONE reusable sheet key_row.kicad_sch",
+        "Row1/2/3/5 = four instances of the reusable 10-key sheet key_row.kicad_sch.",
+        "Row4 = key_row_9.kicad_sch: 9 keys, no switch/diode/RGB at COL6 -- that is",
+        "the upper half of the 2U ENTER cap (switch lives in Row5/COL6). 49 keys.",
         "(MX switch + diode + SK6812MINI-E RGB per key). Shared buses on global nets",
         "COL1..COL10 / VLED / GND; each row's ROW line = a hier pin -> KB_ROWn,",
         "and the RGB DIN/DOUT are chained: KB_LED_DATA -> Row1 -> Row2 -> ... ->",
@@ -387,7 +414,29 @@ if os.environ.get("KSCHGEN_FORCE") == "1":
             print(f"removed {_f} (regenerating fresh)")
 
 print("child sheets:")
-K.write_wired_child(build_key_row(), PROJECT, ROOT_UUID, TITLE, PAPER_ROW)
+ALL_COLS = list(range(1, 11))
+K.write_wired_child(build_key_row(
+    ALL_COLS, ROW10_INSTANCES, ROW_FILE, "key_row.kicad_sch", "2",
+    "Reusable 10-key row (MX + diode + SK6812MINI-E RGB)",
+    ["REUSABLE 10-KEY ROW  (multi-channel: Row1, Row2, Row3, Row5)",
+     "  Row1 -> SW1-10  / D1-10   / D56-65 (RGB)",
+     "  Row2 -> SW11-20 / D11-20  / D66-75      ...",
+     "  Row5 -> SW41-50 / D41-50  / D96-105",
+     "  (Row4 is the 9-key variant -- sheet key_row_9.kicad_sch)"],
+), PROJECT, ROOT_UUID, TITLE, PAPER_ROW)
+
+K.write_wired_child(build_key_row(
+    [k for k in ALL_COLS if k != ENTER_SPAN_COL], [ROW9_INSTANCE], ROW9_FILE,
+    "key_row_9.kicad_sch", "7",
+    "Row4 variant: 9 keys (2U ENTER spans COL6 - no switch there)",
+    [f"ROW4 VARIANT - 9 KEYS (no switch at COL{ENTER_SPAN_COL})",
+     "  The 2U ENTER keycap spans Row4+Row5 of COL6; its single switch is in",
+     "  Row5/COL6, and a 2U stabilizer sits here. So this cell has NO switch,",
+     "  NO diode and NO RGB LED -- the numbering keeps a hole:",
+     "  Row4 -> SW31-35, SW37-40 / D31-35, D37-40 / D86-90, D92-95 (RGB)",
+     "  RGB chain closes over the gap: DIN -> LED(COL1..5) -> LED(COL7..10) -> DOUT",
+     "  Mirrors calcumaker-core keys.rs ENTER_SPAN_CELL = (3, 5) (0-based)."],
+), PROJECT, ROOT_UUID, TITLE, PAPER_ROW)
 K.write_wired_child(build_annunc(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
 K.write_wired_child(build_kbd_mcu(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)
 K.write_wired_child(build_rgb_power(), PROJECT, ROOT_UUID, TITLE, PAPER_ROOT)

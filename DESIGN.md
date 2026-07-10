@@ -749,7 +749,7 @@ Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`
 | Root | `calcumaker-display.kicad_sch` | Row1/Row2/Row3 + Interconnect + Aux + **DispMCU** (STM32G031) + **DispPower** (5V boost + shifter) sheet symbols |
 | Row1/2/3 | `display_row.kicad_sch` (reused ×3) | **multi-channel** — 1 TM1640 + 16 single-digit FJ5161AH, fully wired (shared SEG bus + GRID1–16) |
 | Interconnect | `interconnect.kicad_sch` | J1 ← MCU board (unified SPI; pinout matches mcu J3 + matrix J1) |
-| AuxDisplay | `aux.kicad_sch` | DNP-optional SSD1306 OLED socket (J2) |
+| AuxDisplay | `aux-display.kicad_sch` | DNP-optional SSD1306 OLED socket (J2) |
 
 ---
 

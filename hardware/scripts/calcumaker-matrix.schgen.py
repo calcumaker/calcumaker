@@ -474,7 +474,7 @@ def build_aux():
                      (4, "SDA <- OLED_SDA")], cols=1),
         "",
         "Shows full-precision X / error text / SETUP; the matrix stays primary."))
-    return dict(uuid=AUX, file="aux.kicad_sch", page="6",
+    return dict(uuid=AUX, file="aux-oled.kicad_sch", page="6",
                 title="Aux OLED 128x32 (SSD1306 I2C) — DNP-optional",
                 comps=[(J3, [(path, "J3")])], wiring=wiring, notes=[note],
                 _dir=PROJ_DIR)
@@ -500,7 +500,7 @@ def build_root_strings():
     for k, (nm, fn, uu) in enumerate([("RP2040", "rp2040.kicad_sch", RP2040_U),
                                       ("RGBPower", "rgb_power.kicad_sch", RGBPOWER),
                                       ("MatrixIF", "matrix_if.kicad_sch", MATRIX_IF),
-                                      ("AuxOLED", "aux.kicad_sch", AUX)]):
+                                      ("AuxOLED", "aux-oled.kicad_sch", AUX)]):
         sym += K.w_sheet(nm, fn, uu, g(6 + k * 36), yb, g(30), g(8), pins=[])
     wiring += K.text_note(K.note_block(
         "Calcumaker 16 - RGB Matrix (NESTED MULTI-CHANNEL: cluster -> row -> board).",

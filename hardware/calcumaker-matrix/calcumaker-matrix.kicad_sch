@@ -150,7 +150,7 @@
 			(at 289.5600 135.8900 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "aux.kicad_sch"
+		(property "Sheetfile" "aux-oled.kicad_sch"
 			(at 289.5600 158.7500 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)

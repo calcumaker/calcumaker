@@ -103,7 +103,7 @@
 			(at 162.5600 59.6900 0)
 			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "aux.kicad_sch"
+		(property "Sheetfile" "aux-display.kicad_sch"
 			(at 162.5600 82.5500 0)
 			(effects (font (size 1.27 1.27)) (justify left top))
 		)

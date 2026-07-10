@@ -258,7 +258,7 @@ def build_aux():
         K.pin_table([(1, "VCC <- +3V3"), (2, "GND"), (3, "SCL"), (4, "SDA")], cols=1),
         "",
         "Shows full error text / SETUP / STATUS; the 7-seg glass stays primary."))
-    return dict(uuid=AX, file="aux.kicad_sch", page="7",
+    return dict(uuid=AX, file="aux-display.kicad_sch", page="7",
                 title="Aux OLED 128x32 (SSD1306 I2C) — DNP-optional",
                 comps=[(J2, [(path, "J2")])], wiring=wiring, notes=[note],
                 _dir=PROJ_DIR)
@@ -415,7 +415,7 @@ def build_root_strings():
         wiring += K.w_glabel(f"DIN{i+1}", x - g(3), py, 180, shape="output")
     sym += K.w_sheet("Interconnect", "interconnect.kicad_sch", IC,
                      g(64), g(12), g(20), g(8), pins=[])
-    sym += K.w_sheet("AuxDisplay", "aux.kicad_sch", AX,
+    sym += K.w_sheet("AuxDisplay", "aux-display.kicad_sch", AX,
                      g(64), g(24), g(20), g(8), pins=[])
     sym += K.w_sheet("DispMCU", "disp_mcu.kicad_sch", MCU_SH,
                      g(64), g(36), g(20), g(8), pins=[])

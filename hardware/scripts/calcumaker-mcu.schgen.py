@@ -7,19 +7,29 @@
 *** DRAFT ***
 The MCU board is the **brain/PSU logic board** of a THREE-board split (see
 DESIGN.md → Board Partition): it carries the **MCU (STM32U575RGT6)**, **PSU**
-(USB-C/charge/buck-boost), clock, SWD, the **display 5V rail + level shifter +
-interconnect** (0.5mm FFC) to the angled display board, and a **fine-pitch
-mezzanine** up to the **keyboard board** that stacks above it (the Cherry MX
-matrix + its own STM32G0 scanner + annunciator LEDs live there — a dense LQFP-64
-and 50 through-hole keys don't belong on one PCB). Keyscanning is off the main
-board: only an **I2C + UART link + KB_IRQ wake + power** cross the mezzanine (not
-the raw matrix). The PSU sheet is concrete; the MCU config and connector pinouts
-are PLACEHOLDERS pending front-panel layout. A guard refuses to generate first.
+(USB-C/charge/buck-boost), clock, SWD, the **display-module interconnect**
+(0.5mm FFC) to the angled display board, and a **fine-pitch mezzanine** up to
+the **keyboard board** that stacks above it (the Cherry MX matrix + its own
+STM32G0 scanner + annunciator LEDs live there — a dense LQFP-64 and 50
+through-hole keys don't belong on one PCB). Keyscanning is off the main board:
+only an **I2C + UART link + KB_IRQ wake + power** cross the mezzanine (not the
+raw matrix). The 5V rail + level shifter now live on the display module, not
+here. The PSU sheet is concrete; the connector pinouts are PLACEHOLDERS pending
+front-panel layout. A guard refuses to generate first.
+
+FOUR sheets: MCU, PSU, KeyboardIF, QSPIFlash. The former one-off Clock (Y1),
+Programming (J4) and DisplayIF (J3/J7) sheets were folded into the MCU sheet on
+2026-07-09 and their .kicad_sch files deleted; their parts and notes live on the
+MCU sheet now. The OCTOSPI1 pin map is committed (see the MCU + QSPIFlash notes).
 
 This is DATA; the engine is scripts/kschgen.py. Components are PLACED, not wired
 — wire them in eeschema using the per-sheet notes as the spec (regenerate BEFORE
 wiring; regen reassigns UUIDs). 0402 passives; bulk MLCCs 0603. Verify each
 lib_id/footprint exists in your KiCad 10 install before relying on it.
+
+*** WIRING IS IN PROGRESS in eeschema — do NOT regenerate this board. ***
+kschgen keeps existing .kicad_sch files unless KSCHGEN_FORCE=1; forcing a regen
+would discard the manual wiring and reassign every UUID.
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -89,19 +99,40 @@ def C(ref, val, fp=C0402):
 
 
 # ============================ MCU core sheet =================================
-# STM32U575RGTx (LQFP-64) + power decoupling + reset/boot. Clock and programming
-# are their own subsheets. NOTE: the U5 core can run from the internal LDO or the
-# internal SMPS; SMPS mode needs an external inductor on VLXSMPS + VDD12 caps
-# (datasheet) — placed/configured at layout. VDDA/VREF+ and VDDUSB decoupled.
-MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
+# STM32U575RGTx (LQFP-64) + power decoupling + reset/boot. NOTE: the U5 core can
+# run from the internal LDO or the internal SMPS; SMPS mode needs an external
+# inductor on VLXSMPS + VDD12 caps (datasheet) — placed/configured at layout.
+# VDDA/VREF+ and VDDUSB decoupled.
+#
+# 2026-07-09: the former Clock (Y1/C24/C25), Programming (J4) and DisplayIF
+# (J3/J7) one-off subsheets were FOLDED IN HERE and their .kicad_sch files
+# deleted — they were single-part sheets whose only job was to sit next to the
+# MCU. Their parts, refs and notes now live on this sheet; the pinouts they
+# documented are captured in the PIN MAP below.
+MCU = dict(name="MCU", file="mcu.kicad_sch",
+    title="MCU core (STM32U575) + clock + SWD + display-module interface",
     page="2",
     big=[
         dict(ref="U1", lib_id="MCU_ST_STM32U5:STM32U575RGTx", value="STM32U575RGT6",
              fp=LQFP64, lcsc="C5270980", mpn="STM32U575RGT6", mfr="STMicroelectronics"),
+        # --- was the Programming sheet: PSU uses J1/J2, display FFC is J3, SWD = J4.
+        dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
+             value="SWD TC2030-NL", fp=SWD_FP),
+        # --- was the DisplayIF sheet: unified 12-pos 0.5mm FFC to the display
+        # module. CABLE = GCT FFC05-TIN 05-12-A-<length>-A-4-06-4-T (DigiKey
+        # accessory, NOT assembled; len TBD).
+        dict(ref="J3", lib_id="Connector_Generic:Conn_01x12", value="TO DISPLAY (unified SPI FFC)",
+             fp="Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal",
+             lcsc="C262661", mpn="AFC01-S12FCA-00", mfr="JUSHUO"),
+        # VSYS outlet -> the RGB-matrix module's LED inlet (its own 2-pin JST).
+        dict(ref="J7", lib_id="Connector_Generic:Conn_01x02", value="VSYS -> matrix LED pwr",
+             fp="Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
+             lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST"),
     ],
     small=[
-        # Refs are globally unique across the board: PSU uses C1-C7/R1-R5,
-        # DisplayIF C8-C11/R6-R7, so MCU starts at C12/R8.
+        # Refs are globally unique across the board: PSU uses C1-C7/R1-R5, so the
+        # MCU sheet starts at C12/R8 (C8-C11 / R6-R7 are retired — they belonged
+        # to the 5V boost + 74HCT125 that moved onto the display module).
         C("C12", "100nF"), C("C13", "100nF"), C("C14", "100nF"), C("C15", "100nF"),
         C("C16", "100nF"),                                 # VDD x5 decoupling
         C("C17", "10uF", C0603),                           # VDD bulk
@@ -110,6 +141,10 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         C("C21", "100nF"),                                 # NRST cap
         R("R8", "10k"),                                    # BOOT0 pulldown
         C("C22", "2.2uF", C0603), C("C23", "2.2uF", C0603),  # VCORE/VCAP (LDO/SMPS) — verify per mode
+        # --- was the Clock sheet: LSE 32.768 kHz -> RTC (sleep timing).
+        dict(ref="Y1", lib_id="Device:Crystal", value="32.768kHz", fp=XTAL_FP,
+             lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
+        C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
     ],
     note=(15, 150, K.note_block(
         "MCU CORE  -  U1  STM32U575RGT6   (LQFP-64, Cortex-M33)",
@@ -127,47 +162,62 @@ MCU = dict(name="MCU", file="mcu.kicad_sch", title="MCU core (STM32U575)",
         "RESET / BOOT",
         "  NRST -> C21 100nF          BOOT0 -> R8 10k to GND",
         "",
+        "PIN MAP  (verified vs the ST CubeMX pin DB for LQFP-64)",
+        "  OCTOSPI1 -> U7      OCTOSPIM Port 1; IO0-3 forced, 1 pin each",
+        "    CLK  PB10 AF10 p29      IO0  PB1  AF10 p27",
+        "    NCS  PA4  AF3  p20      IO1  PB0  AF10 p26",
+        "                            IO2  PA7  AF10 p23",
+        "                            IO3  PA6  AF10 p22",
+        "  SPI1 -> display J3  (PA6/PA7 are QSPI now; the FFC has no MISO)",
+        "    SCK  PA5  AF5  p21      MOSI PB5  AF5  p57",
+        "    CS   PA15 AF5  p50      (or any GPIO)",
+        "  USART2 -> keyboard   TX PA2 p16 / RX PA3 p17   AF7",
+        "  I2C1   -> keyboard   SCL PB6 p58 / SDA PB7 p59 AF4",
+        "",
+        "ON THIS SHEET  (Clock / Programming / DisplayIF merged in here)",
+        "  SWD   PA13/PA14 (+ PB3 SWO)      -> J4 Tag-Connect (+ NRST)",
+        "  LSE   PC14/PC15 OSC32            -> Y1 + C24/C25",
+        "  DISP  SPI1 + DISP_IRQ/NRST/BOOT  -> J3 FFC ; J7 VSYS outlet",
+        "",
         "OFF-SHEET",
-        "  USB   PA11/PA12  -> PSU ESD (U3)",
-        "  SWD   PA13/PA14  -> Programming J4  (+ NRST)",
-        "  LSE   OSC32      -> Clock Y1",
-        "  DISP  SPI1 + DISP_IRQ/NRST/BOOT  -> DisplayIF (unified module bus)",
-        "  KBD   I2C+UART+KB_IRQ/NRST/BOOT0 -> KeyboardIF J5",
-        "  QSPI  OCTOSPI1 CLK/NCS/IO0-3     -> QSPIFlash U7",
+        "  USB   PA11/PA12                     -> PSU ESD (U3)",
+        "  KBD   I2C1+USART2+KB_IRQ/NRST/BOOT0 -> KeyboardIF J5/J6",
+        "  QSPI  OCTOSPI1 CLK/NCS/IO0-3        -> QSPIFlash U7",
         "",
-        "Verify OCTOSPI1 pin mapping is available on LQFP-64.")))
-
-# ============================ Clock sheet ====================================
-CLOCK = dict(name="Clock", file="clock.kicad_sch", title="LSE 32.768 kHz (RTC)",
-    page="3", big=[],
-    small=[
-        dict(ref="Y1", lib_id="Device:Crystal", value="32.768kHz", fp=XTAL_FP,
-             lcsc="C32346", mpn="Q13FC13500004", mfr="Epson"),
-        C("C24", "12pF"), C("C25", "12pF"),                # LSE load caps
-    ],
-    note=(15, 100, K.note_block(
-        "CLOCK  -  LSE 32.768 kHz   (Y1  Q13FC13500004, LCSC C32346)",
+        "KB_IRQ must land on a WKUP pin (keypress wake from Stop) -- still open.",
         "",
-        "  Y1.1 -> OSC32_IN  (PC14)",
-        "  Y1.2 -> OSC32_OUT (PC15)",
+        "---- J3  UNIFIED DISPLAY-MODULE FFC  (was the DisplayIF sheet) --------",
+        "0.5mm 12-pos FFC (AFC01-S12FCA-00, C262661). SAME pinout on BOTH display",
+        "boards (7-seg + RGB matrix) -> interchangeable. Technology-agnostic:",
+        "power + SPI 'display intent' + reset/boot. The module MCU (STM32G031 on",
+        "7-seg / RP2040 on the matrix) is the SPI slave + renders locally; 5V and",
+        "any level-shifting are generated ON the module now.",
+        "",
+        K.pin_table([(1, "VSYS"), (2, "VSYS"), (3, "GND"), (4, "GND"), (5, "+3V3"),
+                     (6, "SPI_SCLK"), (7, "SPI_MOSI"), (8, "SPI_CS"), (9, "DISP_IRQ"),
+                     (10, "DISP_NRST"), (11, "DISP_BOOT"), (12, "GND")]),
+        "",
+        "J7 = 2-pin JST-PH VSYS outlet -> the RGB-matrix module's LED inlet (J2):",
+        "the matrix pulls amps for 2304 LEDs, so its LED current takes this direct",
+        "lead, NOT the signal FFC (the 7-seg module boosts from VSYS on the FFC).",
+        "CABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).",
+        "",
+        "---- J4  SWD PROGRAMMING  (was the Programming sheet) ----------------",
+        "Tag-Connect TC2030-NL (no-legs pogo pad). Bare land, no part mounted.",
+        "",
+        K.pin_table([(1, "+3V3 (VTref)"), (2, "SWDIO (PA13)"), (3, "NRST"),
+                     (4, "SWCLK (PA14)"), (5, "GND"), (6, "SWO (PB3, opt)")], cols=1),
+        "",
+        "---- Y1  LSE 32.768 kHz  (was the Clock sheet) -----------------------",
+        "Q13FC13500004, LCSC C32346.  Y1.1 -> OSC32_IN (PC14)",
+        "                             Y1.2 -> OSC32_OUT (PC15)",
         "  C24 / C25 -> LSE load caps to GND   (12pF shown)",
-        "",
         "Load caps: CL match = 2*(CL - Cstray); trim with the RTC SMOOTHCALIB.",
         "Drives the RTC for sleep timing.")))
 
-# ============================ Programming sheet ==============================
-# PSU uses J1/J2, DisplayIF uses J3, so SWD = J4.
-PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
-    page="4", big=[
-        dict(ref="J4", lib_id="Connector:Conn_ARM_SWD_TagConnect_TC2030-NL",
-             value="SWD TC2030-NL", fp=SWD_FP),
-    ], small=[],
-    note=(15, 95, K.note_block(
-        "SWD PROGRAMMING  -  J4  Tag-Connect TC2030-NL  (no-legs pogo pad)",
-        "Bare land, no part mounted.",
-        "",
-        K.pin_table([(1, "+3V3 (VTref)"), (2, "SWDIO (PA13)"), (3, "NRST"),
-                     (4, "SWCLK (PA14)"), (5, "GND"), (6, "SWO (PB3, opt)")], cols=1))))
+# NOTE: the former Clock (Y1 + C24/C25) and Programming (J4) one-off sheets were
+# folded into the MCU sheet above on 2026-07-09 and clock.kicad_sch /
+# prog.kicad_sch deleted. Their parts and notes live on MCU now.
 
 # ============================ PSU sheet (concrete) ===========================
 # Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
@@ -175,7 +225,7 @@ PROG = dict(name="Programming", file="prog.kicad_sch", title="SWD programming",
 # current budget (DESIGN.md Power Tree); a higher-current buck-boost may be
 # needed. LCSC values carried over from ephemerkey; re-verify stock.
 PSU = dict(name="PSU", file="psu.kicad_sch",
-    title="USB-C / Li-ion charge / load-share / buck-boost", page="5",
+    title="USB-C / Li-ion charge / load-share / buck-boost", page="3",
     big=[
         dict(ref="J1", lib_id="Connector:USB_C_Receptacle_USB2.0_16P", value="USB-C",
              fp="Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal",
@@ -237,7 +287,7 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
 MEZZ_SOCKET_FP = "Connector_Hirose_DF40:Hirose_DF40B-12DS-0.4V_2x06-1MP_P0.4mm"
 FFC16_FP = "Connector_FFC-FPC:Hirose_FH12-16S-0.5SH_1x16-1MP_P0.50mm_Horizontal"
 KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
-    title="Keyboard link -- DF40 stack (J5) OR 16-pin FFC cable (J6), populate one", page="7",
+    title="Keyboard link -- DF40 stack (J5) OR 16-pin FFC cable (J6), populate one", page="4",
     big=[
         dict(ref="J5", lib_id="Connector_Generic:Conn_02x06_Odd_Even",
              value="TO KEYBOARD (stack)", fp=MEZZ_SOCKET_FP,
@@ -275,49 +325,13 @@ KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
         "06-4-T (DigiKey). Stacked build: MCU board under a keyless region /",
         "board edge. Verify lands + 3D clearance at layout.")))
 
-# ===================== Display-module interface sheet ========================
-# Each display is now a self-contained MODULE (7-seg OR RGB matrix) with its OWN
-# MCU, plugging into a UNIFIED SPI connector. So the old EN-gated 5V boost +
-# 74HCT125 shifter MOVED onto the (7-seg) display board, and J3 is technology-
-# agnostic: power + SPI "display intent" + reset/boot. A separate 2-pin VSYS
-# outlet (J7) feeds the RGB-matrix module's LED rail directly from the PSU (amps,
-# kept off the signal FFC). The 3V3 TPS63900 (PSU sheet) still feeds the MCU.
-DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
-    title="Unified display-module interface (SPI FFC J3 + VSYS outlet J7)",
-    page="6",
-    big=[
-        # Unified 12-pos 0.5mm FFC to the display module. CABLE = GCT FFC05-TIN
-        # 05-12-A-<length>-A-4-06-4-T (DigiKey accessory, NOT assembled; len TBD).
-        dict(ref="J3", lib_id="Connector_Generic:Conn_01x12", value="TO DISPLAY (unified SPI FFC)",
-             fp="Connector_FFC-FPC:Hirose_FH12-12S-0.5SH_1x12-1MP_P0.50mm_Horizontal",
-             lcsc="C262661", mpn="AFC01-S12FCA-00", mfr="JUSHUO"),
-        # VSYS outlet -> the RGB-matrix module's LED inlet (its own 2-pin JST).
-        dict(ref="J7", lib_id="Connector_Generic:Conn_01x02", value="VSYS -> matrix LED pwr",
-             fp="Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
-             lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST"),
-    ],
-    small=[],
-    note=(15, 110, K.note_block(
-        "UNIFIED DISPLAY-MODULE INTERFACE",
-        "",
-        "J3 = 0.5mm 12-pos FFC to the display module (AFC01-S12FCA-00, C262661).",
-        "SAME pinout on BOTH display boards (7-seg + RGB matrix) -> interchangeable.",
-        "Technology-agnostic: power + SPI 'display intent' + reset/boot. The module",
-        "MCU (STM32G031 on 7-seg / RP2040 on the matrix) is the SPI slave + renders",
-        "locally; 5V + any level-shifting are generated ON the module now.",
-        "",
-        K.pin_table([(1, "VSYS"), (2, "VSYS"), (3, "GND"), (4, "GND"), (5, "+3V3"),
-                     (6, "SPI_SCLK"), (7, "SPI_MOSI"), (8, "SPI_CS"), (9, "DISP_IRQ"),
-                     (10, "DISP_NRST"), (11, "DISP_BOOT"), (12, "GND")]),
-        "",
-        "U575: SPI1 SCLK/MOSI/CS + DISP_IRQ (EXTI) + DISP_NRST/DISP_BOOT (reflash",
-        "the module MCU). +3V3 from the MCU rail; VSYS from the PSU load-share.",
-        "",
-        "J7 = 2-pin JST-PH VSYS outlet -> the RGB-matrix module's LED inlet (J2):",
-        "the matrix pulls amps for 2304 LEDs, so its LED current takes this direct",
-        "lead, NOT the signal FFC (the 7-seg module boosts from VSYS on the FFC).",
-        "CABLE (non-BOM): GCT FFC05-TIN 05-12-A-<len>-A-4-06-4-T (DigiKey; len TBD).",
-        "See DESIGN.md Unified display-module interface / Power Tree.")))
+# NOTE: the DisplayIF sheet (J3 unified SPI FFC + J7 VSYS outlet) was folded into
+# the MCU sheet above on 2026-07-09 and display_if.kicad_sch deleted. Each display
+# is a self-contained MODULE (7-seg OR RGB matrix) with its OWN MCU, plugging into
+# the unified SPI connector, so the old EN-gated 5V boost + 74HCT125 shifter MOVED
+# onto the (7-seg) display board. J7 feeds the RGB-matrix module's LED rail
+# directly from VSYS (amps, kept off the signal FFC). The 3V3 TPS63900 (PSU sheet)
+# still feeds the MCU.
 
 # NOTE: the Keypad (Cherry MX matrix) and Annunciator-LED sheets moved to the
 # separate, stacked **calcumaker-keyboard** board (2026-07-05 split). They reach
@@ -329,7 +343,7 @@ DISPLAY_IF = dict(name="DisplayIF", file="display_if.kicad_sch",
 # state persistence / keystroke programs. CS# pulled up so the flash stays
 # deselected during MCU reset/boot.
 QSPI_FLASH = dict(name="QSPIFlash", file="qspi_flash.kicad_sch",
-    title="4MB quad-SPI NOR flash (OCTOSPI1)", page="8",
+    title="4MB quad-SPI NOR flash (OCTOSPI1)", page="5",
     big=[
         dict(ref="U7", lib_id="Memory_Flash:W25Q32JVSS", value="W25Q32JVSSIQ",
              fp=QSPI_FP, lcsc="C179173", mpn="W25Q32JVSSIQ", mfr="Winbond"),
@@ -342,17 +356,25 @@ QSPI_FLASH = dict(name="QSPIFlash", file="qspi_flash.kicad_sch",
         "QSPI FLASH  -  U7  W25Q32JVSSIQ  (LCSC C179173)",
         "4MB (32Mbit) quad-SPI NOR, SOIC-8, 2.7-3.6V, on the STM32U575 OCTOSPI1.",
         "",
-        K.pin_table([("1", "CS#       <- OCTOSPI NCS  (+ R9 10k pull-up to +3V3)"),
-                     ("6", "CLK       <- OCTOSPI CLK"),
-                     ("5", "IO0 / DI  <-> OCTOSPI IO0"),
-                     ("2", "IO1 / DO  <-> OCTOSPI IO1"),
-                     ("3", "IO2 / WP# <-> OCTOSPI IO2"),
-                     ("7", "IO3 / HOLD# <-> OCTOSPI IO3"),
+        K.pin_table([("1", "CS#         <-  NCS     PA4   AF3    p20  (+R9 10k)"),
+                     ("6", "CLK         <-  CLK     PB10  AF10   p29"),
+                     ("5", "IO0 / DI    <-> IO0     PB1   AF10   p27"),
+                     ("2", "IO1 / DO    <-> IO1     PB0   AF10   p26"),
+                     ("3", "IO2 / WP#   <-> IO2     PA7   AF10   p23"),
+                     ("7", "IO3 / HOLD# <-> IO3     PA6   AF10   p22"),
                      ("8", "VCC = +3V3   (C26 100nF at pin 8)"),
                      ("4", "GND")], cols=1),
         "",
-        "Assign OCTOSPI1 to LQFP-64 pins (PB/PC bank); keep the 4 IO + CLK",
-        "short and length-matched at layout (>=50 MHz quad).",
+        "OCTOSPI on U5 goes through the OCTOSPI I/O manager: the GPIO AFs are",
+        "OCTOSPIM_P1_* and OCTOSPIM routes OCTOSPI1 -> Port 1 (straight-thru).",
+        "LQFP-64 bonds out NO Port-2 bus (ports E/F/G absent), so Port 1 is",
+        "mandatory. On this package IO0-3 have exactly ONE pin each -- only",
+        "CLK (PA3|PB10) and NCS (PA2|PA4|PC11) were a choice. PB10+PA4 keep",
+        "the whole bus in a pin 20-29 cluster and leave PA2/PA3 intact as the",
+        "USART2 TX/RX pair for the keyboard link. Costs SPI1_NSS(PA4)+WKUP2.",
+        "Verified against the ST CubeMX pin DB for STM32U575RGTx / LQFP-64.",
+        "",
+        "Keep the 4 IO + CLK short and length-matched at layout (>=50 MHz quad).",
         "Use: memory-mapped XIP for constant tables + state/program storage.",
         "1.8V-IO variant = W25Q32JW.")))
 
@@ -363,5 +385,5 @@ K.build(
                company="calcumaker authors",
                comments=["Programmer's/technical arbitrary-precision RPN calculator",
                          "MCU board: STM32U575RGT6 (LQFP-64) + PSU + clock + SWD + display-IF + keyboard mezzanine + 4MB QSPI flash (DRAFT)"]),
-    sheets=[MCU, CLOCK, PROG, PSU, DISPLAY_IF, KEYBOARD_IF, QSPI_FLASH],
+    sheets=[MCU, PSU, KEYBOARD_IF, QSPI_FLASH],
 )

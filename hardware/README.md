@@ -33,6 +33,11 @@ The hardware (schematics, PCB layouts, and associated design files under
 Strongly Reciprocal** (`CERN-OHL-S-2.0`). Full text: [`LICENSE`](LICENSE).
 Chosen to match the strong-copyleft posture of the AGPL-3.0 firmware.
 
+**Third-party library parts** (vendored symbols / footprints / 3D models) carry their
+own upstream licenses — CERN-OHL-P, MIT, and CC-BY-SA-4.0-with-exception — all of which
+are compatible with incorporation into a CERN-OHL-S v2 design. Every one is indexed,
+with its source and license, in **[`lib/ATTRIBUTIONS.md`](lib/ATTRIBUTIONS.md)**.
+
 > Copyright (c) 2026 calcumaker authors.
 >
 > This source describes Open Hardware and is licensed under the CERN-OHL-S v2.

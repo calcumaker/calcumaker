@@ -1,5 +1,9 @@
 # calcumaker project footprints
 
+> **Sources + licenses for every vendored/authored part are indexed in
+> [`../ATTRIBUTIONS.md`](../ATTRIBUTIONS.md)** — add a row there for anything new.
+> This file holds the *why* (geometry, placement); that file holds the *provenance*.
+
 Most parts resolve to **KiCad bundled libraries** (symbols + footprints) — see
 the "KiCad Library Map" in `../../../DESIGN.md`.
 

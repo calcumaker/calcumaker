@@ -50,6 +50,12 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
 - Custom parts (Cherry MX footprints, display modules, MCU package if unbundled)
   go in `hardware/lib/{symbols,footprints.pretty,3dmodels}` and are registered in
   the per-board lib-tables (lib name `calcumaker`, shared).
+  **Every vendored/authored part MUST get a row in `hardware/lib/ATTRIBUTIONS.md`**
+  (source + license + where the pinout came from) — required by CERN-OHL-S, and it's
+  what lets a later reader trust a land pattern instead of re-deriving it.
+  Author **exposed pads as visible pins** (never hidden power pins): the sheets are
+  placed-not-wired and wired by hand, so a hidden EP is invisible to both the wirer
+  and ERC.
 - Run from `hardware/` (set `KICAD_CLI` if `kicad-cli` isn't on PATH):
   ```sh
   make gen-calcumaker-mcu        # regenerate a board's schematic from its manifest

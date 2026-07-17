@@ -14,159 +14,67 @@
 	)
 	(lib_symbols)
 	(sheet
-		(at 320.04 40.64)
-		(size 36 22)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0)
-		)
-		(uuid "32aa4625-0e65-45ea-b771-87030b782539")
-		(property "Sheetname" "KeyboardIF"
-			(at 320.04 39.37 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "keyboard_if.kicad_sch"
-			(at 320.04 63.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-	)
-	(sheet
 		(at 40.64 40.64)
-		(size 36 22)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
+		(size 36.00 22.00)
 		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0)
-		)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
 		(uuid "77d1e065-260c-4e9e-b78f-2ca7ebacff25")
 		(property "Sheetname" "MCU"
 			(at 40.64 39.37 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
 		(property "Sheetfile" "mcu.kicad_sch"
 			(at 40.64 63.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
+			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)
 	(sheet
-		(at 375.92 40.64)
-		(size 36 22)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
+		(at 96.52 40.64)
+		(size 36.00 22.00)
 		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "eb68b384-3231-4c3a-becc-31213731c008")
+		(property "Sheetname" "PSU"
+			(at 96.52 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(fill
-			(color 0 0 0 0)
+		(property "Sheetfile" "psu.kicad_sch"
+			(at 96.52 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
 		)
-		(uuid "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef")
-		(property "Sheetname" "QSPIFlash"
-			(at 375.92 39.37 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
+	)
+	(sheet
+		(at 152.40 40.64)
+		(size 36.00 22.00)
+		(fields_autoplaced yes)
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "32aa4625-0e65-45ea-b771-87030b782539")
+		(property "Sheetname" "KeyboardIF"
+			(at 152.40 39.37 0)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "qspi_flash.kicad_sch"
-			(at 375.92 63.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
+		(property "Sheetfile" "keyboard_if.kicad_sch"
+			(at 152.40 63.91 0)
+			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)
 	(sheet
 		(at 208.28 40.64)
-		(size 36 22)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
+		(size 36.00 22.00)
 		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0)
-		)
-		(uuid "eb68b384-3231-4c3a-becc-31213731c008")
-		(property "Sheetname" "PSU"
+		(stroke (width 0.1524) (type solid))
+		(fill (color 0 0 0 0.0000))
+		(uuid "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef")
+		(property "Sheetname" "QSPIFlash"
 			(at 208.28 39.37 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
+			(effects (font (size 1.27 1.27)) (justify left bottom))
 		)
-		(property "Sheetfile" "psu.kicad_sch"
+		(property "Sheetfile" "qspi_flash.kicad_sch"
 			(at 208.28 63.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
+			(effects (font (size 1.27 1.27)) (justify left top))
 		)
 	)
 	(sheet_instances

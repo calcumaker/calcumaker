@@ -48,11 +48,16 @@ PROJ_DIR = os.path.join(HW, "calcumaker-mcu")
 ROOT_UUID = "ca1c0000-0000-4000-8000-00000000ma01"   # keep stable across regens
 
 # ---- symbol libraries -------------------------------------------------------
-K.register_stdlib("Device", "R", "C", "L", "LED", "Crystal", "D_Schottky", "D")
+K.register_stdlib("Device", "R", "C", "L", "LED", "Crystal", "D")
 K.register_stdlib("Regulator_Switching", "TPS63900")
-K.register_stdlib("Battery_Management", "MCP73831-2-OT")
+K.register_stdlib("Battery_Management", "BQ25601")   # 3A sync buck + NVDC power path
 K.register_stdlib("Power_Protection", "USBLC6-2SC6")
-K.register_stdlib("Transistor_FET", "Q_PMOS_GSD")
+K.register_stdlib("Transistor_FET", "Q_NMOS_GSD")    # VBUS OVP pass FET (TCPP01 gate driver)
+# TCPP01-M12 is NOT in the KiCad stdlib (only its DRP sibling TCPP03-M20 is), so the
+# sink part is authored in the project lib alongside TM1640 / FJ5161AH.
+K.register_lib("calcumaker",
+               os.path.join(HW, "lib", "symbols", "calcumaker.kicad_sym"),
+               "TCPP01-M12", "MAX17048")
 K.register_stdlib("Connector", "USB_C_Receptacle_USB2.0_16P",
                   "Conn_ARM_SWD_TagConnect_TC2030-NL")
 K.register_stdlib("Connector_Generic", "Conn_01x02", "Conn_01x12", "Conn_01x16",
@@ -69,8 +74,20 @@ K.register_stdlib("Memory_Flash", "W25Q32JVSS")        # 4MB (32Mbit) quad-SPI N
 # is 6.3V-only). Magnetics: smallest reasonable from the JLCPCB catalog.
 R0402 = "Resistor_SMD:R_0402_1005Metric"
 C0402 = "Capacitor_SMD:C_0402_1005Metric"
-C0603 = "Capacitor_SMD:C_0603_1608Metric"   # bulk MLCCs (10/22uF @ >=16V)
+C0603 = "Capacitor_SMD:C_0603_1608Metric"   # bulk MLCCs (10/22uF @ >=16V) on VSYS/VBAT (<=4.4V)
+C0805 = "Capacitor_SMD:C_0805_2012Metric"   # the 12V-PD VBUS rail: 50V parts, see below
 L2016 = "Inductor_SMD:L_0805_2012Metric"     # ~2x1.6mm power inductor (verify land vs part)
+L4020 = "Inductor_SMD:L_Changjiang_FNR4020S"  # charger power L: 2.2uH >=4A Isat, 4x4x2.0 shielded
+#                                              (TI typ. 1-2.2uH @ 1.5MHz -- verify vs datasheet at layout)
+BQ_FP = "Package_DFN_QFN:Texas_RTW_WQFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm_ThermalVias"
+# TCPP01-M12 = QFN12, D=E=3.00mm, e=0.50mm, EP D2=E2=1.45mm (datasheet Table 15)
+TCPP_FP = "Package_DFN_QFN:QFN-12-1EP_3x3mm_P0.5mm_EP1.45x1.45mm_ThermalVias"
+# MAX17048 = TDFN-8 2x2, 0.5mm pitch, EP 0.8x1.2mm (pad 9).  VERIFIED: KiCad's own
+# footprint cites Maxim package outline 21-0168 -- the authoritative drawing for this
+# package -- in its descr field, and the sibling notchdeck repo independently landed on
+# the same part.  (An earlier DFN-8...EP0.9x1.5mm guess was WRONG: the oversized EP
+# would have risked solder-bridging to the signal pins.)
+MAX_FP = "Package_DFN_QFN:TDFN-8-1EP_2x2mm_P0.5mm_EP0.8x1.2mm"
 LED0402 = "LED_SMD:LED_0402_1005Metric"
 LED0603 = "LED_SMD:LED_0603_1608Metric"      # annunciators (visible indicators)
 SOT235 = "Package_TO_SOT_SMD:SOT-23-5"
@@ -170,9 +187,14 @@ MCU = dict(name="MCU", file="mcu.kicad_sch",
         "                            IO3  PA6  AF10 p22",
         "  SPI1 -> display J3  (PA6/PA7 are QSPI now; the FFC has no MISO)",
         "    SCK  PA5  AF5  p21      MOSI PB5  AF5  p57",
-        "    CS   PA15 AF5  p50      (or any GPIO)",
+        "    CS   PA8       p41      (plain GPIO -- MOVED off PA15, now UCPD1_CC1)",
+        "  UCPD1  -> USB-C CC   CC1 PA15 p50 / CC2 PB15 p63   (dedicated analog,",
+        "                       NO AF alt -- this is why SPI1 CS had to move.",
+        "                       Rd is INTERNAL: no 5.1k parts.  DBCC1/DBCC2 unused,",
+        "                       so PB5 stays SPI1 MOSI.)",
         "  USART2 -> keyboard   TX PA2 p16 / RX PA3 p17   AF7",
-        "  I2C1   -> keyboard   SCL PB6 p58 / SDA PB7 p59 AF4",
+        "  I2C1   -> keyboard + CHARGER   SCL PB6 p58 / SDA PB7 p59 AF4",
+        "                       (shared bus; BQ25601 = 0x6B, no addr clash)",
         "",
         "ON THIS SHEET  (Clock / Programming / DisplayIF merged in here)",
         "  SWD   PA13/PA14 (+ PB3 SWO)      -> J4 Tag-Connect (+ NRST)",
@@ -181,6 +203,8 @@ MCU = dict(name="MCU", file="mcu.kicad_sch",
         "",
         "OFF-SHEET",
         "  USB   PA11/PA12                     -> PSU ESD (U3)",
+        "  CC    PA15/PB15 (UCPD1)             -> PSU ESD (U5) -> USB-C CC1/CC2",
+        "  CHG   I2C1 + CHG_INT/CHG_PG/CHG_CE  -> PSU charger U4",
         "  KBD   I2C1+USART2+KB_IRQ/NRST/BOOT0 -> KeyboardIF J5/J6",
         "  QSPI  OCTOSPI1 CLK/NCS/IO0-3        -> QSPIFlash U7",
         "",
@@ -220,12 +244,21 @@ MCU = dict(name="MCU", file="mcu.kicad_sch",
 # prog.kicad_sch deleted. Their parts and notes live on MCU now.
 
 # ============================ PSU sheet (concrete) ===========================
-# Mirrors the proven ephemerkey power path. NOTE: TPS63900 is ultra-low-Iq but
-# modest max current (~hundreds of mA) — re-evaluate against the display LED
-# current budget (DESIGN.md Power Tree); a higher-current buck-boost may be
-# needed. LCSC values carried over from ephemerkey; re-verify stock.
+# Revised 2026-07-12: the MCP73831 linear charger + the discrete load-share
+# (P-FET + Schottky) were replaced by a BQ25601 -- a 3A synchronous buck charger
+# whose NVDC power path IS the load-share (regulated SYS output). See DESIGN.md
+# "Power" for the full rationale. What changed here:
+#   - U4 MCP73831 -> BQ25601RTWR (C468236, WQFN-24 4x4, stock KiCad symbol)
+#   - DELETED: Q1 (AO3401A), D1 (B5819W), R4 (gate pulldown), R3 (PROG resistor
+#     -- charge current is now the ICHG I2C register, sized to the cell)
+#   - ADDED: L2 charger power inductor + its support passives (BTST/REGN/PMID),
+#     the charger's I2C + /INT + /PG + /CE lines to the MCU, the TS bias, and
+#     the CC1/CC2 ADC taps (R6/R7 + C13/C14) that read the Type-C current
+#     advertisement so firmware can raise IINDPM to 1.5A / 3.0A.
+# NOTE: TPS63900 is ultra-low-Iq but modest max current (~hundreds of mA) --
+# it feeds the MCU rail ONLY, so this is fine. LCSC stock re-verified 2026-07-12.
 PSU = dict(name="PSU", file="psu.kicad_sch",
-    title="USB-C / Li-ion charge / load-share / buck-boost", page="3",
+    title="USB-C / CC sense / BQ25601 charger (NVDC power path) / buck-boost 3V3", page="3",
     big=[
         dict(ref="J1", lib_id="Connector:USB_C_Receptacle_USB2.0_16P", value="USB-C",
              fp="Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal",
@@ -233,40 +266,209 @@ PSU = dict(name="PSU", file="psu.kicad_sch",
         dict(ref="J2", lib_id="Connector_Generic:Conn_01x02", value="BAT 1S Li-ion",
              fp="Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
              lcsc="C173752", mpn="S2B-PH-K-S", mfr="JST"),
+        dict(ref="U4", lib_id="Battery_Management:BQ25601", value="BQ25601RTWR",
+             fp=BQ_FP, lcsc="C468236", mpn="BQ25601RTWR", mfr="Texas Instruments"),
         dict(ref="U2", lib_id="Regulator_Switching:TPS63900", value="TPS63900DSKR",
              fp="Package_SON:WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm",
-             lcsc="C1518762", mpn="TPS63900DSKR", mfr="Texas Instruments"),  # TODO: current sizing
+             lcsc="C1518762", mpn="TPS63900DSKR", mfr="Texas Instruments"),
+        # TCPP01-M12: ST's Type-C port protection -- the companion chip to STM32
+        # UCPD, and the missing half of the reference sink front-end.  It does the
+        # two things a bare USBLC6 cannot:
+        #   1. DEAD-BATTERY HANDOFF.  It carries its OWN Rd and clamps CC while the
+        #      MCU is unpowered, so a flat board still gets VBUS.  Once UCPD boots
+        #      and enables its own Rd, fw drives DB/ high -> TCPP01 drops its clamp
+        #      and closes the CC switches, handing CC over to UCPD.  This is what
+        #      closes the old "dead-battery Rd" risk (was Open Question 8).
+        #   2. CC SHORT-TO-VBUS OVP (6.0V clamp).  A defective cable/source putting
+        #      20V on CC would otherwise destroy PA15/PB15 -- a USBLC6 is an ESD
+        #      clamp (ns transients), NOT sustained-overvoltage protection.
+        # Plus IEC61000-4-2 level 4 ESD on CC, and adjustable VBUS OVP via an
+        # external N-FET it gate-drives.  Sourced by the user: 300 pcs on JLCPCB.
+        # NOT in the KiCad stdlib -> symbol authored in lib/symbols/calcumaker.
+        dict(ref="U5", lib_id="calcumaker:TCPP01-M12", value="TCPP01-M12",
+             fp=TCPP_FP, lcsc="C1121848", mpn="TCPP01-M12", mfr="STMicroelectronics"),
+        # MAX17048 -- 1-cell ModelGauge fuel gauge.  The BQ25601 has NO ADC (it gives
+        # charge status/faults only), so without this there is no real state-of-charge
+        # -- only a crude voltage guess off the battery ADC, and Li-ion's flat 20-80%
+        # plateau makes that poor.  ModelGauge needs NO current-sense resistor.
+        #   VDD + CELL both -> BAT+ (the RAW CELL, not VSYS) so it keeps gauging while
+        #     the system is off.  ~3uA hibernate -- fine to leave on the battery.
+        #   SDA/SCL -> the SHARED I2C1 bus.  addr 0x36 -- no clash with BQ25601 (0x6B).
+        #   ALRT -> open-drain low-SoC interrupt -> MCU GPIO (+R12 pull-up).  Route it
+        #     to a WKUP pin: this is what drives the LOWBAT annunciator, off a real SoC
+        #     threshold rather than a voltage guess.
+        #   CTG + QSTRT -> GND  (CTG must be grounded in normal operation).
+        # Footprint VERIFIED: TDFN-8 2x2, EP 0.8x1.2mm (pad 9) -- KiCad's footprint
+        # descr cites Maxim outline 21-0168, the drawing for this exact package.
+        dict(ref="U6", lib_id="calcumaker:MAX17048", value="MAX17048G+T10",
+             fp=MAX_FP, lcsc="C2682616", mpn="MAX17048G+T10", mfr="Analog Devices"),
+        R("R12", "100k"),                                # ALRT pull-up (open-drain)
+        C("C32", "100nF"),                               # MAX17048 VDD bypass
+        # VBUS OVP pass FET, gate-driven by TCPP01 (VGS 5-6V from its charge pump).
+        # In series on VBUS: connector -> IN_GD (drain) -> FET -> SOURCE -> system.
+        # On an OVP/OTP/UVLO fault TCPP01 pulls the gate down and disconnects VBUS.
+        # AO3400A: 30V / 5.7A / 28mOhm @ VGS=4.5V, and a JLCPCB BASIC part.
+        dict(ref="Q1", lib_id="Transistor_FET:Q_NMOS_GSD", value="AO3400A",
+             fp=SOT23, lcsc="C20917", mpn="AO3400A", mfr="AOS"),
     ],
     small=[
+        # D+/D- ESD.  TCPP01 protects VBUS + CC only -- the datalines still need this.
         dict(ref="U3", lib_id="Power_Protection:USBLC6-2SC6", value="USBLC6-2SC6",
              fp=SOT236, lcsc="C2687116", mpn="USBLC6-2SC6", mfr="STMicroelectronics"),
-        R("R1", "5.1k"), R("R2", "5.1k"),                # CC1/CC2 (sink)
-        dict(ref="U4", lib_id="Battery_Management:MCP73831-2-OT",
-             value="MCP73831-2-OT", fp=SOT235, lcsc="C424093",
-             mpn="MCP73831T-2ACI/OT", mfr="Microchip"),
-        R("R3", "4.7k"),                                 # PROG (charge current — size to cell)
-        C("C1", "10uF", C0603), C("C2", "10uF", C0603),  # charger in/out
-        dict(ref="Q1", lib_id="Transistor_FET:Q_PMOS_GSD", value="AO3401A",
-             fp=SOT23, lcsc="C15127", mpn="AO3401A", mfr="AOS"),
-        dict(ref="D1", lib_id="Device:D_Schottky", value="B5819W", fp=SOD123,
-             lcsc="C8598", mpn="B5819W", mfr="Slkor"),
-        R("R4", "100k"),                                 # load-share gate pulldown
-        dict(ref="L1", lib_id="Device:L", value="2.2uH", fp=L2016),  # smallest reasonable 0805/2016 power L; verify Isat for TPS63900 (PARTS.md)
+        # -- USB-C CC -> TCPP01 (connector side CC1c/CC2c, 22V tolerant) -> MCU side
+        # CC1/CC2 -> the U575's UCPD1 (CC1=PA15, CC2=PB15; dedicated analog pins, NO
+        # AF alternative -- which is why the display SPI1 CS moved off PA15 to PA8).
+        # There are NO 5.1k Rd resistors: in the run state UCPD generates Rd
+        # INTERNALLY (CcPull::Sink).  It is either/or -- an external 5.1k in parallel
+        # with the internal Rd = 2.55k, and the source would misread us as an audio
+        # accessory.  UCPD decodes the source's Rp in HARDWARE
+        # (UCPD_SR.TYPEC_VSTATE_CC: LOWEST=detached LOW=500mA HIGH=1.5A HIGHEST=3.0A);
+        # fw reads it and writes IINDPM over I2C.  UCPD also carries the BMC PHY, so
+        # real USB-PD later is FIRMWARE-ONLY -- no respin.
+        #   DB/ is a plain 3V3 GPIO (NOT the UCPD DBCC1/DBCC2 pins) -- so PB5 stays
+        #   SPI1 MOSI and DBCC1/DBCC2 remain unused.  Datasheet 6.4.
+        R("R11", "100k"),                                # FLT/ pull-up (open-drain)
+        # VBUS OVP threshold: VBUS_CTRL trips at Vovp = 1.20 (min) / 1.25 (typ) /
+        # 1.34 (max) V.  Sized for a 12V PD contract:
+        #     trip = Vovp * (R6+R7)/R7      R6=10k, R7=976R  =>  13.5 .. 15.1 V
+        # It must sit ABOVE the highest LEGAL VBUS and BELOW what stresses the parts:
+        #   - a 12V PDO is spec'd +/-5% => up to 12.6V.  Min trip 13.5V clears it.
+        #   - BQ25601 abs max is 22V.     Max trip 15.1V is far below it.
+        # !! Do NOT use ST's Table 13 "13V" row (R7=1.1k) -- its MIN trip is ~12.1V,
+        # !! which is BELOW a legal 12V source, so it would nuisance-trip on a good
+        # !! charger.  The table rows are nominal-only; they ignore the Vovp spread.
+        R("R6", "10k"),                                  # VBUS_CTRL top    (ST's R1)
+        R("R7", "976R"),                                 # VBUS_CTRL bottom (ST's R2) -> ~14V OVP
+        # VBUS voltage sense -> MCU ADC.  ST datasheet 6.5.5: R3=200k / R4=40.2k.
+        # Not needed for 5V-only operation, but a PD sink policy engine REQUIRES
+        # VBUS sensing (vSafe0V / vSafe5V), so fitting it now keeps PD firmware-only.
+        R("R4", "200k"),                                 # VBUS sense top   (ST's R3)
+        R("R10", "40.2k"),                               # VBUS sense bottom (ST's R4)
+        # CC line capacitance: USB-PD requires the CC receiver to total 200-600pF.
+        # TCPP01 contributes 40-100pF and the MCU 60-90pF -> 150pF each lands inside
+        # the window at both extremes (min 250pF, max 340pF).  Datasheet Table 12.
+        C("C28", "150pF", C0402), C("C29", "150pF", C0402),   # CC1c / CC2c
+        # ESD capacitor -- the system-level ESD rating DEPENDS on this part.  It is
+        # NOT a generic 100nF: must be >=50V X7R (X7R loses capacitance as voltage
+        # rises, so the derating matters) and placed hard against U5 (datasheet
+        # 6.5.1 + section 7).  Explicit part, NOT the C0402 100nF used elsewhere.
+        dict(ref="C30", lib_id="Device:C", value="100nF 50V X7R", fp=C0603,
+             lcsc="C14663", mpn="CC0603KRX7R9BB104", mfr="YAGEO"),  # ST's recommended series
+        C("C31", "100nF", C0402),                        # TCPP01 VCC decoupling
+        # -- BQ25601 support.  Charge current (ICHG) + input limit (IINDPM) are
+        # I2C registers, NOT resistors -- there is no PROG/ISET part any more.
+        # PSEL is tied HIGH so the power-on default is the safe 500mA USB limit:
+        # on a dead cell the NVDC path instant-on's the MCU, firmware boots, reads
+        # CC, and only THEN raises the limit.  If firmware never runs we still
+        # charge -- just slowly.  Fail-safe by construction.
+        # NOTE on refs: deleting the old Rd (R1/R2), PROG (R3) and load-share gate
+        # (R4) freed those numbers, so the new charger passives reuse them.  R5
+        # (STAT LED) is unchanged; R8 belongs to the MCU sheet and R9 to QSPIFlash
+        # -- do NOT reuse those here.
+        R("R1", "100k"),                                 # PSEL pullup -> VBUS (500mA default)
+        dict(ref="L2", lib_id="Device:L", value="2.2uH", fp=L4020),  # charger power L, >=4A Isat
+        # *** THE VBUS RAIL IS NOW UP TO 12V (PD), AND UP TO ~15V ON AN OVP EXCURSION.
+        # *** Every cap that sits on it must be a 50V part -- NOT the 16V bulk MLCCs
+        # *** used on VSYS/VBAT.  Two reasons: (1) 16V is no margin at all against a
+        # *** 15.1V OVP trip, and (2) DC-BIAS DERATING -- an X5R at 12V on a 16V part
+        # *** loses most of its capacitance, so a "10uF" would not be 10uF where it
+        # *** matters most.  50V/0805 keeps the real capacitance up.
+        # VBUS-side (12V): C1, C2, C6, C30.   VSYS/VBAT-side (<=4.4V): C8-C11, C3-C5, C7.
+        dict(ref="C1", lib_id="Device:C", value="1uF 50V", fp=C0603,
+             lcsc="C15849", mpn="CL10A105KB8NNNC", mfr="Samsung"),      # charger VBUS
+        dict(ref="C2", lib_id="Device:C", value="10uF 50V", fp=C0805,
+             lcsc="C440198", mpn="GRM21BR61H106KE43L", mfr="Murata"),   # PMID (sits at ~VBUS)
+        C("C8", "10uF", C0603), C("C9", "10uF", C0603),  # SYS (>=20uF)   [VSYS, <=4.4V]
+        C("C10", "10uF", C0603),                         # BAT            [VBAT, <=4.4V]
+        C("C11", "4.7uF", C0603),                        # REGN LDO       [~4.8V internal]
+        C("C27", "47nF", C0402),                         # BTST (-> SW)   [C12 = MCU sheet]
+        # -- TS: the BQ25601 REFUSES TO CHARGE if TS is out of range.  Either a
+        # 103AT NTC in the pack (preferred -- real pack thermal protection) or
+        # this fixed REGN divider faking 25C.  Decide with the cell (DESIGN.md Q6).
+        R("R2", "5.23k"), R("R3", "30.1k"),              # TS bias (REGN / GND)
+        # VBUS bulk -- on VBUS_PROT (downstream of Q1), so it too is a 12V/50V part.
+        dict(ref="C6", lib_id="Device:C", value="10uF 50V", fp=C0805,
+             lcsc="C440198", mpn="GRM21BR61H106KE43L", mfr="Murata"),
+        # -- buck-boost 3V3 (MCU rail only; VSYS input <=4.4V, 16V parts are fine)
+        dict(ref="L1", lib_id="Device:L", value="2.2uH", fp=L2016),  # verify Isat for TPS63900 (PARTS.md)
         C("C3", "10uF", C0603), C("C4", "10uF", C0603), C("C5", "10uF", C0603),
-        C("C6", "10uF", C0603), C("C7", "10uF", C0603),
+        C("C7", "10uF", C0603),
         dict(ref="D2", lib_id="Device:LED", value="CHG", fp=LED0402, lcsc="C130719"),
-        R("R5", "1k"),
+        R("R5", "1k"),                                   # STAT LED series
     ],
     note=(15, 165, K.note_block(
-        "POWER  -  USB-C -> charge -> load-share -> buck-boost 3V3",
-        "PLACED, not wired.  See DESIGN.md Power Tree.",
+        "POWER  -  USB-C -> BQ25601 (3A buck + NVDC power path) -> buck-boost 3V3",
+        "PLACED, not wired.  See DESIGN.md Power / Power Tree.",
         "",
-        "USB-C  J1   CC1->R1, CC2->R2 (5.1k sink); D+/D- -> U3 ESD -> MCU USB;",
-        "            VBUS bulk C6.",
-        "CHARGER U4  MCP73831: VDD<-VBUS, VBAT->BAT+, PROG R3 (size to cell),",
-        "            STAT->D2+R5; C1/C2 in/out.",
-        "LOAD-SHR Q1 AO3401A: src=BAT+, drn=VSYS, gate<-VBUS via R4;",
-        "            D1 B5819W VBUS->VSYS.",
+        "USB-C  J1   D+/D- -> U3 ESD -> MCU USB.  (TCPP01 covers VBUS+CC, not data.)",
+        "",
+        "TCPP01 U5   ST Type-C port protection -- the companion chip to STM32 UCPD.",
+        "  VBUS PATH (U5 gate-drives Q1; VBUS passes THROUGH the FET):",
+        "    J1 VBUS -> C30 (ESD cap, 50V X7R, keep CLOSE to U5) -> IN_GD(8)",
+        "    IN_GD = Q1 drain; GATE(5) -> Q1 gate; SOURCE(4) = Q1 source = VBUS_PROT",
+        "    VBUS_PROT -> U4 charger VBUS.  On OVP/OTP/UVLO U5 pulls the gate down",
+        "    and DISCONNECTS the system from a defective charger.",
+        "  VBUS OVP THRESHOLD:  J1 VBUS -> R6 10k -> VBUS_CTRL(6) -> R7 976R -> GND",
+        "    trip = Vovp*(R6+R7)/R7, Vovp=1.20/1.25/1.34 => 13.5 .. 15.1 V.",
+        "    Sized for a 12V PD contract: a 12V PDO is +/-5% (=> 12.6V max), so the",
+        "    MIN trip (13.5V) clears it; the MAX trip (15.1V) is far under the",
+        "    BQ25601's 22V abs max.",
+        "    !! do NOT use ST Table 13's '13V' row (1.1k): its MIN trip is ~12.1V,",
+        "    !! BELOW a legal 12V source -> nuisance trips on a good charger.",
+        "  VBUS SENSE:  J1 VBUS -> R4 200k -> VBUS_SENSE (ADC) -> R10 40.2k -> GND",
+        "    (not needed at 5V; a PD policy engine REQUIRES it -> keeps PD fw-only)",
+        "  CC:  J1 CC1 -> CC1c(7) ... CC1(3) -> PA15 (UCPD1_CC1)   [+C28 150pF]",
+        "       J1 CC2 -> CC2c(9) ... CC2(1) -> PB15 (UCPD1_CC2)   [+C29 150pF]",
+        "    connector side is 22V tolerant; U5 clamps CC at 6.0V -> a CC short to",
+        "    VBUS can no longer destroy the MCU's CC pins.",
+        "  CONTROL:  VCC(12) <- TCPP01_EN GPIO (+C31 100nF)  -- powering VCC from a",
+        "    GPIO gives NULL quiescent current when unplugged (datasheet 5).",
+        "            DB/(10)  <- TCPP01_DB  GPIO   (plain 3V3 GPIO, NOT UCPD DBCC!",
+        "                                          so PB5 stays SPI1 MOSI)",
+        "            FLT/(11) -> TCPP01_FLT GPIO   open-drain, + R11 100k pull-up",
+        "            GND(2) + EP(13) -> GND   <-- EP IS A REAL GROUND RETURN, not just",
+        "                                         thermal.  It is a VISIBLE pin: WIRE IT.",
+        "",
+        "  *** NO 5.1k Rd PARTS ANYWHERE *** -- Rd comes from U5 when the MCU is",
+        "  unpowered (dead battery) and from UCPD (CcPull::Sink) once it boots.",
+        "  An external 5.1k would parallel the internal one to 2.55k -> the source",
+        "  misreads us as an audio accessory.  Do NOT add one.",
+        "",
+        "  DEAD-BATTERY / WAKE SEQUENCE  (datasheet Fig.17) -- fw MUST follow it:",
+        "    1. flat board: U5 clamps CC (1.1V) with its OWN Rd; DB/ low = clamp on",
+        "    2. source sees the clamp -> applies 5V on VBUS",
+        "    3. Q1 turns on -> VBUS_PROT feeds U4 -> NVDC instant-on -> MCU boots",
+        "    4. fw powers U5 (TCPP01_EN) and enables Rd in UCPD",
+        "    5. ONLY THEN drive DB/ HIGH -> U5 drops its clamp, closes CC switches,",
+        "       and UCPD owns the CC lines.  ORDER MATTERS (datasheet 6.4).",
+        "    6. fw reads VSTATE (500mA/1.5A/3.0A) -> sets IINDPM on U4 over I2C.",
+        "CHARGER U4  BQ25601 (I2C 0x6B):",
+        "            VBUS<-VBUS_PROT (Q1 SOURCE, NOT the raw connector!)  C1 1uF",
+        "            PMID->C2 10uF  REGN->C11 4.7uF",
+        "            SW(19,20) -> L2 2.2uH -> SYS(15,16) = VSYS, C8/C9 10uF",
+        "            BTST -> C27 47nF -> SW     BAT(13,14) -> BAT+, C10 10uF",
+        "            PSEL -> R1 100k -> VBUS  (HIGH = 500mA safe default)",
+        "            TS   -> R2 5.23k to REGN + R3 30.1k to GND  (or pack NTC)",
+        "            SCL/SDA -> I2C1 (SHARED with keyboard G0 -- no addr clash)",
+        "            /INT -> CHG_INT (EXTI, ideally WKUP)   /PG -> CHG_PG",
+        "            /CE  -> CHG_CE      STAT -> D2 + R5",
+        "            /QON: ship-mode exit -- leave for a pad/button (see DESIGN.md)",
+        "            GND(17,18) + EP(25) -> GND, thermal vias.",
+        "  NOTE: SYS is NVDC -- it tracks ~VBAT with a 3.5V floor (NOT 4.6V like the",
+        "        old Schottky-OR).  See the RGB headroom warning in DESIGN.md.",
+        "  ICHG/IINDPM are I2C REGISTERS.  No PROG resistor.  fw MUST kick the 40s",
+        "        I2C watchdog or the charger reverts to 500mA defaults.",
+        "GAUGE  U6   MAX17048 ModelGauge (I2C 0x36 -- no clash with U4's 0x6B):",
+        "            VDD + CELL -> BAT+  (the RAW CELL, not VSYS -- it must keep",
+        "                                 gauging while the system is off; ~3uA)",
+        "            C32 100nF on VDD.   CTG -> GND.   QSTRT -> GND (unused).",
+        "            GND(4) + EP(9) -> GND  (EP is a visible pin -- WIRE IT).",
+        "            SDA/SCL -> shared I2C1.  ALRT -> MCU GPIO + R12 100k pull-up;",
+        "            put ALRT on a WKUP pin -- it drives the LOWBAT annunciator off a",
+        "            REAL state-of-charge, not a voltage guess.  ModelGauge needs NO",
+        "            current-sense resistor.  (The BQ25601 has no ADC at all.)",
+        "            Pkg TDFN-8 2x2, EP 0.8x1.2 (pad 9) -- per Maxim outline 21-0168.",
+        "",
         "BUCK-BST U2 TPS63900: VIN<-VSYS, L1 2.2uH, Cin/Cout C3/C4/C5;",
         "            CFG strap=3.3V.  VOUT=+3V3 -> MCU ONLY (display has its own",
         "            EN-gated 5V boost) so the TPS63900 stays low-Iq in sleep.",
@@ -320,8 +522,9 @@ KEYBOARD_IF = dict(name="KeyboardIF", file="keyboard_if.kicad_sch",
         "",
         "I2C = G0 reports keys + gets annunciator state; KB_IRQ = G0->MCU WKUP",
         "wake; UART = alt/bootloader; NRST/BOOT0 = MCU reflashes the G0. VSYS =",
-        "load-shared batt/USB rail (PSU sheet) -> the keyboard per-key RGB (gated",
-        "on the keyboard). FFC cable (non-BOM): GCT FFC05-TIN 05-16-A-<len>-A-4-",
+        "the BQ25601 NVDC SYS rail (PSU sheet; ~VBAT, 3.5V floor -- NOT the old",
+        "4.6V Schottky-OR) -> the keyboard per-key RGB (gated on the keyboard;",
+        "check SK6812 headroom at 3.5V).  FFC cable (non-BOM): GCT FFC05-TIN 05-16-A-<len>-A-4-",
         "06-4-T (DigiKey). Stacked build: MCU board under a keyless region /",
         "board edge. Verify lands + 3D clearance at layout.")))
 

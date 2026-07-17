@@ -1,5 +1,8 @@
 # calcumaker 3D models
 
+> **Sources + licenses for every vendored model are indexed in
+> [`../ATTRIBUTIONS.md`](../ATTRIBUTIONS.md)** — add a row there for anything new.
+
 Most parts get their 3D model automatically from KiCad's bundled libraries
 (0402/0805 R/C/L/LED, crystals, JST-PH, USB-C, SOT/SON/QFN packages, diodes,
 headers). Parts **without** a bundled model should be downloaded as STEP and

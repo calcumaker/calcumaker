@@ -26,6 +26,11 @@ See [WIRING_REVIEW.md](WIRING_REVIEW.md) for the pin maps, reviewed ERC warning,
 power corrections, and remaining physical validation. Edit the schematics
 directly; forcing the older placement manifests would discard this wiring.
 
+The MCU board also has a [provisional PCB floor plan](calcumaker-mcu/FLOORPLAN.md):
+75 placed components in functional groups, local supply bypasses, and a 70 × 50 mm
+outline for the cabled configuration. It is unrouted; the placement review records
+the remaining mechanical and fabrication-rule decisions.
+
 ## Library
 
 `lib/{symbols,footprints.pretty,3dmodels}` holds project-specific parts (shared

@@ -274,7 +274,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "0.1"
+      "sch_revision": "0.5"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -675,7 +675,7 @@
       "intersheets_ref_own_page": false,
       "intersheets_ref_prefix": "",
       "intersheets_ref_short": false,
-      "intersheets_ref_show": true,
+      "intersheets_ref_show": false,
       "intersheets_ref_suffix": "",
       "junction_size_choice": 3,
       "label_size_ratio": 0.375,
@@ -708,7 +708,7 @@
       {
         "filename": "calcumaker-keyboard.kicad_sch",
         "name": "",
-        "uuid": "60324426-d6bb-4f1d-bc2d-5c81c9b328d8"
+        "uuid": "ca1c0000-0000-4000-8000-00000000eb01"
       }
     ],
     "used_designators": "U2-3,SW2-51,C2-8,D2-106,Q2-3,J2-3,R2-11",
@@ -717,7 +717,7 @@
   "sheets": [
     [
       "ca1c0000-0000-4000-8000-00000000eb01",
-      "calcumaker-keyboard"
+      ""
     ],
     [
       "ca1c0000-0000-4000-8000-00000000eb11",

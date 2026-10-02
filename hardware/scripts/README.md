@@ -10,10 +10,16 @@ repos). Driven via the `Makefile` (preferred) or run directly. All locate
 | `<project>.schgen.py` | `make gen-<project>` | Regenerate the hierarchical schematic from a data manifest. |
 | `kschgen.py` | — | Generic generation engine imported by the `*.schgen.py` manifests. |
 | `kicad-sch-check.py` | `make check-<project>` | Sanity-check a schematic: component count, missing footprints, duplicate refs, ERC tally. Exits non-zero on a structural problem. |
+| `check-wiring.py` | `make check-wiring` | Export MCU/keypad netlists; verify connector parity, matrix polarity, LED chain, MCU/power/debug nets and reviewed ERC results. Fails on unexpected ERC violations. |
 | `kicad-sch-render.sh` | `make render-<project>` | Render schematic sheet(s) to PNG for a quick visual review. |
 | `jlcpcb-package.sh` | `make jlc-<project>` | Gerbers + drill + BOM + CPL → JLCPCB zip. |
 
 ## Generating a schematic from a manifest
+
+**The committed MCU/keypad schematics are now wired and authoritative.** The
+manifests below retain the earlier placement draft; do not force regeneration
+over the edited sheets. See [the wiring review](../WIRING_REVIEW.md).
+Make targets use `uv run python` (`PYTHON_RUN` can override it).
 
 `scripts/<project>.schgen.py` is **data**: it registers the symbol libraries the
 board uses, lists the components per hierarchical sheet (ref / lib_id / value /
@@ -33,7 +39,7 @@ make check-calcumaker-keyboard # verify a board
 make render-calcumaker-display # eyeball a board's sheets
 ```
 
-Components are **placed, not wired** — laid out on a 100-mil grid with refs,
+The draft manifests produce components **placed, not wired** — laid out on a 100-mil grid with refs,
 values, footprints and a per-sheet wiring note. Wiring is done afterwards in
 eeschema (the notes are the spec). By default, re-running `gen` creates missing
 sheets and keeps existing `.kicad_sch` files intact, reusing their UUIDs in

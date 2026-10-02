@@ -3,405 +3,1516 @@
 	(generator "eeschema")
 	(generator_version "10.0")
 	(uuid "ca1c0000-0000-4000-8000-00000000eb01")
-	(paper "A3")
+	(paper "A2")
 	(title_block
-		(title "Calcumaker 16 — Keyboard")
-		(date "2026-07-06")
-		(rev "0.4")
+		(title "Calcumaker 16 / keyboard / calcumaker-keyboard")
+		(date "2026-10-02")
+		(rev "0.5")
 		(company "calcumaker authors")
-		(comment 1 "Programmer's/technical arbitrary-precision RPN calculator")
-		(comment 2 "Keyboard board: MULTI-CHANNEL 5x10 MX matrix + per-key RGB (row x5) + G0 scanner + mezzanine (DRAFT)")
 	)
 	(lib_symbols)
+	(text "Columns COL1..10, VLED and GND are shared global nets inside the row/scanner sheets.\nRows and serial interfaces cross explicit sheet pins. RGB data is wired in order down the right edge.\nRow4 is the 9-key variant: COL6 is omitted for the 2U ENTER. Final DOUT is deliberately unused."
+		(exclude_from_sim no)
+		(at 25.4 375.92 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "502e9733-458b-46aa-a611-8265fc0c3c98")
+	)
+	(text "CALCUMAKER 16 / KEYBOARD / 49 switches + 49 RGB LEDs"
+		(exclude_from_sim no)
+		(at 25.4 15.24 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+			(justify left top)
+		)
+		(uuid "56dcecb4-6645-4381-989e-20f2872961a3")
+	)
+	(no_connect
+		(at 525.78 314.96)
+		(uuid "6e2e6a6b-8522-4150-b58e-c9ddd83fc64f")
+	)
+	(wire
+		(pts
+			(xy 121.92 266.7)
+			(xy 228.6 266.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "068ee4f4-febe-4ca2-8a45-a838affd47c0")
+	)
+	(wire
+		(pts
+			(xy 121.92 76.2)
+			(xy 228.6 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0b2fb4f1-9259-4e16-80fb-758fd0b00aad")
+	)
+	(wire
+		(pts
+			(xy 525.78 40.64)
+			(xy 561.34 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0d765e22-61ca-4aa0-b56a-9d916b7d45b4")
+	)
+	(wire
+		(pts
+			(xy 551.18 251.46)
+			(xy 551.18 294.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "13167b9d-66c9-47c3-a57c-8026d8e59d84")
+	)
+	(wire
+		(pts
+			(xy 525.78 124.46)
+			(xy 551.18 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "327da801-51dc-44c4-ab07-e9138a160608")
+	)
+	(wire
+		(pts
+			(xy 320.04 40.64)
+			(xy 439.42 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "396cc763-2bf4-47a1-89bb-83e1f7eb8175")
+	)
+	(wire
+		(pts
+			(xy 320.04 167.64)
+			(xy 439.42 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "558e344c-33d3-4631-bfd9-c37d096b1165")
+	)
+	(wire
+		(pts
+			(xy 121.92 137.16)
+			(xy 228.6 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b07e3ef-bb2e-4b78-b3a4-265e3a21a257")
+	)
+	(wire
+		(pts
+			(xy 320.04 294.64)
+			(xy 439.42 294.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5bab2dc9-9cd4-49fa-983a-18370e13a99b")
+	)
+	(wire
+		(pts
+			(xy 121.92 261.62)
+			(xy 228.6 261.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d092077-06bb-4061-a90e-b5bfaed156fd")
+	)
+	(wire
+		(pts
+			(xy 525.78 60.96)
+			(xy 551.18 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d8ff4a8-4f8c-4d67-9c39-71fa8758867d")
+	)
+	(wire
+		(pts
+			(xy 121.92 71.12)
+			(xy 228.6 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f3ea2ad-6ff5-47f0-aed0-9a54c1d82821")
+	)
+	(wire
+		(pts
+			(xy 121.92 50.8)
+			(xy 228.6 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "78f80736-4f8a-408c-9987-08d246063287")
+	)
+	(wire
+		(pts
+			(xy 121.92 60.96)
+			(xy 228.6 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "854020dd-3e1e-4d90-a356-955332cf7458")
+	)
+	(wire
+		(pts
+			(xy 121.92 45.72)
+			(xy 228.6 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "93955665-5063-4bbe-8346-69ccba2c1a8c")
+	)
+	(wire
+		(pts
+			(xy 121.92 281.94)
+			(xy 228.6 281.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9a94e873-e0d2-4184-89a0-c68114945768")
+	)
+	(wire
+		(pts
+			(xy 121.92 170.18)
+			(xy 157.48 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b952752-cd85-4f19-8336-4fc297b27c07")
+	)
+	(wire
+		(pts
+			(xy 551.18 294.64)
+			(xy 525.78 294.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae986de6-375c-4eba-9cbb-28bfa09955a7")
+	)
+	(wire
+		(pts
+			(xy 551.18 231.14)
+			(xy 525.78 231.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aea13793-06b5-48b6-bfdb-6d1ae88a545f")
+	)
+	(wire
+		(pts
+			(xy 320.04 104.14)
+			(xy 439.42 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b60786a0-b9e6-4b72-8650-591ed4656d0f")
+	)
+	(wire
+		(pts
+			(xy 551.18 104.14)
+			(xy 525.78 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d64501e2-0ed4-4da4-841e-c6c9dfb34aee")
+	)
+	(wire
+		(pts
+			(xy 551.18 60.96)
+			(xy 551.18 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "da3efe2c-5487-4578-966c-a01d09d13406")
+	)
+	(wire
+		(pts
+			(xy 525.78 187.96)
+			(xy 551.18 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "defe0211-1e71-4706-a159-9691119f395e")
+	)
+	(wire
+		(pts
+			(xy 121.92 55.88)
+			(xy 228.6 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e1bb15f3-5f2c-4a5d-8913-485d0c7389c8")
+	)
+	(wire
+		(pts
+			(xy 525.78 251.46)
+			(xy 551.18 251.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2808585-ad6e-4dad-a3cf-4f0541d80fbd")
+	)
+	(wire
+		(pts
+			(xy 551.18 124.46)
+			(xy 551.18 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e32fb1e2-2c9c-49e9-a37f-683ca35eb597")
+	)
+	(wire
+		(pts
+			(xy 551.18 187.96)
+			(xy 551.18 231.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e61350db-7e0a-4582-a4b8-7d3a38cccd02")
+	)
+	(wire
+		(pts
+			(xy 121.92 276.86)
+			(xy 228.6 276.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ea50431d-4d9a-482c-9a35-ef4713c8d449")
+	)
+	(wire
+		(pts
+			(xy 121.92 66.04)
+			(xy 228.6 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eaed409d-b885-43d2-a448-e450b658d3f1")
+	)
+	(wire
+		(pts
+			(xy 121.92 271.78)
+			(xy 228.6 271.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eeb20b19-1c57-4430-b77f-7d0b72e88bd2")
+	)
+	(wire
+		(pts
+			(xy 121.92 144.78)
+			(xy 228.6 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fd83877b-1e35-462c-8909-e50219ca27e3")
+	)
+	(wire
+		(pts
+			(xy 551.18 167.64)
+			(xy 525.78 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fe8bc6bc-77e0-48ab-8597-9609cd48c332")
+	)
+	(wire
+		(pts
+			(xy 320.04 231.14)
+			(xy 439.42 231.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ffa3a195-7e78-4aa2-8d00-e0842fd2ec3c")
+	)
+	(label "UART_TX"
+		(at 175.26 55.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0b2a183c-8e95-4426-a4a8-a42a2e1465d3")
+	)
+	(label "RGB_FIRST"
+		(at 561.34 40.64 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0e5b5a1e-8b67-407d-85f8-1b4d619cef3b")
+	)
+	(label "UART_RX"
+		(at 175.26 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1826ebe4-55b0-4cf4-9e52-e8610a2a85d0")
+	)
+	(label "ANN_LOWBAT"
+		(at 175.26 281.94 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3090e7c7-7ef8-4a58-8e0e-0178fb65a371")
+	)
+	(label "KB_BOOT0"
+		(at 175.26 76.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "45998284-8836-453b-b4db-b14766e5c5e2")
+	)
+	(label "KB_NRST"
+		(at 175.26 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6ef73d5b-eb29-41a4-bb91-bd4415c6c12c")
+	)
+	(label "KB_ROW5"
+		(at 379.73 294.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "72b673e7-4658-47ed-8aa2-d34781c640ce")
+	)
+	(label "ANN_G"
+		(at 175.26 266.7 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7554958d-7c72-4f37-b5a5-cf0ba76dc6ed")
+	)
+	(label "KB_ROW3"
+		(at 379.73 167.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8438ad65-4af3-4f94-b7a8-f6a3167172f8")
+	)
+	(label "LED_RAW"
+		(at 175.26 137.16 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "90a20243-183a-41f8-ab30-781af6e8f44d")
+	)
+	(label "ANN_OVERFLOW"
+		(at 175.26 276.86 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "94f88be8-dd55-4118-abc9-7e8e0ac5c0ad")
+	)
+	(label "KB_IRQ"
+		(at 175.26 66.04 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "99c04b2b-73ae-4a31-9950-7a05dbcc024f")
+	)
+	(label "ANN_F"
+		(at 175.26 261.62 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9b68d6ea-6e1d-4a80-855d-f70420de5054")
+	)
+	(label "ANN_CARRY"
+		(at 175.26 271.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ae51ea2b-e02f-4bbb-9a1e-15b46086e3fe")
+	)
+	(label "I2C_SCL"
+		(at 175.26 50.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ae7802de-6734-48c3-8935-ea5fb3106245")
+	)
+	(label "KB_ROW4"
+		(at 379.73 231.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bc9a3de4-2f5f-4aa5-9c9c-246d1fcb660b")
+	)
+	(label "KB_ROW2"
+		(at 379.73 104.14 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bd081ce7-514e-4028-8331-afc2ea1b5908")
+	)
+	(label "RGB_FIRST"
+		(at 157.48 170.18 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cbc9b575-8a82-43ad-88f9-2d477fe91816")
+	)
+	(label "I2C_SDA"
+		(at 175.26 45.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ce071759-37a0-4b7c-900d-5873543985b8")
+	)
+	(label "LED_EN"
+		(at 175.26 144.78 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dc5d63cf-1f6b-41b2-b492-92ae8c0d4c13")
+	)
+	(label "KB_ROW1"
+		(at 379.73 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e8e7987c-ce06-47c9-8fc7-0981eb4e28fb")
+	)
 	(sheet
-		(at 25.4000 25.4000)
-		(size 66.0400 20.3200)
+		(at 439.42 30.48)
+		(size 86.36 40.64)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb11")
 		(property "Sheetname" "Row1"
-			(at 25.4000 24.1300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 439.42 29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "key_row.kicad_sch"
-			(at 25.4000 46.9900 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 439.42 72.39 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-		(pin "ROW" input
-			(at 25.4000 30.4800 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "d0121a56-850a-4d3a-9be7-396c95db9517")
+		(pin "ROW" bidirectional
+			(at 439.42 40.64 180)
+			(uuid "5e655113-29d5-4d89-b0d7-9fc3c2da257f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
-		(pin "DIN" input
-			(at 25.4000 35.5600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "07dc19fc-0afc-4720-aff0-457206472af9")
+		(pin "DIN" bidirectional
+			(at 525.78 40.64 0)
+			(uuid "e8d04bb1-9770-410c-ba1d-7e355c9ab254")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(pin "DOUT" output
-			(at 91.4400 40.6400 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "62aba101-a98d-4f4c-af3b-de3b03215e53")
+		(pin "DOUT" bidirectional
+			(at 525.78 60.96 0)
+			(uuid "88f0ffb2-a851-484f-8dc2-a9d002cda57e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "2")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 25.4000 53.3400)
-		(size 66.0400 20.3200)
+		(at 439.42 93.98)
+		(size 86.36 40.64)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb12")
 		(property "Sheetname" "Row2"
-			(at 25.4000 52.0700 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 439.42 92.71 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "key_row.kicad_sch"
-			(at 25.4000 74.9300 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 439.42 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-		(pin "ROW" input
-			(at 25.4000 58.4200 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "7ac6c8a3-0c12-46a3-aa25-889c21f49f99")
+		(pin "ROW" bidirectional
+			(at 439.42 104.14 180)
+			(uuid "22324a7b-eda9-416d-8563-1911fa004691")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
-		(pin "DIN" input
-			(at 25.4000 63.5000 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "847169b8-e45a-4569-b760-e0343ac54fb3")
+		(pin "DIN" bidirectional
+			(at 525.78 104.14 0)
+			(uuid "bdaf5889-a39b-4520-8ecf-f5f1c6cba225")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(pin "DOUT" output
-			(at 91.4400 68.5800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "1a04076e-bbc1-46ee-9682-da710c42693c")
+		(pin "DOUT" bidirectional
+			(at 525.78 124.46 0)
+			(uuid "6cedb0f9-e1ff-409d-9d8b-fd6810346f5d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "3")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 25.4000 81.2800)
-		(size 66.0400 20.3200)
+		(at 439.42 157.48)
+		(size 86.36 40.64)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb13")
 		(property "Sheetname" "Row3"
-			(at 25.4000 80.0100 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 439.42 156.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "key_row.kicad_sch"
-			(at 25.4000 102.8700 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 439.42 199.39 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-		(pin "ROW" input
-			(at 25.4000 86.3600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "41ad3db1-cd7c-4fc5-94b4-464c688d0581")
+		(pin "ROW" bidirectional
+			(at 439.42 167.64 180)
+			(uuid "0461fea2-04a8-4e34-9e50-cd92ca0f941b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
-		(pin "DIN" input
-			(at 25.4000 91.4400 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "0b26e736-7848-4260-946a-ee05d159a59e")
+		(pin "DIN" bidirectional
+			(at 525.78 167.64 0)
+			(uuid "a203d0d2-283a-4f3e-a308-cb4eec246b89")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(pin "DOUT" output
-			(at 91.4400 96.5200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "faed6c33-1e2e-432d-8032-aa556cf3e26b")
+		(pin "DOUT" bidirectional
+			(at 525.78 187.96 0)
+			(uuid "3aba1f50-a7cd-4d08-9ea2-eff869a9c993")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "4")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 25.4000 109.2200)
-		(size 66.0400 20.3200)
+		(at 439.42 220.98)
+		(size 86.36 40.64)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb14")
 		(property "Sheetname" "Row4"
-			(at 25.4000 107.9500 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 439.42 219.71 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "key_row_9.kicad_sch"
-			(at 25.4000 130.8100 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 439.42 262.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-		(pin "ROW" input
-			(at 25.4000 114.3000 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "d6fea84a-17bc-4179-9ad6-506944e6abed")
+		(pin "ROW" bidirectional
+			(at 439.42 231.14 180)
+			(uuid "a8471cd9-3ed4-48cc-9dbe-bd76827381c8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
-		(pin "DIN" input
-			(at 25.4000 119.3800 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "1902a4ed-5eab-4f94-9797-c5743af07bd9")
+		(pin "DIN" bidirectional
+			(at 525.78 231.14 0)
+			(uuid "33f052f2-22f5-4386-a0b8-f846d7edcfbb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(pin "DOUT" output
-			(at 91.4400 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "c6afa268-5b44-428d-b79c-84da91965d59")
+		(pin "DOUT" bidirectional
+			(at 525.78 251.46 0)
+			(uuid "f2f828b3-831c-4378-aeb8-57faa6972854")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "5")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 25.4000 137.1600)
-		(size 66.0400 20.3200)
+		(at 439.42 284.48)
+		(size 86.36 40.64)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb15")
 		(property "Sheetname" "Row5"
-			(at 25.4000 135.8900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 439.42 283.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "key_row.kicad_sch"
-			(at 25.4000 158.7500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 439.42 326.39 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-		(pin "ROW" input
-			(at 25.4000 142.2400 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "12dd63f1-96a8-44d8-8fea-67fb07e38ce4")
+		(pin "ROW" bidirectional
+			(at 439.42 294.64 180)
+			(uuid "d873f057-3f96-43db-98ee-e5d0f51c4022")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
-		(pin "DIN" input
-			(at 25.4000 147.3200 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "83e066a3-8aaf-4bba-8f80-729787a83c80")
+		(pin "DIN" bidirectional
+			(at 525.78 294.64 0)
+			(uuid "6e52a421-cd81-42d9-8085-920273807130")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(pin "DOUT" output
-			(at 91.4400 152.4000 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "e076a6cf-ecad-4e01-abfa-eff9ec0d6c3c")
+		(pin "DOUT" bidirectional
+			(at 525.78 314.96 0)
+			(uuid "d89e120c-cfc8-4250-853d-85ee3ad526a5")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "6")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 127.0000 25.4000)
-		(size 55.8800 20.3200)
+		(at 30.48 251.46)
+		(size 91.44 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb20")
 		(property "Sheetname" "Annunciators"
-			(at 127.0000 24.1300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 30.48 250.19 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "annunc.kicad_sch"
-			(at 127.0000 46.9900 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 30.48 303.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "ANN_F" bidirectional
+			(at 121.92 261.62 0)
+			(uuid "427af1af-452c-4eb3-b320-46db4e9168db")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ANN_G" bidirectional
+			(at 121.92 266.7 0)
+			(uuid "9fb28819-3648-4310-b28c-3c555595adab")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ANN_CARRY" bidirectional
+			(at 121.92 271.78 0)
+			(uuid "16fdcc1a-3192-4c83-9374-14586db2dc3b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ANN_OVERFLOW" bidirectional
+			(at 121.92 276.86 0)
+			(uuid "0bed0f0f-8880-4e83-a736-d6fc785c9b45")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ANN_LOWBAT" bidirectional
+			(at 121.92 281.94 0)
+			(uuid "9acaa384-82f7-4e1e-adc4-e7f3f04e676e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "7")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 127.0000 55.8800)
-		(size 55.8800 20.3200)
+		(at 228.6 30.48)
+		(size 91.44 317.5)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb30")
 		(property "Sheetname" "KbdMCU"
-			(at 127.0000 54.6100 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 228.6 29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "kbd_mcu.kicad_sch"
-			(at 127.0000 77.4700 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 228.6 349.25 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "I2C_SDA" bidirectional
+			(at 228.6 45.72 180)
+			(uuid "fd0a94d8-ee5a-4ba5-bf49-44bf8cb498d0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "I2C_SCL" bidirectional
+			(at 228.6 50.8 180)
+			(uuid "8b045f3f-56a2-45f6-b0a4-2dd8cccf562b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "UART_TX" bidirectional
+			(at 228.6 55.88 180)
+			(uuid "294f4297-11ea-4f81-a595-d88755afd991")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "UART_RX" bidirectional
+			(at 228.6 60.96 180)
+			(uuid "0facebd0-53aa-4781-8859-dceb8bb4ab25")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "KB_IRQ" bidirectional
+			(at 228.6 66.04 180)
+			(uuid "5ab81cf9-cf81-46fb-bd14-69b47d0b51bd")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "KB_NRST" bidirectional
+			(at 228.6 71.12 180)
+			(uuid "8aa3cc23-9f9d-49a5-a195-86d77439b9b6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "KB_BOOT0" bidirectional
+			(at 228.6 76.2 180)
+			(uuid "a28db041-7e48-41f5-9c6e-ac8969839a19")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "LED_RAW" bidirectional
+			(at 228.6 137.16 180)
+			(uuid "954b61d5-460f-4e09-bbe9-087b19fd3b16")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "LED_EN" bidirectional
+			(at 228.6 144.78 180)
+			(uuid "3b12ef68-8952-4c22-b4b1-f090a24f5e6f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ANN_F" bidirectional
+			(at 228.6 261.62 180)
+			(uuid "01ce5c8f-a1be-4e0c-aa4c-6ef3976bfacc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ANN_G" bidirectional
+			(at 228.6 266.7 180)
+			(uuid "12110bda-b626-412a-991c-d4d8e8cc1da6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ANN_CARRY" bidirectional
+			(at 228.6 271.78 180)
+			(uuid "1d40aef6-ed8d-4ee3-946d-9e068bc0fae9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ANN_OVERFLOW" bidirectional
+			(at 228.6 276.86 180)
+			(uuid "1ade9e96-f412-4bd2-8114-39fe8a15c06c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ANN_LOWBAT" bidirectional
+			(at 228.6 281.94 180)
+			(uuid "950be053-b90b-4227-b309-03310b65721e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "KB_ROW1" bidirectional
+			(at 320.04 40.64 0)
+			(uuid "80753700-dcb4-4528-914a-fb64973ac6f0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_ROW2" bidirectional
+			(at 320.04 104.14 0)
+			(uuid "e3958d7a-ff3c-4017-a49c-bfb150e052ae")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_ROW3" bidirectional
+			(at 320.04 167.64 0)
+			(uuid "49dcc16d-b0b4-45f7-b36c-fb79029e14f3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_ROW4" bidirectional
+			(at 320.04 231.14 0)
+			(uuid "eed7fa28-d6aa-4b11-9e4a-ed644080f972")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_ROW5" bidirectional
+			(at 320.04 294.64 0)
+			(uuid "42d7a222-1e14-4ae7-a43d-85bc1d9c8427")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "8")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 127.0000 86.3600)
-		(size 55.8800 20.3200)
+		(at 30.48 127)
+		(size 91.44 55.88)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb40")
 		(property "Sheetname" "RGBPower"
-			(at 127.0000 85.0900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 30.48 125.73 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "rgb_power.kicad_sch"
-			(at 127.0000 107.9500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 30.48 184.15 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "LED_RAW" bidirectional
+			(at 121.92 137.16 0)
+			(uuid "1144c9d8-12be-4306-9fb3-b3fc117b16f3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "LED_EN" bidirectional
+			(at 121.92 144.78 0)
+			(uuid "2b3a5382-5977-4eb2-b666-33117898b5f7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_LED_DATA" bidirectional
+			(at 121.92 170.18 0)
+			(uuid "1cb3cf82-b8ee-4b08-b240-fd3b3aed307e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "9")
+				)
+			)
 		)
 	)
 	(sheet
-		(at 127.0000 116.8400)
-		(size 55.8800 20.3200)
+		(at 30.48 35.56)
+		(size 91.44 50.8)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
 		(uuid "ca1c0000-0000-4000-8000-00000000eb50")
 		(property "Sheetname" "MainIF"
-			(at 127.0000 115.5700 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+			(at 30.48 34.29 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
 		)
 		(property "Sheetfile" "main_if.kicad_sch"
-			(at 127.0000 138.4300 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+			(at 30.48 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
 		)
-	)
-	(wire (pts (xy 25.4000 30.4800) (xy 17.7800 30.4800))
-		(stroke (width 0) (type default))
-		(uuid "3d7166a4-edf9-4bf6-8015-53c37fb0d861")
-	)
-	(global_label "KB_ROW1"
-		(shape output)
-		(at 17.7800 30.4800 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "37688528-9d9d-40f9-9977-caf2f9beece6")
-	)
-	(wire (pts (xy 25.4000 35.5600) (xy 17.7800 35.5600))
-		(stroke (width 0) (type default))
-		(uuid "3c3a15b5-8560-4429-bdf0-96873b06c570")
-	)
-	(global_label "KB_LED_DATA"
-		(shape input)
-		(at 17.7800 35.5600 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "3c404407-65e2-4f67-9c20-ef4c73df2a2b")
-	)
-	(wire (pts (xy 91.4400 40.6400) (xy 99.0600 40.6400))
-		(stroke (width 0) (type default))
-		(uuid "204d9ba2-d814-4fb7-89bf-15cdc10bbf14")
-	)
-	(global_label "RGB_CH1"
-		(shape output)
-		(at 99.0600 40.6400 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "59b31a10-5039-48c4-a51c-dae95e4281a5")
-	)
-	(wire (pts (xy 25.4000 58.4200) (xy 17.7800 58.4200))
-		(stroke (width 0) (type default))
-		(uuid "96c4bf13-1914-4944-a39f-d765d6291a31")
-	)
-	(global_label "KB_ROW2"
-		(shape output)
-		(at 17.7800 58.4200 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "fc6b9244-20f9-432a-945f-13fc9746982d")
-	)
-	(wire (pts (xy 25.4000 63.5000) (xy 17.7800 63.5000))
-		(stroke (width 0) (type default))
-		(uuid "112e34ee-7366-49a5-8f72-39fd862dd450")
-	)
-	(global_label "RGB_CH1"
-		(shape input)
-		(at 17.7800 63.5000 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "79d7b4f9-7e85-46ca-bdbc-5821c881312e")
-	)
-	(wire (pts (xy 91.4400 68.5800) (xy 99.0600 68.5800))
-		(stroke (width 0) (type default))
-		(uuid "604f6a45-7f9b-4db7-b557-2e5fc5c959eb")
-	)
-	(global_label "RGB_CH2"
-		(shape output)
-		(at 99.0600 68.5800 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "cb72f5d5-9319-4cc3-808e-fb7e756d0b17")
-	)
-	(wire (pts (xy 25.4000 86.3600) (xy 17.7800 86.3600))
-		(stroke (width 0) (type default))
-		(uuid "ed264c7f-c94a-4724-8106-579f1078441f")
-	)
-	(global_label "KB_ROW3"
-		(shape output)
-		(at 17.7800 86.3600 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "93e25261-bc97-4935-8262-a26960588c58")
-	)
-	(wire (pts (xy 25.4000 91.4400) (xy 17.7800 91.4400))
-		(stroke (width 0) (type default))
-		(uuid "38292bf8-3051-4491-a155-98680a393584")
-	)
-	(global_label "RGB_CH2"
-		(shape input)
-		(at 17.7800 91.4400 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "f8638c80-6b42-42df-9b00-89ce314197aa")
-	)
-	(wire (pts (xy 91.4400 96.5200) (xy 99.0600 96.5200))
-		(stroke (width 0) (type default))
-		(uuid "e62e512c-4492-43af-ba07-ca21a7fe8b54")
-	)
-	(global_label "RGB_CH3"
-		(shape output)
-		(at 99.0600 96.5200 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "d12ea595-53a4-4b30-a5f9-d35e7406894d")
-	)
-	(wire (pts (xy 25.4000 114.3000) (xy 17.7800 114.3000))
-		(stroke (width 0) (type default))
-		(uuid "2a83bf64-a139-437b-9dba-c2a79adbed62")
-	)
-	(global_label "KB_ROW4"
-		(shape output)
-		(at 17.7800 114.3000 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "562a90a0-c6e4-417e-ae21-22bed36b430a")
-	)
-	(wire (pts (xy 25.4000 119.3800) (xy 17.7800 119.3800))
-		(stroke (width 0) (type default))
-		(uuid "8df28def-2431-4dbb-9a62-617d760b82b8")
-	)
-	(global_label "RGB_CH3"
-		(shape input)
-		(at 17.7800 119.3800 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "10a16696-b942-4bae-929d-eb7006406eb1")
-	)
-	(wire (pts (xy 91.4400 124.4600) (xy 99.0600 124.4600))
-		(stroke (width 0) (type default))
-		(uuid "e85f333b-b8a4-4d58-8cec-8a7d10947cd4")
-	)
-	(global_label "RGB_CH4"
-		(shape output)
-		(at 99.0600 124.4600 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "d6a0de30-242d-41a3-be0a-013062ac4677")
-	)
-	(wire (pts (xy 25.4000 142.2400) (xy 17.7800 142.2400))
-		(stroke (width 0) (type default))
-		(uuid "201bf399-d9d6-47a8-90ef-ac93fdec76de")
-	)
-	(global_label "KB_ROW5"
-		(shape output)
-		(at 17.7800 142.2400 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "51c8b21a-9aae-4a75-8ee9-43cb6c5621ae")
-	)
-	(wire (pts (xy 25.4000 147.3200) (xy 17.7800 147.3200))
-		(stroke (width 0) (type default))
-		(uuid "31f6c918-ca2e-4896-aee8-4a8cf2803f6d")
-	)
-	(global_label "RGB_CH4"
-		(shape input)
-		(at 17.7800 147.3200 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "f628c1bd-c595-4165-b98c-10ca03263017")
-	)
-	(wire (pts (xy 91.4400 152.4000) (xy 99.0600 152.4000))
-		(stroke (width 0) (type default))
-		(uuid "228c8e52-08e8-40ce-be38-4c393402fd1f")
-	)
-	(global_label "RGB_END"
-		(shape output)
-		(at 99.0600 152.4000 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "0d35935a-99b1-4d0a-bea2-adb06f60bafa")
-	)
-	(text "Calcumaker 16 - Keyboard (MULTI-CHANNEL).\nRow1/2/3/5 = four instances of the reusable 10-key sheet key_row.kicad_sch.\nRow4 = key_row_9.kicad_sch: 9 keys, no switch/diode/RGB at COL6 -- that is\nthe upper half of the 2U ENTER cap (switch lives in Row5/COL6). 49 keys.\n(MX switch + diode + SK6812MINI-E RGB per key). Shared buses on global nets\nCOL1..COL10 / VLED / GND; each row's ROW line = a hier pin -> KB_ROWn,\nand the RGB DIN/DOUT are chained: KB_LED_DATA -> Row1 -> Row2 -> ... ->\nRow5 -> RGB_END. The G0 (KbdMCU) drives KB_ROW1-5 + COL1-10 + LED_DATA/EN;\nRGBPower gates VLED off in sleep. Wire the one-off sheets in eeschema."
-		(exclude_from_sim no)
-		(at 127.00 152.40 0)
-		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "5681b294-cf14-4e78-85f0-8fa1161ae1fc")
+		(pin "I2C_SDA" bidirectional
+			(at 121.92 45.72 0)
+			(uuid "3f2a7cef-47fd-4430-9cd5-19564c958fdb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "I2C_SCL" bidirectional
+			(at 121.92 50.8 0)
+			(uuid "579e688e-1e48-43f2-983e-3d68091589aa")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "UART_TX" bidirectional
+			(at 121.92 55.88 0)
+			(uuid "bd577cac-1e2f-4dea-a6b2-daedf717d9b5")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "UART_RX" bidirectional
+			(at 121.92 60.96 0)
+			(uuid "42653150-2b01-468a-abeb-4654b7739887")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_IRQ" bidirectional
+			(at 121.92 66.04 0)
+			(uuid "8250e079-dd8f-48cc-b822-3ee9007ccad7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_NRST" bidirectional
+			(at 121.92 71.12 0)
+			(uuid "5423f1aa-9c40-4ad8-b980-1728f3bb91f2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "KB_BOOT0" bidirectional
+			(at 121.92 76.2 0)
+			(uuid "e6967616-8821-4c86-aac4-6e9d9ede343e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "calcumaker-keyboard"
+				(path "/ca1c0000-0000-4000-8000-00000000eb01"
+					(page "10")
+				)
+			)
+		)
 	)
 	(sheet_instances
 		(path "/"

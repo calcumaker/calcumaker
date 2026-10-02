@@ -6,6 +6,14 @@
 
 ## Overview
 
+**Schematic status (2026-10-02):** the MCU and keyboard boards are now wired,
+including sheet connections, power, reset/debug and the 49-key/RGB chain.
+The authoritative pin map, corrections and validation results are recorded in
+[`hardware/WIRING_REVIEW.md`](hardware/WIRING_REVIEW.md). Run
+`make -C hardware check-wiring`. The committed schematics supersede the guarded
+placement manifests; do not force regeneration. PCB layout, RGB voltage/logic
+headroom and final cell/connector/inductor selection remain open.
+
 Calcumaker 16 is a wide-format, full-size **Cherry MX** **programmer's /
 technical RPN calculator**. It follows the **HP-16C** lineage — hexadecimal /
 octal / binary / decimal entry, bitwise and shift/rotate operators, and
@@ -441,7 +449,7 @@ keypress wakes the MCU from Stop, so no dedicated ON key is needed.
 its own STM32G031K8U6** (LCSC C432207, UFQFPN-32 — not the main MCU; see Board
 Partition). ROWr = G0 GPIO outputs, COLc = G0 GPIO inputs on **internal pull-ups**
 (no external resistors — lower idle current; the G0 retains pull-ups in Stop).
-**One 1N4148W per key** (anode at switch, cathode to its column) for n-key
+**One 1N4148W per key** (anode at column, cathode toward switch/active-low row) for n-key
 rollover. 15 GPIO (5 rows + 10 cols) on the G0. Refs: `SW1..SW50` (key `(r,c)` =
 `SW(r-1)*10+c`), diodes `D1..D50`. Optional **Kailh hot-swap sockets** (same
 footprint family). The G0 reports `(row,col)` events to the main MCU over the
@@ -613,9 +621,11 @@ a Standby-path concern only.)
 D+/D− still get the **USBLC6-2SC6** (`U3`) — the TCPP01 covers VBUS and CC, not the
 datalines.
 
-**`PSEL` is tied high**, so the charger's power-on default is the safe **500 mA** USB
-limit. That is the fail-safe: if firmware never runs, or UCPD never initializes, the
-board still charges — just slowly. Nothing about the >500 mA path can strand us.
+**`PSEL` is pulled high to REGN through 100 kΩ**, so the charger's initial input
+limit is **500 mA**. Do not connect PSEL to 12 V VBUS (its absolute maximum is 7 V).
+**CE defaults high through 100 kΩ:** the system power path can start, but charging
+waits for firmware to configure the selected cell and enable it. The TS circuit
+requires a 10 kΩ 103AT-2 pack NTC at J8; it does not bypass thermal protection.
 
 **Legacy USB-A bricks stay at 500 mA.** A C-to-A cable carries a 56 kΩ Rp in the
 plug, which advertises "Default USB" no matter how beefy the brick is, and the
@@ -965,7 +975,7 @@ each**; only CLK (PA3 | PB10) and NCS (PA2 | PA4 | PC11) offered a choice.
 | | MOSI | PB5 | AF5 | 57 | UCPD `DBCC1` also lands here but is unused — no conflict |
 | | CS | **PA8** | — | 41 | **moved off PA15** (now UCPD1_CC1); CS is a plain GPIO, so it relocates freely |
 | **UCPD1** → USB-C CC | CC1 | **PA15** | — | 50 | dedicated analog pin, **no AF alternative** — this is why CS moved |
-| | CC2 | **PB15** | — | 63 | dedicated analog pin, no alternative |
+| | CC2 | **PB15** | — | 36 | dedicated analog pin; pad63 is VSS |
 | USART2 → keyboard | TX | PA2 | AF7 | 16 | pair kept intact by choosing PA4 for NCS |
 | | RX | PA3 | AF7 | 17 | |
 | I²C1 → keyboard **+ charger + gauge** | SCL | PB6 | AF4 | 58 | shared bus; BQ25601 = **0x6B**, MAX17048 = **0x36** |
@@ -983,26 +993,27 @@ CC1/CC2 are **fixed by the silicon** (dedicated analog pins, no AF remap), verif
 against the `stm32-metapac` 21.0 pin DB for `stm32u575rg`. PA15 was the display CS,
 so **CS moved to PA8** — a plain GPIO, no AF constraint, zero cost.
 
-Still open: **KB_IRQ must land on a WKUP pin** (keypress wake from Stop) — e.g.
-PA0/PB2 (WKUP1), PC13 (WKUP2), PB6 (WKUP3, conflicts with I²C1 SCL above).
-Also unassigned: the **battery-sense ADC** pin, and **CHG_INT / CHG_PG / CHG_CE**
-(plain GPIO; CHG_INT wants EXTI, and ideally a WKUP pin so an adapter insert can
-wake the calculator from Stop).
+Assigned in the wired revision: **KB_IRQ=PA0**, gauge alert=PC13,
+VBUS/BAT ADC=PC0/PC1, CHG_INT/PG/CE=PC2/PC4/PC5,
+TCPP enable/DB/fault=PC6/PC7/PC3 and display IRQ/reset/boot=PB12/PC8/PC9.
+Keyboard reset/boot use PC10/PC11. The complete G031 matrix and annunciator map,
+shared PA14/SWCLK/BOOT0 requirements, and package pin numbers are in the
+[wiring review](hardware/WIRING_REVIEW.md).
 
 ---
 
 ## Schematic Sheet Plan
 
-Three boards, each generated from its own manifest
-(`hardware/scripts/calcumaker-{mcu,keyboard,display}.schgen.py`); the display and
-the keyboard matrix are **multi-channel** (reusable row instantiated N×, fully
-wired), the remaining sheets are placed-not-wired (wired in eeschema).
+Three boards were initially generated from their own manifests. The MCU and
+keyboard hierarchies are now wired and maintained directly in KiCad. The display
+and keyboard matrix use reusable row sheets. The guarded MCU/keypad manifests
+remain historical placement drafts and must not overwrite the completed wiring.
 
 **`calcumaker-mcu`:**
 
 | Sheet | File | Contents |
 |-------|------|----------|
-| Root | `calcumaker-mcu.kicad_sch` | sheet symbols + title block |
+| Root | `calcumaker-mcu.kicad_sch` | explicit MCU/PSU/QSPI/keyboard sheet ports and connecting wires |
 | MCU | `mcu.kicad_sch` | STM32U575RGTx (U1) + VDD/VDDA/VDDUSB decoupling + VCORE + NRST/BOOT0 + the **committed pin map**. Also absorbs the three former one-off sheets: LSE crystal (Y1 + C24/C25), SWD Tag-Connect TC2030-NL (J4), and the unified SPI display-module interface — connector **J3** (0.5 mm 12-pin FFC) + **J7** VSYS outlet (5V + level shifting live on the module) |
 | PSU | `psu.kicad_sch` | USB-C + ESD + CC sense + BQ25601 charger (NVDC power path) + 3V3 buck-boost (MCU) + battery conn |
 | KeyboardIF | `keyboard_if.kicad_sch` | Keyboard link, **populate one**: DF40 2×6 stack (J5, DF40B-12DS) **or** 16-pin FFC cable (J6, AFC01-S16FCA-00) — I²C+UART+**VSYS** |
@@ -1013,18 +1024,17 @@ wired), the remaining sheets are placed-not-wired (wired in eeschema).
 | Sheet | File | Contents |
 |-------|------|----------|
 | Root | `calcumaker-keyboard.kicad_sch` | 5× `key_row` instances + 4 one-off sheets; per-row `ROW`→`KB_ROWn` + the RGB DIN→DOUT chain wired here |
-| **key_row ×5** | `key_row.kicad_sch` | **Reusable 10-key row (MULTI-CHANNEL, fully wired): each key = MX switch + 1N4148W diode + SK6812MINI-E RGB (reverse-mount).** Instantiated ×5: Row1–5 → SW1–50 / D1–50 (matrix) / D56–105 (RGB). Shared COL1–10/VLED/GND global; ROW + RGB DIN/DOUT hierarchical |
+| **key rows ×5** | `key_row.kicad_sch` ×4; `key_row_9.kicad_sch` ×1 | MX + 1N4148W + SK6812MINI-E + 100 nF per key. Row4 omits COL6 above the 2U ENTER: SW36/D36/D91/C136 absent. Shared COL1–10/VLED/GND; hierarchical ROW and RGB DIN/DOUT |
 | Annunciators | `annunc.kicad_sch` | 5 status LEDs (f g C G low-batt, D51–55 + R1–5) ← the on-board G0 |
 | KbdMCU | `kbd_mcu.kicad_sch` | **STM32G031K8U6 (U1, UFQFPN-32)** scanner + decoupling + BOOT0 + SWD (J2) |
 | RGBPower | `rgb_power.kicad_sch` | RGB **level shifter (U2)** + **gated high-side load switch (Q1/Q2 + R7–10/C6–7)** — drives + sleep-gates the per-key chain off VSYS |
 | MainIF | `main_if.kicad_sch` | MCU link, **populate one**: DF40 2×6 header (J1, DF40C-12DP) **or** 16-pin FFC (J3, AFC01-S16FCA-00) → the MCU board (+VSYS for the RGB) |
 
-All three boards **generate from their manifests and pass the structure check**:
-`calcumaker-mcu` = 56 components (placed-not-wired), `calcumaker-keyboard` = 179
-components (**5×10 matrix + per-key RGB wired multi-channel** as `key_row` ×5; the
-G0/annunciator/RGB-power/mezzanine sheets placed-not-wired), `calcumaker-display`
-= 60 components (fully wired, multi-channel).
-Symbols are stock KiCad except the authored `TM1640` and single-digit `FJ5161AH`.
+The MCU has **75 components**, zero ERC errors and one reviewed GPIO/power-flag
+warning; the keyboard has **227 components** and zero ERC violations. Both pass
+expanded netlist assertions. The display is unchanged by this wiring pass.
+Custom symbols include TM1640, FJ5161AH, TCPP01-M12, MAX17048 and a
+package-corrected STM32G031K8U6; provenance is in `hardware/lib/ATTRIBUTIONS.md`.
 
 **`calcumaker-display`:**
 
@@ -1150,7 +1160,7 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    as a 16C-style suffix letter on the X row — `h`/`o`/`b` for non-decimal
    integers, decimal unmarked (deviation from the 16C's `d`; absence =
    decimal) — a **display tunable** (`suffix` token toggles; on by default;
-   emulator `--no-suffix`). Remaining: wire the LED GPIOs on the keyboard board.
+   emulator `--no-suffix`). The keyboard annunciator GPIOs are now wired.
    ✅ **LOWBAT's data path is now settled** — the **MAX17048** fuel gauge (`U6`,
    Open Question 10) drives it off a real state-of-charge, and its open-drain `ALRT`
    pin fires the low-SoC interrupt directly (was: an unspecified "battery ADC/status
@@ -1158,15 +1168,14 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
 5. ✅ **Keypad designed + boards generated (three-board split).** 5×10 grid, 49 keys (2U ENTER spans two cells),
    f/g scheme, internal-pull-up matrix + two-stage EXTI wake. The keypad +
    annunciators + their **STM32G0 scanner** now live on **`calcumaker-keyboard`**
-   (**key_row ×5 multi-channel** / Annunciators / KbdMCU / RGBPower / MainIF, 178
-   comp — matrix + 50 per-key RGB wired as one reusable 10-key row), which
+   (**key rows ×5 multi-channel** / Annunciators / KbdMCU / RGBPower / MainIF, 227
+   components, 49 switches/RGB LEDs), which
    mezzanine-stacks (I²C+UART+VSYS) above **`calcumaker-mcu`**
-   (MCU / PSU / KeyboardIF / QSPIFlash, 46 comp — Clock, Programming and DisplayIF
-   were merged into the MCU sheet). All symbols stock except the authored
-   TM1640 / FJ5161AH; both **generate + pass the structure check**. Remaining:
+   (MCU / PSU / KeyboardIF / QSPIFlash, 75 components — Clock, Programming and DisplayIF
+   are on the MCU sheet). Both boards are wired and pass electrical checks. Remaining:
    refine `Nop` shift assignments; confirm Cherry MX vs Kailh hot-swap; verify the
-   STM32U5 VCORE LDO-vs-SMPS choice (SMPS needs an inductor); verify the DF40
-   stack height vs MX pin clearance; then **wire the boards in eeschema**.
+   selected capacitor effective values (U575RGT6 uses LDO VCAP); verify the DF40
+   stack height vs MX pin clearance and resolve RGB voltage/logic margins before layout.
 6. **Battery cell + capacity.** Drives the **`ICHG` I²C register** (no longer a
    PROG resistor — the BQ25601 sets charge current in firmware) and the runtime
    target. Target **≤0.7C**, so a 1500–3000 mAh cell → **1–2 A**. The charger can
@@ -1175,10 +1184,9 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    replaces MCP73831 + discrete load-share; **stock KiCad symbol**
    (`Battery_Management:BQ25601`, footprint `Texas_RTW_WQFN-24-1EP_4x4mm...`), so no
    authoring. Remaining:
-   - **`TS` pin must be biased or charging never starts.** Either a **103AT NTC in
-     the battery pack** (preferred — real pack thermal protection) or a **fixed
-     divider from `REGN`** faking 25 °C if the cell has no thermistor. Decide with
-     the cell (Q6).
+   - **TS is wired for a 10 kΩ 103AT-2 pack NTC at J8**, parallel with 30.1 kΩ to
+     ground and 5.23 kΩ to REGN. Select that sensor with the cell (Q6); without it,
+     charging is inhibited. CE also stays disabled until firmware configures the cell.
    - **Inductor value + Isat** — TI's typical app is **1–2.2 µH at 1.5 MHz**;
      manifest currently carries **2.2 µH / ≥4 A Isat** as a placeholder. Pin down
      against the datasheet at layout.
@@ -1186,8 +1194,8 @@ CERN-OHL-S (Q9) · ✅ product name = Calcumaker 16 (Q10) · ✅ display driver+
    - **Firmware: the I²C watchdog defaults to 40 s.** If firmware doesn't kick it
      (or disable it), the charger silently reverts `IINDPM`/`ICHG` to defaults and
      we drop back to 500 mA. Must be handled in the charger driver.
-   - Pick the **CHG_INT / CHG_PG / CHG_CE** GPIOs (see *Pin Budget*); CHG_INT/PG
-     ideally on WKUP pins so an adapter insert wakes the calculator.
+   - Implement **CHG_INT=PC2 / CHG_PG=PC4 / CHG_CE=PC5** in firmware; use EXTI2
+     for charger interrupts during Stop, and configure charger OVP before 12 V PD.
 8. ✅ **CC = UCPD1 + TCPP01-M12 front-end** (`U5`, C1121848 — **300 pcs secured on
    JLCPCB**, 2026-07-12). CC1/CC2 reach the MCU (**PA15/PB15**) *through* the TCPP01.
    This **closed the dead-battery risk** that this question originally raised: the

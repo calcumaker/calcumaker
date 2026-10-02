@@ -5,635 +5,922 @@
 	(uuid "908a20ad-2ae3-4996-a17f-abb4e2dfd5ef")
 	(paper "A3")
 	(title_block
-		(title "Calcumaker 16 — MCU — 4MB quad-SPI NOR flash (OCTOSPI1)")
-		(date "2026-07-06")
-		(rev "0.3")
+		(title "Calcumaker 16 / mcu / qspi flash")
+		(date "2026-10-02")
+		(rev "0.5")
 		(company "calcumaker authors")
 	)
 	(lib_symbols
-	(symbol "Memory_Flash:W25Q32JVSS"
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "U"
-			(at -6.35 11.43 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(symbol "Device:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
 				)
 			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
 		)
-		(property "Value" "W25Q32JVSS"
-			(at 7.62 11.43 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
 				)
 			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
 		)
-		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(symbol "Memory_Flash:W25Q32JVSS"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -6.35 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
 				)
 			)
+			(property "Value" "W25Q32JVSS"
+				(at 7.62 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "http://www.winbond.com/resource-files/w25q32jv%20revg%2003272018%20plus.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "32Mbit / 4MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "flash memory SPI"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "*SOIC*5.3x5.3mm*P1.27mm*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "W25Q32JVSS_0_1"
+				(rectangle
+					(start -7.62 10.16)
+					(end 10.16 -10.16)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "W25Q32JVSS_1_1"
+				(pin input line
+					(at -10.16 7.62 0)
+					(length 2.54)
+					(name "~{CS}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "DO/IO_{1}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "~{WP}/IO_{2}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -12.7 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "DI/IO_{0}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "CLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 -5.08 0)
+					(length 2.54)
+					(name "~{HOLD}/~{RESET}/IO_{3}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 12.7 270)
+					(length 2.54)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
 		)
-		(property "Datasheet" "http://www.winbond.com/resource-files/w25q32jv%20revg%2003272018%20plus.pdf"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "32Mbit / 4MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "flash memory SPI"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "*SOIC*5.3x5.3mm*P1.27mm*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "W25Q32JVSS_0_1"
-			(rectangle
-				(start -7.62 10.16)
-				(end 10.16 -10.16)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type background)
-				)
-			)
-		)
-		(symbol "W25Q32JVSS_1_1"
-			(pin input line
-				(at -10.16 7.62 0)
-				(length 2.54)
-				(name "~{CS}"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin bidirectional line
-				(at -10.16 0 0)
-				(length 2.54)
-				(name "DO/IO_{1}"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin bidirectional line
-				(at -10.16 -2.54 0)
-				(length 2.54)
-				(name "~{WP}/IO_{2}"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "3"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 0 -12.7 90)
-				(length 2.54)
-				(name "GND"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "4"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin bidirectional line
-				(at -10.16 2.54 0)
-				(length 2.54)
-				(name "DI/IO_{0}"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "5"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin input line
-				(at -10.16 5.08 0)
-				(length 2.54)
-				(name "CLK"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "6"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin bidirectional line
-				(at -10.16 -5.08 0)
-				(length 2.54)
-				(name "~{HOLD}/~{RESET}/IO_{3}"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "7"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin power_in line
-				(at 0 12.7 270)
-				(length 2.54)
-				(name "VCC"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "8"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-	(symbol "Device:C"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.254)
-		)
+	(text "4MB QUAD-SPI NOR / OCTOSPI1 port 1"
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "C"
-			(at 0.635 2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
+		(at 25.4 25.4 0)
+		(effects
+			(font
+				(size 2 2)
 			)
+			(justify left top)
 		)
-		(property "Value" "C"
-			(at 0.635 -2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 0.9652 -3.81 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "cap capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "C_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "C_0_1"
-			(polyline
-				(pts
-					(xy -2.032 0.762) (xy 2.032 0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy -2.032 -0.762) (xy 2.032 -0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "C_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
+		(uuid "05e3b7b6-f84f-45c4-9c77-525bd8d2df85")
 	)
-	(symbol "Device:R"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0)
-		)
+	(text "CS# defaults high. IO2/WP# and IO3/HOLD# are data pins in quad mode.\nEnable the flash QE bit before using all four IO signals. Place C26 close to U7."
 		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "R"
-			(at 2.032 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
+		(at 25.4 121.92 0)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify left top)
 		)
-		(property "Value" "R"
-			(at 0 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at -1.778 0 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "R res resistor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "R_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "R_0_1"
-			(rectangle
-				(start -1.016 -2.54)
-				(end 1.016 2.54)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "R_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 1.27)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 1.27)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
+		(uuid "11cc89ca-525a-4948-9011-edbbe6f4ee43")
 	)
+	(junction
+		(at 119.38 44.45)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fdca3508-e64f-4fa7-9336-99596f6ab32e")
 	)
-	(symbol
-		(lib_id "Memory_Flash:W25Q32JVSS")
-		(at 45.7200 55.8800 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "dbc6df28-1d19-49a9-a1dc-27681c56635c")
-		(property "Reference" "U7"
-			(at 49.5300 53.3400 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+	(wire
+		(pts
+			(xy 119.38 88.9) (xy 119.38 93.98)
 		)
-		(property "Value" "W25Q32JVSSIQ"
-			(at 49.5300 58.4200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+		(uuid "221d7d83-96cd-4915-a8fb-be36a82d4a84")
+	)
+	(wire
+		(pts
+			(xy 119.38 44.45) (xy 119.38 63.5)
 		)
-		(property "Datasheet" "~"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(property "LCSC" "C179173"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+		(uuid "2f8888a9-39b4-44ba-88b8-3362143e6783")
+	)
+	(wire
+		(pts
+			(xy 68.58 49.53) (xy 68.58 44.45)
 		)
-		(property "MPN" "W25Q32JVSSIQ"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(property "Manufacturer" "Winbond"
-			(at 45.7200 55.8800 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+		(uuid "3bc23e43-db43-4a90-9271-227454edb364")
+	)
+	(wire
+		(pts
+			(xy 68.58 57.15) (xy 68.58 68.58)
 		)
-		(pin "1" (uuid "29c11172-325e-4da1-b470-4ce9a990b7bf"))
-		(pin "2" (uuid "91045259-dcc7-43f7-89a2-d5d39150d253"))
-		(pin "3" (uuid "d480ba29-ec79-4488-b86f-e1b77576fd47"))
-		(pin "4" (uuid "cb117441-3d19-4304-8685-4445ec0fbcbd"))
-		(pin "5" (uuid "67385acd-0027-432f-a55b-ef0a18ff8831"))
-		(pin "6" (uuid "79903118-0b1c-4369-a3c0-854263330941"))
-		(pin "7" (uuid "3d1fa5c5-b652-4721-b4b3-c4f1e5aee0bf"))
-		(pin "8" (uuid "d339db4c-5f4e-4a50-a8d1-ecc35eaa8731"))
-		(instances
-			(project "calcumaker-mcu"
-				(path "/4528e592-e2a3-4b1b-b9d6-fa4a0915a29b/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
-					(reference "U7")
-					(unit 1)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54e0ecb0-1ca1-49e4-8c69-5af78b1dd41b")
+	)
+	(wire
+		(pts
+			(xy 109.22 76.2) (xy 104.14 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b0bd7b0-fe09-470d-8d30-92e46273c40b")
+	)
+	(wire
+		(pts
+			(xy 119.38 44.45) (xy 190.5 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64eb921b-121c-4390-80bb-328de0ab9429")
+	)
+	(wire
+		(pts
+			(xy 119.38 93.98) (xy 190.5 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6e66ff56-1c5f-409f-9058-8d1b5e7342a6")
+	)
+	(wire
+		(pts
+			(xy 109.22 73.66) (xy 104.14 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e092455-8a89-4042-83da-872210e4273a")
+	)
+	(wire
+		(pts
+			(xy 109.22 78.74) (xy 104.14 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8f53796f-4072-4f67-b8a2-004561f9e938")
+	)
+	(wire
+		(pts
+			(xy 190.5 44.45) (xy 190.5 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "96546678-d4b9-49c0-af23-78a4db07320d")
+	)
+	(wire
+		(pts
+			(xy 109.22 71.12) (xy 104.14 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bb21f2e0-1534-4400-bac0-7057c2ab9bba")
+	)
+	(wire
+		(pts
+			(xy 68.58 68.58) (xy 109.22 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c0da4cac-ef61-4c70-af0f-5aa0fce24613")
+	)
+	(wire
+		(pts
+			(xy 68.58 44.45) (xy 119.38 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3017494-2631-4b78-a8c0-2ba161ea0a04")
+	)
+	(wire
+		(pts
+			(xy 109.22 81.28) (xy 104.14 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8341f13-edad-4d18-ad4c-4b2e99984139")
+	)
+	(wire
+		(pts
+			(xy 190.5 80.01) (xy 190.5 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f9466402-a19a-4e66-9364-c806cd264c2f")
+	)
+	(global_label "+3V3"
+		(shape bidirectional)
+		(at 68.58 44.45 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "cbb5079a-d5f2-4986-a371-583088cc130c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 68.58 44.45 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
 				)
 			)
 		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 119.38 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ef5679da-c6c9-445f-970a-3853cae4fcaa")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 119.38 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(hierarchical_label "QSPI_IO1"
+		(shape bidirectional)
+		(at 104.14 76.2 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "050b368d-a2f7-42fb-93e3-330fcbb431bb")
+	)
+	(hierarchical_label "QSPI_IO2"
+		(shape bidirectional)
+		(at 104.14 78.74 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "07812e87-fe86-4847-a9b2-779314fd3d0d")
+	)
+	(hierarchical_label "QSPI_IO3"
+		(shape bidirectional)
+		(at 104.14 81.28 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "61012d3d-a7e2-42ac-83a0-6860f50e8d1d")
+	)
+	(hierarchical_label "QSPI_NCS"
+		(shape bidirectional)
+		(at 104.14 68.58 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "80805903-3d36-4aaf-8933-078824040cd1")
+	)
+	(hierarchical_label "QSPI_CLK"
+		(shape bidirectional)
+		(at 104.14 71.12 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d06f00e8-c778-4a55-ace5-68d3c94b6d4c")
+	)
+	(hierarchical_label "QSPI_IO0"
+		(shape bidirectional)
+		(at 104.14 73.66 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f8e3c468-3612-482f-b415-92fff8e2bb33")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 30.4800 121.9200 0)
+		(at 190.5 76.2 0)
 		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
+		(in_pos_files yes)
 		(dnp no)
 		(uuid "b53e552b-818a-4394-9c02-6daf98c5e54e")
 		(property "Reference" "C26"
-			(at 34.2900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+			(at 194.31 73.66 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Value" "100nF"
-			(at 34.2900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+			(at 194.31 78.74 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 30.4800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 190.5 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
 		(property "Datasheet" "~"
-			(at 30.4800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 190.5 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 190.5 76.2 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
 		(property "LCSC" "C1525"
-			(at 30.4800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 190.5 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
-		(pin "1" (uuid "dd4857de-2772-496b-8b6e-fe101d61870d"))
-		(pin "2" (uuid "f0603e42-81ea-41bd-84f1-920fdb6f191b"))
+		(pin "1"
+			(uuid "dd4857de-2772-496b-8b6e-fe101d61870d")
+		)
+		(pin "2"
+			(uuid "f0603e42-81ea-41bd-84f1-920fdb6f191b")
+		)
 		(instances
 			(project "calcumaker-mcu"
 				(path "/4528e592-e2a3-4b1b-b9d6-fa4a0915a29b/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
@@ -644,36 +931,218 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 68.5800 121.9200 0)
+		(lib_id "Memory_Flash:W25Q32JVSS")
+		(at 119.38 76.2 0)
 		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "dbc6df28-1d19-49a9-a1dc-27681c56635c")
+		(property "Reference" "U7"
+			(at 132.08 58.42 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "W25Q32JVSSIQ"
+			(at 132.08 60.96 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
+			(at 119.38 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 119.38 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 119.38 76.2 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C179173"
+			(at 119.38 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "W25Q32JVSSIQ"
+			(at 119.38 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Winbond"
+			(at 119.38 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "29c11172-325e-4da1-b470-4ce9a990b7bf")
+		)
+		(pin "2"
+			(uuid "91045259-dcc7-43f7-89a2-d5d39150d253")
+		)
+		(pin "3"
+			(uuid "d480ba29-ec79-4488-b86f-e1b77576fd47")
+		)
+		(pin "4"
+			(uuid "cb117441-3d19-4304-8685-4445ec0fbcbd")
+		)
+		(pin "5"
+			(uuid "67385acd-0027-432f-a55b-ef0a18ff8831")
+		)
+		(pin "6"
+			(uuid "79903118-0b1c-4369-a3c0-854263330941")
+		)
+		(pin "7"
+			(uuid "3d1fa5c5-b652-4721-b4b3-c4f1e5aee0bf")
+		)
+		(pin "8"
+			(uuid "d339db4c-5f4e-4a50-a8d1-ecc35eaa8731")
+		)
+		(instances
+			(project "calcumaker-mcu"
+				(path "/4528e592-e2a3-4b1b-b9d6-fa4a0915a29b/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
+					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 68.58 53.34 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
 		(dnp no)
 		(uuid "e888b3ab-249f-41ae-9082-626f7cd659df")
 		(property "Reference" "R9"
-			(at 72.3900 119.3800 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+			(at 72.39 50.8 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Value" "10k"
-			(at 72.3900 124.4600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
+			(at 72.39 55.88 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 68.5800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 68.58 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
 		(property "Datasheet" "~"
-			(at 68.5800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 68.58 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 68.58 53.34 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
 		(property "LCSC" "C25744"
-			(at 68.5800 121.9200 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(at 68.58 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
 		)
-		(pin "1" (uuid "023338e1-26ff-4f91-ad7c-7c7c7017680a"))
-		(pin "2" (uuid "18d853b7-5844-47e7-bbd7-e206939d0853"))
+		(pin "1"
+			(uuid "023338e1-26ff-4f91-ad7c-7c7c7017680a")
+		)
+		(pin "2"
+			(uuid "18d853b7-5844-47e7-bbd7-e206939d0853")
+		)
 		(instances
 			(project "calcumaker-mcu"
 				(path "/4528e592-e2a3-4b1b-b9d6-fa4a0915a29b/908a20ad-2ae3-4996-a17f-abb4e2dfd5ef"
@@ -683,16 +1152,9 @@
 			)
 		)
 	)
-	(text "QSPI FLASH  -  U7  W25Q32JVSSIQ  (LCSC C179173)\n4MB (32Mbit) quad-SPI NOR, SOIC-8, 2.7-3.6V, on the STM32U575 OCTOSPI1.\n\n  PIN  SIGNAL                                             \n    1  CS#         <-  NCS     PA4   AF3    p20  (+R9 10k)\n    6  CLK         <-  CLK     PB10  AF10   p29           \n    5  IO0 / DI    <-> IO0     PB1   AF10   p27           \n    2  IO1 / DO    <-> IO1     PB0   AF10   p26           \n    3  IO2 / WP#   <-> IO2     PA7   AF10   p23           \n    7  IO3 / HOLD# <-> IO3     PA6   AF10   p22           \n    8  VCC = +3V3   (C26 100nF at pin 8)                  \n    4  GND\n\nOCTOSPI on U5 goes through the OCTOSPI I/O manager: the GPIO AFs are\nOCTOSPIM_P1_* and OCTOSPIM routes OCTOSPI1 -> Port 1 (straight-thru).\nLQFP-64 bonds out NO Port-2 bus (ports E/F/G absent), so Port 1 is\nmandatory. On this package IO0-3 have exactly ONE pin each -- only\nCLK (PA3|PB10) and NCS (PA2|PA4|PC11) were a choice. PB10+PA4 keep\nthe whole bus in a pin 20-29 cluster and leave PA2/PA3 intact as the\nUSART2 TX/RX pair for the keyboard link. Costs SPI1_NSS(PA4)+WKUP2.\nVerified against the ST CubeMX pin DB for STM32U575RGTx / LQFP-64.\n\nKeep the 4 IO + CLK short and length-matched at layout (>=50 MHz quad).\nUse: memory-mapped XIP for constant tables + state/program storage.\n1.8V-IO variant = W25Q32JW."
-		(exclude_from_sim no)
-		(at 15.00 137.92 0)
-		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "a6f4ea2e-baba-4d09-9154-ad43d2355899")
-	)
 	(sheet_instances
 		(path "/"
 			(page "5")
 		)
 	)
-	(embedded_fonts no)
 )

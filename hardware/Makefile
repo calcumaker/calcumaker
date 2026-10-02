@@ -26,6 +26,7 @@
 # Requires kicad-cli (KiCad 9+/10) on PATH (or set KICAD_CLI).
 
 KICAD_CLI ?= kicad-cli
+PYTHON_RUN ?= uv run python
 
 # Add new PCB projects here. Calcumaker 16 is a split design: a stacked pair —
 # the MCU board (brain: MCU/PSU) with the keyboard board (Cherry MX matrix +
@@ -38,7 +39,7 @@ BOM_LABELS  := Item,Designator,Comment,Footprint,Qty,LCSC Part \#,MPN,Manufactur
 SCRIPTS_DIR := scripts
 JLC_SCRIPT  := $(SCRIPTS_DIR)/jlcpcb-package.sh
 
-.PHONY: all docs jlc clean-docs clean-jlc help
+.PHONY: all docs jlc clean-docs clean-jlc help check-wiring
 .PHONY: $(foreach p,$(PROJECTS),docs-$(p) images-$(p) bom-$(p) jlc-$(p) gen-$(p) check-$(p) render-$(p))
 
 all: docs
@@ -57,12 +58,16 @@ help:
 	@echo "  jlc-<project>      JLCPCB zip for one PCB"
 	@echo "  gen-<project>      Regenerate schematic from scripts/<project>.schgen.py"
 	@echo "  check-<project>    Sanity-check schematic (comps/footprints/dups/ERC)"
+	@echo "  check-wiring       Verify MCU/keypad nets and reviewed ERC results"
 	@echo "  render-<project>   Render schematic sheets to PNG for visual review"
 	@echo "  clean-docs         Remove generated docs"
 	@echo "  clean-jlc          Remove generated JLCPCB packages"
 
 docs: $(foreach p,$(PROJECTS),docs-$(p))
 jlc:  $(foreach p,$(PROJECTS),jlc-$(p))
+
+check-wiring:
+	@KICAD_CLI=$(KICAD_CLI) $(PYTHON_RUN) $(SCRIPTS_DIR)/check-wiring.py
 
 clean-docs:
 	$(foreach p,$(PROJECTS), rm -rf $(p)/docs/images && rm -f $(p)/jlcpcb_bom.csv ;)
@@ -122,11 +127,11 @@ jlc-$(1): $$(JLC_SCRIPT) $$($(1)_PCB) $$($(1)_SCH)
 # Regenerate the schematic from its data manifest (placed, not wired).
 gen-$(1): $(SCRIPTS_DIR)/$(1).schgen.py
 	@echo "[$(1)] generating schematic from manifest"
-	python3 $(SCRIPTS_DIR)/$(1).schgen.py
+	$$(PYTHON_RUN) $(SCRIPTS_DIR)/$(1).schgen.py
 
 # Sanity-check the schematic: component count, footprints, dup refs, ERC tally.
 check-$(1): $$($(1)_SCH)
-	@KICAD_CLI=$$(KICAD_CLI) python3 $(SCRIPTS_DIR)/kicad-sch-check.py $$($(1)_SCH)
+	@KICAD_CLI=$$(KICAD_CLI) $$(PYTHON_RUN) $(SCRIPTS_DIR)/kicad-sch-check.py $$($(1)_SCH)
 
 # Render every sheet to PNG for a quick visual review.
 render-$(1): $$($(1)_SCH)

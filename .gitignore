@@ -1,6 +1,7 @@
 # KiCad backup/autosave/lock
 *.kicad_prl
 *-backups/
+hardware/*/.history/
 _autosave-*
 *.bak
 *~

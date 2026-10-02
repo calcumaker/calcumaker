@@ -32,19 +32,19 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
   display-IF + a **keyboard mezzanine** (J5). (Renamed from `calcumaker-main`
   2026-07-05 when the keyboard split off.)
 - `hardware/calcumaker-keyboard/` — the front-panel board that **mezzanine-stacks
-  above** the MCU board: the 50-key Cherry MX matrix + per-key diodes + the
+  above** the MCU board: the 49-key Cherry MX matrix + per-key diodes + the
   annunciator LEDs + the mating mezzanine header (J1). A dense LQFP-64 and 50
   through-hole keys don't share a PCB.
 - `hardware/calcumaker-display/` — 7-seg stack (2–3 rows) + driver + interconnect
   (angled PCB, cabled to the MCU board; the display bus + power cross the
   connector). This one is **fully wired** as a KiCad multi-channel design (row ×3).
-- Each board's schematic is **generated from its own data manifest**
-  (`hardware/scripts/calcumaker-{mcu,keyboard,display}.schgen.py`), not
-  hand-authored, then **placed, not wired** — wiring happens in eeschema using the
-  per-sheet notes. Exceptions are **multi-channel** and fully wired: the display
-  (row ×3) and the **keyboard 5×10 matrix + per-key RGB** (reusable 10-key
-  `key_row` ×5). Regenerating placed-not-wired boards needs `KSCHGEN_FORCE=1`
-  (kschgen keeps existing `.kicad_sch` to protect manual wiring).
+- MCU and keyboard schematics are **wired and maintained directly in KiCad**.
+  Read `hardware/WIRING_REVIEW.md` for pin assignments and remaining physical checks;
+  run `make -C hardware check-wiring` for expanded netlist assertions and ERC.
+  The keyboard has 49 keys: `key_row` ×4 plus `key_row_9` for Row4. The display
+  uses row ×3. The `hardware/scripts/*.schgen.py` manifests are earlier drafts;
+  **do not force regeneration over the committed wiring**. Kschgen's existing-file
+  guard protects these edits.
   - All manifests are **DRAFTs** with a guard (`CALCUMAKER_SCHGEN_DRAFT_OK=1`)
     pending the open part/layout items. Don't generate until those are resolved.
 - Custom parts (Cherry MX footprints, display modules, MCU package if unbundled)

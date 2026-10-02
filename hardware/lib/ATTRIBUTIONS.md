@@ -37,6 +37,7 @@ sed -i 's|\${KICAD.*_3RD_PARTY}/3dmodels/.*/|\${KIPRJMOD}/../lib/3dmodels/|' \
 | **FJ5161AH** (0.56" single-digit 7-seg, CC) | ✅ `calcumaker:FJ5161AH` (authored) | stdlib (`LTS6760` land) | stdlib | in-house, from the vendor datasheet | own work |
 | **ST TCPP01-M12** (USB-C port protection) | ✅ `calcumaker:TCPP01-M12` (authored) | stdlib `Package_DFN_QFN:QFN-12-1EP_3x3mm_P0.5mm_EP1.45x1.45mm_ThermalVias` | stdlib | in-house, from **ST DS12900 rev 4** — pinout Table 1; package Table 15 (D=E=3.00, e=0.50, EP D2=E2=1.45) | own work |
 | **ADI MAX17048** (1-cell fuel gauge) | ✅ `calcumaker:MAX17048` (authored) | stdlib `Package_DFN_QFN:TDFN-8-1EP_2x2mm_P0.5mm_EP0.8x1.2mm` | stdlib | in-house, from the ADI datasheet pinout; **independently cross-checked against sibling repo `notchdeck`** (same symbol + footprint) | own work |
+| **ST STM32G031K8U6** | ✅ `calcumaker:STM32G031K8U6` (derived) | stdlib UFQFPN-32 | stdlib | KiCad 10 `MCU_ST_STM32G0:STM32G031K8Ux`, corrected dedicated PA9/pad19 and PA10/pad21 using [ST DS12992 rev 4, Table 12/Figure 8](https://www.st.com/resource/en/datasheet/stm32g031k8.pdf); EP33 remains GND | CC-BY-SA-4.0 with KiCad library exception |
 | **XINGLIGHT XL-1010RGBC-2812B-S** (C51900942, 1010 addressable RGB) | stdlib `LED:SK6812` (pad-compatible) | ✅ `LED_XL1010RGBC_1.0x1.0mm.kicad_mod` (authored) | ☐ none | in-house, from the XINGLIGHT datasheet | own work |
 | Everything else | stdlib | stdlib | stdlib | KiCad standard libraries | CC-BY-SA-4.0 w/ library exception |
 

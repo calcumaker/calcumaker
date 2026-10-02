@@ -4,8 +4,8 @@ KiCad 10 design for the **Calcumaker 16** programmer's / technical RPN
 calculator. **Split design** — three PCBs (two stacked, one cabled):
 
 - **`calcumaker-mcu/`** — the brain/PSU board: MCU (STM32U575RGT6), PSU (USB-C
-  charge + buck-boost), clock, SWD, the display 5V rail + level shifter +
-  interconnect, and a fine-pitch mezzanine up to the keyboard board. *Bottom of
+  charge + buck-boost), clock, SWD, the display interconnect (its 5V rail and
+  level shifter live on the display module), and a mezzanine to the keyboard. *Bottom of
   the stack.*
 - **`calcumaker-keyboard/`** — the front-panel board: the 49-key Cherry MX matrix (2U ENTER)
   + per-key diodes + the annunciator LEDs + the mating mezzanine header.
@@ -19,6 +19,12 @@ calculator. **Split design** — three PCBs (two stacked, one cabled):
 See `../DESIGN.md` for the full design and `scripts/README.md` for the
 schematic-generation flow. Build docs/BOMs/fab packages with the `Makefile`
 (`make help`).
+
+The MCU and keyboard schematics are wired and verified with KiCad 10.0.6.
+Run `make check-wiring` for electrical net assertions and ERC validation.
+See [WIRING_REVIEW.md](WIRING_REVIEW.md) for the pin maps, reviewed ERC warning,
+power corrections, and remaining physical validation. Edit the schematics
+directly; forcing the older placement manifests would discard this wiring.
 
 ## Library
 

@@ -13,6 +13,7 @@
 #   make jlc-<project>      JLCPCB zip for one PCB
 #   make gen-<project>      regenerate schematic from scripts/<project>.schgen.py
 #   make check-<project>    sanity-check schematic (comps/footprints/dups/ERC)
+#   make keyboard-plate    export keyboard plate cuts + annotated reference SVG
 #   make render-<project>   render schematic sheets to PNG for visual review
 #   make clean-docs         remove generated images and BOMs
 #   make clean-jlc          remove generated JLCPCB packages
@@ -39,7 +40,7 @@ BOM_LABELS  := Item,Designator,Comment,Footprint,Qty,LCSC Part \#,MPN,Manufactur
 SCRIPTS_DIR := scripts
 JLC_SCRIPT  := $(SCRIPTS_DIR)/jlcpcb-package.sh
 
-.PHONY: all docs jlc clean-docs clean-jlc help check-wiring
+.PHONY: all docs jlc clean-docs clean-jlc help check-wiring keyboard-plate
 .PHONY: $(foreach p,$(PROJECTS),docs-$(p) images-$(p) bom-$(p) jlc-$(p) gen-$(p) check-$(p) render-$(p))
 
 all: docs
@@ -59,6 +60,7 @@ help:
 	@echo "  gen-<project>      Regenerate schematic from scripts/<project>.schgen.py"
 	@echo "  check-<project>    Sanity-check schematic (comps/footprints/dups/ERC)"
 	@echo "  check-wiring       Verify MCU/keypad nets and reviewed ERC results"
+	@echo "  keyboard-plate     Export plate-only DXF and annotated keyboard plate SVG"
 	@echo "  render-<project>   Render schematic sheets to PNG for visual review"
 	@echo "  clean-docs         Remove generated docs"
 	@echo "  clean-jlc          Remove generated JLCPCB packages"
@@ -68,6 +70,18 @@ jlc:  $(foreach p,$(PROJECTS),jlc-$(p))
 
 check-wiring:
 	@KICAD_CLI=$(KICAD_CLI) $(PYTHON_RUN) $(SCRIPTS_DIR)/check-wiring.py
+
+# Mechanical plate is a separate part. Suppress PCB drill marks in both exports.
+# User.1 is Plate.Cuts; User.2/3/4 add keycaps, dimensions and placement notes.
+keyboard-plate: calcumaker-keyboard/calcumaker-keyboard.kicad_pcb
+	@mkdir -p calcumaker-keyboard/mechanical
+	$(KICAD_CLI) pcb export dxf --layers User.1 --mode-single \
+	    --output-units mm --drill-shape-opt 0 --exclude-refdes --exclude-value \
+	    -o calcumaker-keyboard/mechanical/keyboard-plate.dxf $<
+	$(KICAD_CLI) pcb export svg --layers User.1,User.2,User.3,User.4 \
+	    --mode-single --exclude-drawing-sheet --drill-shape-opt 0 --black-and-white \
+	    -o calcumaker-keyboard/mechanical/keyboard-plate-reference.svg $<
+	@$(PYTHON_RUN) -c 'from pathlib import Path; p = Path("calcumaker-keyboard/mechanical/keyboard-plate-reference.svg"); p.write_text("\n".join(line.rstrip() for line in p.read_text().splitlines()) + "\n")'
 
 clean-docs:
 	$(foreach p,$(PROJECTS), rm -rf $(p)/docs/images && rm -f $(p)/jlcpcb_bom.csv ;)

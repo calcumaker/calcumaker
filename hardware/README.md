@@ -31,6 +31,11 @@ The MCU board also has a [provisional PCB floor plan](calcumaker-mcu/FLOORPLAN.m
 outline for the cabled configuration. It is unrouted; the placement review records
 the remaining mechanical and fabrication-rule decisions.
 
+The keyboard has a [PCB and mechanical plate floor plan](calcumaker-keyboard/FLOORPLAN.md)
+with 49 key-cell groups, local RGB bypasses, a centered vertical 2U ENTER and
+dedicated `Plate.Cuts`, `Keycaps` and mechanical annotation layers. Run
+`make keyboard-plate` to export the separate plate DXF and reference SVG.
+
 ## Library
 
 `lib/{symbols,footprints.pretty,3dmodels}` holds project-specific parts (shared

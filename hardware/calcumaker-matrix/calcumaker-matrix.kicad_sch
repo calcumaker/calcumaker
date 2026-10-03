@@ -13,219 +13,609 @@
 		(comment 2 "RGB dot-matrix display module: 96x24 1mm WS2812 (cluster->row->board) + RP2040 + unified SPI (DRAFT)")
 	)
 	(lib_symbols)
-	(sheet
-		(at 15.2400 25.4000)
-		(size 76.2000 25.4000)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3021")
-		(property "Sheetname" "Row1"
-			(at 15.2400 24.1300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_row.kicad_sch"
-			(at 15.2400 52.0700 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 15.2400 33.0200 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "2213624c-5f93-495c-ac87-a6f54acfef55")
-		)
-		(pin "DOUT" output
-			(at 91.4400 40.6400 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "4fbc6c0c-1dc8-4e3e-8992-375f1f43200e")
-		)
-	)
-	(sheet
-		(at 15.2400 60.9600)
-		(size 76.2000 25.4000)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3022")
-		(property "Sheetname" "Row2"
-			(at 15.2400 59.6900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_row.kicad_sch"
-			(at 15.2400 87.6300 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 15.2400 68.5800 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "fcbbfd87-0fa6-4fd3-9705-ccdc4a484679")
-		)
-		(pin "DOUT" output
-			(at 91.4400 76.2000 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "00400c7f-b8e2-478f-bc35-0e6f3d68e192")
-		)
-	)
-	(sheet
-		(at 15.2400 96.5200)
-		(size 76.2000 25.4000)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3023")
-		(property "Sheetname" "Row3"
-			(at 15.2400 95.2500 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_row.kicad_sch"
-			(at 15.2400 123.1900 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 15.2400 104.1400 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "d8b9a01c-77b2-46c5-9082-80445f46055d")
-		)
-		(pin "DOUT" output
-			(at 91.4400 111.7600 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "7d972c39-778b-467d-af0f-b9a7e99158d5")
-		)
-	)
-	(sheet
-		(at 15.2400 137.1600)
-		(size 76.2000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3200")
-		(property "Sheetname" "RP2040"
-			(at 15.2400 135.8900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "rp2040.kicad_sch"
-			(at 15.2400 158.7500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 106.6800 137.1600)
-		(size 76.2000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3210")
-		(property "Sheetname" "RGBPower"
-			(at 106.6800 135.8900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "rgb_power.kicad_sch"
-			(at 106.6800 158.7500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 198.1200 137.1600)
-		(size 76.2000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3220")
-		(property "Sheetname" "MatrixIF"
-			(at 198.1200 135.8900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "matrix_if.kicad_sch"
-			(at 198.1200 158.7500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 289.5600 137.1600)
-		(size 76.2000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3230")
-		(property "Sheetname" "AuxOLED"
-			(at 289.5600 135.8900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "aux-oled.kicad_sch"
-			(at 289.5600 158.7500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(wire (pts (xy 15.2400 33.0200) (xy 10.1600 33.0200))
-		(stroke (width 0) (type default))
-		(uuid "33088956-ae63-41b2-970d-53041fd2f09a")
-	)
-	(global_label "CH1_DATA"
-		(shape input)
-		(at 10.1600 33.0200 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "c26c88fd-14e2-4a94-9ac5-481769078d06")
-	)
-	(wire (pts (xy 91.4400 40.6400) (xy 96.5200 40.6400))
-		(stroke (width 0) (type default))
-		(uuid "7473fe02-19b8-4273-93d9-f9d3cbc1c4f2")
-	)
-	(global_label "CH1_END"
-		(shape output)
-		(at 96.5200 40.6400 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "3fe1b076-306b-4fdf-baf2-65abe3593a4e")
-	)
-	(wire (pts (xy 15.2400 68.5800) (xy 10.1600 68.5800))
-		(stroke (width 0) (type default))
-		(uuid "0423e0ef-301e-4591-ad51-fb7ed53cce5f")
-	)
-	(global_label "CH2_DATA"
-		(shape input)
-		(at 10.1600 68.5800 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "f37c0e8c-d026-406b-8041-5589d01ebbbf")
-	)
-	(wire (pts (xy 91.4400 76.2000) (xy 96.5200 76.2000))
-		(stroke (width 0) (type default))
-		(uuid "ee84a3a2-18e4-4ad3-b3ad-80d1ebb0e6b3")
-	)
-	(global_label "CH2_END"
-		(shape output)
-		(at 96.5200 76.2000 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "5a41aa7d-469b-421e-b887-8e8c1bbcceea")
-	)
-	(wire (pts (xy 15.2400 104.1400) (xy 10.1600 104.1400))
-		(stroke (width 0) (type default))
-		(uuid "05c9ea97-45ab-4d10-ba13-7f2193dbd853")
-	)
-	(global_label "CH3_DATA"
-		(shape input)
-		(at 10.1600 104.1400 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "1b88eb25-8eb9-43de-a90c-ea1e29456152")
-	)
-	(wire (pts (xy 91.4400 111.7600) (xy 96.5200 111.7600))
-		(stroke (width 0) (type default))
-		(uuid "ce4f24dc-1ae8-4e50-9af1-1dc6606d6d59")
-	)
-	(global_label "CH3_END"
-		(shape output)
-		(at 96.5200 111.7600 0)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "6e0de99a-193a-4c2b-8dff-3448f797af01")
-	)
 	(text "Calcumaker 16 - RGB Matrix (NESTED MULTI-CHANNEL: cluster -> row -> board).\nRow1..Row3 = 3 instances of led_row.kicad_sch; each led_row = 12 instances\nof led_cluster.kicad_sch (8x8 = 64x XL-1010). Grid 96x24 = 2304 px. Shared\nglobals VLED (gated) / GND; DIN/DOUT are hier pins chained cluster->cluster\nthen row->row: CHr_DATA -> Row_r -> CHr_END. RP2040 PIO drives 3 data lines\nvia RGBPower's quad shifter; RGBPower gates VLED off in sleep. Wire the\none-off sheets in eeschema. Same unified SPI connector as the 7-seg board."
 		(exclude_from_sim no)
 		(at 15.24 167.64 0)
-		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
+		(effects
+			(font
+				(face "Courier New")
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
 		(uuid "00e0af3a-e05f-4535-93a5-ae87c06cdc49")
+	)
+	(wire
+		(pts
+			(xy 15.24 68.58)
+			(xy 10.16 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0423e0ef-301e-4591-ad51-fb7ed53cce5f")
+	)
+	(wire
+		(pts
+			(xy 15.24 104.14)
+			(xy 10.16 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "05c9ea97-45ab-4d10-ba13-7f2193dbd853")
+	)
+	(wire
+		(pts
+			(xy 15.24 33.02)
+			(xy 10.16 33.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33088956-ae63-41b2-970d-53041fd2f09a")
+	)
+	(wire
+		(pts
+			(xy 91.44 40.64)
+			(xy 96.52 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7473fe02-19b8-4273-93d9-f9d3cbc1c4f2")
+	)
+	(wire
+		(pts
+			(xy 91.44 111.76)
+			(xy 96.52 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ce4f24dc-1ae8-4e50-9af1-1dc6606d6d59")
+	)
+	(wire
+		(pts
+			(xy 91.44 76.2)
+			(xy 96.52 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ee84a3a2-18e4-4ad3-b3ad-80d1ebb0e6b3")
+	)
+	(global_label "CH3_DATA"
+		(shape input)
+		(at 10.16 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1b88eb25-8eb9-43de-a90c-ea1e29456152")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 22.3376 104.14 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "CH1_END"
+		(shape output)
+		(at 96.52 40.64 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3fe1b076-306b-4fdf-baf2-65abe3593a4e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 108.0323 40.64 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "CH2_END"
+		(shape output)
+		(at 96.52 76.2 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "5a41aa7d-469b-421e-b887-8e8c1bbcceea")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 108.0323 76.2 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "CH3_END"
+		(shape output)
+		(at 96.52 111.76 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "6e0de99a-193a-4c2b-8dff-3448f797af01")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 108.0323 111.76 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "CH1_DATA"
+		(shape input)
+		(at 10.16 33.02 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c26c88fd-14e2-4a94-9ac5-481769078d06")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 22.3376 33.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "CH2_DATA"
+		(shape input)
+		(at 10.16 68.58 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f37c0e8c-d026-406b-8041-5589d01ebbbf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 22.3376 68.58 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(sheet
+		(at 15.24 25.4)
+		(size 76.2 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3021")
+		(property "Sheetname" "Row1"
+			(at 15.24 24.13 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_row.kicad_sch"
+			(at 15.24 52.07 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 15.24 33.02 180)
+			(uuid "2213624c-5f93-495c-ac87-a6f54acfef55")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 91.44 40.64 0)
+			(uuid "4fbc6c0c-1dc8-4e3e-8992-375f1f43200e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 15.24 60.96)
+		(size 76.2 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3022")
+		(property "Sheetname" "Row2"
+			(at 15.24 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_row.kicad_sch"
+			(at 15.24 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 15.24 68.58 180)
+			(uuid "fcbbfd87-0fa6-4fd3-9705-ccdc4a484679")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 91.44 76.2 0)
+			(uuid "00400c7f-b8e2-478f-bc35-0e6f3d68e192")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "15")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 15.24 96.52)
+		(size 76.2 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3023")
+		(property "Sheetname" "Row3"
+			(at 15.24 95.25 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_row.kicad_sch"
+			(at 15.24 123.19 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 15.24 104.14 180)
+			(uuid "d8b9a01c-77b2-46c5-9082-80445f46055d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 91.44 111.76 0)
+			(uuid "7d972c39-778b-467d-af0f-b9a7e99158d5")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "28")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 15.24 137.16)
+		(size 76.2 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3200")
+		(property "Sheetname" "RP2040"
+			(at 15.24 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "rp2040.kicad_sch"
+			(at 15.24 158.75 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "41")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 106.68 137.16)
+		(size 76.2 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3210")
+		(property "Sheetname" "RGBPower"
+			(at 106.68 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "rgb_power.kicad_sch"
+			(at 106.68 158.75 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "42")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 198.12 137.16)
+		(size 76.2 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3220")
+		(property "Sheetname" "MatrixIF"
+			(at 198.12 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "matrix_if.kicad_sch"
+			(at 198.12 158.75 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "43")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 289.56 137.16)
+		(size 76.2 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3230")
+		(property "Sheetname" "AuxOLED"
+			(at 289.56 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "aux-oled.kicad_sch"
+			(at 289.56 158.75 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001"
+					(page "44")
+				)
+			)
+		)
 	)
 	(sheet_instances
 		(path "/"

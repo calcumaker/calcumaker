@@ -274,7 +274,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "0.1"
+      "sch_revision": "0.2"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -675,7 +675,7 @@
       "intersheets_ref_own_page": false,
       "intersheets_ref_prefix": "",
       "intersheets_ref_short": false,
-      "intersheets_ref_show": true,
+      "intersheets_ref_show": false,
       "intersheets_ref_suffix": "",
       "junction_size_choice": 3,
       "label_size_ratio": 0.375,
@@ -708,7 +708,7 @@
       {
         "filename": "calcumaker-display.kicad_sch",
         "name": "",
-        "uuid": "500fd649-6ac4-4c35-8c31-afee91bdf563"
+        "uuid": "ca1c0000-0000-4000-8000-0000000d1501"
       }
     ],
     "used_designators": "",
@@ -717,7 +717,7 @@
   "sheets": [
     [
       "ca1c0000-0000-4000-8000-0000000d1501",
-      "calcumaker-display"
+      ""
     ],
     [
       "ca1c0000-0000-4000-8000-0000000d1511",

@@ -22,6 +22,15 @@ Add `*.kicad_mod` files here and register them via `../../fp-lib-table` /
 
 ## Vendored
 
+- **`LED_XL1010RGBC_1.0x1.0mm.kicad_mod`** — authored from the XINGLIGHT
+  XL-1010RGBC-2812B-S drawing (see attribution), corrected 2026-10-02.
+  Pads are 0.45 mm squares at (±0.425, ±0.425) mm. At zero rotation, top view:
+  GND/pad1 lower-left, DIN/pad2 lower-right, VDD/pad3 upper-right, DOUT/pad4
+  upper-left. Numbers follow the SK6812 logical symbol, not vendor numbering.
+  The 1.50 mm courtyard enables the proposed 1.50 mm matrix pitch; manufacturing
+  qualification remains necessary. Pin orientation is on F.Fab, with no tiny
+  silkscreen marker between adjacent pixels. No 3D model is supplied.
+
 - **`SW_MX_HS_CPG151101S11_1u.kicad_mod`** — the keyswitch **hot-swap** footprint
   (Kailh CPG151101S11 socket). From
   [ebastler/marbastlib](https://github.com/ebastler/marbastlib) (**CERN-OHL-P**);

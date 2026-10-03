@@ -11,12 +11,13 @@ repos). Driven via the `Makefile` (preferred) or run directly. All locate
 | `kschgen.py` | — | Generic generation engine imported by the `*.schgen.py` manifests. |
 | `kicad-sch-check.py` | `make check-<project>` | Sanity-check a schematic: component count, missing footprints, duplicate refs, ERC tally. Exits non-zero on a structural problem. |
 | `check-wiring.py` | `make check-wiring` | Export MCU/keypad netlists; verify connector parity, matrix polarity, LED chain, MCU/power/debug nets and reviewed ERC results. Fails on unexpected ERC violations. |
+| `check-display-wiring.py` | `make check-display-wiring` | Verify all 48 digits, 2,304 pixels, 288 pixel bypasses, supply separation, USB, host interface, boot/debug nets and reviewed ERC results. |
 | `kicad-sch-render.sh` | `make render-<project>` | Render schematic sheet(s) to PNG for a quick visual review. |
 | `jlcpcb-package.sh` | `make jlc-<project>` | Gerbers + drill + BOM + CPL → JLCPCB zip. |
 
 ## Generating a schematic from a manifest
 
-**The committed MCU/keypad schematics are now wired and authoritative.** The
+**All four boards' committed schematics are now wired and authoritative.** The
 manifests below retain the earlier placement draft; do not force regeneration
 over the edited sheets. See [the wiring review](../WIRING_REVIEW.md).
 Make targets use `uv run python` (`PYTHON_RUN` can override it).

@@ -10,548 +10,1363 @@
 		(rev "0.1")
 		(company "calcumaker authors")
 	)
-	(lib_symbols
-	)
-	(sheet
-		(at 15.2400 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3030")
-		(property "Sheetname" "Cluster1"
-			(at 15.2400 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(lib_symbols)
+	(text "REUSABLE ROW  (led_row.kicad_sch)  -  instantiated x3 at the root (Row1-3)\n= 12x led_cluster chained DIN -> Cluster1 -> ... -> Cluster12 -> DOUT.\n96 x 8 px = 768 LEDs = one WS2812 data chain (one RP2040 PIO line).\nVLED / GND are global nets (shared everywhere); only DIN/DOUT are hier."
+		(exclude_from_sim no)
+		(at 15.24 101.6 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 1.27 1.27)
+			)
+			(justify left top)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 15.2400 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(uuid "628eab94-44bd-4806-8883-60c00b8b79aa")
+	)
+	(wire
+		(pts
+			(xy 218.44 71.12) (xy 223.52 71.12)
 		)
-		(pin "DIN" input
-			(at 15.2400 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "360eda76-5af1-4922-95e3-816f555f72a2")
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DOUT" output
-			(at 40.6400 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "02b8d100-3452-4ed3-8a6d-ef46cf81c020")
-		)
-	)
-	(wire (pts (xy 15.2400 60.9600) (xy 10.1600 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "1d5e3375-b594-43d3-a543-5f9d4dd0bab8")
-	)
-	(hierarchical_label "DIN"
-		(shape input)
-		(at 10.1600 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "b504e3d2-5339-4e37-a06c-01f42990c1fc")
-	)
-	(wire (pts (xy 40.6400 71.1200) (xy 45.7200 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "a4f1c91a-a858-412a-a558-fa30a953b552")
-	)
-	(label "RC1"
-		(at 45.7200 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "50f7b6df-2dfe-4c34-a83b-e68c289c7157")
-	)
-	(sheet
-		(at 50.8000 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3031")
-		(property "Sheetname" "Cluster2"
-			(at 50.8000 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 50.8000 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 50.8000 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "cd99949a-0704-4497-abab-0e84787c575d")
-		)
-		(pin "DOUT" output
-			(at 76.2000 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "3fd2dfbc-eddb-42de-868e-08cef7a1955f")
-		)
-	)
-	(wire (pts (xy 50.8000 60.9600) (xy 45.7200 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "090adea4-dc1a-4a05-a2d5-a910c0ba31aa")
-	)
-	(label "RC1"
-		(at 45.7200 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "4a5fcdf6-3e2e-4cbd-9806-05bad6106629")
-	)
-	(wire (pts (xy 76.2000 71.1200) (xy 81.2800 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "4335cbd6-5f47-4515-ad81-f951c9a785e9")
-	)
-	(label "RC2"
-		(at 81.2800 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "b29b19df-0ce5-4f99-8199-e6e558977e08")
-	)
-	(sheet
-		(at 86.3600 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3032")
-		(property "Sheetname" "Cluster3"
-			(at 86.3600 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 86.3600 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 86.3600 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "216dd569-8957-434b-96cf-84dce4d0dbb4")
-		)
-		(pin "DOUT" output
-			(at 111.7600 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "8be88def-9948-42b9-a7e4-2792ca8403cb")
-		)
-	)
-	(wire (pts (xy 86.3600 60.9600) (xy 81.2800 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "dc6be2b1-34ad-4131-b73a-920672d5d4c8")
-	)
-	(label "RC2"
-		(at 81.2800 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "16b51119-4707-4750-88cd-5426c5629f1b")
-	)
-	(wire (pts (xy 111.7600 71.1200) (xy 116.8400 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "693b87b2-bf6e-4859-b0ec-da0495a0de79")
-	)
-	(label "RC3"
-		(at 116.8400 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "74fa7ee6-43f3-419f-91b0-5b9e414bfcf0")
-	)
-	(sheet
-		(at 121.9200 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3033")
-		(property "Sheetname" "Cluster4"
-			(at 121.9200 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 121.9200 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 121.9200 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "4b12e24f-44cf-4489-81d4-0cf8ea60789c")
-		)
-		(pin "DOUT" output
-			(at 147.3200 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "b84bbaab-da1c-4ddd-95d4-69e1225758fb")
-		)
-	)
-	(wire (pts (xy 121.9200 60.9600) (xy 116.8400 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "8fa83143-2ff5-449a-8d73-904d9fbfa411")
-	)
-	(label "RC3"
-		(at 116.8400 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "cb37ba5d-20fc-41c1-9870-36dd01ca86d4")
-	)
-	(wire (pts (xy 147.3200 71.1200) (xy 152.4000 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "d35e88f8-766d-4bf5-8d2c-25a1501a30db")
-	)
-	(label "RC4"
-		(at 152.4000 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "afed0b81-3a30-47da-87b7-172972380b34")
-	)
-	(sheet
-		(at 157.4800 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3034")
-		(property "Sheetname" "Cluster5"
-			(at 157.4800 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 157.4800 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 157.4800 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "cd7a2f75-64eb-4407-8b4b-c80e6bce7a0d")
-		)
-		(pin "DOUT" output
-			(at 182.8800 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "e2d13bcc-dc3c-4f5e-9e55-713a863caf41")
-		)
-	)
-	(wire (pts (xy 157.4800 60.9600) (xy 152.4000 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "2deec463-f04f-4aa4-a5f1-1b6af735def7")
-	)
-	(label "RC4"
-		(at 152.4000 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "41ced2c9-aa35-41d5-abe1-43bf2de44b87")
-	)
-	(wire (pts (xy 182.8800 71.1200) (xy 187.9600 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "6b99d968-c9c1-488b-8323-e7336626ebe6")
-	)
-	(label "RC5"
-		(at 187.9600 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "978a26d5-e799-49bc-b4b8-b92d8c4317eb")
-	)
-	(sheet
-		(at 193.0400 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3035")
-		(property "Sheetname" "Cluster6"
-			(at 193.0400 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 193.0400 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 193.0400 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "e644448a-145b-49cf-b439-033aa5d5db5c")
-		)
-		(pin "DOUT" output
-			(at 218.4400 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "3610c4b0-5413-481b-bbe2-969822905c68")
-		)
-	)
-	(wire (pts (xy 193.0400 60.9600) (xy 187.9600 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "11a4de86-f75a-4a33-8a7e-dd1e3f65d961")
-	)
-	(label "RC5"
-		(at 187.9600 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "5763422d-7d8e-4f5a-a84c-dcbe2e786121")
-	)
-	(wire (pts (xy 218.4400 71.1200) (xy 223.5200 71.1200))
-		(stroke (width 0) (type default))
 		(uuid "000a959f-613b-42c5-837d-26dca9e5c077")
 	)
-	(label "RC6"
-		(at 223.5200 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "cff67600-5ec1-41a0-b5f4-bfbf57cc5349")
-	)
-	(sheet
-		(at 228.6000 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3036")
-		(property "Sheetname" "Cluster7"
-			(at 228.6000 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 50.8 60.96) (xy 45.72 60.96)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 228.6000 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 228.6000 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "82ca8964-fd50-49b9-ac9b-83a17ba13654")
+		(uuid "090adea4-dc1a-4a05-a2d5-a910c0ba31aa")
+	)
+	(wire
+		(pts
+			(xy 289.56 71.12) (xy 294.64 71.12)
 		)
-		(pin "DOUT" output
-			(at 254.0000 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "dda5e115-faf6-4ed3-85dc-fa7f3305dfe9")
+		(stroke
+			(width 0)
+			(type default)
 		)
-	)
-	(wire (pts (xy 228.6000 60.9600) (xy 223.5200 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "865364ee-a781-4c53-8951-35dc80204494")
-	)
-	(label "RC6"
-		(at 223.5200 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "243bccad-6731-4adc-b8cf-fc475cd0f4c8")
-	)
-	(wire (pts (xy 254.0000 71.1200) (xy 259.0800 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "6099e6ba-c007-4899-8ecc-fcc550bc438e")
-	)
-	(label "RC7"
-		(at 259.0800 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "75bd8ed6-0774-4fe4-8041-05040509fbfb")
-	)
-	(sheet
-		(at 264.1600 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3037")
-		(property "Sheetname" "Cluster8"
-			(at 264.1600 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 264.1600 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 264.1600 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "97a9d72b-0dd5-43db-a374-0948b3ff9c2d")
-		)
-		(pin "DOUT" output
-			(at 289.5600 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "83a73414-f63d-4b94-aa44-c10c88730c3f")
-		)
-	)
-	(wire (pts (xy 264.1600 60.9600) (xy 259.0800 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "df1001c1-ea6d-4758-98f0-f73324d5a8ea")
-	)
-	(label "RC7"
-		(at 259.0800 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "8f775f27-bfc8-4cdc-a7ec-e21e1fe4ed5c")
-	)
-	(wire (pts (xy 289.5600 71.1200) (xy 294.6400 71.1200))
-		(stroke (width 0) (type default))
 		(uuid "09e64564-36ca-4865-8927-636839390528")
 	)
-	(label "RC8"
-		(at 294.6400 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "e01f92a3-f1e3-4fe7-aad1-e4185b81c961")
+	(wire
+		(pts
+			(xy 431.8 71.12) (xy 436.88 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f46651d-c5ab-4842-8b2f-9d8003e7b1d7")
 	)
-	(sheet
-		(at 299.7200 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3038")
-		(property "Sheetname" "Cluster9"
-			(at 299.7200 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 193.04 60.96) (xy 187.96 60.96)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 299.7200 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 299.7200 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "6ac2ced9-5c7d-44e8-b0b9-0028852363e8")
-		)
-		(pin "DOUT" output
-			(at 325.1200 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "9d6b0d3a-7f36-44eb-b528-fcdb599d9e51")
-		)
+		(uuid "11a4de86-f75a-4a33-8a7e-dd1e3f65d961")
 	)
-	(wire (pts (xy 299.7200 60.9600) (xy 294.6400 60.9600))
-		(stroke (width 0) (type default))
+	(wire
+		(pts
+			(xy 299.72 60.96) (xy 294.64 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
 		(uuid "18953cb0-87f6-4154-a81b-e6dc6931f554")
 	)
-	(label "RC8"
-		(at 294.6400 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "ceac075d-138a-48e2-9fdb-7f086a0f2d62")
-	)
-	(wire (pts (xy 325.1200 71.1200) (xy 330.2000 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "535014ad-be0a-460f-a3ec-afcef1bf43d6")
-	)
-	(label "RC9"
-		(at 330.2000 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "53b0eb43-36b7-4056-b08e-30ffc658cef8")
-	)
-	(sheet
-		(at 335.2800 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d3039")
-		(property "Sheetname" "Cluster10"
-			(at 335.2800 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 15.24 60.96) (xy 10.16 60.96)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 335.2800 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 335.2800 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "5fa3f77c-98b7-4612-93fa-642ab1a7873f")
-		)
-		(pin "DOUT" output
-			(at 360.6800 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "1eee2ee1-ef47-4b39-afaf-ecb202eb5e29")
-		)
+		(uuid "1d5e3375-b594-43d3-a543-5f9d4dd0bab8")
 	)
-	(wire (pts (xy 335.2800 60.9600) (xy 330.2000 60.9600))
-		(stroke (width 0) (type default))
+	(wire
+		(pts
+			(xy 335.28 60.96) (xy 330.2 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
 		(uuid "2817f2ed-94ec-455f-a57e-39d8f22a5442")
 	)
-	(label "RC9"
-		(at 330.2000 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "2ecc3fb2-cf6d-4b91-a0f1-83bd3e49eeac")
-	)
-	(wire (pts (xy 360.6800 71.1200) (xy 365.7600 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "f1573c7b-bdd0-4033-aa99-fc34cc6dc8fa")
-	)
-	(label "RC10"
-		(at 365.7600 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "9a698076-a94e-4cfc-bcc3-cfa588011bd0")
-	)
-	(sheet
-		(at 370.8400 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d303a")
-		(property "Sheetname" "Cluster11"
-			(at 370.8400 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 157.48 60.96) (xy 152.4 60.96)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 370.8400 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 370.8400 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "1bef013c-9c6d-474d-8c13-a5f7b32481e8")
-		)
-		(pin "DOUT" output
-			(at 396.2400 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "11f877ef-b0f1-4c2e-a2d0-d1b1ac078fbc")
-		)
+		(uuid "2deec463-f04f-4aa4-a5f1-1b6af735def7")
 	)
-	(wire (pts (xy 370.8400 60.9600) (xy 365.7600 60.9600))
-		(stroke (width 0) (type default))
-		(uuid "4a38a427-03c2-4745-8e5d-711d404a8b98")
-	)
-	(label "RC10"
-		(at 365.7600 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "f19b6402-a991-477a-8bb9-c96a3992221e")
-	)
-	(wire (pts (xy 396.2400 71.1200) (xy 401.3200 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "bcec02c8-d89c-4695-be13-8d4badff467c")
-	)
-	(label "RC11"
-		(at 401.3200 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
-		(uuid "3d133090-75d1-4354-98aa-07c5d2e5eb72")
-	)
-	(sheet
-		(at 406.4000 50.8000)
-		(size 25.4000 30.4800)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d303b")
-		(property "Sheetname" "Cluster12"
-			(at 406.4000 49.5300 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 406.4 60.96) (xy 401.32 60.96)
 		)
-		(property "Sheetfile" "led_cluster.kicad_sch"
-			(at 406.4000 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 406.4000 60.9600 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "21a6000d-455d-489b-8ae2-b49ba2f796dd")
-		)
-		(pin "DOUT" output
-			(at 431.8000 71.1200 0)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "db03a59e-46c8-4529-903e-4daf54c92ee9")
-		)
-	)
-	(wire (pts (xy 406.4000 60.9600) (xy 401.3200 60.9600))
-		(stroke (width 0) (type default))
 		(uuid "3f99a583-8faa-4087-ab45-54f8b3f6d98c")
 	)
+	(wire
+		(pts
+			(xy 76.2 71.12) (xy 81.28 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4335cbd6-5f47-4515-ad81-f951c9a785e9")
+	)
+	(wire
+		(pts
+			(xy 370.84 60.96) (xy 365.76 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4a38a427-03c2-4745-8e5d-711d404a8b98")
+	)
+	(wire
+		(pts
+			(xy 325.12 71.12) (xy 330.2 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "535014ad-be0a-460f-a3ec-afcef1bf43d6")
+	)
+	(wire
+		(pts
+			(xy 254 71.12) (xy 259.08 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6099e6ba-c007-4899-8ecc-fcc550bc438e")
+	)
+	(wire
+		(pts
+			(xy 111.76 71.12) (xy 116.84 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "693b87b2-bf6e-4859-b0ec-da0495a0de79")
+	)
+	(wire
+		(pts
+			(xy 182.88 71.12) (xy 187.96 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6b99d968-c9c1-488b-8323-e7336626ebe6")
+	)
+	(wire
+		(pts
+			(xy 228.6 60.96) (xy 223.52 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "865364ee-a781-4c53-8951-35dc80204494")
+	)
+	(wire
+		(pts
+			(xy 121.92 60.96) (xy 116.84 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8fa83143-2ff5-449a-8d73-904d9fbfa411")
+	)
+	(wire
+		(pts
+			(xy 40.64 71.12) (xy 45.72 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a4f1c91a-a858-412a-a558-fa30a953b552")
+	)
+	(wire
+		(pts
+			(xy 396.24 71.12) (xy 401.32 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bcec02c8-d89c-4695-be13-8d4badff467c")
+	)
+	(wire
+		(pts
+			(xy 147.32 71.12) (xy 152.4 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d35e88f8-766d-4bf5-8d2c-25a1501a30db")
+	)
+	(wire
+		(pts
+			(xy 86.36 60.96) (xy 81.28 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc6be2b1-34ad-4131-b73a-920672d5d4c8")
+	)
+	(wire
+		(pts
+			(xy 264.16 60.96) (xy 259.08 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "df1001c1-ea6d-4758-98f0-f73324d5a8ea")
+	)
+	(wire
+		(pts
+			(xy 360.68 71.12) (xy 365.76 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1573c7b-bdd0-4033-aa99-fc34cc6dc8fa")
+	)
 	(label "RC11"
-		(at 401.3200 60.9600 180)
-		(effects (font (size 1.27 1.27)) (justify left bottom))
+		(at 401.32 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
 		(uuid "03e74b9d-43d5-4217-831d-11104dff370f")
 	)
-	(wire (pts (xy 431.8000 71.1200) (xy 436.8800 71.1200))
-		(stroke (width 0) (type default))
-		(uuid "0f46651d-c5ab-4842-8b2f-9d8003e7b1d7")
+	(label "RC2"
+		(at 81.28 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "16b51119-4707-4750-88cd-5426c5629f1b")
+	)
+	(label "RC6"
+		(at 223.52 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "243bccad-6731-4adc-b8cf-fc475cd0f4c8")
+	)
+	(label "RC9"
+		(at 330.2 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2ecc3fb2-cf6d-4b91-a0f1-83bd3e49eeac")
+	)
+	(label "RC11"
+		(at 401.32 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3d133090-75d1-4354-98aa-07c5d2e5eb72")
+	)
+	(label "RC4"
+		(at 152.4 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "41ced2c9-aa35-41d5-abe1-43bf2de44b87")
+	)
+	(label "RC1"
+		(at 45.72 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4a5fcdf6-3e2e-4cbd-9806-05bad6106629")
+	)
+	(label "RC1"
+		(at 45.72 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50f7b6df-2dfe-4c34-a83b-e68c289c7157")
+	)
+	(label "RC9"
+		(at 330.2 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "53b0eb43-36b7-4056-b08e-30ffc658cef8")
+	)
+	(label "RC5"
+		(at 187.96 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5763422d-7d8e-4f5a-a84c-dcbe2e786121")
+	)
+	(label "RC3"
+		(at 116.84 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "74fa7ee6-43f3-419f-91b0-5b9e414bfcf0")
+	)
+	(label "RC7"
+		(at 259.08 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "75bd8ed6-0774-4fe4-8041-05040509fbfb")
+	)
+	(label "RC7"
+		(at 259.08 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8f775f27-bfc8-4cdc-a7ec-e21e1fe4ed5c")
+	)
+	(label "RC5"
+		(at 187.96 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "978a26d5-e799-49bc-b4b8-b92d8c4317eb")
+	)
+	(label "RC10"
+		(at 365.76 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9a698076-a94e-4cfc-bcc3-cfa588011bd0")
+	)
+	(label "RC4"
+		(at 152.4 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "afed0b81-3a30-47da-87b7-172972380b34")
+	)
+	(label "RC2"
+		(at 81.28 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b29b19df-0ce5-4f99-8199-e6e558977e08")
+	)
+	(label "RC3"
+		(at 116.84 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cb37ba5d-20fc-41c1-9870-36dd01ca86d4")
+	)
+	(label "RC8"
+		(at 294.64 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ceac075d-138a-48e2-9fdb-7f086a0f2d62")
+	)
+	(label "RC6"
+		(at 223.52 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cff67600-5ec1-41a0-b5f4-bfbf57cc5349")
+	)
+	(label "RC8"
+		(at 294.64 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e01f92a3-f1e3-4fe7-aad1-e4185b81c961")
+	)
+	(label "RC10"
+		(at 365.76 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f19b6402-a991-477a-8bb9-c96a3992221e")
 	)
 	(hierarchical_label "DOUT"
 		(shape output)
-		(at 436.8800 71.1200 0)
-		(effects (font (size 1.27 1.27)) (justify left))
+		(at 436.88 71.12 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
 		(uuid "6b83515b-762e-405b-b37d-cda31df67714")
 	)
-	(text "REUSABLE ROW  (led_row.kicad_sch)  -  instantiated x3 at the root (Row1-3)\n= 12x led_cluster chained DIN -> Cluster1 -> ... -> Cluster12 -> DOUT.\n96 x 8 px = 768 LEDs = one WS2812 data chain (one RP2040 PIO line).\nVLED / GND are global nets (shared everywhere); only DIN/DOUT are hier."
-		(exclude_from_sim no)
-		(at 15.24 101.60 0)
-		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "628eab94-44bd-4806-8883-60c00b8b79aa")
+	(hierarchical_label "DIN"
+		(shape input)
+		(at 10.16 60.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "b504e3d2-5339-4e37-a06c-01f42990c1fc")
 	)
-	(sheet_instances
-		(path "/"
-			(page "2")
+	(sheet
+		(at 15.24 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3030")
+		(property "Sheetname" "Cluster1"
+			(at 15.24 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 15.24 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 15.24 60.96 180)
+			(uuid "360eda76-5af1-4922-95e3-816f555f72a2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 40.64 71.12 0)
+			(uuid "02b8d100-3452-4ed3-8a6d-ef46cf81c020")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "3")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "16")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "29")
+				)
+			)
 		)
 	)
-	(embedded_fonts no)
+	(sheet
+		(at 50.8 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3031")
+		(property "Sheetname" "Cluster2"
+			(at 50.8 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 50.8 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 50.8 60.96 180)
+			(uuid "cd99949a-0704-4497-abab-0e84787c575d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 76.2 71.12 0)
+			(uuid "3fd2dfbc-eddb-42de-868e-08cef7a1955f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "4")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "17")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "30")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 86.36 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3032")
+		(property "Sheetname" "Cluster3"
+			(at 86.36 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 86.36 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 86.36 60.96 180)
+			(uuid "216dd569-8957-434b-96cf-84dce4d0dbb4")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 111.76 71.12 0)
+			(uuid "8be88def-9948-42b9-a7e4-2792ca8403cb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "5")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "18")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "31")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 121.92 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3033")
+		(property "Sheetname" "Cluster4"
+			(at 121.92 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 121.92 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 121.92 60.96 180)
+			(uuid "4b12e24f-44cf-4489-81d4-0cf8ea60789c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 147.32 71.12 0)
+			(uuid "b84bbaab-da1c-4ddd-95d4-69e1225758fb")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "6")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "19")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "32")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 157.48 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3034")
+		(property "Sheetname" "Cluster5"
+			(at 157.48 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 157.48 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 157.48 60.96 180)
+			(uuid "cd7a2f75-64eb-4407-8b4b-c80e6bce7a0d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 182.88 71.12 0)
+			(uuid "e2d13bcc-dc3c-4f5e-9e55-713a863caf41")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "7")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "20")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "33")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 193.04 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3035")
+		(property "Sheetname" "Cluster6"
+			(at 193.04 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 193.04 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 193.04 60.96 180)
+			(uuid "e644448a-145b-49cf-b439-033aa5d5db5c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 218.44 71.12 0)
+			(uuid "3610c4b0-5413-481b-bbe2-969822905c68")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "8")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "21")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "34")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 228.6 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3036")
+		(property "Sheetname" "Cluster7"
+			(at 228.6 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 228.6 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 228.6 60.96 180)
+			(uuid "82ca8964-fd50-49b9-ac9b-83a17ba13654")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 254 71.12 0)
+			(uuid "dda5e115-faf6-4ed3-85dc-fa7f3305dfe9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "9")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "22")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "35")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 264.16 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3037")
+		(property "Sheetname" "Cluster8"
+			(at 264.16 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 264.16 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 264.16 60.96 180)
+			(uuid "97a9d72b-0dd5-43db-a374-0948b3ff9c2d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 289.56 71.12 0)
+			(uuid "83a73414-f63d-4b94-aa44-c10c88730c3f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "10")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "23")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "36")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 299.72 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3038")
+		(property "Sheetname" "Cluster9"
+			(at 299.72 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 299.72 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 299.72 60.96 180)
+			(uuid "6ac2ced9-5c7d-44e8-b0b9-0028852363e8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 325.12 71.12 0)
+			(uuid "9d6b0d3a-7f36-44eb-b528-fcdb599d9e51")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "11")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "24")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "37")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 335.28 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d3039")
+		(property "Sheetname" "Cluster10"
+			(at 335.28 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 335.28 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 335.28 60.96 180)
+			(uuid "5fa3f77c-98b7-4612-93fa-642ab1a7873f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 360.68 71.12 0)
+			(uuid "1eee2ee1-ef47-4b39-afaf-ecb202eb5e29")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "12")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "25")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "38")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 370.84 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d303a")
+		(property "Sheetname" "Cluster11"
+			(at 370.84 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 370.84 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 370.84 60.96 180)
+			(uuid "1bef013c-9c6d-474d-8c13-a5f7b32481e8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 396.24 71.12 0)
+			(uuid "11f877ef-b0f1-4c2e-a2d0-d1b1ac078fbc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "13")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "26")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "39")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 406.4 50.8)
+		(size 25.4 30.48)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d303b")
+		(property "Sheetname" "Cluster12"
+			(at 406.4 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "led_cluster.kicad_sch"
+			(at 406.4 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 406.4 60.96 180)
+			(uuid "21a6000d-455d-489b-8ae2-b49ba2f796dd")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "DOUT" output
+			(at 431.8 71.12 0)
+			(uuid "db03a59e-46c8-4529-903e-4daf54c92ee9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-matrix"
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3021"
+					(page "14")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3022"
+					(page "27")
+				)
+				(path "/ca1c0000-0000-4000-8000-0000000d3001/ca1c0000-0000-4000-8000-0000000d3023"
+					(page "40")
+				)
+			)
+		)
+	)
 )

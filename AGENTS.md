@@ -38,7 +38,10 @@ KiCad hardware (`hardware/`), firmware (`firmware/`), the design doc
 - `hardware/calcumaker-display/` — 7-seg stack (2–3 rows) + driver + interconnect
   (angled PCB, cabled to the MCU board; the display bus + power cross the
   connector). This one is **fully wired** as a KiCad multi-channel design (row ×3).
-- MCU and keyboard schematics are **wired and maintained directly in KiCad**.
+- All four board schematics are **wired and maintained directly in KiCad**.
+  The display alternatives have provisional PCBs and mechanical viewing references;
+  read their `FLOORPLAN.md` files for power/part limitations. Run
+  `make -C hardware check-display-wiring` for complete digit/pixel net assertions.
   Read `hardware/WIRING_REVIEW.md` for pin assignments and remaining physical checks;
   run `make -C hardware check-wiring` for expanded netlist assertions and ERC.
   The keyboard has 49 keys: `key_row` ×4 plus `key_row_9` for Row4. The display

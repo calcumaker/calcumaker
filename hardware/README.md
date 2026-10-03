@@ -1,7 +1,7 @@
 # Calcumaker 16 — hardware
 
 KiCad 10 design for the **Calcumaker 16** programmer's / technical RPN
-calculator. **Split design** — three PCBs (two stacked, one cabled):
+calculator. **Split design** — two stacked PCBs and one of two cabled display variants:
 
 - **`calcumaker-mcu/`** — the brain/PSU board: MCU (STM32U575RGT6), PSU (USB-C
   charge + buck-boost), clock, SWD, the display interconnect (its 5V rail and
@@ -15,6 +15,8 @@ calculator. **Split design** — three PCBs (two stacked, one cabled):
   driver ICs + the interconnect back to the MCU board. Mounts at an upward angle,
   cabled; power, the display serial bus, and optional aux-display I2C cross the
   FFC.
+- **`calcumaker-matrix/`** — alternative 96 × 24 addressable-pixel display with
+  RP2040 control, USB programming and a dedicated LED power inlet.
 
 See `../DESIGN.md` for the full design and `scripts/README.md` for the
 schematic-generation flow. Build docs/BOMs/fab packages with the `Makefile`
@@ -35,6 +37,15 @@ The keyboard has a [PCB and mechanical plate floor plan](calcumaker-keyboard/FLO
 with 49 key-cell groups, local RGB bypasses, a centered vertical 2U ENTER and
 dedicated `Plate.Cuts`, `Keycaps` and mechanical annotation layers. Run
 `make keyboard-plate` to export the separate plate DXF and reference SVG.
+
+Both display variants have grouped, unrouted floor plans:
+[48-digit seven-segment](calcumaker-display/FLOORPLAN.md) and
+[2,304-pixel matrix](calcumaker-matrix/FLOORPLAN.md). They include local bypasses,
+mechanical viewing references and position CSVs. Run `make check-display-wiring`
+to check every digit/pixel net and ERC, and `make display-mechanical` to export
+window DXFs and reference SVGs. These are provisional mechanical envelopes;
+the matrix power path and both boards' remaining part choices require qualification.
+All four boards' edited schematics are authoritative over the older manifests.
 
 ## Library
 

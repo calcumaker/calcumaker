@@ -13,171 +13,474 @@
 		(comment 2 "Display board: multi-channel 7-seg RPN stack + drivers + interconnect (DRAFT)")
 	)
 	(lib_symbols)
-	(sheet
-		(at 71.1200 30.4800)
-		(size 60.9600 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1511")
-		(property "Sheetname" "Row1"
-			(at 71.1200 29.2100 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(text "Calcumaker 16 — Display (MULTI-CHANNEL). Row1/2/3 are three instances of ONE reusable sheet (display_row.kicad_sch). Shared bus is carried on global nets +5V / GND / DISP_CLK; each row's serial data DIN is a hierarchical pin fed by DIN1/DIN2/DIN3 from the interconnect. Top row (Row3 / U3 / DS33-48) is optional -> 2- or 3-row build."
+		(exclude_from_sim no)
+		(at 20 105 0)
+		(effects
+			(font
+				(face "Courier New")
+				(size 1.27 1.27)
+			)
+			(justify left top)
 		)
-		(property "Sheetfile" "display_row.kicad_sch"
-			(at 71.1200 52.0700 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-		(pin "DIN" input
-			(at 71.1200 40.6400 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "1125eaae-a8b3-4db8-b59b-ad27ed4ba2fe")
-		)
+		(uuid "d03d525e-8c1e-42b9-b467-bb21cf54a0ab")
 	)
-	(sheet
-		(at 71.1200 60.9600)
-		(size 60.9600 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1512")
-		(property "Sheetname" "Row2"
-			(at 71.1200 59.6900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 71.12 101.6)
+			(xy 63.5 101.6)
 		)
-		(property "Sheetfile" "display_row.kicad_sch"
-			(at 71.1200 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 71.1200 71.1200 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "2c7a145b-60e9-42cb-b6f9-9d6698f51fad")
-		)
+		(uuid "4e820893-12b7-40f3-86c2-6b2199d57acc")
 	)
-	(sheet
-		(at 71.1200 91.4400)
-		(size 60.9600 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1513")
-		(property "Sheetname" "Row3"
-			(at 71.1200 90.1700 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
+	(wire
+		(pts
+			(xy 71.12 71.12)
+			(xy 63.5 71.12)
 		)
-		(property "Sheetfile" "display_row.kicad_sch"
-			(at 71.1200 113.0300 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
+		(stroke
+			(width 0)
+			(type default)
 		)
-		(pin "DIN" input
-			(at 71.1200 101.6000 180)
-			(effects (font (size 1.27 1.27)) (justify left))
-			(uuid "ca276048-5134-4cf0-9640-07de0e730515")
-		)
-	)
-	(sheet
-		(at 162.5600 30.4800)
-		(size 50.8000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1520")
-		(property "Sheetname" "Interconnect"
-			(at 162.5600 29.2100 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "interconnect.kicad_sch"
-			(at 162.5600 52.0700 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 162.5600 60.9600)
-		(size 50.8000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1530")
-		(property "Sheetname" "AuxDisplay"
-			(at 162.5600 59.6900 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "aux-display.kicad_sch"
-			(at 162.5600 82.5500 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 162.5600 91.4400)
-		(size 50.8000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1540")
-		(property "Sheetname" "DispMCU"
-			(at 162.5600 90.1700 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "disp_mcu.kicad_sch"
-			(at 162.5600 113.0300 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(sheet
-		(at 162.5600 121.9200)
-		(size 50.8000 20.3200)
-		(fields_autoplaced yes)
-		(stroke (width 0.1524) (type solid))
-		(fill (color 0 0 0 0.0000))
-		(uuid "ca1c0000-0000-4000-8000-0000000d1550")
-		(property "Sheetname" "DispPower"
-			(at 162.5600 120.6500 0)
-			(effects (font (size 1.27 1.27)) (justify left bottom))
-		)
-		(property "Sheetfile" "disp_power.kicad_sch"
-			(at 162.5600 143.5100 0)
-			(effects (font (size 1.27 1.27)) (justify left top))
-		)
-	)
-	(wire (pts (xy 71.1200 40.6400) (xy 63.5000 40.6400))
-		(stroke (width 0) (type default))
-		(uuid "aa368fbe-94ee-449b-a105-bbc14c430397")
-	)
-	(global_label "DIN1"
-		(shape output)
-		(at 63.5000 40.6400 180)
-		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
-		(uuid "123d8dc3-52f6-484c-a7b6-867141d5b29e")
-	)
-	(wire (pts (xy 71.1200 71.1200) (xy 63.5000 71.1200))
-		(stroke (width 0) (type default))
 		(uuid "6ba494fe-9942-4768-ad69-d06302265c09")
+	)
+	(wire
+		(pts
+			(xy 71.12 40.64)
+			(xy 63.5 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aa368fbe-94ee-449b-a105-bbc14c430397")
 	)
 	(global_label "DIN2"
 		(shape output)
-		(at 63.5000 71.1200 180)
+		(at 63.5 71.12 0)
 		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
 		(uuid "02d76ab1-2deb-4975-8436-6591052a995c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 70.9 71.12 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
 	)
-	(wire (pts (xy 71.1200 101.6000) (xy 63.5000 101.6000))
-		(stroke (width 0) (type default))
-		(uuid "4e820893-12b7-40f3-86c2-6b2199d57acc")
+	(global_label "DIN1"
+		(shape output)
+		(at 63.5 40.64 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "123d8dc3-52f6-484c-a7b6-867141d5b29e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 70.9 40.64 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
 	)
 	(global_label "DIN3"
 		(shape output)
-		(at 63.5000 101.6000 180)
+		(at 63.5 101.6 0)
 		(fields_autoplaced yes)
-		(effects (font (size 1.27 1.27)) (justify left))
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
 		(uuid "d105b974-242f-4c62-ba37-4cc73a5f763d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 70.9 101.6 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
 	)
-	(text "Calcumaker 16 — Display (MULTI-CHANNEL). Row1/2/3 are three instances of ONE reusable sheet (display_row.kicad_sch). Shared bus is carried on global nets +5V / GND / DISP_CLK; each row's serial data DIN is a hierarchical pin fed by DIN1/DIN2/DIN3 from the interconnect. Top row (Row3 / U3 / DS33-48) is optional -> 2- or 3-row build."
+	(sheet
+		(at 71.12 30.48)
+		(size 60.96 20.32)
 		(exclude_from_sim no)
-		(at 20.00 105.00 0)
-		(effects (font (face "Courier New") (size 1.27 1.27)) (justify left top))
-		(uuid "d03d525e-8c1e-42b9-b467-bb21cf54a0ab")
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1511")
+		(property "Sheetname" "Row1"
+			(at 71.12 29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "display_row.kicad_sch"
+			(at 71.12 52.07 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 71.12 40.64 180)
+			(uuid "1125eaae-a8b3-4db8-b59b-ad27ed4ba2fe")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 71.12 60.96)
+		(size 60.96 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1512")
+		(property "Sheetname" "Row2"
+			(at 71.12 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "display_row.kicad_sch"
+			(at 71.12 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 71.12 71.12 180)
+			(uuid "2c7a145b-60e9-42cb-b6f9-9d6698f51fad")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 71.12 91.44)
+		(size 60.96 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1513")
+		(property "Sheetname" "Row3"
+			(at 71.12 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "display_row.kicad_sch"
+			(at 71.12 113.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "DIN" input
+			(at 71.12 101.6 180)
+			(uuid "ca276048-5134-4cf0-9640-07de0e730515")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 162.56 30.48)
+		(size 50.8 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1520")
+		(property "Sheetname" "Interconnect"
+			(at 162.56 29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "interconnect.kicad_sch"
+			(at 162.56 52.07 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 162.56 60.96)
+		(size 50.8 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1530")
+		(property "Sheetname" "AuxDisplay"
+			(at 162.56 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "aux-display.kicad_sch"
+			(at 162.56 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 162.56 91.44)
+		(size 50.8 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1540")
+		(property "Sheetname" "DispMCU"
+			(at 162.56 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "disp_mcu.kicad_sch"
+			(at 162.56 113.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 162.56 121.92)
+		(size 50.8 20.32)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "ca1c0000-0000-4000-8000-0000000d1550")
+		(property "Sheetname" "DispPower"
+			(at 162.56 120.65 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "disp_power.kicad_sch"
+			(at 162.56 143.51 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "calcumaker-display"
+				(path "/ca1c0000-0000-4000-8000-0000000d1501"
+					(page "8")
+				)
+			)
+		)
 	)
 	(sheet_instances
 		(path "/"

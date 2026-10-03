@@ -40,7 +40,7 @@ BOM_LABELS  := Item,Designator,Comment,Footprint,Qty,LCSC Part \#,MPN,Manufactur
 SCRIPTS_DIR := scripts
 JLC_SCRIPT  := $(SCRIPTS_DIR)/jlcpcb-package.sh
 
-.PHONY: all docs jlc clean-docs clean-jlc help check-wiring keyboard-plate
+.PHONY: all docs jlc clean-docs clean-jlc help check-wiring check-display-wiring keyboard-plate display-mechanical
 .PHONY: $(foreach p,$(PROJECTS),docs-$(p) images-$(p) bom-$(p) jlc-$(p) gen-$(p) check-$(p) render-$(p))
 
 all: docs
@@ -60,6 +60,8 @@ help:
 	@echo "  gen-<project>      Regenerate schematic from scripts/<project>.schgen.py"
 	@echo "  check-<project>    Sanity-check schematic (comps/footprints/dups/ERC)"
 	@echo "  check-wiring       Verify MCU/keypad nets and reviewed ERC results"
+	@echo "  check-display-wiring Verify both display variants and reviewed ERC results"
+	@echo "  display-mechanical Export viewing-window DXFs and annotated display SVGs"
 	@echo "  keyboard-plate     Export plate-only DXF and annotated keyboard plate SVG"
 	@echo "  render-<project>   Render schematic sheets to PNG for visual review"
 	@echo "  clean-docs         Remove generated docs"
@@ -70,6 +72,22 @@ jlc:  $(foreach p,$(PROJECTS),jlc-$(p))
 
 check-wiring:
 	@KICAD_CLI=$(KICAD_CLI) $(PYTHON_RUN) $(SCRIPTS_DIR)/check-wiring.py
+
+check-display-wiring:
+	@KICAD_CLI=$(KICAD_CLI) $(PYTHON_RUN) $(SCRIPTS_DIR)/check-display-wiring.py
+
+# Viewing references, not released bezel cutting profiles. No PCB drill marks.
+display-mechanical:
+	@for p in calcumaker-display calcumaker-matrix; do \
+	    mkdir -p $$p/mechanical; \
+	    $(KICAD_CLI) pcb export dxf --layers User.1 --mode-single \
+	        --output-units mm --drill-shape-opt 0 --exclude-refdes --exclude-value \
+	        -o $$p/mechanical/viewing-windows.dxf $$p/$$p.kicad_pcb || exit 1; \
+	    $(KICAD_CLI) pcb export svg --layers Edge.Cuts,User.1,User.2,User.3,User.4 \
+	        --mode-single --exclude-drawing-sheet --drill-shape-opt 0 --black-and-white \
+	        -o $$p/mechanical/display-reference.svg $$p/$$p.kicad_pcb || exit 1; \
+	done
+	@$(PYTHON_RUN) -c 'from pathlib import Path; [p.write_text("\n".join(line.rstrip() for line in p.read_text().splitlines()) + "\n") for p in Path(".").glob("calcumaker-*/mechanical/display-reference.svg")]'
 
 # Mechanical plate is a separate part. Suppress PCB drill marks in both exports.
 # User.1 is Plate.Cuts; User.2/3/4 add keycaps, dimensions and placement notes.
